@@ -18,7 +18,7 @@ RUN npm run build
 
 # ─── Stage 3: runner ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl bash
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -33,11 +33,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
 COPY --from=builder /app/prisma ./prisma
+
+# Script de démarrage : migrate + seed + start
+COPY --chown=nextjs:nodejs start.sh ./start.sh
+RUN chmod +x ./start.sh
 
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["./start.sh"]

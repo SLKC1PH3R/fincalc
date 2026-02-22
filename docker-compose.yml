@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # ─── Application Next.js ────────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: fincalc-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://fincalc:${POSTGRES_PASSWORD}@postgres:5432/fincalc
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fincalc-net
+
+  # ─── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: fincalc-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fincalc
+      POSTGRES_USER: fincalc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fincalc -d fincalc"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fincalc-net
+
+  # ─── Migration job (runs once then exits) ────────────────────────────────────
+  migrate:
+    build: .
+    container_name: fincalc-migrate
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    environment:
+      DATABASE_URL: postgresql://fincalc:${POSTGRES_PASSWORD}@postgres:5432/fincalc
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme123}
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fincalc-net
+    restart: "no"
+
+volumes:
+  postgres_data:
+
+networks:
+  fincalc-net:
+    driver: bridge

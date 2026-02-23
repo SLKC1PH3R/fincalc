@@ -4,244 +4,361 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import {
   AreaChart, Area, PieChart, Pie, Cell,
-  ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid
+  ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   TrendingUp, Flame, Receipt, Home, Building2,
   Wallet, PiggyBank, RefreshCw, Calculator,
-  ChevronRight, ArrowRight, Sparkles
+  ChevronRight, ArrowUpRight, Clock, Sparkles,
+  BarChart3
 } from 'lucide-react'
-import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface Simulation {
+  id: string
+  type: string
+  name: string
+  inputs: Record<string, any>
+  results: Record<string, any>
+  createdAt: string
+}
+
+// ─── Data ────────────────────────────────────────────────────────────────────
 const MODULES = [
   {
     href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp,
-    desc: 'Visualisez l\'effet boule de neige de votre épargne sur le long terme.',
-    tag: 'Épargne', color: 'text-foreground',
+    desc: 'Effet boule de neige sur le long terme', tag: 'Épargne',
+    accent: 'from-emerald-500/10 to-transparent',
+    iconColor: 'text-emerald-400',
+    border: 'hover:border-emerald-500/30',
   },
   {
     href: '/dashboard/dca', label: 'DCA', icon: RefreshCw,
-    desc: 'Simulez un investissement régulier et comparez avec un achat unique.',
-    tag: 'Épargne', color: 'text-foreground',
+    desc: 'Investissement régulier vs achat unique', tag: 'Épargne',
+    accent: 'from-sky-500/10 to-transparent',
+    iconColor: 'text-sky-400',
+    border: 'hover:border-sky-500/30',
   },
   {
     href: '/dashboard/fire', label: 'FI/RE', icon: Flame,
-    desc: 'Calculez votre objectif d\'indépendance financière et votre date de retraite anticipée.',
-    tag: 'Épargne', color: 'text-foreground',
+    desc: 'Date d\'indépendance financière', tag: 'Épargne',
+    accent: 'from-orange-500/10 to-transparent',
+    iconColor: 'text-orange-400',
+    border: 'hover:border-orange-500/30',
   },
   {
     href: '/dashboard/buyrent', label: 'Acheter vs Louer', icon: Home,
-    desc: 'Comparez le patrimoine généré selon que vous achetez ou louez votre résidence.',
-    tag: 'Immobilier', color: 'text-foreground',
+    desc: 'Comparaison patrimoniale à long terme', tag: 'Immobilier',
+    accent: 'from-violet-500/10 to-transparent',
+    iconColor: 'text-violet-400',
+    border: 'hover:border-violet-500/30',
   },
   {
     href: '/dashboard/mortgage', label: 'Prêt Immobilier', icon: Building2,
-    desc: 'Calculez vos mensualités, le TAEG et le tableau d\'amortissement complet.',
-    tag: 'Immobilier', color: 'text-foreground',
+    desc: 'Mensualités, TAEG, amortissement', tag: 'Immobilier',
+    accent: 'from-pink-500/10 to-transparent',
+    iconColor: 'text-pink-400',
+    border: 'hover:border-pink-500/30',
   },
   {
     href: '/dashboard/rental', label: 'Rentabilité Locative', icon: Wallet,
-    desc: 'Analysez le cashflow et la rentabilité nette d\'un investissement locatif.',
-    tag: 'Immobilier', color: 'text-foreground',
+    desc: 'Cashflow et rendement net locatif', tag: 'Immobilier',
+    accent: 'from-teal-500/10 to-transparent',
+    iconColor: 'text-teal-400',
+    border: 'hover:border-teal-500/30',
   },
   {
     href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt,
-    desc: 'Calculez votre impôt sur le revenu avec abattement 10%, frais réels et TMI.',
-    tag: 'Fiscal', color: 'text-foreground',
+    desc: 'Calcul IR, TMI, frais réels', tag: 'Fiscal',
+    accent: 'from-rose-500/10 to-transparent',
+    iconColor: 'text-rose-400',
+    border: 'hover:border-rose-500/30',
   },
   {
-    href: '/dashboard/retirement', label: 'Simulateur Retraite', icon: PiggyBank,
-    desc: 'Estimez votre pension et optimisez votre préparation retraite via le PER.',
-    tag: 'Fiscal', color: 'text-foreground',
+    href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank,
+    desc: 'Pension estimée et préparation PER', tag: 'Fiscal',
+    accent: 'from-amber-500/10 to-transparent',
+    iconColor: 'text-amber-400',
+    border: 'hover:border-amber-500/30',
   },
   {
     href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator,
-    desc: 'Analysez la répartition de vos dépenses selon la règle d\'or des finances perso.',
-    tag: 'Budget', color: 'text-foreground',
+    desc: 'Répartition selon la règle d\'or', tag: 'Budget',
+    accent: 'from-lime-500/10 to-transparent',
+    iconColor: 'text-lime-400',
+    border: 'hover:border-lime-500/30',
   },
 ]
 
-const TAG_COLORS: Record<string, string> = {
-  'Épargne': 'bg-muted text-muted-foreground',
-  'Immobilier': 'bg-muted text-muted-foreground',
-  'Fiscal': 'bg-muted text-muted-foreground',
-  'Budget': 'bg-muted text-muted-foreground',
+const TYPE_META: Record<string, { label: string; color: string; icon: any }> = {
+  compound:   { label: 'Intérêts',  color: '#34d399', icon: TrendingUp },
+  dca:        { label: 'DCA',       color: '#38bdf8', icon: RefreshCw },
+  fire:       { label: 'FI/RE',     color: '#fb923c', icon: Flame },
+  buyrent:    { label: 'Achat/Loc', color: '#a78bfa', icon: Home },
+  mortgage:   { label: 'Prêt',      color: '#f472b6', icon: Building2 },
+  rental:     { label: 'Locatif',   color: '#2dd4bf', icon: Wallet },
+  tax:        { label: 'Impôts',    color: '#fb7185', icon: Receipt },
+  retirement: { label: 'Retraite',  color: '#fbbf24', icon: PiggyBank },
+  budget:     { label: 'Budget',    color: '#a3e635', icon: Calculator },
 }
 
-interface Simulation {
-  id: string; type: string; name: string
-  inputs: Record<string, any>; results: Record<string, any>; createdAt: string
+function timeAgo(dateStr: string) {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
+  if (diff < 60) return 'À l\'instant'
+  if (diff < 3600) return `Il y a ${Math.floor(diff / 60)}min`
+  if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)}h`
+  if (diff < 604800) return `Il y a ${Math.floor(diff / 86400)}j`
+  return new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  compound: 'Composés', dca: 'DCA', fire: 'FI/RE',
-  buyrent: 'Achat/Loc', mortgage: 'Prêt', rental: 'Locatif',
-  tax: 'Impôts', retirement: 'Retraite', budget: 'Budget'
-}
-
-function SimSummaryChart({ sims }: { sims: Simulation[] }) {
-  // Count by type for pie
-  const byType = sims.reduce((acc, s) => {
-    acc[s.type] = (acc[s.type] || 0) + 1; return acc
-  }, {} as Record<string, number>)
-
-  const pieData = Object.entries(byType).map(([type, count]) => ({
-    name: TYPE_LABELS[type] || type, value: count
-  }))
-
-  const FILLS = ['hsl(0 0% 80%)', 'hsl(0 0% 60%)', 'hsl(0 0% 45%)', 'hsl(0 0% 30%)', 'hsl(0 0% 20%)', 'hsl(160 84% 39%)', 'hsl(38 92% 50%)', 'hsl(217 91% 60%)', 'hsl(0 72% 51%)']
-
-  // Activity timeline — group by week
-  const now = Date.now()
-  const weeks: Record<number, number> = {}
-  sims.forEach(s => {
-    const d = new Date(s.createdAt)
-    const w = Math.floor((now - d.getTime()) / (7 * 24 * 3600 * 1000))
-    if (w <= 11) weeks[11 - w] = (weeks[11 - w] || 0) + 1
-  })
-  const timelineData = Array.from({ length: 12 }, (_, i) => ({
-    week: i === 11 ? 'Cette semaine' : `S-${11 - i}`,
-    count: weeks[i] || 0
-  }))
-
+// ─── Stat Card ───────────────────────────────────────────────────────────────
+function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>Répartition des simulations</CardTitle>
-          <CardDescription>{sims.length} simulation{sims.length > 1 ? 's' : ''} sauvegardée{sims.length > 1 ? 's' : ''}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <ResponsiveContainer width={120} height={120}>
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={55} dataKey="value" paddingAngle={2}>
-                  {pieData.map((_, i) => <Cell key={i} fill={FILLS[i % FILLS.length]} strokeWidth={0} />)}
-                </Pie>
-                <Tooltip contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 11 }} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex-1 space-y-1.5">
-              {pieData.map((d, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: FILLS[i % FILLS.length] }} />
-                    <span className="text-muted-foreground">{d.name}</span>
-                  </div>
-                  <span className="font-medium">{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>Activité (12 semaines)</CardTitle>
-          <CardDescription>Simulations sauvegardées par semaine</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={120}>
-            <AreaChart data={timelineData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-              <XAxis dataKey="week" tick={{ fontSize: 9, fill: 'hsl(0 0% 50%)' }} interval={3} />
-              <YAxis tick={{ fontSize: 9, fill: 'hsl(0 0% 50%)' }} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 11 }} />
-              <Area type="monotone" dataKey="count" stroke="hsl(0 0% 70%)" fill="hsl(0 0% 70%)" fillOpacity={0.15} strokeWidth={1.5} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+    <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-xl p-5 flex flex-col gap-1">
+      <span className="text-[11px] text-white/40 uppercase tracking-widest font-medium">{label}</span>
+      <span className="text-2xl font-semibold text-white tracking-tight">{value}</span>
+      {sub && <span className="text-xs text-white/30">{sub}</span>}
     </div>
   )
 }
 
+// ─── Module Card ─────────────────────────────────────────────────────────────
+function ModuleCard({ mod }: { mod: typeof MODULES[0] }) {
+  return (
+    <Link href={mod.href} className="group block">
+      <div className={cn(
+        'relative overflow-hidden bg-[#0f0f0f] border border-white/[0.06] rounded-xl p-5 transition-all duration-200',
+        'hover:border-white/[0.12] hover:-translate-y-0.5',
+        mod.border
+      )}>
+        {/* Gradient glow top-left */}
+        <div className={cn('absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300', mod.accent)} />
+
+        <div className="relative">
+          <div className="flex items-start justify-between mb-4">
+            <div className="h-9 w-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+              <mod.icon className={cn('h-4 w-4', mod.iconColor)} />
+            </div>
+            <span className="text-[10px] text-white/25 uppercase tracking-widest font-medium">{mod.tag}</span>
+          </div>
+
+          <h3 className="text-sm font-semibold text-white mb-1 group-hover:text-white transition-colors">
+            {mod.label}
+          </h3>
+          <p className="text-xs text-white/40 leading-relaxed mb-4">{mod.desc}</p>
+
+          <div className="flex items-center gap-1 text-[11px] text-white/25 group-hover:text-white/50 transition-colors">
+            <span>Ouvrir</span>
+            <ArrowUpRight className="h-3 w-3" />
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// ─── Activity Chart ───────────────────────────────────────────────────────────
+function ActivityChart({ sims }: { sims: Simulation[] }) {
+  const now = Date.now()
+  const weeks: Record<number, number> = {}
+  sims.forEach(s => {
+    const w = Math.floor((now - new Date(s.createdAt).getTime()) / (7 * 24 * 3600 * 1000))
+    if (w <= 11) weeks[11 - w] = (weeks[11 - w] || 0) + 1
+  })
+  const data = Array.from({ length: 12 }, (_, i) => ({
+    w: i === 11 ? 'Cette sem.' : `S-${11 - i}`,
+    n: weeks[i] || 0,
+  }))
+
+  return (
+    <ResponsiveContainer width="100%" height={80}>
+      <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
+            <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="w" hide />
+        <YAxis hide />
+        <Tooltip
+          contentStyle={{
+            background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '8px', fontSize: 11, color: '#fff',
+          }}
+          formatter={(v: any) => [`${v} simulation${v > 1 ? 's' : ''}`, '']}
+          labelFormatter={(l) => l}
+        />
+        <Area type="monotone" dataKey="n" stroke="#6366f1" strokeWidth={1.5} fill="url(#actGrad)" dot={false} />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+}
+
+// ─── Distribution Donut ───────────────────────────────────────────────────────
+function DistributionDonut({ sims }: { sims: Simulation[] }) {
+  const byType = sims.reduce((acc, s) => {
+    acc[s.type] = (acc[s.type] || 0) + 1; return acc
+  }, {} as Record<string, number>)
+  const data = Object.entries(byType).map(([type, count]) => ({
+    name: TYPE_META[type]?.label || type,
+    value: count,
+    color: TYPE_META[type]?.color || '#6b7280',
+  }))
+
+  return (
+    <div className="flex items-center gap-5">
+      <div className="flex-shrink-0">
+        <ResponsiveContainer width={80} height={80}>
+          <PieChart>
+            <Pie data={data} cx="50%" cy="50%" innerRadius={26} outerRadius={38} dataKey="value" paddingAngle={2} startAngle={90} endAngle={450}>
+              {data.map((d, i) => <Cell key={i} fill={d.color} strokeWidth={0} />)}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-1.5">
+        {data.slice(0, 6).map((d, i) => (
+          <div key={i} className="flex items-center gap-1.5 min-w-0">
+            <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: d.color }} />
+            <span className="text-[11px] text-white/40 truncate">{d.name}</span>
+            <span className="text-[11px] text-white/60 ml-auto flex-shrink-0">{d.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Recent Sim Row ───────────────────────────────────────────────────────────
+function RecentSimRow({ sim }: { sim: Simulation }) {
+  const meta = TYPE_META[sim.type]
+  const Icon = meta?.icon || BarChart3
+  const restoreUrl = `/dashboard/${sim.type === 'compound' ? 'compound' : sim.type}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`
+
+  return (
+    <Link href={restoreUrl} className="group flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors rounded-lg -mx-1">
+      <div className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0">
+        <Icon className="h-3.5 w-3.5" style={{ color: meta?.color || '#6b7280' }} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-white/80 font-medium truncate group-hover:text-white transition-colors">{sim.name}</p>
+        <p className="text-[11px] text-white/30">{meta?.label || sim.type}</p>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className="text-[11px] text-white/25 flex items-center gap-1">
+          <Clock className="h-3 w-3" />
+          {timeAgo(sim.createdAt)}
+        </span>
+        <ChevronRight className="h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition-colors" />
+      </div>
+    </Link>
+  )
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const { data: session } = useSession()
   const [sims, setSims] = useState<Simulation[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     fetch('/api/simulations').then(r => r.json()).then(data => {
       if (Array.isArray(data)) setSims(data)
-    }).catch(() => {})
+    }).finally(() => setLoaded(true))
   }, [])
 
-  const firstName = session?.user?.name?.split(' ')[0] || 'vous'
+  const firstName = session?.user?.name?.split(' ')[0] || ''
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
+  const totalSims = sims.length
+  const thisWeek = sims.filter(s => Date.now() - new Date(s.createdAt).getTime() < 7 * 86400 * 1000).length
+  const mostUsed = sims.length ? Object.entries(
+    sims.reduce((a, s) => { a[s.type] = (a[s.type] || 0) + 1; return a }, {} as Record<string, number>)
+  ).sort((a, b) => b[1] - a[1])[0] : null
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-5xl">
-      {/* Hero */}
-      <div className="space-y-1">
-        <p className="text-sm text-muted-foreground">{greeting}, <span className="text-foreground font-medium">{firstName}</span></p>
-        <h1 className="text-2xl font-semibold tracking-tight">Tableau de bord financier</h1>
-        <p className="text-sm text-muted-foreground">9 calculateurs pour piloter votre patrimoine et vos investissements</p>
+    <div className="max-w-6xl space-y-8 pb-12">
+
+      {/* Header */}
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-sm text-white/35 mb-1">{greeting}{firstName ? `, ${firstName}` : ''}</p>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Tableau de bord</h1>
+        </div>
+        <div className="flex items-center gap-2 text-[11px] text-white/25">
+          <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' })}
+        </div>
       </div>
 
-      {/* Simulations summary - only if user has saved some */}
-      {sims.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-medium flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-muted-foreground" />
-              Vos simulations
-            </h2>
-            <Link href="/dashboard/history" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-              Voir tout <ArrowRight className="h-3 w-3" />
-            </Link>
+      {/* Stats + Activity row (only if sims exist) */}
+      {loaded && totalSims > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 lg:col-span-1">
+            <StatCard label="Simulations" value={totalSims} sub="total" />
+            <StatCard label="Cette semaine" value={thisWeek} sub="nouvelles" />
+            <StatCard
+              label="Module favori"
+              value={mostUsed ? (TYPE_META[mostUsed[0]]?.label || mostUsed[0]) : '—'}
+              sub={mostUsed ? `${mostUsed[1]} fois` : undefined}
+            />
           </div>
-          <SimSummaryChart sims={sims} />
 
-          {/* Recent 3 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {sims.slice(0, 3).map(sim => (
-              <Link key={sim.id} href={`/dashboard/${sim.type === 'compound' ? 'compound' : sim.type}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`}>
-                <Card className="hover:border-foreground/30 transition-colors cursor-pointer">
-                  <CardContent className="pt-4 pb-4">
-                    <p className="text-xs text-muted-foreground mb-0.5">{TYPE_LABELS[sim.type]}</p>
-                    <p className="text-sm font-medium truncate">{sim.name}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">
-                      {new Date(sim.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+          {/* Activity + Donut */}
+          <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+            {/* Activity */}
+            <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[11px] text-white/40 uppercase tracking-widest font-medium">Activité</span>
+                <span className="text-[11px] text-white/25">12 semaines</span>
+              </div>
+              <ActivityChart sims={sims} />
+            </div>
+
+            {/* Distribution */}
+            <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[11px] text-white/40 uppercase tracking-widest font-medium">Répartition</span>
+                <span className="text-[11px] text-white/25">{totalSims} sim.</span>
+              </div>
+              <DistributionDonut sims={sims} />
+            </div>
           </div>
         </div>
       )}
 
-      {/* Modules grid */}
-      <div className="space-y-3">
-        <h2 className="text-sm font-medium">Tous les calculateurs</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {MODULES.map((mod) => (
-            <Link key={mod.href} href={mod.href}>
-              <Card className="group hover:border-foreground/30 transition-all duration-150 cursor-pointer h-full">
-                <CardContent className="pt-5 pb-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
-                      <mod.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </div>
-                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{mod.tag}</span>
-                  </div>
-                  <h3 className="text-sm font-semibold mb-1 group-hover:text-foreground transition-colors">{mod.label}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{mod.desc}</p>
-                  <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                    <span>Ouvrir</span>
-                    <ChevronRight className="h-3 w-3" />
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Recent sims */}
+      {loaded && totalSims > 0 && (
+        <div className="bg-[#0f0f0f] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.04]">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              <span className="text-sm font-medium text-white/70">Simulations récentes</span>
+            </div>
+            <Link href="/dashboard/history" className="text-[11px] text-white/30 hover:text-white/60 flex items-center gap-1 transition-colors">
+              Voir tout <ArrowUpRight className="h-3 w-3" />
             </Link>
-          ))}
+          </div>
+          <div className="px-4 py-2">
+            {sims.slice(0, 5).map(sim => <RecentSimRow key={sim.id} sim={sim} />)}
+          </div>
+        </div>
+      )}
+
+      {/* Modules */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-medium text-white/50 uppercase tracking-widest text-[11px]">Calculateurs</h2>
+          <span className="text-[11px] text-white/25">{MODULES.length} modules</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {MODULES.map(mod => <ModuleCard key={mod.href} mod={mod} />)}
         </div>
       </div>
+
     </div>
   )
 }

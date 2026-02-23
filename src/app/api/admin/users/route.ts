@@ -16,13 +16,30 @@ export async function GET() {
 
   const users = await prisma.user.findMany({
     select: {
-      id: true, email: true, name: true, image: true, createdAt: true,
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
       _count: { select: { simulations: true } }
     },
     orderBy: { createdAt: 'desc' }
   })
 
-  return NextResponse.json(users)
+  // Fetch image separately with raw query to handle schema differences gracefully
+  let usersWithImage: Array<typeof users[0] & { image?: string | null }> = users
+
+  try {
+    const images = await prisma.$queryRaw<{ id: string; image: string | null }[]>`
+      SELECT id, image FROM "User"
+    `
+    const imageMap = new Map(images.map(u => [u.id, u.image]))
+    usersWithImage = users.map(u => ({ ...u, image: imageMap.get(u.id) ?? null }))
+  } catch {
+    // image column doesn't exist yet - return users without it
+    usersWithImage = users.map(u => ({ ...u, image: null }))
+  }
+
+  return NextResponse.json(usersWithImage)
 }
 
 export async function DELETE(req: NextRequest) {

@@ -1,3 +1,5 @@
+import { fmt } from "@/lib/fmt"
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface CompoundInputs {

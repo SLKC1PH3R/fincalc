@@ -1,4 +1,5 @@
 import { NextAuthOptions } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
@@ -12,6 +13,14 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   providers: [
+    // ─── Google OAuth ─────────────────────────────────────────────
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
+
+    // ─── Email + Password ──────────────────────────────────────────
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -25,7 +34,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email.toLowerCase() },
         })
 
-        if (!user) return null
+        if (!user || !user.password) return null
 
         const isValid = await bcrypt.compare(credentials.password, user.password)
         if (!isValid) return null
@@ -35,10 +44,31 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    // ─── Whitelist check for Google OAuth ─────────────────────────
+    async signIn({ user, account }) {
+      // Credentials provider: already checked in authorize()
+      if (account?.provider === 'credentials') return true
+
+      // Google provider: check whitelist
+      if (!user.email) return false
+
+      const allowed = await prisma.allowedEmail.findUnique({
+        where: { email: user.email.toLowerCase() },
+      })
+
+      if (!allowed) {
+        // Return custom error page with reason
+        return '/login?error=NotAllowed'
+      }
+
+      return true
+    },
+
     async jwt({ token, user }) {
       if (user) token.id = user.id
       return token
     },
+
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string

@@ -11,7 +11,8 @@ model User {
   id            String       @id @default(cuid())
   email         String       @unique
   name          String?
-  password      String
+  password      String?      // Optional — null for Google OAuth users
+  image         String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   simulations   Simulation[]
@@ -54,15 +55,15 @@ model VerificationToken {
 }
 
 model Simulation {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String   // 'compound' | 'fire' | 'tax' | 'buyrent' | 'mortgage'
-  name        String
-  inputs      Json
-  results     Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  name      String
+  inputs    Json
+  results   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, type])
 }

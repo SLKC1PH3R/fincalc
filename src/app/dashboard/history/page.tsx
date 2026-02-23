@@ -14,11 +14,15 @@ interface Simulation {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; Icon: any; href: string }> = {
-  compound: { label: 'Intérêts Composés', Icon: TrendingUp, href: '/dashboard' },
-  fire:     { label: 'FI/RE',             Icon: Flame,      href: '/dashboard/fire' },
-  tax:      { label: 'Impôts',            Icon: Receipt,    href: '/dashboard/tax' },
-  buyrent:  { label: 'Acheter vs Louer',  Icon: Home,       href: '/dashboard/buyrent' },
-  mortgage: { label: 'Prêt Immobilier',   Icon: Building2,  href: '/dashboard/mortgage' },
+  compound:   { label: 'Intérêts Composés',    Icon: TrendingUp, href: '/dashboard' },
+  dca:        { label: 'DCA',                   Icon: TrendingUp, href: '/dashboard/dca' },
+  fire:       { label: 'FI/RE',                 Icon: Flame,      href: '/dashboard/fire' },
+  tax:        { label: 'Impôts',                Icon: Receipt,    href: '/dashboard/tax' },
+  buyrent:    { label: 'Acheter vs Louer',      Icon: Home,       href: '/dashboard/buyrent' },
+  mortgage:   { label: 'Prêt Immobilier',       Icon: Building2,  href: '/dashboard/mortgage' },
+  rental:     { label: 'Rentabilité Locative',  Icon: Building2,  href: '/dashboard/rental' },
+  retirement: { label: 'Retraite',              Icon: TrendingUp, href: '/dashboard/retirement' },
+  budget:     { label: 'Budget 50/30/20',       Icon: TrendingUp, href: '/dashboard/budget' },
 }
 
 function SimCard({ sim, onDelete }: { sim: Simulation; onDelete: () => void }) {

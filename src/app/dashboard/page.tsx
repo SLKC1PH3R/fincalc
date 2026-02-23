@@ -1,7 +1,5 @@
 'use client'
-import { Suspense } from 'react'
-import { useState, useEffect, useMemo } from 'react'
-import { Suspense } from 'react'
+import { Suspense, useState, useEffect, useMemo } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'

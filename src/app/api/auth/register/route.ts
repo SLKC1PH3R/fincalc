@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Email invalide'),
   password: z.string().min(8, 'Minimum 8 caractères'),
   name: z.string().min(2, 'Minimum 2 caractères'),
 })
@@ -15,13 +15,6 @@ export async function POST(req: NextRequest) {
     const { email, password, name } = schema.parse(body)
     const normalizedEmail = email.toLowerCase()
 
-    // Check whitelist
-    const allowed = await prisma.allowedEmail.findUnique({ where: { email: normalizedEmail } })
-    if (!allowed) {
-      return NextResponse.json({ error: 'Cet email n\'est pas autorisé à s\'inscrire.' }, { status: 403 })
-    }
-
-    // Check if already exists
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } })
     if (existing) {
       return NextResponse.json({ error: 'Un compte existe déjà avec cet email.' }, { status: 409 })
@@ -37,7 +30,6 @@ export async function POST(req: NextRequest) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.errors[0].message }, { status: 400 })
     }
-    console.error(err)
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }

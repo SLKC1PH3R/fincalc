@@ -1,5 +1,6 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { Suspense } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -8,7 +9,8 @@ import { Slider } from '@/components/ui/slider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcTax, type TaxInputs } from '@/lib/calculators'
+import { calcTax, type TaxInputs } import { useSearchParams } from 'next/navigation'
+from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle2 } from 'lucide-react'
@@ -53,11 +55,19 @@ const SCORE = {
   eleve: { label: 'Élevé', icon: AlertCircle, color: 'text-crimson-finance' },
 }
 
-export default function TaxPage() {
+function TaxPageInner() {
   const [inputs, setInputs] = useState<TaxInputs>({
     gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false
   })
   const set = (k: keyof TaxInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Restore simulation from history
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const raw = searchParams.get('restore')
+    if (!raw) return
+    try { setInputs(JSON.parse(raw) as TaxInputs) } catch {}
+  }, [])
   const r = useMemo(() => calcTax(inputs), [inputs])
   const score = SCORE[r.analysis.score]
 
@@ -328,4 +338,8 @@ export default function TaxPage() {
       </Card>
     </div>
   )
+}
+
+export default function TaxPage() {
+  return <Suspense><TaxPageInner /></Suspense>
 }

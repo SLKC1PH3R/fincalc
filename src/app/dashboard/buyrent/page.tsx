@@ -1,5 +1,6 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { Suspense } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -7,7 +8,8 @@ import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcBuyRent, type BuyRentInputs } from '@/lib/calculators'
+import { calcBuyRent, type BuyRentInputs } import { useSearchParams } from 'next/navigation'
+from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, Home, TrendingUp, CheckCircle2, Info } from 'lucide-react'
@@ -23,9 +25,17 @@ function Tip({ text }: { text: string }) {
   )
 }
 
-export default function BuyRentPage() {
+function BuyRentPageInner() {
   const [inputs, setInputs] = useState<BuyRentInputs>({ price: 300000, down: 60000, loanRate: 3.5, rent: 1000, years: 20, appreciation: 2, investReturn: 7 })
   const set = (k: keyof BuyRentInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Restore simulation from history
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const raw = searchParams.get('restore')
+    if (!raw) return
+    try { setInputs(JSON.parse(raw) as BuyRentInputs) } catch {}
+  }, [])
   const r = useMemo(() => calcBuyRent(inputs), [inputs])
 
   const tips = []
@@ -228,4 +238,8 @@ export default function BuyRentPage() {
       </Card>
     </div>
   )
+}
+
+export default function BuyRentPage() {
+  return <Suspense><BuyRentPageInner /></Suspense>
 }

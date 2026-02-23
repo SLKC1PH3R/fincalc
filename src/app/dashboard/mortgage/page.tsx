@@ -1,5 +1,6 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { Suspense } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -8,7 +9,8 @@ import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcMortgage, type MortgageInputs } from '@/lib/calculators'
+import { calcMortgage, type MortgageInputs } import { useSearchParams } from 'next/navigation'
+from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
@@ -24,9 +26,17 @@ function Tip({ text }: { text: string }) {
   )
 }
 
-export default function MortgagePage() {
+function MortgagePageInner() {
   const [inputs, setInputs] = useState<MortgageInputs>({ amount: 240000, rate: 3.5, years: 20, insurance: 80, fees: 5000 })
   const set = (k: keyof MortgageInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Restore simulation from history
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const raw = searchParams.get('restore')
+    if (!raw) return
+    try { setInputs(JSON.parse(raw) as MortgageInputs) } catch {}
+  }, [])
   const r = useMemo(() => calcMortgage(inputs), [inputs])
 
   const interestRatio = r.totalInterest / inputs.amount * 100
@@ -192,4 +202,8 @@ export default function MortgagePage() {
       </Card>
     </div>
   )
+}
+
+export default function MortgagePage() {
+  return <Suspense><MortgagePageInner /></Suspense>
 }

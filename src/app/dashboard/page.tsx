@@ -1,5 +1,7 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { Suspense } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { Suspense } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -9,7 +11,9 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcCompound, type CompoundInputs } from '@/lib/calculators'
+import { useRestoreSimulation } from '@/lib/useRestoreSimulation'
+import { calcCompound, type CompoundInputs } import { useSearchParams } from 'next/navigation'
+from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
@@ -25,9 +29,17 @@ function Tip({ text }: { text: string }) {
   )
 }
 
-export default function CompoundPage() {
+function CompoundPageInner() {
   const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
   const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Restore simulation from history
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const raw = searchParams.get('restore')
+    if (!raw) return
+    try { setInputs(JSON.parse(raw) as CompoundInputs) } catch {}
+  }, [])
   const r = useMemo(() => calcCompound(inputs), [inputs])
 
   const score = r.multiplier >= 5 ? 'excellent' : r.multiplier >= 3 ? 'bon' : r.multiplier >= 2 ? 'moyen' : 'faible'
@@ -178,4 +190,8 @@ export default function CompoundPage() {
       </Card>
     </div>
   )
+}
+
+export default function CompoundPage() {
+  return <Suspense><CompoundPageInner /></Suspense>
 }

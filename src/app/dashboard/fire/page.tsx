@@ -1,5 +1,6 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { Suspense } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -7,7 +8,8 @@ import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcFire, type FireInputs } from '@/lib/calculators'
+import { calcFire, type FireInputs } import { useSearchParams } from 'next/navigation'
+from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
@@ -23,9 +25,17 @@ function Tip({ text }: { text: string }) {
   )
 }
 
-export default function FirePage() {
+function FirePageInner() {
   const [inputs, setInputs] = useState<FireInputs>({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Restore simulation from history
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const raw = searchParams.get('restore')
+    if (!raw) return
+    try { setInputs(JSON.parse(raw) as FireInputs) } catch {}
+  }, [])
   const r = useMemo(() => calcFire(inputs), [inputs])
 
   const score = r.savingsRate >= 50 ? 'excellent' : r.savingsRate >= 30 ? 'bon' : r.savingsRate >= 15 ? 'moyen' : 'faible'
@@ -179,4 +189,8 @@ export default function FirePage() {
       </Card>
     </div>
   )
+}
+
+export default function FirePage() {
+  return <Suspense><FirePageInner /></Suspense>
 }

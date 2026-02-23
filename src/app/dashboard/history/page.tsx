@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { Trash2, TrendingUp, Flame, Receipt, Home, Building2, Clock } from 'lucide-react'
+import { Trash2, TrendingUp, Flame, Receipt, Home, Building2, Clock, ExternalLink } from 'lucide-react'
 import { fmt } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 
@@ -12,26 +13,32 @@ interface Simulation {
   inputs: Record<string, unknown>; results: Record<string, unknown>; createdAt: string
 }
 
-const TYPE_CONFIG: Record<string, { label: string; Icon: any }> = {
-  compound: { label: 'Intérêts Composés', Icon: TrendingUp },
-  fire: { label: 'FI/RE', Icon: Flame },
-  tax: { label: 'Impôts', Icon: Receipt },
-  buyrent: { label: 'Acheter vs Louer', Icon: Home },
-  mortgage: { label: 'Prêt Immobilier', Icon: Building2 },
+const TYPE_CONFIG: Record<string, { label: string; Icon: any; href: string }> = {
+  compound: { label: 'Intérêts Composés', Icon: TrendingUp, href: '/dashboard' },
+  fire:     { label: 'FI/RE',             Icon: Flame,      href: '/dashboard/fire' },
+  tax:      { label: 'Impôts',            Icon: Receipt,    href: '/dashboard/tax' },
+  buyrent:  { label: 'Acheter vs Louer',  Icon: Home,       href: '/dashboard/buyrent' },
+  mortgage: { label: 'Prêt Immobilier',   Icon: Building2,  href: '/dashboard/mortgage' },
 }
 
 function SimCard({ sim, onDelete }: { sim: Simulation; onDelete: () => void }) {
+  const router = useRouter()
   const config = TYPE_CONFIG[sim.type] || TYPE_CONFIG.compound
   const { Icon } = config
   const date = new Date(sim.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
 
   const keyResults: { label: string; value: string }[] = []
   const r = sim.results
-  if (sim.type === 'compound' && r.final) keyResults.push({ label: 'Capital final', value: fmt(r.final as number) }, { label: 'Intérêts', value: fmt(r.interest as number) })
-  if (sim.type === 'fire' && r.target) keyResults.push({ label: 'Objectif', value: fmt(r.target as number) }, { label: 'Années', value: `${r.yearsToFire} ans` })
-  if (sim.type === 'tax' && r.ir) keyResults.push({ label: 'IR', value: fmt(r.ir as number) }, { label: 'Net', value: fmt(r.netIncome as number) })
-  if (sim.type === 'buyrent') keyResults.push({ label: 'Achat', value: fmt(r.buyNetWorth as number) }, { label: 'Location', value: fmt(r.rentCapital as number) })
-  if (sim.type === 'mortgage' && r.monthlyPayment) keyResults.push({ label: 'Mensualité', value: fmt(r.totalMonthly as number) }, { label: 'TAEG', value: `${(r.taeg as number).toFixed(2)}%` })
+  if (sim.type === 'compound' && r.final)        keyResults.push({ label: 'Capital final', value: fmt(r.final as number) }, { label: 'Intérêts', value: fmt(r.interest as number) })
+  if (sim.type === 'fire' && r.target)           keyResults.push({ label: 'Objectif', value: fmt(r.target as number) }, { label: 'Années', value: `${r.yearsToFire} ans` })
+  if (sim.type === 'tax' && r.ir)                keyResults.push({ label: 'IR', value: fmt(r.ir as number) }, { label: 'Net', value: fmt(r.netIncome as number) })
+  if (sim.type === 'buyrent')                    keyResults.push({ label: 'Achat', value: fmt(r.buyNetWorth as number) }, { label: 'Location', value: fmt(r.rentCapital as number) })
+  if (sim.type === 'mortgage' && r.totalMonthly) keyResults.push({ label: 'Mensualité', value: fmt(r.totalMonthly as number) }, { label: 'TAEG', value: `${(r.taeg as number).toFixed(2)}%` })
+
+  const handleVisualize = () => {
+    const params = new URLSearchParams({ restore: JSON.stringify(sim.inputs) })
+    router.push(`${config.href}?${params.toString()}`)
+  }
 
   return (
     <Card className="group">
@@ -46,7 +53,9 @@ function SimCard({ sim, onDelete }: { sim: Simulation; onDelete: () => void }) {
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="text-xs text-muted-foreground">{config.label}</span>
                 <span className="text-xs text-muted-foreground">·</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{date}</span>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" />{date}
+                </span>
               </div>
             </div>
           </div>
@@ -58,6 +67,7 @@ function SimCard({ sim, onDelete }: { sim: Simulation; onDelete: () => void }) {
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
+
         {keyResults.length > 0 && (
           <>
             <Separator className="mt-3 mb-3" />
@@ -71,6 +81,16 @@ function SimCard({ sim, onDelete }: { sim: Simulation; onDelete: () => void }) {
             </div>
           </>
         )}
+
+        <Separator className="mt-3 mb-3" />
+        <Button
+          variant="outline" size="sm"
+          className="w-full h-8 text-xs gap-1.5"
+          onClick={handleVisualize}
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          Visualiser la simulation
+        </Button>
       </CardContent>
     </Card>
   )
@@ -86,7 +106,6 @@ export default function HistoryPage() {
     if (res.ok) setSims(await res.json())
     setLoading(false)
   }
-
   useEffect(() => { load() }, [])
 
   const del = async (id: string) => {
@@ -101,16 +120,18 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Historique</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{sims.length} simulation{sims.length !== 1 ? 's' : ''} sauvegardée{sims.length !== 1 ? 's' : ''}</p>
-        </div>
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight">Historique</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {sims.length} simulation{sims.length !== 1 ? 's' : ''} sauvegardée{sims.length !== 1 ? 's' : ''}
+        </p>
       </div>
 
       {loading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1,2,3].map(i => <Card key={i}><CardContent className="h-28 animate-pulse bg-muted/30 rounded-lg" /></Card>)}
+          {[1, 2, 3].map(i => (
+            <Card key={i}><CardContent className="h-32 pt-5"><div className="h-full rounded-md bg-muted/30 animate-pulse" /></CardContent></Card>
+          ))}
         </div>
       )}
 

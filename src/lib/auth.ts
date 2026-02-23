@@ -95,6 +95,24 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // 1. Autoriser automatiquement tous les comptes Google @gmail.com
+      if (account?.provider === "google" && user.email?.endsWith("@gmail.com")) {
+        return true
+      }
+
+      // 2. Si c’est Google mais pas @gmail.com → vérifier AllowedEmail
+      if (account?.provider === "google") {
+        const allowed = await prisma.allowedEmail.findUnique({
+          where: { email: user.email! },
+        })
+        return !!allowed
+      }
+
+      // 3. Pour les Credentials → laisser NextAuth gérer
+      return true
+    },
+
     async jwt({ token, user, trigger, session }) {
       if (user) token.id = user.id
       if (trigger === 'update' && session) {
@@ -103,6 +121,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
+
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string

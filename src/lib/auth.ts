@@ -5,8 +5,40 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
+// Custom adapter that handles missing 'image' column gracefully
+function safeAdapter() {
+  const base = PrismaAdapter(prisma) as any
+
+  return {
+    ...base,
+    createUser: async (data: any) => {
+      // Try with image first, fall back without if column doesn't exist
+      try {
+        return await base.createUser(data)
+      } catch (err: any) {
+        if (err?.message?.includes('image') || err?.meta?.field_name === 'image') {
+          const { image: _removed, ...dataWithoutImage } = data
+          return await base.createUser(dataWithoutImage)
+        }
+        throw err
+      }
+    },
+    updateUser: async (data: any) => {
+      try {
+        return await base.updateUser(data)
+      } catch (err: any) {
+        if (err?.message?.includes('image') || err?.meta?.field_name === 'image') {
+          const { image: _removed, ...dataWithoutImage } = data
+          return await base.updateUser(dataWithoutImage)
+        }
+        throw err
+      }
+    },
+  }
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: safeAdapter() as any,
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',
@@ -39,10 +71,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) token.id = user.id
-      // Allow session update (for name/image changes)
       if (trigger === 'update' && session) {
-        if (session.name) token.name = session.name
-        if (session.image) token.picture = session.image
+        if (session.name !== undefined) token.name = session.name
+        if (session.image !== undefined) token.picture = session.image
       }
       return token
     },

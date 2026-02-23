@@ -200,7 +200,7 @@ export default function HomePage() {
           {/* Recent 3 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {sims.slice(0, 3).map(sim => (
-              <Link key={sim.id} href={`/dashboard/${sim.type === 'compound' ? 'compound' : sim.type}?restore=${encodeURIComponent(JSON.stringify(sim))}`}>
+              <Link key={sim.id} href={`/dashboard/${sim.type === 'compound' ? 'compound' : sim.type}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`}>
                 <Card className="hover:border-foreground/30 transition-colors cursor-pointer">
                   <CardContent className="pt-4 pb-4">
                     <p className="text-xs text-muted-foreground mb-0.5">{TYPE_LABELS[sim.type]}</p>

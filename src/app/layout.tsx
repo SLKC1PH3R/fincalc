@@ -6,6 +6,11 @@ import { Toaster } from '@/components/ui/toaster'
 export const metadata: Metadata = {
   title: 'FinCalc — Outils de Finance Personnelle',
   description: 'Calculateurs financiers : intérêts composés, FI/RE, impôts, prêt immobilier',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

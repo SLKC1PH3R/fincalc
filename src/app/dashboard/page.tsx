@@ -1,194 +1,247 @@
 'use client'
-import { Suspense, useState, useEffect, useMemo } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import {
+  AreaChart, Area, PieChart, Pie, Cell,
+  ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid
+} from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Slider } from '@/components/ui/slider'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { SaveSimulation } from '@/components/SaveSimulation'
-import { useSearchParams } from 'next/navigation'
-import { calcCompound, type CompoundInputs } from '@/lib/calculators'
+import { Badge } from '@/components/ui/badge'
+import {
+  TrendingUp, Flame, Receipt, Home, Building2,
+  Wallet, PiggyBank, RefreshCw, Calculator,
+  ChevronRight, ArrowRight, Sparkles
+} from 'lucide-react'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
+const MODULES = [
+  {
+    href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp,
+    desc: 'Visualisez l\'effet boule de neige de votre épargne sur le long terme.',
+    tag: 'Épargne', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/dca', label: 'DCA', icon: RefreshCw,
+    desc: 'Simulez un investissement régulier et comparez avec un achat unique.',
+    tag: 'Épargne', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/fire', label: 'FI/RE', icon: Flame,
+    desc: 'Calculez votre objectif d\'indépendance financière et votre date de retraite anticipée.',
+    tag: 'Épargne', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/buyrent', label: 'Acheter vs Louer', icon: Home,
+    desc: 'Comparez le patrimoine généré selon que vous achetez ou louez votre résidence.',
+    tag: 'Immobilier', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/mortgage', label: 'Prêt Immobilier', icon: Building2,
+    desc: 'Calculez vos mensualités, le TAEG et le tableau d\'amortissement complet.',
+    tag: 'Immobilier', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/rental', label: 'Rentabilité Locative', icon: Wallet,
+    desc: 'Analysez le cashflow et la rentabilité nette d\'un investissement locatif.',
+    tag: 'Immobilier', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt,
+    desc: 'Calculez votre impôt sur le revenu avec abattement 10%, frais réels et TMI.',
+    tag: 'Fiscal', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/retirement', label: 'Simulateur Retraite', icon: PiggyBank,
+    desc: 'Estimez votre pension et optimisez votre préparation retraite via le PER.',
+    tag: 'Fiscal', color: 'text-foreground',
+  },
+  {
+    href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator,
+    desc: 'Analysez la répartition de vos dépenses selon la règle d\'or des finances perso.',
+    tag: 'Budget', color: 'text-foreground',
+  },
+]
+
+const TAG_COLORS: Record<string, string> = {
+  'Épargne': 'bg-muted text-muted-foreground',
+  'Immobilier': 'bg-muted text-muted-foreground',
+  'Fiscal': 'bg-muted text-muted-foreground',
+  'Budget': 'bg-muted text-muted-foreground',
 }
 
-function CompoundPageInner() {
-  const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
-  const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+interface Simulation {
+  id: string; type: string; name: string
+  results: Record<string, any>; createdAt: string
+}
 
-  // Restore simulation from history
-  const searchParams = useSearchParams()
-  useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
-    try { setInputs(JSON.parse(raw) as CompoundInputs) } catch {}
-  }, [])
-  const r = useMemo(() => calcCompound(inputs), [inputs])
+const TYPE_LABELS: Record<string, string> = {
+  compound: 'Composés', dca: 'DCA', fire: 'FI/RE',
+  buyrent: 'Achat/Loc', mortgage: 'Prêt', rental: 'Locatif',
+  tax: 'Impôts', retirement: 'Retraite', budget: 'Budget'
+}
 
-  const score = r.multiplier >= 5 ? 'excellent' : r.multiplier >= 3 ? 'bon' : r.multiplier >= 2 ? 'moyen' : 'faible'
-  const scoreConf = {
-    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-finance' },
-    bon: { label: 'Bon', Icon: TrendingUp, color: 'text-blue-400' },
-    moyen: { label: 'Moyen', Icon: Minus, color: 'text-amber-400' },
-    faible: { label: 'Faible', Icon: AlertCircle, color: 'text-crimson-finance' },
-  }[score]
+function SimSummaryChart({ sims }: { sims: Simulation[] }) {
+  // Count by type for pie
+  const byType = sims.reduce((acc, s) => {
+    acc[s.type] = (acc[s.type] || 0) + 1; return acc
+  }, {} as Record<string, number>)
 
-  const tips = []
-  if (inputs.rate < 5) tips.push('Un rendement de 5-8%/an est atteignable via des ETF World diversifiés sur le long terme.')
-  if (inputs.monthly < 300) tips.push(`+100€/mois supplémentaires = +${fmt(calcCompound({...inputs, monthly: inputs.monthly + 100}).final - r.final)} à terme.`)
-  if (inputs.years < 15) tips.push('L\'intérêt composé devient vraiment puissant sur 20-30 ans. Chaque année compte double.')
-  if (tips.length === 0) tips.push('Stratégie solide. Maintenez la régularité et évitez de retirer avant terme.')
+  const pieData = Object.entries(byType).map(([type, count]) => ({
+    name: TYPE_LABELS[type] || type, value: count
+  }))
+
+  const FILLS = ['hsl(0 0% 80%)', 'hsl(0 0% 60%)', 'hsl(0 0% 45%)', 'hsl(0 0% 30%)', 'hsl(0 0% 20%)', 'hsl(160 84% 39%)', 'hsl(38 92% 50%)', 'hsl(217 91% 60%)', 'hsl(0 72% 51%)']
+
+  // Activity timeline — group by week
+  const now = Date.now()
+  const weeks: Record<number, number> = {}
+  sims.forEach(s => {
+    const d = new Date(s.createdAt)
+    const w = Math.floor((now - d.getTime()) / (7 * 24 * 3600 * 1000))
+    if (w <= 11) weeks[11 - w] = (weeks[11 - w] || 0) + 1
+  })
+  const timelineData = Array.from({ length: 12 }, (_, i) => ({
+    week: i === 11 ? 'Cette semaine' : `S-${11 - i}`,
+    count: weeks[i] || 0
+  }))
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Intérêts Composés</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">La 8ème merveille du monde — Albert Einstein</p>
-        </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
-          <SaveSimulation type="compound" name={`Composés ${inputs.capital.toLocaleString('fr')}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
-        </div>
-      </div>
-
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Capital final', value: fmt(r.final) },
-          { label: 'Capital investi', value: fmt(r.invested) },
-          { label: 'Intérêts générés', value: fmt(r.interest) },
-          { label: 'Multiplication', value: `×${r.multiplier.toFixed(1)}` },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent><div className="text-2xl font-semibold tracking-tight">{k.value}</div></CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Params */}
-        <Card>
-          <CardHeader><CardTitle>Paramètres</CardTitle><CardDescription>Ajustez les valeurs</CardDescription></CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Capital initial<Tip text="Montant placé dès le départ. Peut être 0 si vous démarrez de zéro." /></Label>
-              <Input type="number" value={inputs.capital} onChange={e => set('capital')(+e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Versement mensuel<Tip text="Somme ajoutée chaque mois. La régularité est clé — même un petit montant produit des effets spectaculaires sur 20+ ans." /></Label>
-              <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Taux annuel<Tip text="Livret A : 3%. Fonds euros : 2-4%. ETF World : 7-10% historique." /></Label>
-                <span className="text-sm font-medium">{inputs.rate}%</span>
-              </div>
-              <Slider min={0.5} max={20} step={0.1} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
-              <div className="flex justify-between text-[11px] text-muted-foreground">
-                <button className="hover:text-foreground" onClick={() => set('rate')(3)}>Livret A 3%</button>
-                <button className="hover:text-foreground" onClick={() => set('rate')(4)}>Fonds € 4%</button>
-                <button className="hover:text-foreground" onClick={() => set('rate')(8)}>ETF ~8%</button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Durée<Tip text="Plus la durée est longue, plus l'effet boule de neige est puissant. 30 ans peut multiplier votre capital par 7 à 10." /></Label>
-                <span className="text-sm font-medium">{inputs.years} ans</span>
-              </div>
-              <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Capitalisation<Tip text="Fréquence de réinvestissement des intérêts. Mensuelle est la plus courante." /></Label>
-              <Select value={String(inputs.frequency)} onValueChange={v => set('frequency')(+v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="12">Mensuelle</SelectItem>
-                  <SelectItem value="4">Trimestrielle</SelectItem>
-                  <SelectItem value="1">Annuelle</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Chart */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Évolution du capital sur {inputs.years} ans</CardTitle>
-            <CardDescription>Capital total vs capital effectivement investi</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${v}a`} />
-                <YAxis tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
-                <Line type="monotone" dataKey="total" name="Capital total" stroke="hsl(0 0% 98%)" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="invested" name="Investi" stroke="hsl(0 0% 40%)" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Synthèse */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />
-            <CardTitle>Analyse — Stratégie {scoreConf.label}</CardTitle>
-          </div>
-          <CardDescription>Sur {inputs.years} ans à {inputs.rate}% · {fmt(inputs.monthly)}/mois</CardDescription>
+        <CardHeader className="pb-2">
+          <CardTitle>Répartition des simulations</CardTitle>
+          <CardDescription>{sims.length} simulation{sims.length > 1 ? 's' : ''} sauvegardée{sims.length > 1 ? 's' : ''}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: 'Multiplication', value: `×${r.multiplier.toFixed(1)}`, color: scoreConf.color },
-              { label: 'Part des intérêts', value: fmtPct(r.interest / r.final * 100), color: 'text-emerald-finance' },
-              { label: 'Gain / mois moyen', value: fmt(r.interest / (inputs.years * 12)), color: 'text-foreground' },
-              { label: 'ROI total', value: fmtPct(r.roi), color: 'text-foreground' },
-            ].map((k, i) => (
-              <div key={i} className="rounded-md border border-border p-3">
-                <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
-                <p className={cn('text-lg font-semibold tracking-tight', k.color)}>{k.value}</p>
-              </div>
-            ))}
-          </div>
-          <Separator />
-          <div className="space-y-2">
-            {tips.map((tip, i) => (
-              <div key={i} className="flex gap-3 rounded-md border border-border p-3">
-                <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[10px] font-semibold">{i + 1}</span>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <ResponsiveContainer width={120} height={120}>
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={55} dataKey="value" paddingAngle={2}>
+                  {pieData.map((_, i) => <Cell key={i} fill={FILLS[i % FILLS.length]} strokeWidth={0} />)}
+                </Pie>
+                <Tooltip contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 11 }} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex-1 space-y-1.5">
+              {pieData.map((d, i) => (
+                <div key={i} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: FILLS[i % FILLS.length] }} />
+                    <span className="text-muted-foreground">{d.name}</span>
+                  </div>
+                  <span className="font-medium">{d.value}</span>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{tip}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle>Activité (12 semaines)</CardTitle>
+          <CardDescription>Simulations sauvegardées par semaine</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={120}>
+            <AreaChart data={timelineData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
+              <XAxis dataKey="week" tick={{ fontSize: 9, fill: 'hsl(0 0% 50%)' }} interval={3} />
+              <YAxis tick={{ fontSize: 9, fill: 'hsl(0 0% 50%)' }} allowDecimals={false} />
+              <Tooltip contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 11 }} />
+              <Area type="monotone" dataKey="count" stroke="hsl(0 0% 70%)" fill="hsl(0 0% 70%)" fillOpacity={0.15} strokeWidth={1.5} />
+            </AreaChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
   )
 }
 
-export default function CompoundPage() {
-  return <Suspense><CompoundPageInner /></Suspense>
+export default function HomePage() {
+  const { data: session } = useSession()
+  const [sims, setSims] = useState<Simulation[]>([])
+
+  useEffect(() => {
+    fetch('/api/simulations').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setSims(data)
+    }).catch(() => {})
+  }, [])
+
+  const firstName = session?.user?.name?.split(' ')[0] || 'vous'
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
+
+  return (
+    <div className="space-y-8 animate-fade-in max-w-5xl">
+      {/* Hero */}
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">{greeting}, <span className="text-foreground font-medium">{firstName}</span></p>
+        <h1 className="text-2xl font-semibold tracking-tight">Tableau de bord financier</h1>
+        <p className="text-sm text-muted-foreground">9 calculateurs pour piloter votre patrimoine et vos investissements</p>
+      </div>
+
+      {/* Simulations summary - only if user has saved some */}
+      {sims.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-muted-foreground" />
+              Vos simulations
+            </h2>
+            <Link href="/dashboard/history" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
+              Voir tout <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <SimSummaryChart sims={sims} />
+
+          {/* Recent 3 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {sims.slice(0, 3).map(sim => (
+              <Link key={sim.id} href={`/dashboard/${sim.type === 'compound' ? 'compound' : sim.type}?restore=${encodeURIComponent(JSON.stringify(sim))}`}>
+                <Card className="hover:border-foreground/30 transition-colors cursor-pointer">
+                  <CardContent className="pt-4 pb-4">
+                    <p className="text-xs text-muted-foreground mb-0.5">{TYPE_LABELS[sim.type]}</p>
+                    <p className="text-sm font-medium truncate">{sim.name}</p>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      {new Date(sim.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modules grid */}
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium">Tous les calculateurs</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {MODULES.map((mod) => (
+            <Link key={mod.href} href={mod.href}>
+              <Card className="group hover:border-foreground/30 transition-all duration-150 cursor-pointer h-full">
+                <CardContent className="pt-5 pb-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                      <mod.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    </div>
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{mod.tag}</span>
+                  </div>
+                  <h3 className="text-sm font-semibold mb-1 group-hover:text-foreground transition-colors">{mod.label}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{mod.desc}</p>
+                  <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    <span>Ouvrir</span>
+                    <ChevronRight className="h-3 w-3" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }

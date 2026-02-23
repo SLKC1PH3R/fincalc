@@ -13,14 +13,11 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   providers: [
-    // ─── Google OAuth ─────────────────────────────────────────────
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
     }),
-
-    // ─── Email + Password ──────────────────────────────────────────
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -29,49 +26,31 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-
         const user = await prisma.user.findUnique({
           where: { email: credentials.email.toLowerCase() },
         })
-
         if (!user || !user.password) return null
-
         const isValid = await bcrypt.compare(credentials.password, user.password)
         if (!isValid) return null
-
         return { id: user.id, email: user.email, name: user.name }
       },
     }),
   ],
   callbacks: {
-    // ─── Whitelist check for Google OAuth ─────────────────────────
-    async signIn({ user, account }) {
-      // Credentials provider: already checked in authorize()
-      if (account?.provider === 'credentials') return true
-
-      // Google provider: check whitelist
-      if (!user.email) return false
-
-      const allowed = await prisma.allowedEmail.findUnique({
-        where: { email: user.email.toLowerCase() },
-      })
-
-      if (!allowed) {
-        // Return custom error page with reason
-        return '/login?error=NotAllowed'
-      }
-
-      return true
-    },
-
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) token.id = user.id
+      // Allow session update (for name/image changes)
+      if (trigger === 'update' && session) {
+        if (session.name) token.name = session.name
+        if (session.image) token.picture = session.image
+      }
       return token
     },
-
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
+        if (token.name) session.user.name = token.name as string
+        if (token.picture) session.user.image = token.picture as string
       }
       return session
     },

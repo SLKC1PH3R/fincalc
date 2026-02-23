@@ -14,7 +14,7 @@ interface Simulation {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; Icon: any; href: string }> = {
-  compound:   { label: 'Intérêts Composés',    Icon: TrendingUp, href: '/dashboard' },
+  compound:   { label: 'Intérêts Composés',    Icon: TrendingUp, href: '/dashboard/compound' },
   dca:        { label: 'DCA',                   Icon: TrendingUp, href: '/dashboard/dca' },
   fire:       { label: 'FI/RE',                 Icon: Flame,      href: '/dashboard/fire' },
   tax:        { label: 'Impôts',                Icon: Receipt,    href: '/dashboard/tax' },

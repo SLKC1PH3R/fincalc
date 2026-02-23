@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
         return !!allowed
       }
 
-      // 3. Pour les Credentials → laisser NextAuth gérer
+      // 3. Pour les Credentials → autoriser
       return true
     },
 

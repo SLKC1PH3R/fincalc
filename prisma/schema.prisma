@@ -11,8 +11,8 @@ model User {
   id            String       @id @default(cuid())
   email         String       @unique
   name          String?
-  password      String?      // Optional — null for Google OAuth users
-  image         String?
+  password      String?      // Nullable — null pour les comptes Google OAuth
+  image         String?      // Avatar URL ou base64
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   simulations   Simulation[]

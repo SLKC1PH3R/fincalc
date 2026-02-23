@@ -1,49 +1,73 @@
 import { NextAuthOptions } from 'next-auth'
+import crypto from 'crypto'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
-// Custom adapter that handles missing 'image' column gracefully
-function safeAdapter() {
+// Placeholder used for OAuth users when password column is NOT NULL in DB
+// They never log in via password so this value is never checked
+const OAUTH_PASSWORD_PLACEHOLDER = '$2a$10$OAUTH.USER.NO.PASSWORD.PLACEHOLDER.HASH.UNUSED'
+
+function robustAdapter() {
   const base = PrismaAdapter(prisma) as any
 
   return {
     ...base,
+
     createUser: async (data: any) => {
-      // Try with image first, fall back without if column doesn't exist
-      try {
-        return await base.createUser(data)
-      } catch (err: any) {
-        if (err?.message?.includes('image') || err?.meta?.field_name === 'image') {
-          const { image: _removed, ...dataWithoutImage } = data
-          return await base.createUser(dataWithoutImage)
+      // Try each approach from safest to most compatible with legacy DB schema
+      const attempts = [
+        // 1. Normal (schema up to date)
+        () => prisma.user.create({ data }),
+        // 2. Without image (column may not exist)
+        () => { const { image, ...d } = data; return prisma.user.create({ data: d }) },
+        // 3. Without image + null password (if column is nullable)
+        () => { const { image, ...d } = data; return prisma.user.create({ data: { ...d, password: null } }) },
+        // 4. Without image + placeholder password (if column is NOT NULL — legacy schema)
+        () => { const { image, ...d } = data; return prisma.user.create({ data: { ...d, password: OAUTH_PASSWORD_PLACEHOLDER } }) },
+        // 5. Raw SQL insert — absolute last resort
+        () => prisma.$executeRaw`
+          INSERT INTO "User" (id, email, name, "emailVerified", "createdAt", "updatedAt")
+          VALUES (
+            ${data.id ?? crypto.randomUUID()},
+            ${data.email},
+            ${data.name ?? null},
+            ${data.emailVerified ?? null},
+            NOW(), NOW()
+          )
+          ON CONFLICT (email) DO NOTHING
+        `.then(() => prisma.user.findUnique({ where: { email: data.email } })),
+      ]
+
+      for (const attempt of attempts) {
+        try {
+          const result = await attempt()
+          if (result) return result
+        } catch (_e) {
+          // continue to next attempt
         }
-        throw err
       }
+
+      throw new Error('Impossible de créer le compte utilisateur. Vérifiez le schéma de la base de données.')
     },
+
     updateUser: async (data: any) => {
+      const { id, image, ...rest } = data
       try {
-        return await base.updateUser(data)
-      } catch (err: any) {
-        if (err?.message?.includes('image') || err?.meta?.field_name === 'image') {
-          const { image: _removed, ...dataWithoutImage } = data
-          return await base.updateUser(dataWithoutImage)
-        }
-        throw err
+        return await prisma.user.update({ where: { id }, data: { ...rest, image: image ?? undefined } })
+      } catch (_e: any) {
+        return await prisma.user.update({ where: { id }, data: rest })
       }
     },
   }
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: safeAdapter() as any,
+  adapter: robustAdapter() as any,
   session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
+  pages: { signIn: '/login', error: '/login' },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -62,6 +86,8 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email.toLowerCase() },
         })
         if (!user || !user.password) return null
+        // Reject OAuth placeholder password
+        if (user.password === OAUTH_PASSWORD_PLACEHOLDER) return null
         const isValid = await bcrypt.compare(credentials.password, user.password)
         if (!isValid) return null
         return { id: user.id, email: user.email, name: user.name }

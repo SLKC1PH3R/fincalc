@@ -73,7 +73,7 @@ const TAG_COLORS: Record<string, string> = {
 
 interface Simulation {
   id: string; type: string; name: string
-  results: Record<string, any>; createdAt: string
+  inputs: Record<string, any>; results: Record<string, any>; createdAt: string
 }
 
 const TYPE_LABELS: Record<string, string> = {

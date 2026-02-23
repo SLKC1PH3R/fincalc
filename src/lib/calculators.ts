@@ -38,6 +38,9 @@ export interface TaxInputs {
   gross: number
   parts: number
   csRate: number
+  regime: 'salarie' | 'independant' | 'micro'
+  fraisReels: number
+  useFraisReels: boolean
 }
 
 export interface TaxResults {
@@ -48,7 +51,15 @@ export interface TaxResults {
   avgRate: number
   tmi: number
   totalLevy: number
-  brackets: { label: string; rate: number; ir: number; active: boolean }[]
+  abattement: number
+  netBeforeTax: number
+  effectivePressure: number
+  brackets: { label: string; rate: number; ir: number; active: boolean; taxable: number }[]
+  analysis: {
+    score: 'excellent' | 'bon' | 'moyen' | 'eleve'
+    message: string
+    tips: string[]
+  }
 }
 
 export interface BuyRentInputs {
@@ -134,8 +145,16 @@ export function calcFire(i: FireInputs): FireResults {
 export function calcTax(i: TaxInputs): TaxResults {
   const cotisations = i.gross * i.csRate / 100
   const netBeforeTax = i.gross - cotisations
-  const abattement = Math.min(netBeforeTax * 0.1, 14171)
-  const imposable = netBeforeTax - abattement
+
+  // Abattement : frais réels ou forfait 10% (plafonné à 14 171€, min 495€)
+  let abattement: number
+  if (i.useFraisReels && i.fraisReels > 0) {
+    abattement = i.fraisReels
+  } else {
+    abattement = Math.min(Math.max(netBeforeTax * 0.1, 495), 14171)
+  }
+
+  const imposable = Math.max(0, netBeforeTax - abattement)
 
   const BRACKETS = [
     { min: 0, max: 11294, rate: 0 },
@@ -157,15 +176,48 @@ export function calcTax(i: TaxInputs): TaxResults {
       label: b.max === Infinity ? `> ${b.min.toLocaleString('fr')}€` : `${b.min.toLocaleString('fr')} — ${b.max.toLocaleString('fr')}€`,
       rate: b.rate * 100,
       ir: irBracket * i.parts,
+      taxable: taxable * i.parts,
       active: perPart > b.min && perPart <= b.max,
     }
-  }).filter(b => b.ir > 0 || b.active)
+  }).filter(b => b.taxable > 0 || b.active)
 
   const ir = irPerPart * i.parts
   const netIncome = i.gross - cotisations - ir
   const avgRate = i.gross > 0 ? ir / i.gross * 100 : 0
+  const effectivePressure = i.gross > 0 ? (cotisations + ir) / i.gross * 100 : 0
 
-  return { netIncome, imposable, ir, cotisations, avgRate, tmi, totalLevy: cotisations + ir, brackets }
+  // Analyse & conseils
+  let score: TaxResults['analysis']['score']
+  let message: string
+  const tips: string[] = []
+
+  if (effectivePressure < 20) {
+    score = 'excellent'
+    message = 'Pression fiscale et sociale faible — votre situation est très favorable.'
+  } else if (effectivePressure < 35) {
+    score = 'bon'
+    message = 'Pression fiscale modérée — situation dans la moyenne française.'
+  } else if (effectivePressure < 50) {
+    score = 'moyen'
+    message = 'Pression fiscale significative — des optimisations sont possibles.'
+  } else {
+    score = 'eleve'
+    message = 'Pression fiscale élevée — optimisation fiscale fortement recommandée.'
+  }
+
+  if (tmi >= 30 && !i.useFraisReels) tips.push('Comparez vos frais réels avec l\'abattement forfaitaire de 10% — si vos frais professionnels dépassent ' + Math.round(abattement).toLocaleString('fr') + '€, optez pour les frais réels.')
+  if (tmi >= 41) tips.push('À votre TMI de ' + tmi + '%, versements sur un PER (Plan Épargne Retraite) déductibles du revenu imposable — économie directe.')
+  if (tmi >= 30) tips.push('Investissement locatif en déficit foncier ou SCPI peut réduire votre base imposable.')
+  if (i.parts === 1 && tmi >= 30) tips.push('Si applicable, reconnaître un enfant à charge ou mariage peut augmenter le nombre de parts fiscales.')
+  if (cotisations > 15000) tips.push('Statut indépendant : envisagez une structure en société (SASU/EURL) pour optimiser la rémunération vs dividendes.')
+  if (tips.length === 0) tips.push('Votre situation fiscale est bien optimisée pour votre niveau de revenus.')
+
+  return {
+    netIncome, imposable, ir, cotisations, avgRate, tmi,
+    totalLevy: cotisations + ir, abattement, netBeforeTax,
+    effectivePressure, brackets,
+    analysis: { score, message, tips }
+  }
 }
 
 export function calcBuyRent(i: BuyRentInputs): BuyRentResults {

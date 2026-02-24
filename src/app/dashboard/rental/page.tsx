@@ -49,7 +49,7 @@ function RentalPageInner() {
   }[r.analysis.score]
 
   const barData = [
-    { name: 'Loyers', value: Math.round(r.annualRent), fill: 'hsl(0 0% 70%)' },
+    { name: 'Loyers', value: Math.round(r.annualRent), fill: 'hsl(160 84% 39%)' },
     { name: 'Charges', value: -Math.round(r.annualCharges), fill: 'hsl(0 72% 51%)' },
     { name: 'Taxe foncière', value: -Math.round(inputs.taxeFonciere), fill: 'hsl(0 72% 51%)' },
     { name: 'Assurance', value: -Math.round(inputs.insurance), fill: 'hsl(0 72% 51%)' },
@@ -196,7 +196,7 @@ function RentalPageInner() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: 12, color: '#fff', backdropFilter: 'blur(8px)' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 <Bar dataKey="value" radius={[3, 3, 0, 0]}>
                   {barData.map((e, i) => <Cell key={i} fill={e.fill} />)}
                 </Bar>

@@ -378,9 +378,9 @@ export function LandingClient() {
           {/* Mobile burger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden"
+            className="md:hidden flex items-center justify-center"
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}
           >
             <div style={{ width: 22, height: 13, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <span style={{

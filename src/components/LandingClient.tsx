@@ -351,7 +351,7 @@ export function LandingClient() {
           </Link>
 
           {/* Desktop links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="hidden md:flex">
+          <div style={{ alignItems: 'center', gap: 28 }} className="hidden md:flex">
             {[['#how', 'Comment ça marche'], ['#modules', 'Modules'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
               <a key={href} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
@@ -362,7 +362,7 @@ export function LandingClient() {
           </div>
 
           {/* Desktop CTA */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="hidden md:flex">
+          <div style={{ alignItems: 'center', gap: 10 }} className="hidden md:flex">
             <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.55)', textDecoration: 'none', padding: '8px 16px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', transition: 'all 0.15s' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.55)' }}>

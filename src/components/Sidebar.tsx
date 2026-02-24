@@ -214,7 +214,7 @@ export function Sidebar({ user, isAdmin }: SidebarProps) {
           ) : null}
 
           <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
             title={collapsed ? 'Déconnexion' : undefined}
             className={cn(
               'w-full flex items-center gap-2.5 rounded-lg text-xs text-white/25 hover:text-white/60 hover:bg-white/[0.04] transition-all',

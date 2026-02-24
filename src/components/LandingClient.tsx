@@ -15,7 +15,7 @@ const MODULES = [
   { icon: Home, label: 'Acheter vs Louer', desc: 'Comparez le patrimoine généré selon que vous achetez ou louez votre résidence principale.', tag: 'Immobilier', color: '#a78bfa', href: '/login' },
   { icon: Building2, label: 'Prêt Immobilier', desc: 'Calculez vos mensualités, le TAEG et générez le tableau d\'amortissement complet.', tag: 'Immobilier', color: '#f472b6', href: '/login' },
   { icon: Wallet, label: 'Rentabilité Locative', desc: 'Analysez le cashflow, la rentabilité nette et la fiscalité de votre investissement locatif.', tag: 'Immobilier', color: '#2dd4bf', href: '/login' },
-  { icon: Receipt, label: 'Impôts IR', desc: 'Calculez votre impôt sur le revenu 2024, votre TMI et comparez frais réels vs abattement.', tag: 'Fiscal', color: '#fb7185', href: '/login' },
+  { icon: Receipt, label: 'Impôts IR', desc: 'Calculez votre impôt sur le revenu 2026, votre TMI et comparez frais réels vs abattement.', tag: 'Fiscal', color: '#fb7185', href: '/login' },
   { icon: PiggyBank, label: 'Simulateur Retraite', desc: 'Estimez votre pension de retraite et optimisez votre préparation via le PER.', tag: 'Fiscal', color: '#fbbf24', href: '/login' },
   { icon: Calculator, label: 'Budget 50/30/20', desc: 'Analysez la répartition de vos dépenses et optimisez selon la règle d\'or des finances perso.', tag: 'Budget', color: '#a3e635', href: '/login' },
 ]
@@ -32,7 +32,7 @@ const FEATURES = [
   { icon: Zap, title: 'Calculs instantanés', desc: 'Résultats en temps réel à chaque modification. Graphiques et synthèses automatiques.' },
   { icon: Lock, title: 'Open source', desc: 'Code entièrement transparent. Déployez votre propre instance sur votre infrastructure.' },
   { icon: BarChart3, title: 'Historique complet', desc: 'Sauvegardez et retrouvez toutes vos simulations. Comparez l\'évolution de vos scénarios.' },
-  { icon: LineChart, title: 'Fiscalité 2024', desc: 'Barèmes IR, PS, LMNP, PER à jour. Calculs adaptés au droit fiscal français.' },
+  { icon: LineChart, title: 'Fiscalité 2026', desc: 'Barèmes IR, PS, LMNP, PER à jour. Calculs adaptés au droit fiscal français.' },
   { icon: Target, title: 'Synthèses claires', desc: 'Chaque calculateur produit un score, des recommandations et des axes d\'optimisation.' },
 ]
 
@@ -249,7 +249,7 @@ export function LandingClient() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
             style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', color: '#a5b4fc' }}>
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            9 calculateurs · Fiscalité française 2024
+            9 calculateurs · Fiscalité française 2026
           </div>
 
           {/* Headline */}

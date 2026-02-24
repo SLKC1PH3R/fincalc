@@ -127,16 +127,10 @@ export default function LoginPage() {
               ) : mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
             </Button>
           </form>
-
-          {mode === 'register' && (
-            <p className="mt-4 font-mono text-xs text-muted-foreground text-center">
-              L&apos;inscription est sur invitation uniquement.
-            </p>
-          )}
         </div>
 
         <p className="text-center font-mono text-xs text-muted-foreground/40 mt-6 tracking-widest">
-          FinCalc v1.0 — Self-Hosted
+          FinCalc v1.0
         </p>
       </div>
     </div>

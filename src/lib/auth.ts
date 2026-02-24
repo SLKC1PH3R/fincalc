@@ -35,7 +35,17 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      if (user) token.id = user.id
+      if (user) {
+        token.id = user.id
+        // Charger l'image depuis la DB à chaque nouvelle connexion
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id as string },
+            select: { image: true },
+          })
+          if (dbUser?.image) token.picture = dbUser.image
+        } catch {}
+      }
       if (trigger === 'update' && session) {
         if (session.name !== undefined) token.name = session.name
         if (session.image !== undefined) token.picture = session.image

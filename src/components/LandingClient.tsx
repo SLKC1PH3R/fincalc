@@ -351,8 +351,8 @@ export function LandingClient() {
           </Link>
 
           {/* Desktop links */}
-          <div style={{ alignItems: 'center', gap: 28 }} className="hidden md:flex">
-            {[['#how', 'Comment ça marche'], ['#modules', 'Modules'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
+          <div style={{ alignItems: 'center', gap: 24 }} className="hidden md:flex">
+            {[['#modules', 'Modules'], ['#how', 'Comment ça marche'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
               <a key={href} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
@@ -409,8 +409,10 @@ export function LandingClient() {
         }}>
           <div style={{ padding: '16px 20px 20px' }}>
             {[
-              ['#how', 'Comment ça marche'],
               ['#modules', 'Modules'],
+              ['#how', 'Comment ça marche'],
+              ['#why', 'Nos engagements'],
+              ['#security', 'Sécurité'],
               ['#roadmap', 'Roadmap'],
             ].map(([href, label]) => (
               <a
@@ -528,43 +530,6 @@ export function LandingClient() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
-      <section id="how" style={{ padding: '100px 20px' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><Clock style={{ width: 11, height: 11 }} /> En 3 étapes</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
-                Comment ça marche ?
-              </h2>
-            </div>
-          </RevealSection>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
-            {HOW.map((step, i) => (
-              <RevealSection key={i} delay={i * 120}>
-                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden' }}>
-                  {/* Step number big bg */}
-                  <div style={{ position: 'absolute', top: -10, right: 16, fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
-                    {step.step}
-                  </div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 10, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, marginBottom: 20 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>{step.step}</span>
-                  </div>
-                  <h3 style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>{step.title}</h3>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>{step.desc}</p>
-                  {i < HOW.length - 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
-                      <ArrowRight style={{ width: 16, height: 16, color: `${GOLD}60` }} />
-                    </div>
-                  )}
-                </div>
-              </RevealSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
@@ -588,8 +553,44 @@ export function LandingClient() {
         </div>
       </section>
 
+      {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
+      <section id="how" style={{ padding: '100px 20px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <SectionTag><Clock style={{ width: 11, height: 11 }} /> En 3 étapes</SectionTag>
+              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
+                Comment ça marche ?
+              </h2>
+            </div>
+          </RevealSection>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+            {HOW.map((step, i) => (
+              <RevealSection key={i} delay={i * 120}>
+                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: -10, right: 16, fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
+                    {step.step}
+                  </div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 10, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, marginBottom: 20 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>{step.step}</span>
+                  </div>
+                  <h3 style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>{step.title}</h3>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>{step.desc}</p>
+                  {i < HOW.length - 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+                      <ArrowRight style={{ width: 16, height: 16, color: `${GOLD}60` }} />
+                    </div>
+                  )}
+                </div>
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── WHY FINCALC ───────────────────────────────────────────────── */}
-      <section style={{ padding: '80px 20px 100px' }}>
+      <section id="why" style={{ padding: '80px 20px 100px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           {/* Divider */}
           <div style={{ height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.07) 50%,transparent)', marginBottom: 80 }} />
@@ -622,7 +623,7 @@ export function LandingClient() {
       </section>
 
       {/* ── SECURITY ──────────────────────────────────────────────────── */}
-      <section style={{ padding: '80px 20px 100px' }}>
+      <section id="security" style={{ padding: '80px 20px 100px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ background: 'linear-gradient(135deg, rgba(241,192,134,0.04) 0%, rgba(52,211,153,0.03) 100%)', border: `1px solid ${GOLD_BORDER}`, borderRadius: 28, padding: 'clamp(32px,5vw,64px)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${GOLD}08, transparent 55%)`, pointerEvents: 'none' }} />
@@ -757,7 +758,7 @@ export function LandingClient() {
             {/* Produit */}
             <div>
               <h4 style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Produit</h4>
-              {[['#modules', 'Calculateurs'], ['#how', 'Comment ça marche'], ['#roadmap', 'Roadmap'], ['/login', 'Créer un compte']].map(([href, label]) => (
+              {[['#modules', 'Calculateurs'], ['#how', 'Comment ça marche'], ['#roadmap', 'Roadmap'], ['#why', 'Nos engagements'], ['#security', 'Protection'], ['/login', 'Créer un compte']].map(([href, label]) => (
                 <a key={href} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>
@@ -769,7 +770,7 @@ export function LandingClient() {
             {/* Légal */}
             <div>
               <h4 style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Légal</h4>
-              {[['#', 'Mentions légales'], ['#', 'Politique de confidentialité'], ['#', 'CGU']].map(([href, label]) => (
+              {[['/mentions-legales', 'Mentions légales'], ['/politique-confidentialite', 'Politique de confidentialité'], ['/cgu', 'CGU']].map(([href, label]) => (
                 <a key={label} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>
@@ -781,7 +782,7 @@ export function LandingClient() {
             {/* À propos */}
             <div>
               <h4 style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>À propos</h4>
-              {[['#', 'À propos de FinCalc'], ['mailto:contact@fincalc.app', 'Contact'], ['https://github.com/SLKC1PH3R/fincalc', 'GitHub (open source)']].map(([href, label]) => (
+              {[['/about', 'À propos de FinCalc'], ['mailto:contact@fincalc.app', 'Contact']].map(([href, label]) => (
                 <a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>

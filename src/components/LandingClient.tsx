@@ -375,17 +375,52 @@ export function LandingClient() {
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', padding: 8 }} className="md:hidden">
-            {menuOpen ? <X style={{ width: 20, height: 20 }} /> : <Menu style={{ width: 20, height: 20 }} />}
+          {/* Mobile burger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden"
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <div style={{ width: 22, height: 13, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <span style={{
+                display: 'block', height: 1.5, background: 'rgba(255,255,255,0.75)', borderRadius: 2,
+                transformOrigin: 'center',
+                transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                transform: menuOpen ? 'translateY(5.75px) rotate(45deg)' : 'none',
+              }} />
+              <span style={{
+                display: 'block', height: 1.5, background: 'rgba(255,255,255,0.75)', borderRadius: 2,
+                transformOrigin: 'center',
+                transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                transform: menuOpen ? 'translateY(-5.75px) rotate(-45deg)' : 'none',
+              }} />
+            </div>
           </button>
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
-          <div style={{ background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.07)', padding: '16px 20px 20px' }}>
-            {[['#how', 'Comment ça marche'], ['#modules', 'Modules'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
-              <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '12px 0', fontSize: 15, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{
+          overflow: 'hidden',
+          maxHeight: menuOpen ? 320 : 0,
+          transition: 'max-height 0.35s cubic-bezier(0.23, 1, 0.32, 1)',
+          background: '#0a0a0a',
+          borderTop: menuOpen ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
+        }}>
+          <div style={{ padding: '16px 20px 20px' }}>
+            {[
+              ['#how', 'Comment ça marche'],
+              ['#modules', 'Modules'],
+              ['#roadmap', 'Roadmap'],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                style={{ display: 'flex', alignItems: 'center', padding: '13px 0', fontSize: 15, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+              >
                 {label}
               </a>
             ))}
@@ -398,7 +433,7 @@ export function LandingClient() {
               </Link>
             </div>
           </div>
-        )}
+        </div>
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}

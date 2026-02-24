@@ -254,7 +254,7 @@ export default function HomePage() {
             {MODULES.map(mod => (
               <Link key={mod.href} href={mod.href} className="group block" style={{ textDecoration: 'none' }}>
                 <div className="relative overflow-hidden rounded-xl p-4 transition-all duration-200"
-                  style={{ background: `linear-gradient(135deg, ${mod.color}0d, #0c0c0c)`, border: `1px solid ${mod.color}25` }}
+                  style={{ background: `radial-gradient(ellipse at top left, ${mod.color}18, transparent 70%)`, border: `1px solid ${mod.color}25` }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color + '60'; e.currentTarget.style.transform = 'translateY(-1px)' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = mod.color + '25'; e.currentTarget.style.transform = '' }}>
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"

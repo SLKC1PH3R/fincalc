@@ -54,7 +54,7 @@ function CompoundPageInner() {
   if (tips.length === 0) tips.push('Stratégie solide. Maintenez la régularité et évitez de retirer avant terme.')
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -62,7 +62,7 @@ function CompoundPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">La 8ème merveille du monde — Albert Einstein</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="compound" name={`Composés ${inputs.capital.toLocaleString('fr')}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -140,7 +140,7 @@ function CompoundPageInner() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
                 <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${v}a`} />
                 <YAxis tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 <Line type="monotone" dataKey="total" name="Capital total" stroke="hsl(0 0% 98%)" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="invested" name="Investi" stroke="hsl(0 0% 40%)" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
               </LineChart>
@@ -150,7 +150,7 @@ function CompoundPageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: score === 'excellent' || score === 'bon' ? 'rgba(52,211,153,0.35)' : score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />

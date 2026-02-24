@@ -104,7 +104,7 @@ export default function HomePage() {
     <div className="flex-1" style={{ background: '#080808', minHeight: '100vh' }}>
 
       {/* ── HERO SECTION — full width like Finary ── */}
-      <div className="relative overflow-hidden" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: 'clamp(24px,4vw,40px) clamp(20px,4vw,40px)' }}>
+      <div className="relative overflow-hidden px-5 xl:px-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingTop: 'clamp(20px,3vw,36px)', paddingBottom: 'clamp(20px,3vw,36px)' }}>
         {/* Subtle bg glow */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 20% 50%, ${GOLD}06, transparent 60%)` }} />
 
@@ -132,9 +132,11 @@ export default function HomePage() {
               { label: 'Calculateurs', value: '9', sub: 'disponibles' },
             ].map((s, i) => (
               <div key={i} className="rounded-xl p-4" style={{ background: i === 3 ? `linear-gradient(135deg, ${GOLD}12, rgba(0,0,0,0))` : '#0f0f0f', border: `1px solid ${i === 3 ? GOLD_BORDER : 'rgba(255,255,255,0.06)'}` }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 8 }}>{s.label}</p>
-                <p style={{ fontSize: '1.5rem', fontWeight: 600, color: i === 3 ? GOLD : '#fff', letterSpacing: '-0.025em' }}>{s.value}</p>
-                {s.sub && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 2 }}>{s.sub}</p>}
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>{s.label}</p>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: i === 3 ? GOLD : '#fff', letterSpacing: '-0.025em' }}>{s.value}</p>
+                  {s.sub && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{s.sub}</p>}
+                </div>
               </div>
             ))}
           </div>
@@ -196,11 +198,11 @@ export default function HomePage() {
       </div>
 
       {/* ── RECENT SIMS + MODULES — Finary bottom layout ── */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-0" style={{ minHeight: 'calc(100vh - 400px)' }}>
+      <div className={`grid grid-cols-1 gap-0 ${loaded && totalSims > 0 ? 'xl:grid-cols-[260px_1fr]' : ''}`} style={{ minHeight: 'calc(100vh - 400px)' }}>
 
         {/* LEFT: Recent simulations */}
         {loaded && totalSims > 0 && (
-          <div className="xl:col-span-1 p-5 xl:p-6" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
+          <div className="p-5 xl:p-6" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5" style={{ color: GOLD }} />
@@ -241,7 +243,7 @@ export default function HomePage() {
         )}
 
         {/* RIGHT: Modules grid */}
-        <div className={`${loaded && totalSims > 0 ? 'xl:col-span-2' : 'xl:col-span-3'} p-5 xl:p-6`}>
+        <div className="p-5 xl:p-6">
           <div className="flex items-center justify-between mb-4">
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>
               Calculateurs
@@ -252,9 +254,9 @@ export default function HomePage() {
             {MODULES.map(mod => (
               <Link key={mod.href} href={mod.href} className="group block" style={{ textDecoration: 'none' }}>
                 <div className="relative overflow-hidden rounded-xl p-4 transition-all duration-200"
-                  style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color + '40'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = '' }}>
+                  style={{ background: `linear-gradient(135deg, ${mod.color}0d, #0c0c0c)`, border: `1px solid ${mod.color}25` }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color + '60'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = mod.color + '25'; e.currentTarget.style.transform = '' }}>
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                     style={{ background: `radial-gradient(circle at 0% 0%, ${mod.color}10, transparent 55%)` }} />
                   <div className="relative">
@@ -267,7 +269,7 @@ export default function HomePage() {
                     </div>
                     <h3 style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 3 }}>{mod.label}</h3>
                     <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)', lineHeight: 1.5, marginBottom: 10 }}>{mod.desc}</p>
-                    <div className="flex items-center gap-1" style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
+                    <div className="flex items-center justify-end gap-1" style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
                       <span>Ouvrir</span>
                       <ArrowUpRight className="h-3 w-3" />
                     </div>

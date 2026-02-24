@@ -46,7 +46,7 @@ function BuyRentPageInner() {
   if (r.buyWins && r.breakevenYears < 10) tips.push(`Excellent investissement : seuil de rentabilité atteint en ${r.breakevenYears} ans.`)
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -54,7 +54,7 @@ function BuyRentPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Comparaison patrimoniale sur {inputs.years} ans</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="buyrent" name={`Achat vs Loc ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -211,7 +211,7 @@ function BuyRentPageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: r.buyWins ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />

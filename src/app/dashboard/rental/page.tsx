@@ -59,7 +59,7 @@ function RentalPageInner() {
   ]
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -67,7 +67,7 @@ function RentalPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Cashflow · Rendement · Fiscalité (nu / meublé / LMNP)</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="rental" name={`Locatif ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -196,41 +196,51 @@ function RentalPageInner() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 <Bar dataKey="value" radius={[3, 3, 0, 0]}>
                   {barData.map((e, i) => <Cell key={i} fill={e.fill} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
 
-            <div className="rounded-md border border-border overflow-hidden">
-              <table className="w-full text-sm">
-                <tbody>
-                  {[
-                    { label: 'Loyers annuels bruts', value: fmt(r.annualRent) },
-                    { label: `Vacance locative (${inputs.vacancy}%)`, value: `− ${fmt(r.annualVacancyLoss)}` },
-                    { label: 'Charges non récupérables', value: `− ${fmt(r.annualCharges)}` },
-                    { label: 'Taxe foncière', value: `− ${fmt(inputs.taxeFonciere)}` },
-                    { label: 'Assurance PNO', value: `− ${fmt(inputs.insurance)}` },
-                    { label: 'Revenu net opérationnel', value: fmt(r.netOperatingIncome), bold: true },
-                    { label: `Remboursement crédit`, value: `− ${fmt(r.monthlyLoan * 12)}` },
-                    { label: `Impôts (${inputs.regime.toUpperCase()})`, value: `− ${fmt(r.tax)}` },
-                    { label: 'Cashflow annuel net', value: fmt(r.cashflowAnnual), bold: true, color: r.cashflowAnnual >= 0 ? 'text-emerald-finance' : 'text-crimson-finance' },
-                  ].map((row, i) => (
-                    <tr key={i} className={cn('border-b border-border last:border-0', row.bold && 'bg-muted/30')}>
-                      <td className="px-4 py-2.5 text-muted-foreground text-sm">{row.label}</td>
-                      <td className={cn('px-4 py-2.5 text-right font-medium tabular-nums', row.color)}>{row.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+              {[
+                { label: 'Loyers annuels bruts', value: fmt(r.annualRent), positive: true },
+                { label: `Vacance locative (${inputs.vacancy}%)`, value: `− \u00a0${fmt(r.annualVacancyLoss)}`, negative: true },
+                { label: 'Charges non récupérables', value: `− \u00a0${fmt(r.annualCharges)}`, negative: true },
+                { label: 'Taxe foncière', value: `− \u00a0${fmt(inputs.taxeFonciere)}`, negative: true },
+                { label: 'Assurance PNO', value: `− \u00a0${fmt(inputs.insurance)}`, negative: true },
+                { label: 'Revenu net opérationnel', value: fmt(r.netOperatingIncome), bold: true, separator: true },
+                { label: 'Remboursement crédit', value: `− \u00a0${fmt(r.monthlyLoan * 12)}`, negative: true },
+                { label: `Impôts (${inputs.regime.toUpperCase()})`, value: `− \u00a0${fmt(r.tax)}`, negative: true },
+                { label: 'Cashflow annuel net', value: fmt(r.cashflowAnnual), bold: true, cashflow: true },
+              ].map((row, i, arr) => (
+                <div key={i} className="flex items-center justify-between px-4 py-3"
+                  style={{
+                    borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    background: row.cashflow
+                      ? (r.cashflowAnnual >= 0 ? 'rgba(52,211,153,0.05)' : 'rgba(239,68,68,0.05)')
+                      : row.bold ? 'rgba(255,255,255,0.02)' : 'transparent',
+                    marginTop: row.separator ? '0' : '0',
+                    borderTop: row.separator ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                  }}>
+                  <span style={{ fontSize: 13, color: row.bold ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.4)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
+                  <span style={{
+                    fontSize: 13, fontWeight: row.bold ? 700 : 500,
+                    fontVariantNumeric: 'tabular-nums',
+                    color: row.cashflow
+                      ? (r.cashflowAnnual >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)')
+                      : row.negative ? 'rgba(255,255,255,0.45)' : row.positive ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.85)',
+                  }}>{row.value}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.35)' : r.analysis.score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />

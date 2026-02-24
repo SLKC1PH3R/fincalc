@@ -13,13 +13,22 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 
-function BudgetField({ label, value, onChange, placeholder }: { label: string; value: number; onChange: (v: number) => void; placeholder?: string }) {
+function BudgetField({ label, value, onChange, step = 50 }: { label: string; value: number; onChange: (v: number) => void; placeholder?: string; step?: number }) {
   return (
-    <div className="flex items-center gap-3">
-      <Label className="text-muted-foreground w-36 flex-shrink-0 text-xs">{label}</Label>
-      <Input type="number" min={0} value={value || ''} onChange={e => onChange(+e.target.value)}
-        placeholder={placeholder || '0'} className="h-8 text-sm" />
-      <span className="text-xs text-muted-foreground w-8 text-right">{value > 0 ? `${Math.round(value / (1) * 100 / 100)}€` : ''}</span>
+    <div className="flex items-center gap-2">
+      <Label className="text-muted-foreground shrink-0 text-xs" style={{ width: '8.5rem' }}>{label}</Label>
+      <div className="flex flex-1 h-8 items-center rounded-md overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+        <button type="button" onClick={() => onChange(Math.max(0, value - step))}
+          className="flex items-center justify-center h-full text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors flex-shrink-0 text-base leading-none"
+          style={{ width: '2rem', borderRight: '1px solid rgba(255,255,255,0.08)' }}>−</button>
+        <input type="number" min={0} value={value || ''} onChange={e => onChange(+e.target.value)}
+          placeholder="0"
+          className="h-full flex-1 bg-transparent text-sm text-center focus:outline-none tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          style={{ color: 'rgba(255,255,255,0.75)' }} />
+        <button type="button" onClick={() => onChange(value + step)}
+          className="flex items-center justify-center h-full text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors flex-shrink-0 text-base leading-none"
+          style={{ width: '2rem', borderLeft: '1px solid rgba(255,255,255,0.08)' }}>+</button>
+      </div>
     </div>
   )
 }
@@ -60,7 +69,7 @@ function BudgetPageInner() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -68,7 +77,7 @@ function BudgetPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Besoins · Envies · Épargne — Règle d'or des finances personnelles</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="budget" name={`Budget ${fmt(inputs.netIncome)}/mois`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -206,7 +215,7 @@ function BudgetPageInner() {
                   <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={2}>
                     {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
                   </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 </PieChart>
               </ResponsiveContainer>
 
@@ -255,7 +264,7 @@ function BudgetPageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.35)' : r.analysis.score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />

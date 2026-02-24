@@ -3,5 +3,5 @@ export function fmt(n: number) {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
-  }).format(n)
+  }).format(n).replace(/\u202f/g, '\u00a0')
 }

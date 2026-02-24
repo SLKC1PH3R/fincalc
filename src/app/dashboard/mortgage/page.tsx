@@ -55,7 +55,7 @@ function MortgagePageInner() {
   if (interestRatio < 30) tips.push(`Excellent crédit — vous payez seulement ${fmtPct(interestRatio)} d'intérêts sur le capital.`)
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -63,7 +63,7 @@ function MortgagePageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Mensualités · TAEG · Tableau d&apos;amortissement</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="mortgage" name={`Prêt ${fmt(inputs.amount)} @ ${inputs.rate}%`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -137,7 +137,7 @@ function MortgagePageInner() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
                 <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${v}a`} />
                 <YAxis tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 <Area type="monotone" dataKey="capitalRepaid" name="Remboursé" stroke="hsl(0 0% 98%)" fill="hsl(0 0% 98%)" fillOpacity={0.1} strokeWidth={1.5} />
                 <Area type="monotone" dataKey="remaining" name="Restant dû" stroke="hsl(0 0% 50%)" fill="hsl(0 0% 50%)" fillOpacity={0.05} strokeWidth={1.5} />
               </AreaChart>
@@ -173,7 +173,7 @@ function MortgagePageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: scoreConf.color.includes('emerald') || scoreConf.color.includes('blue') ? 'rgba(52,211,153,0.35)' : scoreConf.color.includes('amber') ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />

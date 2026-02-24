@@ -56,7 +56,7 @@ function FirePageInner() {
   const progressColor = r.progressPct >= 75 ? 'hsl(160 84% 39%)' : r.progressPct >= 50 ? 'hsl(38 92% 50%)' : r.progressPct >= 25 ? 'hsl(38 60% 50%)' : 'hsl(0 72% 51%)'
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -64,7 +64,7 @@ function FirePageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Financial Independence, Retire Early</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -161,7 +161,7 @@ function FirePageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card>
+      <Card style={{ borderColor: score === 'excellent' || score === 'bon' ? 'rgba(52,211,153,0.35)' : score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />

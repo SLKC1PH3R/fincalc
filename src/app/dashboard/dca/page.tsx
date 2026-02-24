@@ -37,7 +37,7 @@ function DCAPageInner() {
   const r = useMemo(() => calcDCA(inputs), [inputs])
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
@@ -45,7 +45,7 @@ function DCAPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Investissement régulier vs achat unique — effet de la volatilité</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
@@ -132,7 +132,7 @@ function DCAPageInner() {
                 <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/12)}a`} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
                 <Tooltip formatter={(v: any, name: string) => [name === 'price' ? `${v}€` : fmt(v), name === 'value' ? 'Valeur' : name === 'invested' ? 'Investi' : 'Prix']}
-                  contentStyle={{ background: 'hsl(0 0% 3.9%)', border: '1px solid hsl(0 0% 14.9%)', borderRadius: '6px', fontSize: 12 }} />
+                  contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke="hsl(0 0% 98%)" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="invested" name="Capital investi" stroke="hsl(0 0% 45%)" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
@@ -142,7 +142,7 @@ function DCAPageInner() {
         </Card>
       </div>
 
-      <Card>
+      <Card style={{ borderColor: r.vsLumpSum >= 0 ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-muted-foreground" /><CardTitle>Analyse DCA</CardTitle></div>
         </CardHeader>

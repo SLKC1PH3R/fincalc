@@ -120,13 +120,22 @@ export function Sidebar({ user, isAdmin }: SidebarProps) {
               </div>
             </div>
           ) : (
-            /* Collapsed: just icon */
-            <Link href="/dashboard">
-              <div className="h-8 w-8 rounded-lg flex items-center justify-center"
-                style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)' }}>
-                <TrendingUp className="h-4 w-4" style={{ color: '#f1c086' }} />
-              </div>
-            </Link>
+            /* Collapsed: logo + open button stacked */
+            <div className="flex flex-col items-center gap-2">
+              <Link href="/dashboard" title="Accueil">
+                <div className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform hover:scale-105"
+                  style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)' }}>
+                  <TrendingUp className="h-4 w-4" style={{ color: '#f1c086' }} />
+                </div>
+              </Link>
+              <button
+                onClick={toggle}
+                title="Ouvrir le menu"
+                className="h-7 w-7 flex items-center justify-center rounded-md text-white/25 hover:text-white/70 hover:bg-white/[0.06] transition-all"
+              >
+                <PanelLeftOpen className="h-4 w-4" />
+              </button>
+            </div>
           )}
         </div>
 

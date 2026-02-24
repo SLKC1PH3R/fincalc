@@ -604,7 +604,7 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style={{ gap: 10 }}>
             {WHY.map((w, i) => (
               <RevealSection key={i} delay={i * 80}>
                 <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '24px 20px', textAlign: 'center', transition: 'border-color 0.2s' }}
@@ -684,7 +684,7 @@ export function LandingClient() {
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 8 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 8 }}>
             {ROADMAP.map((item, i) => {
               const color = item.status === 'done' ? '#34d399' : item.status === 'wip' ? GOLD : 'rgba(255,255,255,0.2)'
               const bgColor = item.status === 'done' ? 'rgba(52,211,153,0.08)' : item.status === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.03)'

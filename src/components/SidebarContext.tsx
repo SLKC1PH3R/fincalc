@@ -12,8 +12,14 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
+    // On mobile, default to collapsed (hidden)
+    const isMobile = window.innerWidth < 768
     const saved = localStorage.getItem('sidebar-collapsed')
-    if (saved === 'true') setCollapsed(true)
+    if (saved !== null) {
+      setCollapsed(saved === 'true')
+    } else if (isMobile) {
+      setCollapsed(true)
+    }
   }, [])
 
   const toggle = () => {
@@ -31,3 +37,4 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 }
 
 export const useSidebar = () => useContext(SidebarContext)
+export const useSidebarToggle = () => useContext(SidebarContext).toggle

@@ -57,7 +57,7 @@ function RetirementPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Retraite de base · Complémentaire · PER · Épargne personnelle</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="retirement" name={`Retraite ${inputs.retirementAge}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

@@ -77,7 +77,7 @@ function BudgetPageInner() {
           <p className="text-sm text-muted-foreground mt-0.5">Besoins · Envies · Épargne — Règle d'or des finances personnelles</p>
         </div>
         <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ borderColor: 'rgba(239,68,68,0.45)', color: 'rgb(220,60,60)' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="budget" name={`Budget ${fmt(inputs.netIncome)}/mois`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

@@ -123,7 +123,7 @@ export default function HistoryPage() {
   }, {} as Record<string, Simulation[]>)
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Historique</h1>
         <p className="text-sm text-muted-foreground mt-0.5">

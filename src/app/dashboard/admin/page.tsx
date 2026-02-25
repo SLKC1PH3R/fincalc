@@ -81,7 +81,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in p-5 md:p-6">
       <div className="flex items-center gap-3">
         <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
           <Shield className="h-4 w-4 text-muted-foreground" />

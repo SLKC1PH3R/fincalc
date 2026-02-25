@@ -29,94 +29,165 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default:            'Une erreur est survenue. Réessayez.',
 }
 
-/* ── Dashboard Preview (right panel) ── */
+/* ── Dashboard Preview — Desktop + Mobile devices ── */
 function DashboardPreview() {
   const modules = [
-    { label: 'Impôts IR', icon: Calculator, color: '#f97316', tag: 'FISCALITÉ' },
-    { label: 'FI/RE', icon: Flame, color: '#f1c086', tag: 'LIBERTÉ' },
-    { label: 'Locatif', icon: Home, color: '#22c55e', tag: 'IMMO' },
-    { label: 'Budget', icon: PiggyBank, color: '#a78bfa', tag: 'PERSO' },
-    { label: 'Composés', icon: BarChart3, color: '#38bdf8', tag: 'INVEST' },
-    { label: 'Retraite', icon: TrendingUp, color: '#fb7185', tag: 'FUTUR' },
-  ]
-  const kpis = [
-    { label: 'Simulations', value: '24', sub: 'total' },
-    { label: 'Cette semaine', value: '3', sub: 'nouvelles' },
-    { label: 'Module favori', value: 'FI/RE', sub: '8 fois' },
-    { label: 'Calculateurs', value: '9', sub: 'disponibles' },
+    { label: 'Impôts IR', icon: Calculator, color: '#f97316' },
+    { label: 'FI/RE', icon: Flame, color: '#f1c086' },
+    { label: 'Locatif', icon: Home, color: '#22c55e' },
+    { label: 'Budget', icon: PiggyBank, color: '#a78bfa' },
+    { label: 'Composés', icon: BarChart3, color: '#38bdf8' },
+    { label: 'Retraite', icon: TrendingUp, color: '#fb7185' },
   ]
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: 700,
-      transform: 'perspective(1400px) rotateY(-5deg) rotateX(2deg)',
-      transformStyle: 'preserve-3d',
-      filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.6))',
-    }}>
-      {/* Fake browser bar */}
-      <div style={{ background: '#111', borderRadius: '12px 12px 0 0', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
-        <div style={{ flex: 1, margin: '0 8px', background: 'rgba(255,255,255,0.05)', borderRadius: 4, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>fire.digitalstack.cloud/dashboard</span>
+    <div style={{ position: 'relative', width: '100%', height: 440 }}>
+
+      {/* ── DESKTOP mockup ── */}
+      <div style={{
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        width: '78%',
+        transform: 'perspective(1000px) rotateY(-8deg) rotateX(4deg)',
+        transformOrigin: 'right top',
+        filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.75))',
+        zIndex: 1,
+      }}>
+        {/* Browser chrome */}
+        <div style={{ background: '#141414', borderRadius: '10px 10px 0 0', padding: '7px 10px', display: 'flex', alignItems: 'center', gap: 5, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
+          <div style={{ flex: 1, margin: '0 6px', background: 'rgba(255,255,255,0.05)', borderRadius: 3, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>fire.digitalstack.cloud/dashboard</span>
+          </div>
         </div>
+
+        {/* App — sidebar + content */}
+        <div style={{ display: 'flex', height: 310, background: '#080808', borderRadius: '0 0 10px 10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', borderTop: 'none' }}>
+          {/* Sidebar */}
+          <div style={{ width: 110, flexShrink: 0, background: '#060606', borderRight: '1px solid rgba(255,255,255,0.05)', padding: '10px 7px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 5px 10px' }}>
+              <div style={{ width: 20, height: 20, borderRadius: 5, background: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <TrendingUp style={{ width: 10, height: 10, color: '#000' }} />
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>FinCalc</span>
+            </div>
+            {[
+              { label: 'Accueil', active: true },
+              { label: 'Intérêts', active: false },
+              { label: 'FI/RE', active: false },
+              { label: 'Locatif', active: false },
+              { label: 'Impôts IR', active: false },
+              { label: 'Budget', active: false },
+            ].map((item, i) => (
+              <div key={i} style={{ padding: '5px 7px', borderRadius: 5, fontSize: 9, color: item.active ? '#fff' : 'rgba(255,255,255,0.3)', background: item.active ? 'rgba(255,255,255,0.07)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>{item.label}</span>
+                {item.active && <div style={{ width: 4, height: 4, borderRadius: '50%', background: GOLD }} />}
+              </div>
+            ))}
+          </div>
+
+          {/* Main content */}
+          <div style={{ flex: 1, padding: 12, overflow: 'hidden' }}>
+            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginBottom: 1 }}>Bonsoir, Thomas</p>
+            <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', marginBottom: 10 }}>Tableau de bord</p>
+
+            {/* KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, marginBottom: 8 }}>
+              {[{ l: 'Simulations', v: '24' }, { l: 'Cette semaine', v: '3' }, { l: 'Module favori', v: 'FI/RE' }].map((k, i) => (
+                <div key={i} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, padding: '6px 8px' }}>
+                  <p style={{ fontSize: 7, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>{k.l}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{k.v}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Modules grid */}
+            <p style={{ fontSize: 7, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: 5 }}>Calculateurs</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+              {modules.map((mod, i) => (
+                <div key={i} style={{ background: `radial-gradient(ellipse at top left, ${mod.color}15, transparent 70%)`, border: `1px solid ${mod.color}28`, borderRadius: 6, padding: '7px 8px' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: 4, background: mod.color + '18', border: `1px solid ${mod.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+                    <mod.icon style={{ width: 9, height: 9, color: mod.color }} />
+                  </div>
+                  <p style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.75)' }}>{mod.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Laptop base/chin */}
+        <div style={{ height: 10, background: 'linear-gradient(to bottom, #1a1a1a, #111)', borderRadius: '0 0 4px 4px' }} />
+        <div style={{ height: 6, background: '#0d0d0d', borderRadius: '0 0 8px 8px', margin: '0 -4px' }} />
       </div>
 
-      {/* App shell */}
-      <div style={{ background: '#080808', borderRadius: '0 0 12px 12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', borderTop: 'none' }}>
-        {/* Top nav */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 22, height: 22, borderRadius: 6, background: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 12, height: 12, color: '#000' }} />
+      {/* ── MOBILE mockup ── */}
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        width: '26%',
+        zIndex: 2,
+        transform: 'perspective(600px) rotateY(10deg) rotateX(-3deg)',
+        transformOrigin: 'left bottom',
+        filter: 'drop-shadow(0 16px 32px rgba(0,0,0,0.8))',
+      }}>
+        {/* Phone shell */}
+        <div style={{ background: 'linear-gradient(160deg, #222, #141414)', borderRadius: 22, padding: '10px 5px 16px', border: '1px solid rgba(255,255,255,0.12)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)' }}>
+          {/* Dynamic island / pill */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 5 }}>
+            <div style={{ width: 44, height: 5, background: '#000', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)' }} />
+          </div>
+
+          {/* Screen */}
+          <div style={{ background: '#080808', borderRadius: 14, overflow: 'hidden', padding: 8 }}>
+            {/* Mobile top nav */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TrendingUp style={{ width: 8, height: 8, color: '#000' }} />
+                </div>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#fff' }}>FinCalc</span>
+              </div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: `${GOLD}60` }} />
+              </div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>FinCalc</span>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {['Tableau de bord', 'Historique', 'Paramètres'].map((t, i) => (
-              <span key={i} style={{ fontSize: 9, color: i === 0 ? GOLD : 'rgba(255,255,255,0.3)', padding: '3px 8px', borderRadius: 4, background: i === 0 ? `${GOLD}15` : 'transparent', border: i === 0 ? `1px solid ${GOLD}30` : 'none' }}>{t}</span>
-            ))}
-          </div>
-        </div>
 
-        <div style={{ padding: 16 }}>
-          {/* Greeting */}
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>Bonsoir, Thomas</p>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 12 }}>Tableau de bord</p>
-
-          {/* KPI row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 12 }}>
-            {kpis.map((k, i) => (
-              <div key={i} style={{ background: i === 3 ? `${GOLD}10` : '#0f0f0f', border: `1px solid ${i === 3 ? GOLD + '30' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8, padding: '8px 10px' }}>
-                <p style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{k.label}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: i === 3 ? GOLD : '#fff', letterSpacing: '-0.02em' }}>{k.value}</span>
-                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)' }}>{k.sub}</span>
-                </div>
+            {/* FI/RE result card */}
+            <div style={{ background: `radial-gradient(ellipse at top left, ${GOLD}12, transparent 70%)`, border: `1px solid ${GOLD}25`, borderRadius: 10, padding: '8px 10px', marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 5 }}>
+                <Flame style={{ width: 10, height: 10, color: GOLD }} />
+                <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>FI/RE</span>
               </div>
-            ))}
+              <p style={{ fontSize: 7, color: 'rgba(255,255,255,0.35)', marginBottom: 1 }}>Patrimoine cible</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>750 000 <span style={{ fontSize: 12 }}>€</span></p>
+              <div style={{ marginTop: 6, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: '38%', height: '100%', background: GOLD, borderRadius: 2 }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.3)' }}>38% atteint</span>
+                <span style={{ fontSize: 7, color: GOLD }}>18 ans</span>
+              </div>
+            </div>
+
+            {/* Mini KPI bar */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+              {[{ l: 'Taux épargne', v: '28%', c: '#22c55e' }, { l: 'Mensuel', v: '1 400€', c: '#38bdf8' }].map((k, i) => (
+                <div key={i} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 7, padding: '5px 7px' }}>
+                  <p style={{ fontSize: 7, color: 'rgba(255,255,255,0.28)', marginBottom: 2 }}>{k.l}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: k.c }}>{k.v}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Modules grid */}
-          <p style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: 6 }}>Calculateurs</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5 }}>
-            {modules.map((mod, i) => (
-              <div key={i} style={{ background: `radial-gradient(ellipse at top left, ${mod.color}18, transparent 70%)`, border: `1px solid ${mod.color}30`, borderRadius: 8, padding: '10px 10px 8px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: 5, background: mod.color + '20', border: `1px solid ${mod.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <mod.icon style={{ width: 11, height: 11, color: mod.color }} />
-                  </div>
-                  <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{mod.tag}</span>
-                </div>
-                <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 5 }}>{mod.label}</p>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 2, color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>
-                  <span>Ouvrir</span>
-                  <ArrowUpRight style={{ width: 8, height: 8 }} />
-                </div>
-              </div>
-            ))}
+          {/* Home indicator */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+            <div style={{ width: 36, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 2 }} />
           </div>
         </div>
       </div>
@@ -193,7 +264,7 @@ function AuthForm() {
     <div className="min-h-screen flex" style={{ background: '#080808' }}>
 
       {/* ── LEFT: Form ── */}
-      <div className="flex flex-col w-full lg:w-[460px] xl:w-[500px] flex-shrink-0 relative z-10" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+      <div className="flex flex-col w-full lg:w-1/2 flex-shrink-0 relative z-10" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
         {/* Subtle glow top-left */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 0%, ${GOLD}08, transparent 60%)` }} />
 

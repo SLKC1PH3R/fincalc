@@ -32,11 +32,11 @@ function FirePageInner() {
 
   // Restore simulation from history
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
-    try { setInputs(JSON.parse(raw) as FireInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as FireInputs) } catch {}
+  }, [restoreParam])
   const r = useMemo(() => calcFire(inputs), [inputs])
 
   const score = r.savingsRate >= 50 ? 'excellent' : r.savingsRate >= 30 ? 'bon' : r.savingsRate >= 15 ? 'moyen' : 'faible'

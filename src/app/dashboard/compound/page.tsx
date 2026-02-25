@@ -33,11 +33,11 @@ function CompoundPageInner() {
 
   // Restore simulation from history
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
-    try { setInputs(JSON.parse(raw) as CompoundInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as CompoundInputs) } catch {}
+  }, [restoreParam])
   const r = useMemo(() => calcCompound(inputs), [inputs])
 
   const score = r.multiplier >= 5 ? 'excellent' : r.multiplier >= 3 ? 'bon' : r.multiplier >= 2 ? 'moyen' : 'faible'

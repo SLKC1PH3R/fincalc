@@ -64,11 +64,11 @@ function TaxPageInner() {
 
   // Restore simulation from history
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
-    try { setInputs(JSON.parse(raw) as TaxInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as TaxInputs) } catch {}
+  }, [restoreParam])
   const r = useMemo(() => calcTax(inputs), [inputs])
   const score = SCORE[r.analysis.score]
 

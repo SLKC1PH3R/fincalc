@@ -32,11 +32,11 @@ function BuyRentPageInner() {
 
   // Restore simulation from history
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
-    try { setInputs(JSON.parse(raw) as BuyRentInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as BuyRentInputs) } catch {}
+  }, [restoreParam])
   const r = useMemo(() => calcBuyRent(inputs), [inputs])
 
   const tips: string[] = []

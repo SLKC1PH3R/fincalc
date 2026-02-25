@@ -30,10 +30,11 @@ function DCAPageInner() {
   const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore'); if (!raw) return
-    try { setInputs(JSON.parse(raw) as DCAInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as DCAInputs) } catch {}
+  }, [restoreParam])
 
   const r = useMemo(() => calcDCA(inputs), [inputs])
 

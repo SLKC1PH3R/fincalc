@@ -155,10 +155,19 @@ export function printReport(config: PrintConfig) {
     <span>fire.digitalstack.cloud</span>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     window.onload = function() {
-      setTimeout(function() { window.print(); }, 300);
-      window.onafterprint = function() { window.close(); };
+      setTimeout(function() {
+        var el = document.body;
+        html2pdf().set({
+          margin: [10, 15, 10, 15],
+          filename: document.title.replace('FinCalc — ', '') + '.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(el).save().then(function() { window.close(); });
+      }, 400);
     };
   </script>
 </body>

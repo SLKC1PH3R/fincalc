@@ -43,10 +43,11 @@ function BudgetPageInner() {
   })
   const set = (k: keyof BudgetInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore'); if (!raw) return
-    try { setInputs(JSON.parse(raw) as BudgetInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as BudgetInputs) } catch {}
+  }, [restoreParam])
 
   const r = useMemo(() => calcBudget(inputs), [inputs])
   const scoreConf = {

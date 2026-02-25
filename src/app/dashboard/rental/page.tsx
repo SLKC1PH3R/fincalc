@@ -128,11 +128,11 @@ function RentalPageInner() {
   const [resultTab, setResultTab] = useState('global')
 
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore')
-    if (!raw) return
+    if (!restoreParam) return
     try {
-      const parsed = JSON.parse(raw)
+      const parsed = JSON.parse(restoreParam)
       if (parsed.apartments) {
         setApartments(parsed.apartments)
         setActiveAptId(parsed.apartments[0].id)
@@ -140,7 +140,7 @@ function RentalPageInner() {
         setApartments([{ id: '1', name: 'Appartement 1', inputs: parsed as RentalInputs }])
       }
     } catch {}
-  }, [])
+  }, [restoreParam])
 
   const activeApt = apartments.find(a => a.id === activeAptId) ?? apartments[0]
   const inputs = activeApt.inputs

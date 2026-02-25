@@ -34,10 +34,11 @@ function RetirementPageInner() {
   })
   const set = (k: keyof RetirementInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const searchParams = useSearchParams()
+  const restoreParam = searchParams.get('restore')
   useEffect(() => {
-    const raw = searchParams.get('restore'); if (!raw) return
-    try { setInputs(JSON.parse(raw) as RetirementInputs) } catch {}
-  }, [])
+    if (!restoreParam) return
+    try { setInputs(JSON.parse(restoreParam) as RetirementInputs) } catch {}
+  }, [restoreParam])
 
   const r = useMemo(() => calcRetirement(inputs), [inputs])
   const scoreConf = {

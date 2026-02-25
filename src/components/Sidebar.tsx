@@ -1,8 +1,8 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator,
@@ -58,8 +58,10 @@ interface SidebarProps {
   isAdmin?: boolean
 }
 
-export function Sidebar({ user, isAdmin }: SidebarProps) {
+function SidebarInner({ user, isAdmin }: SidebarProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const activeSimId = searchParams.get('sim')
   const { collapsed, toggle } = useSidebar()
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
@@ -204,18 +206,28 @@ export function Sidebar({ user, isAdmin }: SidebarProps) {
                       {/* Sub-menu */}
                       {!collapsed && isExpanded && itemSims.length > 0 && (
                         <div className="mt-0.5 ml-5 pl-3 space-y-0.5" style={{ borderLeft: '1px solid rgba(255,255,255,0.06)' }}>
-                          {itemSims.slice(0, 6).map(sim => (
-                            <Link
-                              key={sim.id}
-                              href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`}
-                              className="block truncate py-1.5 px-2 rounded-md transition-colors"
-                              style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}
-                              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-                              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
-                            >
-                              {sim.name}
-                            </Link>
-                          ))}
+                          {itemSims.slice(0, 6).map(sim => {
+                            const isActiveSim = activeSimId === sim.id
+                            return (
+                              <Link
+                                key={sim.id}
+                                href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                className="flex items-center gap-1.5 truncate py-1.5 px-2 rounded-md transition-colors"
+                                style={{
+                                  fontSize: 11,
+                                  textDecoration: 'none',
+                                  color: isActiveSim ? '#f1c086' : 'rgba(255,255,255,0.3)',
+                                  background: isActiveSim ? 'rgba(241,192,134,0.08)' : 'transparent',
+                                  fontWeight: isActiveSim ? 600 : 400,
+                                }}
+                                onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+                                onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+                              >
+                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                                <span className="truncate">{sim.name}</span>
+                              </Link>
+                            )
+                          })}
                           {itemSims.length > 6 && (
                             <Link href="/dashboard/history"
                               className="block py-1.5 px-2 rounded-md transition-colors"
@@ -274,5 +286,13 @@ export function Sidebar({ user, isAdmin }: SidebarProps) {
         </div>
       </aside>
     </>
+  )
+}
+
+export function Sidebar(props: SidebarProps) {
+  return (
+    <Suspense>
+      <SidebarInner {...props} />
+    </Suspense>
   )
 }

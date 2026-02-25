@@ -19,7 +19,8 @@ import {
   ArrowUpRight,
   Sparkles,
   BarChart3,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
 } from 'lucide-react'
 
 interface Simulation {
@@ -68,6 +69,7 @@ export default function HomePage() {
   const [sims, setSims] = useState<Simulation[]>([])
   const [loaded, setLoaded] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Tout')
+  const [recentOpen, setRecentOpen] = useState(true)
 
   useEffect(() => {
     fetch('/api/simulations').then(r => r.json()).then(data => {
@@ -204,17 +206,22 @@ export default function HomePage() {
         {loaded && totalSims > 0 && (
           <div className="p-5 xl:p-6" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
+              <button
+                onClick={() => setRecentOpen(v => !v)}
+                className="flex items-center gap-2"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
                 <Sparkles className="h-3.5 w-3.5" style={{ color: GOLD }} />
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)' }}>Récentes</span>
-              </div>
+                <ChevronDown className="h-3.5 w-3.5" style={{ color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', transform: recentOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
+              </button>
               <Link href="/dashboard/history" className="flex items-center gap-1" style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}>
                 Voir tout <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1" style={{ display: recentOpen ? 'block' : 'none' }}>
               {sims.slice(0, 8).map(sim => {
                 const meta = TYPE_META[sim.type]
                 const Icon = meta?.icon || BarChart3

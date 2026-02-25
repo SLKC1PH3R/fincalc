@@ -176,13 +176,14 @@ function ModuleCard({ mod, index }: { mod: typeof MODULES[0]; index: number }) {
 }
 
 // ─── Section wrapper with reveal ─────────────────────────────────────────
-function RevealSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function RevealSection({ children, delay = 0, style: extraStyle }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const { ref, visible } = useInView()
   return (
     <div ref={ref} style={{
       opacity: visible ? 1 : 0,
       transform: visible ? 'none' : 'translateY(28px)',
       transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+      ...extraStyle,
     }}>
       {children}
     </div>
@@ -565,10 +566,10 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, alignItems: 'stretch' }}>
             {HOW.map((step, i) => (
-              <RevealSection key={i} delay={i * 120}>
-                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden' }}>
+              <RevealSection key={i} delay={i * 120} style={{ height: '100%' }}>
+                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden', height: '100%', boxSizing: 'border-box' }}>
                   <div style={{ position: 'absolute', top: -10, right: 16, fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
                     {step.step}
                   </div>
@@ -604,10 +605,10 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style={{ gap: 10 }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style={{ gap: 10, alignItems: 'stretch' }}>
             {WHY.map((w, i) => (
-              <RevealSection key={i} delay={i * 80}>
-                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '24px 20px', textAlign: 'center', transition: 'border-color 0.2s' }}
+              <RevealSection key={i} delay={i * 80} style={{ height: '100%' }}>
+                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '24px 20px', textAlign: 'center', transition: 'border-color 0.2s', height: '100%', boxSizing: 'border-box' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = GOLD_BORDER)}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}>
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>

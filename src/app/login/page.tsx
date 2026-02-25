@@ -49,8 +49,8 @@ function DashboardPreview() {
   return (
     <div style={{
       width: '100%',
-      maxWidth: 560,
-      transform: 'perspective(1200px) rotateY(-8deg) rotateX(4deg)',
+      maxWidth: 700,
+      transform: 'perspective(1400px) rotateY(-5deg) rotateX(2deg)',
       transformStyle: 'preserve-3d',
       filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.6))',
     }}>
@@ -332,19 +332,26 @@ function AuthForm() {
           <DashboardPreview />
         </div>
 
-        {/* Tagline bottom */}
+        {/* Security bottom */}
         <div className="relative px-12 pb-12">
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>
-            Tous vos calculs financiers en un seul endroit
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600, marginBottom: 14 }}>
+            Sécurité &amp; confidentialité
           </p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
-            Impôts · FI/RE · Immobilier · Budget · Investissement · Retraite
-          </p>
-          <div className="flex gap-5 mt-4">
-            {[['9', 'Calculateurs'], ['100%', 'Gratuit'], ['Privé', 'Données locales']].map(([v, l], i) => (
-              <div key={i}>
-                <p style={{ fontSize: 16, fontWeight: 700, color: GOLD, letterSpacing: '-0.02em' }}>{v}</p>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{l}</p>
+          <div className="space-y-3">
+            {[
+              { title: 'Vos données sont chiffrées', desc: 'Toutes les transmissions sont sécurisées via HTTPS/TLS.' },
+              { title: 'Aucune donnée bancaire requise', desc: 'Aucun RIB, aucun accès à vos comptes. Zéro risque.' },
+              { title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par FinCalc.' },
+              { title: 'Vos simulations restent privées', desc: 'Stockées sur votre compte uniquement. Jamais partagées ni revendues.' },
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ width: 15, height: 15, borderRadius: '50%', background: `${GOLD}18`, border: `1px solid ${GOLD}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: GOLD }} />
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.55)', marginBottom: 1 }}>{item.title}</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', lineHeight: 1.5 }}>{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>

@@ -48,7 +48,7 @@ function CompoundPageInner() {
     faible: { label: 'Faible', Icon: AlertCircle, color: 'text-crimson-finance' },
   }[score]
 
-  const tips = []
+  const tips: string[] = []
   if (inputs.rate < 5) tips.push('Un rendement de 5-8%/an est atteignable via des ETF World diversifiés sur le long terme.')
   if (inputs.monthly < 300) tips.push(`+100€/mois supplémentaires = +${fmt(calcCompound({...inputs, monthly: inputs.monthly + 100}).final - r.final)} à terme.`)
   if (inputs.years < 15) tips.push('L\'intérêt composé devient vraiment puissant sur 20-30 ans. Chaque année compte double.')

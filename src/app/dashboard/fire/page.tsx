@@ -47,7 +47,7 @@ function FirePageInner() {
     faible: { label: 'Faible', Icon: AlertCircle, color: 'text-crimson-finance' },
   }[score]
 
-  const tips = []
+  const tips: string[] = []
   if (r.savingsRate < 20) tips.push('Un taux d\'épargne < 20% rallonge considérablement le chemin. Identifiez les postes à réduire en priorité.')
   if (inputs.withdrawalRate > 4) tips.push('Un taux de retrait > 4% augmente le risque d\'épuiser le capital. La règle des 4% est éprouvée sur 30 ans.')
   if (inputs.rate > 8) tips.push(`Un rendement de ${inputs.rate}% est optimiste. Prévoyez un scénario pessimiste à 5%.`)

@@ -49,7 +49,7 @@ function MortgagePageInner() {
     eleve: { label: 'Élevé', Icon: AlertCircle, color: 'text-crimson-finance' },
   }[score]
 
-  const tips = []
+  const tips: string[] = []
   if (inputs.rate > 4) tips.push('Taux > 4% : consultez un courtier, les économies sur la durée peuvent dépasser 20 000€.')
   if (inputs.years > 25) tips.push(`Durée de ${inputs.years} ans : réduire de 5 ans économiserait environ ${fmt(r.totalInterest * 0.25)} d'intérêts.`)
   if (r.totalInsurance > r.totalInterest * 0.3) tips.push('Assurance emprunteur élevée. La délégation d\'assurance peut économiser 30-50%.')

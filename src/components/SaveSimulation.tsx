@@ -36,6 +36,7 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
       })
       if (!res.ok) throw new Error()
       setSaved(true)
+      window.dispatchEvent(new CustomEvent('simulation-saved'))
       toast({ variant: 'success', title: '✓ Simulation sauvegardée', description: `"${finalName}" ajoutée à votre historique.` })
       setTimeout(() => setSaved(false), 3000)
     } catch {

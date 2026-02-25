@@ -13,6 +13,7 @@ import { calcBuyRent, type BuyRentInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, Home, TrendingUp, CheckCircle2, Info } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -47,14 +48,32 @@ function BuyRentPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Acheter vs Louer</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Comparaison patrimoniale sur {inputs.years} ans</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Acheter vs Louer',
+            subtitle: `Comparaison patrimoniale sur ${inputs.years} ans`,
+            kpis: [
+              { label: r.buyWins ? 'Avantage achat' : 'Avantage location', value: fmt(Math.abs(r.delta)), highlight: true },
+              { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth) },
+              { label: 'Capital si location', value: fmt(r.rentCapital) },
+              { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans` },
+            ],
+            inputs: [
+              { label: "Prix du bien", value: fmt(inputs.price) },
+              { label: 'Apport', value: fmt(inputs.down) },
+              { label: 'Taux crédit', value: `${inputs.loanRate}%` },
+              { label: 'Loyer équivalent', value: `${fmt(inputs.rent)}/mois` },
+              { label: 'Durée analyse', value: `${inputs.years} ans` },
+              { label: 'Rendement investissement', value: `${inputs.investReturn}%` },
+            ],
+            tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="buyrent" name={`Achat vs Loc ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

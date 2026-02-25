@@ -14,6 +14,7 @@ import { calcRental, type RentalInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -60,14 +61,39 @@ function RentalPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Rentabilité Locative</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Cashflow · Rendement · Fiscalité (nu / meublé / LMNP)</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Rentabilité Locative',
+            subtitle: `Cashflow · Rendement · Fiscalité — ${fmt(inputs.price)} · loyer ${fmt(inputs.rent)}/mois`,
+            kpis: [
+              { label: 'Cashflow mensuel', value: fmt(r.cashflowMonthly), highlight: true, sub: `${fmt(r.cashflowAnnual)}/an` },
+              { label: 'Rendement brut', value: fmtPct(r.grossYield) },
+              { label: 'Rendement net', value: fmtPct(r.netYield) },
+              { label: 'ROI fonds propres', value: fmtPct(r.roi) },
+            ],
+            inputs: [
+              { label: "Prix d'achat", value: fmt(inputs.price) },
+              { label: 'Loyer mensuel HC', value: fmt(inputs.rent) },
+              { label: 'Charges non récup.', value: fmt(inputs.charges) },
+              { label: 'Montant emprunt', value: fmt(inputs.loanAmount) },
+              { label: 'Taux crédit', value: `${inputs.loanRate}%` },
+              { label: 'Durée crédit', value: `${inputs.loanYears} ans` },
+            ],
+            sections: [{ title: 'Détail annuel', items: [
+              { label: 'Loyers perçus', value: fmt(r.annualRent) },
+              { label: 'Charges annuelles', value: fmt(r.annualCharges) },
+              { label: 'Mensualité crédit', value: fmt(r.monthlyLoan) },
+              { label: 'Fiscalité annuelle', value: fmt(r.tax) },
+              { label: 'Investissement total', value: fmt(r.totalInvestment) },
+            ]}],
+            tips: r.analysis.tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="rental" name={`Locatif ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

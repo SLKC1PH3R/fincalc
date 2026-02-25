@@ -12,6 +12,7 @@ import { calcBudget, type BudgetInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function BudgetField({ label, value, onChange, step = 50 }: { label: string; value: number; onChange: (v: number) => void; placeholder?: string; step?: number }) {
   return (
@@ -70,14 +71,30 @@ function BudgetPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Budget 50 / 30 / 20</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Besoins · Envies · Épargne — Règle d'or des finances personnelles</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Budget 50/30/20',
+            subtitle: `Revenu net ${fmt(inputs.netIncome)}/mois`,
+            kpis: [
+              { label: 'Besoins', value: fmtPct(r.needsPct), sub: `${fmt(r.needs)}/mois · cible 50%` },
+              { label: 'Envies', value: fmtPct(r.wantsPct), sub: `${fmt(r.wants)}/mois · cible 30%` },
+              { label: 'Épargne', value: fmtPct(r.savingsPct), highlight: true, sub: `${fmt(r.savingsTotal)}/mois · cible 20%` },
+              { label: 'Solde non alloué', value: fmt(r.balance) },
+            ],
+            inputs: [
+              { label: 'Revenu net mensuel', value: fmt(inputs.netIncome) },
+              { label: 'Total besoins', value: fmt(r.needs) },
+              { label: 'Total envies', value: fmt(r.wants) },
+              { label: 'Total épargne', value: fmt(r.savingsTotal) },
+            ],
+            tips: r.analysis.tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="budget" name={`Budget ${fmt(inputs.netIncome)}/mois`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

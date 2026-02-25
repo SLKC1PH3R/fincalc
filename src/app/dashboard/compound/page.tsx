@@ -14,6 +14,7 @@ import { calcCompound, type CompoundInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -55,14 +56,30 @@ function CompoundPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Intérêts Composés</h1>
           <p className="text-sm text-muted-foreground mt-0.5">La 8ème merveille du monde — Albert Einstein</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Intérêts Composés',
+            subtitle: `Capital ${fmt(inputs.capital)} · ${fmt(inputs.monthly)}/mois · ${inputs.rate}% · ${inputs.years} ans`,
+            kpis: [
+              { label: 'Capital final', value: fmt(r.final), highlight: true },
+              { label: 'Capital investi', value: fmt(r.invested) },
+              { label: 'Intérêts générés', value: fmt(r.interest) },
+              { label: 'Multiplication', value: `×${r.multiplier.toFixed(1)}` },
+            ],
+            inputs: [
+              { label: 'Capital initial', value: fmt(inputs.capital) },
+              { label: 'Versement mensuel', value: fmt(inputs.monthly) },
+              { label: 'Taux annuel', value: `${inputs.rate}%` },
+              { label: 'Durée', value: `${inputs.years} ans` },
+              { label: 'Capitalisation', value: inputs.frequency === 12 ? 'Mensuelle' : inputs.frequency === 4 ? 'Trimestrielle' : 'Annuelle' },
+            ],
+            tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="compound" name={`Composés ${inputs.capital.toLocaleString('fr')}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

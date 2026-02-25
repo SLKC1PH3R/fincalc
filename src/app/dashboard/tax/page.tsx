@@ -14,6 +14,7 @@ import { calcTax, type TaxInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { printReport } from '@/lib/print'
 import { Separator } from '@/components/ui/separator'
 
 function Tip({ text }: { text: string }) {
@@ -79,7 +80,7 @@ function TaxPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
 
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -87,8 +88,26 @@ function TaxPageInner() {
           <h1 className="text-xl font-semibold tracking-tight">Impôts sur le Revenu</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Barème IR France 2024 — Abattement 10% inclus</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Impôts sur le Revenu',
+            subtitle: `Barème IR France 2024 · Revenu brut ${fmt(inputs.gross)}`,
+            kpis: [
+              { label: 'Net après tout', value: fmt(r.netIncome), highlight: true, sub: `${fmt(r.netIncome / 12)}/mois` },
+              { label: 'Impôt sur le revenu', value: fmt(r.ir), sub: `Taux moyen ${fmtPct(r.avgRate)}` },
+              { label: 'Cotisations sociales', value: fmt(r.cotisations), sub: `${inputs.csRate}% du brut` },
+              { label: 'Pression fiscale', value: fmtPct(r.effectivePressure), sub: `TMI : ${r.tmi}%` },
+            ],
+            inputs: [
+              { label: 'Revenu brut annuel', value: fmt(inputs.gross) },
+              { label: 'Parts fiscales', value: String(inputs.parts) },
+              { label: 'Cotisations sociales', value: `${inputs.csRate}%` },
+              { label: 'Revenu imposable', value: fmt(r.imposable) },
+              { label: 'Abattement', value: fmt(r.abattement) },
+              { label: 'TMI', value: `${r.tmi}%` },
+            ],
+            tips: r.analysis.tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="tax" name={`Impôts ${fmt(inputs.gross)}`} inputs={inputs as any} results={r as any} />

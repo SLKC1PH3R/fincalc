@@ -14,6 +14,7 @@ import { calcRetirement, type RetirementInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -50,14 +51,39 @@ function RetirementPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Simulateur Retraite</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Retraite de base · Complémentaire · PER · Épargne personnelle</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Retraite',
+            subtitle: `Retraite de base · Complémentaire · PER · Épargne personnelle`,
+            kpis: [
+              { label: 'Revenu retraite total', value: `${fmt(r.totalIncome)}/mois`, highlight: true, sub: `dont ${fmt(r.netMonthly)} retraite légale` },
+              { label: 'Taux de remplacement', value: fmtPct(r.replacementRate), sub: 'Cible : 75%+' },
+              { label: 'Années avant retraite', value: `${r.yearsToRetirement} ans`, sub: `Départ à ${inputs.retirementAge} ans` },
+              { label: 'Écart vs salaire net', value: `${fmt(r.gap)}/mois` },
+            ],
+            inputs: [
+              { label: 'Âge actuel', value: `${inputs.age} ans` },
+              { label: 'Âge de départ', value: `${inputs.retirementAge} ans` },
+              { label: 'Salaire brut annuel', value: fmt(inputs.salary) },
+              { label: 'Trimestres validés', value: String(inputs.quarters) },
+              { label: 'Versement PER annuel', value: fmt(inputs.perAnnual) },
+              { label: "Taux d'épargne perso", value: `${inputs.savingsRate}%` },
+            ],
+            sections: [{ title: 'Détail revenu retraite', items: [
+              { label: 'Retraite de base', value: `${fmt(r.baseMonthly)}/mois` },
+              { label: 'Retraite complémentaire', value: `${fmt(r.complementMonthly)}/mois` },
+              { label: 'Rente PER', value: `${fmt(r.perMonthly)}/mois` },
+              { label: 'Capital PER constitué', value: fmt(r.perCapital) },
+              { label: 'Épargne additionnelle', value: fmt(r.additionalSavings) },
+            ]}],
+            tips: r.analysis.tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="retirement" name={`Retraite ${inputs.retirementAge}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

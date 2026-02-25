@@ -13,6 +13,7 @@ import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -57,14 +58,34 @@ function FirePageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Calculateur FI/RE</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Financial Independence, Retire Early</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'FI/RE',
+            subtitle: 'Financial Independence, Retire Early',
+            kpis: [
+              { label: 'Patrimoine FIRE cible', value: fmt(r.target), highlight: true },
+              { label: 'Années avant FIRE', value: r.yearsToFire > 99 ? '+100 ans' : `${r.yearsToFire} ans` },
+              { label: "Taux d'épargne", value: fmtPct(r.savingsRate) },
+              { label: 'Progression', value: fmtPct(r.progressPct) },
+            ],
+            inputs: [
+              { label: 'Revenu net annuel', value: fmt(inputs.income) },
+              { label: 'Dépenses annuelles', value: fmt(inputs.expenses) },
+              { label: 'Patrimoine actuel', value: fmt(inputs.netWorth) },
+              { label: 'Rendement attendu', value: `${inputs.rate}%` },
+              { label: 'Taux de retrait', value: `${inputs.withdrawalRate}%` },
+            ],
+            sections: [{ title: 'Détail', items: [
+              { label: 'Épargne annuelle', value: fmt(r.annualSavings) },
+              { label: 'Revenu passif mensuel cible', value: fmt(r.monthlyPassive) },
+            ]}],
+            tips,
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

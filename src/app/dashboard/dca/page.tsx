@@ -13,6 +13,7 @@ import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, Info } from 'lucide-react'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -38,14 +39,40 @@ function DCAPageInner() {
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
-      <style>{`@media print { aside, nav, [data-noprint] { display: none !important; } main { margin-left: 0 !important; } }`}</style>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">DCA — Dollar Cost Averaging</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Investissement régulier vs achat unique — effet de la volatilité</p>
         </div>
-        <div className="flex gap-2" data-noprint>
-          <Button variant="outline" size="sm" onClick={() => window.print()} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'DCA — Investissement Régulier',
+            subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
+            kpis: [
+              { label: 'Valeur estimée', value: fmt(r.estimatedValue), highlight: true },
+              { label: 'Total investi', value: fmt(r.totalInvested) },
+              { label: 'Gain total', value: fmt(r.gain) },
+              { label: 'vs Achat unique', value: `${r.vsLumpSum >= 0 ? '+' : ''}${fmt(r.vsLumpSum)}` },
+            ],
+            inputs: [
+              { label: 'Versement mensuel', value: fmt(inputs.monthly) },
+              { label: 'Durée', value: `${inputs.years} ans` },
+              { label: 'Rendement annuel', value: `${inputs.targetRate}%` },
+              { label: 'Volatilité', value: `${inputs.volatility}%` },
+              { label: 'Prix initial unitaire', value: fmt(inputs.initialPrice) },
+            ],
+            sections: [{ title: 'Résultats détaillés', items: [
+              { label: 'Gain total', value: fmtPct(r.gainPct) },
+              { label: 'Prix moyen acquisition', value: fmt(r.avgCostBasis) },
+              { label: 'Unités accumulées', value: r.units.toFixed(2) },
+            ]}],
+            tips: [
+              'Le DCA lisse le prix moyen d\'achat en investissant régulièrement, réduisant l\'impact de la volatilité.',
+              'Sur le long terme, le DCA peut surperformer l\'achat unique en cas de forte volatilité.',
+              'La discipline est clé : évitez d\'interrompre vos versements lors des baisses de marché.',
+            ],
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>

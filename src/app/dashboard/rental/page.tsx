@@ -14,6 +14,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useTheme } from '@/contexts/ThemeContext'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -90,6 +91,7 @@ function CustomSankeyNode(props: {
   x?: number; y?: number; width?: number; height?: number
   payload?: { name: string; value: number }
 }) {
+  const { theme } = useTheme()
   const { x = 0, y = 0, width = 26, height = 0, payload } = props
   if (!payload || height < 1) return null
   const name = payload.name
@@ -98,11 +100,12 @@ function CustomSankeyNode(props: {
   const labelX = isLeft ? x - 12 : x + width + 12
   const anchor = isLeft ? 'end' : 'start'
   const midY = y + height / 2
+  const valueFill = theme === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)'
   return (
     <g>
       <rect x={x} y={y} width={width} height={height} fill={color} fillOpacity={0.90} rx={4} />
       <text x={labelX} y={midY - 8} textAnchor={anchor} fill={color} fontSize={12} fontWeight={700} dominantBaseline="middle">{name}</text>
-      <text x={labelX} y={midY + 8} textAnchor={anchor} fill="rgba(255,255,255,0.65)" fontSize={11} fontWeight={500} dominantBaseline="middle">{fmt(payload.value)}</text>
+      <text x={labelX} y={midY + 8} textAnchor={anchor} fill={valueFill} fontSize={11} fontWeight={500} dominantBaseline="middle">{fmt(payload.value)}</text>
     </g>
   )
 }
@@ -123,7 +126,7 @@ function CustomSankeyLink(props: {
 
 function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>; inputs: RentalInputs; label: string }) {
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--card-dark-border)' }}>
       {[
         { label: 'Loyers annuels bruts', value: fmt(r.annualRent), positive: true },
         { label: `Vacance locative (${inputs.vacancy}%)`, value: `− \u00a0${fmt(r.annualVacancyLoss)}`, negative: true },
@@ -137,19 +140,19 @@ function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>;
       ].map((row, i, arr) => (
         <div key={i} className="flex items-center justify-between px-4 py-3"
           style={{
-            borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+            borderBottom: i < arr.length - 1 ? '1px solid var(--section-border)' : 'none',
             background: row.cashflow
               ? (r.cashflowAnnual >= 0 ? 'rgba(52,211,153,0.05)' : 'rgba(239,68,68,0.05)')
-              : row.bold ? 'rgba(255,255,255,0.02)' : 'transparent',
-            borderTop: row.separator ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              : row.bold ? 'var(--row-hover)' : 'transparent',
+            borderTop: row.separator ? '1px solid var(--card-dark-border)' : 'none',
           }}>
-          <span style={{ fontSize: 13, color: row.bold ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.4)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
+          <span style={{ fontSize: 13, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
           <span style={{
             fontSize: 13, fontWeight: row.bold ? 700 : 500,
             fontVariantNumeric: 'tabular-nums',
             color: row.cashflow
               ? (r.cashflowAnnual >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)')
-              : row.negative ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.85)',
+              : row.negative ? 'var(--text-muted-c)' : 'var(--text-em)',
           }}>{row.value}</span>
         </div>
       ))}
@@ -169,7 +172,7 @@ function GlobalCashflowTable({ apartments, results }: { apartments: Apartment[];
   const totalCashflow = results.reduce((s, r) => s + r.cashflowAnnual, 0)
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--card-dark-border)' }}>
       {[
         { label: 'Loyers annuels bruts', value: fmt(totalAnnualRent), positive: true },
         { label: 'Vacance locative totale', value: `− \u00a0${fmt(totalVacancyLoss)}`, negative: true },
@@ -183,19 +186,19 @@ function GlobalCashflowTable({ apartments, results }: { apartments: Apartment[];
       ].map((row, i, arr) => (
         <div key={i} className="flex items-center justify-between px-4 py-3"
           style={{
-            borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+            borderBottom: i < arr.length - 1 ? '1px solid var(--section-border)' : 'none',
             background: row.cashflow
               ? (totalCashflow >= 0 ? 'rgba(52,211,153,0.05)' : 'rgba(239,68,68,0.05)')
-              : row.bold ? 'rgba(255,255,255,0.02)' : 'transparent',
-            borderTop: row.separator ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              : row.bold ? 'var(--row-hover)' : 'transparent',
+            borderTop: row.separator ? '1px solid var(--card-dark-border)' : 'none',
           }}>
-          <span style={{ fontSize: 13, color: row.bold ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.4)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
+          <span style={{ fontSize: 13, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
           <span style={{
             fontSize: 13, fontWeight: row.bold ? 700 : 500,
             fontVariantNumeric: 'tabular-nums',
             color: row.cashflow
               ? (totalCashflow >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)')
-              : row.negative ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.85)',
+              : row.negative ? 'var(--text-muted-c)' : 'var(--text-em)',
           }}>{row.value}</span>
         </div>
       ))}
@@ -373,13 +376,10 @@ function RentalPageInner() {
               <div key={apt.id} className="relative group">
                 <button
                   onClick={() => setActiveAptId(apt.id)}
-                  className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
-                    activeAptId === apt.id
-                      ? 'text-white'
-                      : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
-                  )}
-                  style={activeAptId === apt.id ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.2)' } : { border: '1px solid transparent' }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  style={activeAptId === apt.id
+                    ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                    : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                 >
                   {apt.name}
                 </button>
@@ -397,8 +397,8 @@ function RentalPageInner() {
             {apartments.length < 6 && (
               <button
                 onClick={addApartment}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs text-white/30 hover:text-white/60 hover:bg-white/[0.04] transition-all"
-                style={{ border: '1px dashed rgba(255,255,255,0.12)' }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-all"
+                style={{ border: '1px dashed hsl(var(--border))', color: 'var(--text-subtle)' }}
               >
                 <Plus className="h-3 w-3" />Ajouter
               </button>
@@ -520,8 +520,10 @@ function RentalPageInner() {
               <div className="flex items-center gap-1 flex-wrap justify-end flex-shrink-0">
                 <button
                   onClick={() => setResultTab('global')}
-                  className={cn('px-2.5 py-1 rounded-md text-xs font-medium transition-all', resultTab === 'global' ? 'text-white' : 'text-white/35 hover:text-white/60')}
-                  style={resultTab === 'global' ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)' } : { border: '1px solid transparent' }}
+                  className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
+                  style={resultTab === 'global'
+                    ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                    : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                 >
                   Global
                 </button>
@@ -529,8 +531,10 @@ function RentalPageInner() {
                   <button
                     key={apt.id}
                     onClick={() => setResultTab(apt.id)}
-                    className={cn('px-2.5 py-1 rounded-md text-xs font-medium transition-all', resultTab === apt.id ? 'text-white' : 'text-white/35 hover:text-white/60')}
-                    style={resultTab === apt.id ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)' } : { border: '1px solid transparent' }}
+                    className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
+                    style={resultTab === apt.id
+                      ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                      : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                   >
                     {apt.name}
                   </button>
@@ -552,8 +556,8 @@ function RentalPageInner() {
                 <Tooltip
                   formatter={(v: number) => [fmt(v), '']}
                   contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
-                  itemStyle={{ color: '#fff' }}
-                  labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                  itemStyle={{ color: 'var(--text-primary)' }}
+                  labelStyle={{ color: 'var(--text-muted-c)' }}
                 />
               </Sankey>
             </ResponsiveContainer>
@@ -567,17 +571,17 @@ function RentalPageInner() {
             {/* Per-apartment mini KPIs when in global view */}
             {resultTab === 'global' && apartments.length > 1 && (
               <div className="space-y-2">
-                <p className="text-[11px] font-semibold text-white/25 uppercase tracking-widest">Par appartement</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-subtle)' }}>Par appartement</p>
                 <div className="grid grid-cols-1 gap-2">
                   {apartments.map((apt, idx) => {
                     const r = results[idx]
                     return (
                       <div key={apt.id} className="flex items-center justify-between px-3 py-2 rounded-lg"
-                        style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                        <span className="text-xs font-medium text-white/60 truncate flex-1">{apt.name}</span>
+                        style={{ background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)' }}>
+                        <span className="text-xs font-medium truncate flex-1" style={{ color: 'var(--sb-text)' }}>{apt.name}</span>
                         <div className="flex items-center gap-4 flex-shrink-0">
-                          <span className="text-[11px] text-white/35">{fmtPct(r.grossYield)} brut</span>
-                          <span className="text-[11px] text-white/35">{fmtPct(r.netYield)} net</span>
+                          <span className="text-[11px]" style={{ color: 'var(--text-muted-c)' }}>{fmtPct(r.grossYield)} brut</span>
+                          <span className="text-[11px]" style={{ color: 'var(--text-muted-c)' }}>{fmtPct(r.netYield)} net</span>
                           <span className={cn('text-xs font-semibold tabular-nums', r.cashflowMonthly >= 0 ? 'text-emerald-finance' : 'text-crimson-finance')}>
                             {fmt(r.cashflowMonthly)}/mois
                           </span>

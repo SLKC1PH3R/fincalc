@@ -70,7 +70,7 @@ const ROADMAP = [
   { status: 'done', label: '9 calculateurs financiers', desc: 'Épargne, Immobilier, Fiscal, Budget' },
   { status: 'done', label: 'Historique des simulations', desc: 'Sauvegarde et restauration des scénarios' },
   { status: 'wip', label: 'Export PDF avec branding', desc: 'Téléchargez vos simulations en PDF premium' },
-  { status: 'wip', label: 'Mode sombre / clair', desc: 'Personnalisation de l\'interface' },
+  { status: 'done', label: 'Mode sombre / clair', desc: 'Personnalisation de l\'interface' },
   { status: 'planned', label: 'Application mobile native', desc: 'iOS & Android — accès où que vous soyez' },
   { status: 'planned', label: 'Comptes multi-utilisateurs', desc: 'Partagez vos simulations avec votre famille ou conseiller' },
   { status: 'planned', label: 'Partage de simulations', desc: 'Liens publics pour partager un scénario' },
@@ -78,6 +78,12 @@ const ROADMAP = [
   { status: 'planned', label: 'Tableau de bord personnalisable', desc: 'Widgets drag & drop selon vos priorités' },
   { status: 'planned', label: 'Nouveaux simulateurs', desc: 'Succession, donation, assurance-vie, SCPI' },
   { status: 'planned', label: 'Intégrations bancaires', desc: 'Import automatique de vos données via Open Banking' },
+]
+
+const ROADMAP_PHASES = [
+  { id: 'done' as const, label: 'Disponible', color: '#34d399', items: ROADMAP.filter(r => r.status === 'done') },
+  { id: 'wip' as const, label: 'En cours', color: GOLD, items: ROADMAP.filter(r => r.status === 'wip') },
+  { id: 'planned' as const, label: 'À venir', color: 'rgba(255,255,255,0.28)', items: ROADMAP.filter(r => r.status === 'planned') },
 ]
 
 // ─── Floating financial icons ─────────────────────────────────────────────
@@ -484,6 +490,7 @@ export function LandingClient() {
             Prenez le contrôle de votre{' '}
             <span style={{
               fontStyle: 'italic',
+              fontWeight: 700,
               background: `linear-gradient(135deg, ${GOLD} 0%, #e0965a 50%, ${GOLD} 100%)`,
               backgroundSize: '200% auto',
               WebkitBackgroundClip: 'text',
@@ -496,7 +503,7 @@ export function LandingClient() {
             , dès maintenant
           </h1>
 
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.42)', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 36px' }}>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 36px' }}>
             Simulez vos investissements, optimisez votre fiscalité et planifiez votre retraite avec des outils conçus pour le marché français.
           </p>
 
@@ -662,7 +669,7 @@ export function LandingClient() {
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
       <section id="roadmap" style={{ padding: '80px 20px 100px' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ marginBottom: 52 }}>
               <SectionTag><Globe style={{ width: 11, height: 11 }} /> Ce qui arrive</SectionTag>
@@ -675,35 +682,68 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
-            {[{ c: '#34d399', l: 'Disponible' }, { c: GOLD, l: 'En cours' }, { c: 'rgba(255,255,255,0.2)', l: 'Planifié' }].map(({ c, l }) => (
-              <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: c }} />
-                {l}
+          {/* Vertical timeline */}
+          <div style={{ position: 'relative' }}>
+            {/* Gradient line */}
+            <div style={{ position: 'absolute', left: 14, top: 28, bottom: 28, width: 1, background: 'linear-gradient(to bottom, #34d399 0%, #34d399 42%, rgba(241,192,134,0.55) 60%, rgba(255,255,255,0.08) 100%)', pointerEvents: 'none' }} />
+
+            {ROADMAP_PHASES.map((phase, pi) => (
+              <div key={phase.id} style={{ marginBottom: pi < ROADMAP_PHASES.length - 1 ? 40 : 0 }}>
+                {/* Phase header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%', flexShrink: 0, position: 'relative', zIndex: 1,
+                    background: phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(241,192,134,0.12)' : 'rgba(255,255,255,0.05)',
+                    border: `1.5px solid ${phase.id === 'done' ? 'rgba(52,211,153,0.4)' : phase.id === 'wip' ? 'rgba(241,192,134,0.3)' : 'rgba(255,255,255,0.15)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: phase.id === 'done' ? '0 0 14px rgba(52,211,153,0.3)' : phase.id === 'wip' ? '0 0 14px rgba(241,192,134,0.2)' : 'none',
+                  }}>
+                    {phase.id === 'done' && <Check style={{ width: 12, height: 12, color: '#34d399' }} />}
+                    {phase.id === 'wip' && <Clock style={{ width: 12, height: 12, color: GOLD }} />}
+                    {phase.id === 'planned' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.25)' }} />}
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: phase.color, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                    {phase.label}
+                  </span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 100, padding: '1px 9px' }}>
+                    {phase.items.length}
+                  </span>
+                </div>
+
+                {/* Items */}
+                <div style={{ paddingLeft: 44, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {phase.items.map((item, i) => (
+                    <RevealSection key={i} delay={pi * 80 + i * 35}>
+                      <div
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                          background: phase.id === 'done' ? 'rgba(52,211,153,0.05)' : phase.id === 'wip' ? 'rgba(241,192,134,0.06)' : 'rgba(255,255,255,0.02)',
+                          border: `1px solid ${phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(241,192,134,0.18)' : 'rgba(255,255,255,0.05)'}`,
+                          borderRadius: 12, padding: '13px 16px', transition: 'border-color 0.2s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = phase.id === 'done' ? 'rgba(52,211,153,0.32)' : phase.id === 'wip' ? 'rgba(241,192,134,0.4)' : 'rgba(255,255,255,0.12)' }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(241,192,134,0.18)' : 'rgba(255,255,255,0.05)' }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: phase.id === 'planned' ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.85)', marginBottom: 2, lineHeight: 1.3 }}>{item.label}</p>
+                          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.26)', lineHeight: 1.5 }}>{item.desc}</p>
+                        </div>
+                        {phase.id === 'done' && (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Check style={{ width: 10, height: 10, color: '#34d399' }} />
+                          </div>
+                        )}
+                        {phase.id === 'wip' && (
+                          <div style={{ fontSize: 9, fontWeight: 700, color: GOLD, background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.22)', padding: '2px 8px', borderRadius: 100, flexShrink: 0, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>
+                            EN COURS
+                          </div>
+                        )}
+                      </div>
+                    </RevealSection>
+                  ))}
+                </div>
               </div>
             ))}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 8, alignItems: 'stretch' }}>
-            {ROADMAP.map((item, i) => {
-              const color = item.status === 'done' ? '#34d399' : item.status === 'wip' ? GOLD : 'rgba(255,255,255,0.2)'
-              const bgColor = item.status === 'done' ? 'rgba(52,211,153,0.08)' : item.status === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.03)'
-              const borderColor = item.status === 'done' ? 'rgba(52,211,153,0.2)' : item.status === 'wip' ? GOLD_BORDER : 'rgba(255,255,255,0.06)'
-              return (
-                <RevealSection key={i} delay={i * 40} style={{ height: '100%' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 18px', background: bgColor, border: `1px solid ${borderColor}`, borderRadius: 12, height: '100%' }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 5 }} />
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: item.status === 'planned' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.85)', marginBottom: 2 }}>{item.label}</p>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', lineHeight: 1.5 }}>{item.desc}</p>
-                    </div>
-                    {item.status === 'done' && <Check style={{ width: 14, height: 14, color: '#34d399', marginLeft: 'auto', flexShrink: 0 }} />}
-                    {item.status === 'wip' && <div style={{ fontSize: 9, fontWeight: 700, color: GOLD, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, padding: '2px 6px', borderRadius: 4, marginLeft: 'auto', flexShrink: 0, whiteSpace: 'nowrap' }}>EN COURS</div>}
-                  </div>
-                </RevealSection>
-              )
-            })}
           </div>
         </div>
       </section>

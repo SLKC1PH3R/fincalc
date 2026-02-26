@@ -65,6 +65,12 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
   const { collapsed, toggle } = useSidebar()
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const toggleSection = (title: string) => setCollapsedSections(prev => {
+    const next = new Set(prev)
+    if (next.has(title)) next.delete(title); else next.add(title)
+    return next
+  })
 
   const loadSims = () => {
     fetch('/api/simulations')
@@ -153,32 +159,42 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
 
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
-          {/* Accueil — standalone */}
+          {/* Synthèse — standalone */}
           <div>
             <Link
               href="/dashboard"
-              title={collapsed ? 'Accueil' : undefined}
+              title={collapsed ? 'Synthèse' : undefined}
               className={cn(
                 'flex items-center gap-2.5 rounded-lg transition-all duration-150',
                 collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                pathname === '/dashboard' ? 'text-white' : 'text-white/35 hover:text-white/70 hover:bg-white/[0.04]'
+                pathname === '/dashboard' ? 'text-white' : 'text-white/65 hover:text-white hover:bg-white/[0.04]'
               )}
               style={pathname === '/dashboard' ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.15)' } : {}}
             >
               <BarChart3 className="h-3.5 w-3.5 flex-shrink-0 transition-colors"
                 style={pathname === '/dashboard' ? { color: '#f1c086' } : {}} />
-              {!collapsed && <span className="text-xs font-medium">Accueil</span>}
+              {!collapsed && <span className="text-xs font-medium">Synthèse</span>}
             </Link>
           </div>
 
-          {NAV_SECTIONS.map((section) => (
+          {NAV_SECTIONS.map((section) => {
+            const isSectionCollapsed = collapsedSections.has(section.title)
+            return (
             <div key={section.title}>
               {!collapsed && (
-                <p className="text-[10px] font-semibold text-white/20 uppercase tracking-widest px-2 mb-1">
-                  {section.title}
-                </p>
+                <button
+                  onClick={() => toggleSection(section.title)}
+                  className="flex items-center justify-between w-full px-2 mb-1.5 group"
+                >
+                  <span className="text-[11px] font-semibold text-white/55 uppercase tracking-widest group-hover:text-white/80 transition-colors">
+                    {section.title}
+                  </span>
+                  <ChevronDown className="h-3 w-3 text-white/30 group-hover:text-white/60 transition-all flex-shrink-0"
+                    style={{ transform: isSectionCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+                </button>
               )}
               {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'rgba(255,255,255,0.05)' }} />}
+              {(collapsed || !isSectionCollapsed) && (
               <div className="space-y-0.5">
                 {section.items.map((item) => {
                   const isActive = pathname === item.href
@@ -196,7 +212,7 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                           className={cn(
                             'flex items-center gap-2.5 rounded-lg transition-all duration-150 group flex-1 min-w-0',
                             collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                            isActive ? 'text-white' : 'text-white/35 hover:text-white/70 hover:bg-white/[0.04]'
+                            isActive ? 'text-white' : 'text-white/65 hover:text-white hover:bg-white/[0.04]'
                           )}
                           style={isActive ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.15)' } : {}}
                         >
@@ -281,19 +297,21 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                   )
                 })}
               </div>
+              )}
             </div>
-          ))}
+          )
+          })}
 
           {/* Admin */}
           {isAdmin && (
             <div>
-              {!collapsed && <p className="text-[10px] font-semibold text-white/20 uppercase tracking-widest px-2 mb-1">Admin</p>}
+              {!collapsed && <p className="text-[11px] font-semibold text-white/55 uppercase tracking-widest px-2 mb-1.5">Admin</p>}
               {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'rgba(255,255,255,0.05)' }} />}
               <Link href="/dashboard/admin" title={collapsed ? 'Administration' : undefined}
                 className={cn(
                   'flex items-center gap-2.5 rounded-lg transition-all duration-150',
                   collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                  pathname === '/dashboard/admin' ? 'text-white' : 'text-white/35 hover:text-white/70 hover:bg-white/[0.04]'
+                  pathname === '/dashboard/admin' ? 'text-white' : 'text-white/65 hover:text-white hover:bg-white/[0.04]'
                 )}
                 style={pathname === '/dashboard/admin' ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.15)' } : {}}>
                 <Shield className="h-3.5 w-3.5 flex-shrink-0"

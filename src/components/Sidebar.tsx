@@ -15,7 +15,6 @@ const NAV_SECTIONS = [
   {
     title: 'Épargne',
     items: [
-      { href: '/dashboard', label: 'Accueil', icon: BarChart3 },
       { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp },
       { href: '/dashboard/dca', label: 'DCA', icon: RefreshCw },
       { href: '/dashboard/fire', label: 'FI/RE', icon: Flame },
@@ -154,6 +153,24 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
 
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
+          {/* Accueil — standalone */}
+          <div>
+            <Link
+              href="/dashboard"
+              title={collapsed ? 'Accueil' : undefined}
+              className={cn(
+                'flex items-center gap-2.5 rounded-lg transition-all duration-150',
+                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
+                pathname === '/dashboard' ? 'text-white' : 'text-white/35 hover:text-white/70 hover:bg-white/[0.04]'
+              )}
+              style={pathname === '/dashboard' ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.15)' } : {}}
+            >
+              <BarChart3 className="h-3.5 w-3.5 flex-shrink-0 transition-colors"
+                style={pathname === '/dashboard' ? { color: '#f1c086' } : {}} />
+              {!collapsed && <span className="text-xs font-medium">Accueil</span>}
+            </Link>
+          </div>
+
           {NAV_SECTIONS.map((section) => (
             <div key={section.title}>
               {!collapsed && (

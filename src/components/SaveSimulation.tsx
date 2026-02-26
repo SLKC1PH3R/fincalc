@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { Save, Check, X } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Save, Check, X, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
@@ -15,9 +16,12 @@ interface SaveSimulationProps {
 export function SaveSimulation({ type, name, inputs, results }: SaveSimulationProps) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [updated, setUpdated] = useState(false)
   const [editing, setEditing] = useState(false)
   const [customName, setCustomName] = useState(name)
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+  const simId = searchParams.get('sim')
 
   const startSave = () => {
     setCustomName(name)
@@ -46,6 +50,27 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
     }
   }
 
+  const handleUpdate = async () => {
+    if (!simId) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/simulations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: simId, inputs, results }),
+      })
+      if (!res.ok) throw new Error()
+      setUpdated(true)
+      window.dispatchEvent(new CustomEvent('simulation-saved'))
+      toast({ variant: 'success', title: '✓ Simulation mise à jour', description: 'Les modifications ont été enregistrées.' })
+      setTimeout(() => setUpdated(false), 3000)
+    } catch {
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de mettre à jour.' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (editing) {
     return (
       <div className="flex items-center gap-1.5">
@@ -68,9 +93,17 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
   }
 
   return (
-    <Button onClick={startSave} disabled={saving || saved} variant="gold" size="sm" className="gap-2">
-      {saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
-      {saved ? 'Sauvegardé' : 'Sauvegarder'}
-    </Button>
+    <div className="flex items-center gap-1.5">
+      {simId && (
+        <Button onClick={handleUpdate} disabled={saving || updated} variant="outline" size="sm" className="gap-2">
+          {updated ? <Check className="h-3.5 w-3.5" /> : <RefreshCw className="h-3.5 w-3.5" />}
+          {updated ? 'Mis à jour' : 'Mettre à jour'}
+        </Button>
+      )}
+      <Button onClick={startSave} disabled={saving || saved} variant="gold" size="sm" className="gap-2">
+        {saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+        {saved ? 'Sauvegardé' : 'Sauvegarder'}
+      </Button>
+    </div>
   )
 }

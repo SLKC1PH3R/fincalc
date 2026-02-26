@@ -1,7 +1,7 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
+import { Sankey, Tooltip, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -37,6 +37,82 @@ const DEFAULT_INPUTS: RentalInputs = {
   taxeFonciere: 1200, insurance: 200, vacancy: 4, loanAmount: 160000,
   loanRate: 3.5, loanYears: 20, regime: 'nu', marginalRate: 30
 }
+
+// ── Sankey helpers ──────────────────────────────────────────────────────────
+const LOSS_SET = new Set(['Vacance', 'Charges', 'Taxe foncière', 'Assurance', 'Crédit', 'Impôts'])
+
+function buildSankeyData(
+  annualRent: number, vacancyLoss: number, annualCharges: number,
+  taxe: number, assurance: number, noi: number,
+  credit: number, impots: number, cashflow: number
+) {
+  const nodes: { name: string }[] = []
+  const links: { source: number; target: number; value: number }[] = []
+  const add = (name: string) => { nodes.push({ name }); return nodes.length - 1 }
+
+  const iLoyers   = add('Loyers')
+  const iEffort   = cashflow < 0 ? add('Effort mensuel') : -1
+  const iVacance  = vacancyLoss  > 10 ? add('Vacance')       : -1
+  const iCharges  = annualCharges > 10 ? add('Charges')       : -1
+  const iTaxe     = taxe          > 10 ? add('Taxe foncière') : -1
+  const iAssur    = assurance     > 10 ? add('Assurance')     : -1
+  const iNOI      = add('Rev. net op.')
+  const iCredit   = credit  > 10 ? add('Crédit')       : -1
+  const iImpots   = impots  > 10 ? add('Impôts')       : -1
+  const iCashflow = cashflow > 10 ? add('Cashflow net') : -1
+
+  if (iVacance >= 0) links.push({ source: iLoyers, target: iVacance, value: Math.round(vacancyLoss) })
+  if (iCharges >= 0) links.push({ source: iLoyers, target: iCharges, value: Math.round(annualCharges) })
+  if (iTaxe >= 0)    links.push({ source: iLoyers, target: iTaxe,    value: Math.round(taxe) })
+  if (iAssur >= 0)   links.push({ source: iLoyers, target: iAssur,   value: Math.round(assurance) })
+  links.push({ source: iLoyers, target: iNOI, value: Math.max(Math.round(noi), 1) })
+  if (iEffort >= 0)  links.push({ source: iEffort, target: iNOI,    value: Math.round(Math.abs(cashflow)) })
+  if (iCredit >= 0)  links.push({ source: iNOI,    target: iCredit, value: Math.round(credit) })
+  if (iImpots >= 0)  links.push({ source: iNOI,    target: iImpots, value: Math.round(impots) })
+  if (iCashflow >= 0) links.push({ source: iNOI,   target: iCashflow, value: Math.round(cashflow) })
+
+  return { nodes, links }
+}
+
+function CustomSankeyNode(props: {
+  x?: number; y?: number; width?: number; height?: number
+  payload?: { name: string; value: number }
+}) {
+  const { x = 0, y = 0, width = 8, height = 0, payload } = props
+  if (!payload || height < 1) return null
+  const name = payload.name
+  const isLoyers   = name === 'Loyers'
+  const isCashflow = name === 'Cashflow net'
+  const isEffort   = name === 'Effort mensuel'
+  const color = isLoyers || isCashflow ? '#34d399' : isEffort ? '#f59e0b' : LOSS_SET.has(name) ? '#f87171' : '#94a3b8'
+  const labelX = isLoyers ? x - 8 : x + width + 8
+  const anchor  = isLoyers ? 'end' : 'start'
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height={height} fill={color} fillOpacity={0.9} rx={2} />
+      <text x={labelX} y={y + height / 2 - 6} textAnchor={anchor} fill={color} fontSize={10} fontWeight={600} dominantBaseline="middle">{name}</text>
+      <text x={labelX} y={y + height / 2 + 7} textAnchor={anchor} fill="rgba(255,255,255,0.35)" fontSize={9} dominantBaseline="middle">{fmt(payload.value)}</text>
+    </g>
+  )
+}
+
+function CustomSankeyLink(props: {
+  sourceX?: number; sourceY?: number; sourceControlX?: number
+  targetX?: number; targetY?: number; targetControlX?: number
+  linkWidth?: number; payload?: { source: { name: string }; target: { name: string } }
+}) {
+  const { sourceX = 0, sourceY = 0, sourceControlX = 0, targetX = 0, targetY = 0, targetControlX = 0, linkWidth = 0, payload } = props
+  if (linkWidth < 1) return null
+  const tgt = payload?.target?.name ?? ''
+  const src = payload?.source?.name ?? ''
+  const color = LOSS_SET.has(tgt) ? 'rgba(248,113,113,0.22)'
+    : src === 'Effort mensuel'    ? 'rgba(245,158,11,0.25)'
+    : tgt === 'Cashflow net'      ? 'rgba(52,211,153,0.28)'
+    : 'rgba(148,163,184,0.18)'
+  const d = `M${sourceX},${sourceY + linkWidth / 2} C${sourceControlX},${sourceY + linkWidth / 2} ${targetControlX},${targetY + linkWidth / 2} ${targetX},${targetY + linkWidth / 2} L${targetX},${targetY - linkWidth / 2} C${targetControlX},${targetY - linkWidth / 2} ${sourceControlX},${sourceY - linkWidth / 2} ${sourceX},${sourceY - linkWidth / 2} Z`
+  return <path d={d} fill={color} strokeWidth={0} />
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>; inputs: RentalInputs; label: string }) {
   return (
@@ -183,26 +259,23 @@ function RentalPageInner() {
   const globalEquity = useMemo(() => results.reduce((s, r, i) => s + (r.totalInvestment - apartments[i].inputs.loanAmount), 0), [results, apartments])
   const globalROI = globalEquity > 0 ? (globalCashflowAnnual / globalEquity) * 100 : 0
 
-  // Bar data helper
-  const makeBarData = (r: ReturnType<typeof calcRental>, apt: Apartment) => [
-    { name: 'Loyers', value: Math.round(r.annualRent), fill: 'hsl(160 84% 39%)' },
-    { name: 'Charges', value: -Math.round(r.annualCharges), fill: 'hsl(0 72% 51%)' },
-    { name: 'Taxe fonc.', value: -Math.round(apt.inputs.taxeFonciere), fill: 'hsl(0 72% 51%)' },
-    { name: 'Assurance', value: -Math.round(apt.inputs.insurance), fill: 'hsl(0 72% 51%)' },
-    { name: 'Crédit', value: -Math.round(r.monthlyLoan * 12), fill: 'hsl(0 60% 40%)' },
-    { name: 'Impôts', value: -Math.round(r.tax), fill: 'hsl(38 92% 50%)' },
-    { name: 'Cashflow', value: Math.round(r.cashflowAnnual), fill: r.cashflowAnnual >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)' },
-  ]
+  // Sankey data helpers
+  const makeSankeyData = (r: ReturnType<typeof calcRental>, apt: Apartment) =>
+    buildSankeyData(r.annualRent, r.annualVacancyLoss, r.annualCharges,
+      apt.inputs.taxeFonciere, apt.inputs.insurance,
+      r.netOperatingIncome, r.monthlyLoan * 12, r.tax, r.cashflowAnnual)
 
-  const globalBarData = [
-    { name: 'Loyers', value: Math.round(globalAnnualRent), fill: 'hsl(160 84% 39%)' },
-    { name: 'Charges', value: -Math.round(results.reduce((s, r) => s + r.annualCharges, 0)), fill: 'hsl(0 72% 51%)' },
-    { name: 'Taxes', value: -Math.round(apartments.reduce((s, a) => s + a.inputs.taxeFonciere, 0)), fill: 'hsl(0 72% 51%)' },
-    { name: 'Assurances', value: -Math.round(apartments.reduce((s, a) => s + a.inputs.insurance, 0)), fill: 'hsl(0 72% 51%)' },
-    { name: 'Crédits', value: -Math.round(results.reduce((s, r) => s + r.monthlyLoan * 12, 0)), fill: 'hsl(0 60% 40%)' },
-    { name: 'Impôts', value: -Math.round(results.reduce((s, r) => s + r.tax, 0)), fill: 'hsl(38 92% 50%)' },
-    { name: 'Cashflow', value: Math.round(globalCashflowAnnual), fill: globalCashflowAnnual >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)' },
-  ]
+  const globalSankeyData = useMemo(() => buildSankeyData(
+    globalAnnualRent,
+    results.reduce((s, r) => s + r.annualVacancyLoss, 0),
+    results.reduce((s, r) => s + r.annualCharges, 0),
+    apartments.reduce((s, a) => s + a.inputs.taxeFonciere, 0),
+    apartments.reduce((s, a) => s + a.inputs.insurance, 0),
+    globalNOI,
+    results.reduce((s, r) => s + r.monthlyLoan * 12, 0),
+    results.reduce((s, r) => s + r.tax, 0),
+    globalCashflowAnnual
+  ), [results, apartments, globalAnnualRent, globalNOI, globalCashflowAnnual])
 
   // Global score
   const globalScore = globalCashflowMonthly > 200 ? 'excellent' : globalCashflowMonthly >= 0 ? 'bon' : globalCashflowMonthly >= -100 ? 'moyen' : 'negatif'
@@ -219,7 +292,7 @@ function RentalPageInner() {
   const activeTabApt = resultTab === 'global'
     ? null
     : apartments.find(a => a.id === resultTab)!
-  const activeTabBarData = activeTabResult && activeTabApt ? makeBarData(activeTabResult, activeTabApt) : globalBarData
+  const activeTabSankeyData = activeTabResult && activeTabApt ? makeSankeyData(activeTabResult, activeTabApt) : globalSankeyData
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
@@ -459,16 +532,23 @@ function RentalPageInner() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={activeTabBarData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} />
-                <YAxis tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v / 1000)}k`} />
-                <Tooltip formatter={(v: unknown) => [fmt(v as number), '']} contentStyle={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: 12, color: '#fff', backdropFilter: 'blur(8px)' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
-                <Bar dataKey="value" radius={[3, 3, 0, 0]}>
-                  {activeTabBarData.map((e, i) => <Cell key={i} fill={e.fill} />)}
-                </Bar>
-              </BarChart>
+            <ResponsiveContainer width="100%" height={280}>
+              <Sankey
+                data={activeTabSankeyData}
+                nodePadding={14}
+                nodeWidth={8}
+                margin={{ top: 8, right: 140, bottom: 8, left: 90 }}
+                iterations={32}
+                node={(props: Parameters<typeof CustomSankeyNode>[0]) => <CustomSankeyNode {...props} />}
+                link={(props: Parameters<typeof CustomSankeyLink>[0]) => <CustomSankeyLink {...props} />}
+              >
+                <Tooltip
+                  formatter={(v: number) => [fmt(v), '']}
+                  contentStyle={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: 12, color: '#fff' }}
+                  itemStyle={{ color: '#fff' }}
+                  labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                />
+              </Sankey>
             </ResponsiveContainer>
 
             {resultTab === 'global' ? (

@@ -37,6 +37,23 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(simulation, { status: 201 })
 }
 
+export async function PATCH(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const { id, inputs, results } = await req.json()
+  if (!id) return NextResponse.json({ error: 'ID manquant' }, { status: 400 })
+
+  const sim = await prisma.simulation.findFirst({ where: { id, userId: session.user.id } })
+  if (!sim) return NextResponse.json({ error: 'Introuvable' }, { status: 404 })
+
+  const updated = await prisma.simulation.update({
+    where: { id },
+    data: { ...(inputs && { inputs }), ...(results && { results }) },
+  })
+  return NextResponse.json(updated)
+}
+
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })

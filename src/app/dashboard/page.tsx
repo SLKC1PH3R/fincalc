@@ -128,19 +128,24 @@ export default function HomePage() {
           {/* Stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
-              { label: 'Simulations', value: totalSims, sub: 'total' },
-              { label: 'Cette semaine', value: thisWeek, sub: 'nouvelles' },
-              { label: 'Module favori', value: mostUsed?.name || '—', sub: mostUsed ? `${mostUsed.value} fois` : '' },
-              { label: 'Calculateurs', value: '9', sub: 'disponibles' },
-            ].map((s, i) => (
-              <div key={i} className="rounded-xl p-4" style={{ background: i === 3 ? `linear-gradient(135deg, ${GOLD}12, rgba(0,0,0,0))` : '#0f0f0f', border: `1px solid ${i === 3 ? GOLD_BORDER : 'rgba(255,255,255,0.06)'}` }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>{s.label}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: i === 3 ? GOLD : '#fff', letterSpacing: '-0.025em' }}>{s.value}</p>
-                  {s.sub && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{s.sub}</p>}
+              { label: 'Simulations', value: totalSims, sub: 'total', href: '/dashboard/history' },
+              { label: 'Cette semaine', value: thisWeek, sub: 'nouvelles', href: null },
+              { label: 'Module favori', value: mostUsed?.name || '—', sub: mostUsed ? `${mostUsed.value} fois` : '', href: null },
+              { label: 'Calculateurs', value: '9', sub: 'disponibles', href: null },
+            ].map((s, i) => {
+              const card = (
+                <div className="rounded-xl p-4" style={{ background: i === 3 ? `linear-gradient(135deg, ${GOLD}12, rgba(0,0,0,0))` : '#0f0f0f', border: `1px solid ${i === 3 ? GOLD_BORDER : 'rgba(255,255,255,0.06)'}`, transition: 'border-color 0.15s', cursor: s.href ? 'pointer' : 'default' }}>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>{s.label}</p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    <p style={{ fontSize: '1.5rem', fontWeight: 600, color: i === 3 ? GOLD : '#fff', letterSpacing: '-0.025em' }}>{s.value}</p>
+                    {s.sub && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{s.sub}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+              return s.href
+                ? <Link key={i} href={s.href} className="block hover:opacity-80 transition-opacity">{card}</Link>
+                : <div key={i}>{card}</div>
+            })}
           </div>
 
           {/* Charts — only if data */}

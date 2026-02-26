@@ -95,7 +95,7 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
   return (
     <div className="flex items-center gap-1.5">
       {simId && (
-        <Button onClick={handleUpdate} disabled={saving || updated} variant="outline" size="sm" className="gap-2">
+        <Button onClick={handleUpdate} disabled={saving || updated} size="sm" className="gap-2" style={{ background: 'rgb(22,163,74)', borderColor: 'transparent', color: '#fff' }}>
           {updated ? <Check className="h-3.5 w-3.5" /> : <RefreshCw className="h-3.5 w-3.5" />}
           {updated ? 'Mis à jour' : 'Mettre à jour'}
         </Button>

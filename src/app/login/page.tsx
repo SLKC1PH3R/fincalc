@@ -5,10 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import { TrendingUp, Loader2, Eye, EyeOff } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 const GOLD = '#f1c086'
 
@@ -30,20 +28,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default:            'Une erreur est survenue. Réessayez.',
 }
 
-/* ── Dashboard Preview — real screenshots ── */
 function DashboardPreview() {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Desktop screenshot */}
-      <div style={{
-        position: 'relative',
-        width: '82%',
-        borderRadius: 10,
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 32px 64px rgba(0,0,0,0.8)',
-      }}>
-        {/* Browser chrome bar */}
+      <div style={{ position: 'relative', width: '82%', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 32px 64px rgba(0,0,0,0.8)' }}>
         <div style={{ background: '#141414', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
@@ -52,45 +40,53 @@ function DashboardPreview() {
             <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>fire.digitalstack.cloud/dashboard</span>
           </div>
         </div>
-        <Image
-          src="/dashboard-desktop.png"
-          alt="Dashboard FinCalc"
-          width={1200}
-          height={750}
-          style={{ display: 'block', width: '100%', height: 'auto' }}
-          priority
-        />
+        <Image src="/dashboard-desktop.png" alt="Dashboard FinCalc" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
       </div>
-
-      {/* Mobile screenshot — overlapping bottom-left */}
-      <div style={{
-        position: 'absolute',
-        left: 0,
-        bottom: -20,
-        width: '26%',
-        borderRadius: 22,
-        overflow: 'hidden',
-        border: '2px solid rgba(255,255,255,0.12)',
-        boxShadow: '0 20px 48px rgba(0,0,0,0.9)',
-        background: '#000',
-      }}>
-        {/* Phone notch */}
+      <div style={{ position: 'absolute', left: 0, bottom: -20, width: '26%', borderRadius: 22, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 48px rgba(0,0,0,0.9)', background: '#000' }}>
         <div style={{ background: '#111', height: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: 40, height: 5, background: '#000', borderRadius: 3 }} />
         </div>
-        <Image
-          src="/dashboard-mobile.png"
-          alt="Dashboard mobile FinCalc"
-          width={390}
-          height={844}
-          style={{ display: 'block', width: '100%', height: 'auto' }}
-          priority
-        />
-        {/* Home indicator */}
+        <Image src="/dashboard-mobile.png" alt="Dashboard mobile FinCalc" width={390} height={844} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
         <div style={{ background: '#111', height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
         </div>
       </div>
+    </div>
+  )
+}
+
+/* ── Shared form pieces ── */
+function GoogleBtn({ onClick, disabled, loading, label }: { onClick: () => void; disabled: boolean; loading: boolean; label: string }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: '100%', height: 42, borderRadius: 8,
+        border: '1px solid rgba(255,255,255,0.12)',
+        background: hovered && !disabled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)',
+        color: 'rgba(255,255,255,0.85)', fontSize: 14, fontWeight: 500,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.6 : 1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        transition: 'background 0.15s',
+      }}
+    >
+      {loading ? <Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} /> : <GoogleIcon />}
+      {label}
+    </button>
+  )
+}
+
+function Divider() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>ou par email</span>
+      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
     </div>
   )
 }
@@ -112,7 +108,10 @@ function AuthForm() {
   const urlError = searchParams.get('error')
   const displayError = error || (urlError ? (ERROR_MESSAGES[urlError] || ERROR_MESSAGES.Default) : '')
 
+  const isRegister = mode === 'register'
+
   const switchMode = (next: 'login' | 'register') => {
+    if (next === mode) return
     setMode(next)
     setError('')
     setSuccess('')
@@ -160,12 +159,129 @@ function AuthForm() {
     }
   }
 
+  /* ── Card face shared styles ── */
+  const faceStyle: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    backfaceVisibility: 'hidden',
+    WebkitBackfaceVisibility: 'hidden',
+    borderRadius: 16,
+    background: 'linear-gradient(160deg, #111 0%, #0d0d0d 100%)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    padding: '28px 28px 24px',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+  }
+
+  /* ── Login face ── */
+  const loginFace = (
+    <div style={{ ...faceStyle, pointerEvents: isRegister ? 'none' : 'auto' }}>
+      <div style={{ marginBottom: 22 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.025em', marginBottom: 5 }}>Bienvenue</h1>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)' }}>Connectez-vous pour accéder à vos simulations</p>
+      </div>
+
+      <GoogleBtn onClick={handleGoogle} disabled={loadingGoogle || loading} loading={loadingGoogle} label="Continuer avec Google" />
+      <Divider />
+
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="login-email" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Email</Label>
+          <Input id="login-email" type="email" placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" tabIndex={isRegister ? -1 : 0} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="login-password" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Mot de passe</Label>
+          <div className="relative">
+            <Input id="login-password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required minLength={1} autoComplete="current-password" className="pr-9" tabIndex={isRegister ? -1 : 0} />
+            <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        {displayError && (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2">
+            <p className="text-xs text-destructive">{displayError}</p>
+          </div>
+        )}
+        {success && (
+          <div className="rounded-md bg-emerald-500/10 border border-emerald-500/20 px-3 py-2">
+            <p className="text-xs text-emerald-500">{success}</p>
+          </div>
+        )}
+
+        <Button type="submit" className="w-full mt-1" disabled={loading || loadingGoogle} tabIndex={isRegister ? -1 : 0} style={{ height: 42, background: GOLD, color: '#000', fontWeight: 600, border: 'none' }}>
+          {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          Se connecter
+        </Button>
+      </form>
+
+      <p style={{ textAlign: 'center', marginTop: 18, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+        Pas encore de compte ?{' '}
+        <button onClick={() => switchMode('register')} tabIndex={isRegister ? -1 : 0} style={{ color: GOLD, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+          S&apos;inscrire
+        </button>
+      </p>
+    </div>
+  )
+
+  /* ── Register face ── */
+  const registerFace = (
+    <div style={{ ...faceStyle, transform: 'rotateY(180deg)', pointerEvents: isRegister ? 'auto' : 'none' }}>
+      <div style={{ marginBottom: 20 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.025em', marginBottom: 5 }}>Créer un compte</h1>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)' }}>Gratuit, sans carte bancaire</p>
+      </div>
+
+      <GoogleBtn onClick={handleGoogle} disabled={loadingGoogle || loading} loading={loadingGoogle} label="S'inscrire avec Google" />
+      <Divider />
+
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-name" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Nom complet</Label>
+          <Input id="reg-name" type="text" placeholder="Jean Dupont" value={name} onChange={e => setName(e.target.value)} required minLength={2} autoComplete="name" tabIndex={isRegister ? 0 : -1} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-email" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Email</Label>
+          <Input id="reg-email" type="email" placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="new-email" tabIndex={isRegister ? 0 : -1} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="reg-password" style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Mot de passe</Label>
+          <div className="relative">
+            <Input id="reg-password" type={showPassword ? 'text' : 'password'} placeholder="Minimum 8 caractères" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" className="pr-9" tabIndex={isRegister ? 0 : -1} />
+            <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        {displayError && (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2">
+            <p className="text-xs text-destructive">{displayError}</p>
+          </div>
+        )}
+
+        <Button type="submit" className="w-full mt-1" disabled={loading || loadingGoogle} tabIndex={isRegister ? 0 : -1} style={{ height: 42, background: GOLD, color: '#000', fontWeight: 600, border: 'none' }}>
+          {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          Créer mon compte
+        </Button>
+      </form>
+
+      <p style={{ textAlign: 'center', marginTop: 18, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+        Déjà un compte ?{' '}
+        <button onClick={() => switchMode('login')} tabIndex={isRegister ? 0 : -1} style={{ color: GOLD, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+          Se connecter
+        </button>
+      </p>
+    </div>
+  )
+
   return (
     <div className="min-h-screen flex" style={{ background: '#080808' }}>
 
       {/* ── LEFT: Form ── */}
       <div className="flex flex-col w-full lg:w-1/2 flex-shrink-0 relative z-10" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-        {/* Subtle glow top-left */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 0%, ${GOLD}08, transparent 60%)` }} />
 
         <div className="relative flex flex-col flex-1 px-8 py-10 md:px-12">
@@ -178,109 +294,73 @@ function AuthForm() {
           </div>
 
           {/* Form area */}
-          <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
-            {/* Heading */}
-            <div className="mb-8">
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', letterSpacing: '-0.025em', marginBottom: 6 }}>
-                {mode === 'login' ? 'Bienvenue' : 'Créer un compte'}
-              </h1>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>
-                {mode === 'login' ? 'Connectez-vous pour accéder à vos simulations' : 'Gratuit, sans carte bancaire'}
-              </p>
-            </div>
+          <div className="flex-1 flex flex-col justify-center">
+            <div style={{ maxWidth: 380, margin: '0 auto', width: '100%' }}>
 
-            {/* Google */}
-            <button
-              onClick={handleGoogle}
-              disabled={loadingGoogle || loading}
-              className="w-full flex items-center justify-center gap-2.5 transition-all"
-              style={{ height: 42, borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.85)', fontSize: 14, fontWeight: 500, cursor: loadingGoogle || loading ? 'not-allowed' : 'pointer', opacity: loadingGoogle || loading ? 0.6 : 1 }}
-              onMouseEnter={e => { if (!loadingGoogle && !loading) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
-            >
-              {loadingGoogle ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon />}
-              {mode === 'login' ? 'Continuer avec Google' : 'S\'inscrire avec Google'}
-            </button>
-
-            <div className="flex items-center gap-3 my-5">
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>ou par email</span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3.5">
-              {mode === 'register' && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Nom complet</Label>
-                  <Input id="name" type="text" placeholder="Jean Dupont" value={name} onChange={e => setName(e.target.value)} required minLength={2} autoComplete="name" />
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <Label htmlFor="email" style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Email</Label>
-                <Input id="email" type="email" placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete={mode === 'login' ? 'email' : 'new-email'} />
+              {/* ── Tab toggle — the flip trigger ── */}
+              <div style={{
+                position: 'relative',
+                display: 'flex',
+                borderRadius: 10,
+                border: '1px solid rgba(255,255,255,0.08)',
+                padding: 3,
+                background: 'rgba(255,255,255,0.02)',
+                marginBottom: 20,
+              }}>
+                {/* Sliding pill */}
+                <div style={{
+                  position: 'absolute',
+                  top: 3,
+                  left: isRegister ? 'calc(50% + 1.5px)' : '3px',
+                  width: 'calc(50% - 4.5px)',
+                  bottom: 3,
+                  borderRadius: 7,
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  transition: 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  pointerEvents: 'none',
+                }} />
+                {(['login', 'register'] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => switchMode(m)}
+                    style={{
+                      flex: 1, padding: '9px 0', fontSize: 13, fontWeight: 600,
+                      color: mode === m ? '#fff' : 'rgba(255,255,255,0.3)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      borderRadius: 7, position: 'relative', zIndex: 1,
+                      transition: 'color 0.25s',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {m === 'login' ? 'Connexion' : 'Inscription'}
+                  </button>
+                ))}
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="password" style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Mot de passe</Label>
-                <div className="relative">
-                  <Input id="password" type={showPassword ? 'text' : 'password'} placeholder={mode === 'register' ? 'Minimum 8 caractères' : '••••••••'} value={password} onChange={e => setPassword(e.target.value)} required minLength={mode === 'register' ? 8 : 1} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} className="pr-9" />
-                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+              {/* ── 3D flip card ── */}
+              <div style={{ perspective: '1400px' }}>
+                <div style={{
+                  position: 'relative',
+                  transformStyle: 'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
+                  transition: 'transform 0.65s cubic-bezier(0.45, 0, 0.15, 1)',
+                  transform: isRegister ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                  minHeight: 480,
+                }}>
+                  {loginFace}
+                  {registerFace}
                 </div>
               </div>
 
-              {displayError && (
-                <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2">
-                  <p className="text-xs text-destructive">{displayError}</p>
-                </div>
-              )}
-              {success && (
-                <div className="rounded-md bg-emerald-500/10 border border-emerald-500/20 px-3 py-2">
-                  <p className="text-xs text-emerald-500">{success}</p>
-                </div>
-              )}
-
-              <Button type="submit" className="w-full mt-1" disabled={loading || loadingGoogle} style={{ height: 42, background: GOLD, color: '#000', fontWeight: 600, border: 'none' }}>
-                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                {mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
-              </Button>
-            </form>
-
-            {/* Switch */}
-            <p className="text-center mt-5" style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
-              {mode === 'login' ? (
-                <>Pas encore de compte ?{' '}
-                  <button onClick={() => switchMode('register')} style={{ color: GOLD, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-                    S'inscrire
-                  </button>
-                </>
-              ) : (
-                <>Déjà un compte ?{' '}
-                  <button onClick={() => switchMode('login')} style={{ color: GOLD, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-                    Se connecter
-                  </button>
-                </>
-              )}
-            </p>
-
-            {/* Tab toggle — subtle */}
-            <div className="flex mt-6 rounded-lg overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
-              {(['login', 'register'] as const).map((m) => (
-                <button key={m} onClick={() => switchMode(m)} className="flex-1 py-2 transition-all"
-                  style={{ fontSize: 12, fontWeight: 500, background: mode === m ? 'rgba(255,255,255,0.05)' : 'transparent', color: mode === m ? '#fff' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer' }}>
-                  {m === 'login' ? 'Connexion' : 'Inscription'}
-                </button>
-              ))}
             </div>
           </div>
 
           {/* Footer */}
           <div className="mt-auto pt-8 flex items-center gap-4" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             {['CGU', 'Confidentialité', 'Mentions légales'].map((t, i) => (
-              <a key={i} href={`/${t === 'CGU' ? 'cgu' : t === 'Confidentialité' ? 'politique-confidentialite' : 'mentions-legales'}`}
+              <a key={i}
+                href={`/${t === 'CGU' ? 'cgu' : t === 'Confidentialité' ? 'politique-confidentialite' : 'mentions-legales'}`}
                 style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textDecoration: 'none' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
@@ -293,19 +373,13 @@ function AuthForm() {
 
       {/* ── RIGHT: Dashboard Preview ── */}
       <div className="hidden lg:flex flex-1 flex-col relative overflow-hidden" style={{ background: '#050505' }}>
-        {/* Gold glow top-right */}
         <div className="absolute pointer-events-none" style={{ top: '-15%', right: '-15%', width: '70%', height: '70%', background: `radial-gradient(ellipse, ${GOLD}0a, transparent 65%)` }} />
-        {/* Bottom gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '25%', background: 'linear-gradient(to top, #050505, transparent)' }} />
-
-        {/* Centered preview */}
         <div className="flex-1 flex items-center justify-center px-8 py-12" style={{ minHeight: 0 }}>
           <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <DashboardPreview />
           </div>
         </div>
-
-        {/* Security bottom */}
         <div className="relative px-12 pb-12">
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600, marginBottom: 14 }}>
             Sécurité &amp; confidentialité

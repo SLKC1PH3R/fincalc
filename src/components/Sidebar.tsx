@@ -5,7 +5,7 @@ import { signOut } from 'next-auth/react'
 import { useEffect, useState, Suspense } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
-  Wallet, PiggyBank, RefreshCw, Calculator, Percent,
+  Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -72,6 +72,13 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setSims(data) })
       .catch(() => {})
+  }
+
+  const deleteSim = async (id: string) => {
+    setSims(prev => prev.filter(s => s.id !== id))
+    try {
+      await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' })
+    } catch {}
   }
 
   useEffect(() => {
@@ -210,23 +217,36 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                           {itemSims.slice(0, 6).map(sim => {
                             const isActiveSim = activeSimId === sim.id
                             return (
-                              <Link
+                              <div
                                 key={sim.id}
-                                href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                className="flex items-center gap-1.5 truncate py-1.5 px-2 rounded-md transition-colors"
-                                style={{
-                                  fontSize: 11,
-                                  textDecoration: 'none',
-                                  color: isActiveSim ? '#f1c086' : 'rgba(255,255,255,0.3)',
-                                  background: isActiveSim ? 'rgba(241,192,134,0.08)' : 'transparent',
-                                  fontWeight: isActiveSim ? 600 : 400,
-                                }}
-                                onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
-                                onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+                                className="group flex items-center rounded-md transition-colors"
+                                style={{ background: isActiveSim ? 'rgba(241,192,134,0.08)' : 'transparent' }}
+                                onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
+                                onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                               >
-                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
-                                <span className="truncate">{sim.name}</span>
-                              </Link>
+                                <Link
+                                  href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                  className="flex items-center gap-1.5 py-1.5 px-2 flex-1 min-w-0 overflow-hidden"
+                                  style={{
+                                    fontSize: 11,
+                                    textDecoration: 'none',
+                                    color: isActiveSim ? '#f1c086' : 'rgba(255,255,255,0.3)',
+                                    fontWeight: isActiveSim ? 600 : 400,
+                                  }}
+                                  onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+                                  onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'rgba(255,255,255,0.3)' }}
+                                >
+                                  {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                                  <span className="truncate">{sim.name}</span>
+                                </Link>
+                                <button
+                                  onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                                  className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center text-white/20 hover:text-red-400 transition-all flex-shrink-0 mr-1"
+                                  title="Supprimer"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </div>
                             )
                           })}
                           {itemSims.length > 6 && (

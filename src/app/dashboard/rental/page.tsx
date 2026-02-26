@@ -39,7 +39,19 @@ const DEFAULT_INPUTS: RentalInputs = {
 }
 
 // ── Sankey helpers ──────────────────────────────────────────────────────────
-const LOSS_SET = new Set(['Vacance', 'Charges', 'Taxe foncière', 'Assurance', 'Crédit', 'Impôts'])
+const NODE_COLORS: Record<string, string> = {
+  'Loyers':         '#818cf8',
+  'Effort mensuel': '#fb923c',
+  'Vacance':        '#f472b6',
+  'Charges':        '#c084fc',
+  'Taxe foncière':  '#60a5fa',
+  'Assurance':      '#2dd4bf',
+  'Rev. net op.':   '#fdba74',
+  'Crédit':         '#f87171',
+  'Impôts':         '#e879f9',
+  'Cashflow net':   '#34d399',
+}
+const LEFT_NODES = new Set(['Loyers', 'Effort mensuel'])
 
 function buildSankeyData(
   annualRent: number, vacancyLoss: number, annualCharges: number,
@@ -78,20 +90,19 @@ function CustomSankeyNode(props: {
   x?: number; y?: number; width?: number; height?: number
   payload?: { name: string; value: number }
 }) {
-  const { x = 0, y = 0, width = 8, height = 0, payload } = props
+  const { x = 0, y = 0, width = 26, height = 0, payload } = props
   if (!payload || height < 1) return null
   const name = payload.name
-  const isLoyers   = name === 'Loyers'
-  const isCashflow = name === 'Cashflow net'
-  const isEffort   = name === 'Effort mensuel'
-  const color = isLoyers || isCashflow ? '#34d399' : isEffort ? '#f59e0b' : LOSS_SET.has(name) ? '#f87171' : '#94a3b8'
-  const labelX = isLoyers ? x - 8 : x + width + 8
-  const anchor  = isLoyers ? 'end' : 'start'
+  const color = NODE_COLORS[name] ?? '#94a3b8'
+  const isLeft = LEFT_NODES.has(name)
+  const labelX = isLeft ? x - 12 : x + width + 12
+  const anchor = isLeft ? 'end' : 'start'
+  const midY = y + height / 2
   return (
     <g>
-      <rect x={x} y={y} width={width} height={height} fill={color} fillOpacity={0.9} rx={2} />
-      <text x={labelX} y={y + height / 2 - 6} textAnchor={anchor} fill={color} fontSize={10} fontWeight={600} dominantBaseline="middle">{name}</text>
-      <text x={labelX} y={y + height / 2 + 7} textAnchor={anchor} fill="rgba(255,255,255,0.35)" fontSize={9} dominantBaseline="middle">{fmt(payload.value)}</text>
+      <rect x={x} y={y} width={width} height={height} fill={color} fillOpacity={0.90} rx={4} />
+      <text x={labelX} y={midY - 8} textAnchor={anchor} fill={color} fontSize={12} fontWeight={700} dominantBaseline="middle">{name}</text>
+      <text x={labelX} y={midY + 8} textAnchor={anchor} fill="rgba(255,255,255,0.65)" fontSize={11} fontWeight={500} dominantBaseline="middle">{fmt(payload.value)}</text>
     </g>
   )
 }
@@ -103,14 +114,10 @@ function CustomSankeyLink(props: {
 }) {
   const { sourceX = 0, sourceY = 0, sourceControlX = 0, targetX = 0, targetY = 0, targetControlX = 0, linkWidth = 0, payload } = props
   if (linkWidth < 1) return null
-  const tgt = payload?.target?.name ?? ''
-  const src = payload?.source?.name ?? ''
-  const color = LOSS_SET.has(tgt) ? 'rgba(248,113,113,0.22)'
-    : src === 'Effort mensuel'    ? 'rgba(245,158,11,0.25)'
-    : tgt === 'Cashflow net'      ? 'rgba(52,211,153,0.28)'
-    : 'rgba(148,163,184,0.18)'
+  const srcName = payload?.source?.name ?? ''
+  const color = NODE_COLORS[srcName] ?? '#94a3b8'
   const d = `M${sourceX},${sourceY + linkWidth / 2} C${sourceControlX},${sourceY + linkWidth / 2} ${targetControlX},${targetY + linkWidth / 2} ${targetX},${targetY + linkWidth / 2} L${targetX},${targetY - linkWidth / 2} C${targetControlX},${targetY - linkWidth / 2} ${sourceControlX},${sourceY - linkWidth / 2} ${sourceX},${sourceY - linkWidth / 2} Z`
-  return <path d={d} fill={color} strokeWidth={0} />
+  return <path d={d} fill={color} fillOpacity={0.32} strokeWidth={0} />
 }
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -532,13 +539,13 @@ function RentalPageInner() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={400}>
               <Sankey
                 data={activeTabSankeyData}
-                nodePadding={14}
-                nodeWidth={8}
-                margin={{ top: 8, right: 140, bottom: 8, left: 90 }}
-                iterations={32}
+                nodePadding={20}
+                nodeWidth={26}
+                margin={{ top: 16, right: 160, bottom: 16, left: 120 }}
+                iterations={64}
                 node={(props: Parameters<typeof CustomSankeyNode>[0]) => <CustomSankeyNode {...props} />}
                 link={(props: Parameters<typeof CustomSankeyLink>[0]) => <CustomSankeyLink {...props} />}
               >

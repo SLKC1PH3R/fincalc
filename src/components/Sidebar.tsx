@@ -5,7 +5,7 @@ import { signOut } from 'next-auth/react'
 import { useEffect, useState, Suspense } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
-  Wallet, PiggyBank, RefreshCw, Calculator,
+  Wallet, PiggyBank, RefreshCw, Calculator, Percent,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -39,6 +39,7 @@ const NAV_SECTIONS = [
   {
     title: 'Budget',
     items: [
+      { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent },
       { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator },
     ]
   },

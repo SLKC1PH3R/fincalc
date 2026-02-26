@@ -122,8 +122,10 @@ export function printReport(config: PrintConfig) {
       display: flex; justify-content: space-between; color: #bbb; font-size: 11px;
     }
     @media print {
-      body { padding: 20px 28px; }
-      @page { margin: 12mm 15mm; size: A4; }
+      body { padding: 0; }
+      @page { margin: 14mm 16mm; size: A4 portrait; }
+      .section { page-break-inside: avoid; }
+      .kpis { page-break-inside: avoid; }
     }
   </style>
 </head>
@@ -155,19 +157,14 @@ export function printReport(config: PrintConfig) {
     <span>fire.digitalstack.cloud</span>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     window.onload = function() {
       setTimeout(function() {
-        var el = document.body;
-        html2pdf().set({
-          margin: [10, 15, 10, 15],
-          filename: document.title.replace('FinCalc — ', '') + '.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(el).save().then(function() { window.close(); });
-      }, 400);
+        window.print();
+      }, 300);
+    };
+    window.onafterprint = function() {
+      window.close();
     };
   </script>
 </body>

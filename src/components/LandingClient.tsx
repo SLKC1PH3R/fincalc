@@ -66,24 +66,47 @@ const HOW = [
 ]
 
 const ROADMAP = [
+  // ── Disponible ──────────────────────────────────────────────────────────
   { status: 'done', label: 'Connexion Google OAuth', desc: 'Authentification sécurisée via Google' },
   { status: 'done', label: '9 calculateurs financiers', desc: 'Épargne, Immobilier, Fiscal, Budget' },
   { status: 'done', label: 'Historique des simulations', desc: 'Sauvegarde et restauration des scénarios' },
-  { status: 'wip', label: 'Export PDF avec branding', desc: 'Téléchargez vos simulations en PDF premium' },
   { status: 'done', label: 'Mode sombre / clair', desc: 'Personnalisation de l\'interface' },
+  // ── En cours ────────────────────────────────────────────────────────────
+  { status: 'wip', label: 'Export PDF avec branding', desc: 'Téléchargez vos simulations en PDF premium' },
+  { status: 'wip', label: 'PEA', desc: 'Enveloppe fiscale, plafond 150 000 €, exonération IR après 5 ans, comparaison CTO vs PEA sur la durée' },
+  { status: 'wip', label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP — taux actuels, plafonds, comparaison et manque à gagner vs investissement' },
+  { status: 'wip', label: 'Impact des frais', desc: 'ETF à 0,2 % vs fonds actif à 2 % sur 20 ans — la différence spectaculaire en chiffres' },
+  { status: 'wip', label: 'Inflation & pouvoir d\'achat', desc: 'Valeur réelle de votre capital dans le temps, rendement minimum pour ne pas perdre en réel' },
+  { status: 'wip', label: 'Remboursement de dettes', desc: 'Avalanche vs boule de neige — comparaison du coût total selon la stratégie' },
+  { status: 'wip', label: 'Plus-value immobilière', desc: 'Abattements par durée de détention (22 ans IR, 30 ans PS), calcul avant vente' },
+  { status: 'wip', label: 'SCPI', desc: 'Rendement brut/net, fiscalité foncière, comparaison achat direct, liquidité' },
+  { status: 'wip', label: 'Déficit foncier', desc: 'Calcul de l\'économie d\'impôt pour les propriétaires réalisant des travaux' },
+  { status: 'wip', label: 'Viager', desc: 'Bouquet et rente selon l\'espérance de vie — intérêt pour acheteur et vendeur' },
+  { status: 'wip', label: 'Flat Tax vs Barème IR', desc: 'Dividendes, plus-values, intérêts — selon votre TMI, l\'un ou l\'autre est plus avantageux' },
+  { status: 'wip', label: 'Auto-entrepreneur / Freelance', desc: 'CA → revenu net après charges sociales, CFE et IR' },
+  { status: 'wip', label: 'IFI', desc: 'Impôt sur la Fortune Immobilière — seuil 1,3 M€, calcul de la base taxable' },
+  { status: 'wip', label: 'Succession & Donation', desc: 'Abattements par lien de parenté (100 k€ parent/enfant), DMTG, optimisation tous les 15 ans' },
+  { status: 'wip', label: 'Stock-options / BSPCE / AGA', desc: 'Fiscalité des plans d\'actionnariat salarié, de plus en plus répandu en startup' },
+  { status: 'wip', label: 'Épargne d\'urgence', desc: 'Combien garder en liquidités selon ses charges fixes, stabilité de l\'emploi et situation familiale' },
+  { status: 'wip', label: 'Coût réel d\'un crédit conso', desc: 'TAEG, coût total, et ce que le même argent placé aurait rapporté' },
+  // ── À venir ─────────────────────────────────────────────────────────────
+  { status: 'planned', label: 'Comparateur de scénarios', desc: '2 ou 3 simulations côte à côte sur un même graphique — la killer feature qui manque à tous les outils gratuits' },
+  { status: 'planned', label: 'Calculatrice rapide (sidebar)', desc: 'Mini-calc toujours accessible sans quitter la page en cours' },
+  { status: 'planned', label: 'Mode "reverse"', desc: '"J\'ai besoin de Y€ à la retraite, combien dois-je épargner par mois ?" — logique inversée très intuitive' },
+  { status: 'planned', label: 'Tableau patrimonial', desc: 'Synthèse de tous vos actifs (immobilier, PEA, AV, livrets, crypto…) avec répartition globale' },
+  { status: 'planned', label: 'Alertes paramétrables', desc: '"Notifie-moi si le Livret A change", rappels d\'objectifs, emails automatiques' },
+  { status: 'planned', label: 'Rapport mensuel par email', desc: 'Résumé de vos simulations et évolution de vos objectifs chaque mois' },
+  { status: 'planned', label: 'Mode présentation', desc: 'Vue épurée pour montrer une simulation à son conseiller CGP ou banquier' },
+  { status: 'planned', label: 'Glossaire financier contextuel', desc: 'Tooltip sur TMI, TAEG, rendement brut… directement dans les calculateurs' },
+  { status: 'planned', label: 'Articles & guides', desc: '"Comprendre le FI/RE", "PEA vs CTO : lequel choisir ?" — contenu pédagogique et SEO' },
   { status: 'planned', label: 'Application mobile native', desc: 'iOS & Android — accès où que vous soyez' },
-  { status: 'planned', label: 'Comptes multi-utilisateurs', desc: 'Partagez vos simulations avec votre famille ou conseiller' },
-  { status: 'planned', label: 'Partage de simulations', desc: 'Liens publics pour partager un scénario' },
-  { status: 'planned', label: 'Alertes & objectifs', desc: 'Notifications quand vous atteignez vos jalons' },
-  { status: 'planned', label: 'Tableau de bord personnalisable', desc: 'Widgets drag & drop selon vos priorités' },
-  { status: 'planned', label: 'Nouveaux simulateurs', desc: 'Succession, donation, assurance-vie, SCPI' },
   { status: 'planned', label: 'Intégrations bancaires', desc: 'Import automatique de vos données via Open Banking' },
 ]
 
 const ROADMAP_PHASES = [
-  { id: 'done' as const, label: 'Disponible', color: '#34d399', items: ROADMAP.filter(r => r.status === 'done') },
-  { id: 'wip' as const, label: 'En cours', color: GOLD, items: ROADMAP.filter(r => r.status === 'wip') },
-  { id: 'planned' as const, label: 'À venir', color: 'rgba(255,255,255,0.28)', items: ROADMAP.filter(r => r.status === 'planned') },
+  { id: 'done' as const, label: 'Disponible', period: 'Q1 2026', color: '#34d399', items: ROADMAP.filter(r => r.status === 'done') },
+  { id: 'wip' as const, label: 'En cours', period: 'Q2 2026', color: GOLD, items: ROADMAP.filter(r => r.status === 'wip') },
+  { id: 'planned' as const, label: 'À venir', period: 'Q4 2026 – 2027', color: 'rgba(255,255,255,0.28)', items: ROADMAP.filter(r => r.status === 'planned') },
 ]
 
 // ─── Floating financial icons ─────────────────────────────────────────────
@@ -702,12 +725,17 @@ export function LandingClient() {
                     {phase.id === 'wip' && <Clock style={{ width: 12, height: 12, color: GOLD }} />}
                     {phase.id === 'planned' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.25)' }} />}
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: phase.color, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                    {phase.label}
-                  </span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 100, padding: '1px 9px' }}>
-                    {phase.items.length}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: phase.color, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                      {phase.label}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 100, padding: '1px 9px' }}>
+                      {phase.items.length}
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: phase.id === 'done' ? 'rgba(52,211,153,0.55)' : phase.id === 'wip' ? `${GOLD}88` : 'rgba(255,255,255,0.18)', letterSpacing: '0.02em' }}>
+                      {phase.period}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Items */}

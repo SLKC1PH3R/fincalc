@@ -13,6 +13,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 
 function BudgetField({ label, value, onChange, step = 50 }: { label: string; value: number; onChange: (v: number) => void; placeholder?: string; step?: number }) {
   return (
@@ -35,6 +36,7 @@ function BudgetField({ label, value, onChange, step = 50 }: { label: string; val
 }
 
 function BudgetPageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<BudgetInputs>({
     netIncome: 3500,
     housing: 900, food: 400, transport: 200, health: 50, utilities: 100, otherNeeds: 100,
@@ -58,8 +60,8 @@ function BudgetPageInner() {
   }[r.analysis.score]
 
   const pieData = [
-    { name: 'Besoins', value: Math.round(r.needs), fill: 'hsl(0 0% 70%)' },
-    { name: 'Envies', value: Math.round(r.wants), fill: 'hsl(0 0% 45%)' },
+    { name: 'Besoins', value: Math.round(r.needs), fill: chart.fill1 },
+    { name: 'Envies', value: Math.round(r.wants), fill: chart.fill2 },
     { name: 'Épargne', value: Math.round(r.savingsTotal), fill: 'hsl(160 84% 39%)' },
     ...(r.balance > 0 ? [{ name: 'Non alloué', value: Math.round(r.balance), fill: 'hsl(38 92% 50%)' }] : []),
   ]
@@ -233,7 +235,7 @@ function BudgetPageInner() {
                   <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={2}>
                     {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
                   </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
+                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
                 </PieChart>
               </ResponsiveContainer>
 

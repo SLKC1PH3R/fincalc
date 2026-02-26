@@ -551,7 +551,7 @@ function RentalPageInner() {
               >
                 <Tooltip
                   formatter={(v: number) => [fmt(v), '']}
-                  contentStyle={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', fontSize: 12, color: '#fff' }}
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
                   itemStyle={{ color: '#fff' }}
                   labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
                 />

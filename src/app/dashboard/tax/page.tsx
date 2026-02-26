@@ -15,6 +15,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 import { Separator } from '@/components/ui/separator'
 
 function Tip({ text }: { text: string }) {
@@ -57,6 +58,7 @@ const SCORE = {
 }
 
 function TaxPageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<TaxInputs>({
     gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false
   })
@@ -259,7 +261,7 @@ function TaxPageInner() {
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" paddingAngle={2}>
                   {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
                 </Pie>
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
               </PieChart>
             </ResponsiveContainer>
             <div className="space-y-2 mt-2">

@@ -14,6 +14,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, Info } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -27,6 +28,7 @@ function Tip({ text }: { text: string }) {
 }
 
 function DCAPageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const searchParams = useSearchParams()
@@ -156,14 +158,14 @@ function DCAPageInner() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/12)}a`} />
-                <YAxis tick={{ fontSize: 10, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${Math.round(v/12)}a`} />
+                <YAxis tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
                 <Tooltip formatter={(v: any, name: string) => [name === 'price' ? `${v}€` : fmt(v), name === 'value' ? 'Valeur' : name === 'invested' ? 'Investi' : 'Prix']}
-                  contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
+                  contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke="hsl(0 0% 98%)" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="invested" name="Capital investi" stroke="hsl(0 0% 45%)" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke={chart.lineMain} strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

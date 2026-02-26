@@ -15,6 +15,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -28,6 +29,7 @@ function Tip({ text }: { text: string }) {
 }
 
 function MortgagePageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<MortgageInputs>({ amount: 240000, rate: 3.5, years: 20, insurance: 80, fees: 5000 })
   const set = (k: keyof MortgageInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
 
@@ -158,12 +160,12 @@ function MortgagePageInner() {
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${v}a`} />
-                <YAxis tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
-                <Area type="monotone" dataKey="capitalRepaid" name="Remboursé" stroke="hsl(0 0% 98%)" fill="hsl(0 0% 98%)" fillOpacity={0.1} strokeWidth={1.5} />
-                <Area type="monotone" dataKey="remaining" name="Restant dû" stroke="hsl(0 0% 50%)" fill="hsl(0 0% 50%)" fillOpacity={0.05} strokeWidth={1.5} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
+                <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${Math.round(v/1000)}k`} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                <Area type="monotone" dataKey="capitalRepaid" name="Remboursé" stroke={chart.lineMain} fill={chart.lineMain} fillOpacity={0.1} strokeWidth={1.5} />
+                <Area type="monotone" dataKey="remaining" name="Restant dû" stroke={chart.lineDim} fill={chart.lineDim} fillOpacity={0.05} strokeWidth={1.5} />
               </AreaChart>
             </ResponsiveContainer>
 

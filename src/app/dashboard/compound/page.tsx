@@ -15,6 +15,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -28,6 +29,7 @@ function Tip({ text }: { text: string }) {
 }
 
 function CompoundPageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
   const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
 
@@ -154,12 +156,12 @@ function CompoundPageInner() {
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 14.9%)" />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => `${v}a`} />
-                <YAxis tick={{ fontSize: 11, fill: 'hsl(0 0% 63.9%)' }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: 12, color: '#fff' }} itemStyle={{ color: '#fff' }} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
-                <Line type="monotone" dataKey="total" name="Capital total" stroke="hsl(0 0% 98%)" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="invested" name="Investi" stroke="hsl(0 0% 40%)" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
+                <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                <Line type="monotone" dataKey="total" name="Capital total" stroke={chart.lineMain} strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="invested" name="Investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

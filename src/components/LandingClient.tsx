@@ -685,14 +685,14 @@ export function LandingClient() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 8 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: 8, alignItems: 'stretch' }}>
             {ROADMAP.map((item, i) => {
               const color = item.status === 'done' ? '#34d399' : item.status === 'wip' ? GOLD : 'rgba(255,255,255,0.2)'
               const bgColor = item.status === 'done' ? 'rgba(52,211,153,0.08)' : item.status === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.03)'
               const borderColor = item.status === 'done' ? 'rgba(52,211,153,0.2)' : item.status === 'wip' ? GOLD_BORDER : 'rgba(255,255,255,0.06)'
               return (
-                <RevealSection key={i} delay={i * 40}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 18px', background: bgColor, border: `1px solid ${borderColor}`, borderRadius: 12 }}>
+                <RevealSection key={i} delay={i * 40} style={{ height: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 18px', background: bgColor, border: `1px solid ${borderColor}`, borderRadius: 12, height: '100%' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 5 }} />
                     <div>
                       <p style={{ fontSize: 13, fontWeight: 600, color: item.status === 'planned' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.85)', marginBottom: 2 }}>{item.label}</p>

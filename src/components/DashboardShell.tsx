@@ -14,10 +14,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       collapsed ? 'md:ml-14 ml-0' : 'md:ml-56 ml-0'
     )}>
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0 border-b border-white/[0.05]"
-        style={{ background: '#0a0a0a' }}>
+      <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0 border-b"
+        style={{ background: 'var(--sb-bg)', borderBottomColor: 'var(--sb-border)' }}>
         <div className="flex items-center gap-3">
-          <button onClick={toggle} className="text-white/40 hover:text-white transition-colors">
+          <button onClick={toggle} style={{ color: 'var(--sb-text-dim)' }} className="transition-colors">
             <PanelLeftOpen className="h-5 w-5" />
           </button>
           <Link href="/dashboard" className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)' }}>
               <TrendingUp className="h-3 w-3" style={{ color: '#f1c086' }} />
             </div>
-            <span className="font-bold text-white" style={{ fontSize: 14, letterSpacing: '-0.02em' }}>FinCalc</span>
+            <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>FinCalc</span>
           </Link>
         </div>
       </div>

@@ -266,7 +266,9 @@ export default function PatrimoinePage() {
                         </Pie>
                         <Tooltip
                           formatter={(v: number) => [fmtCompact(v), '']}
-                          contentStyle={{ background: chartTheme.tooltip.background, border: `1px solid ${chartTheme.tooltip.border}`, borderRadius: 8, fontSize: 12 }}
+                          contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
+                          itemStyle={chartTheme.itemStyle}
+                          labelStyle={chartTheme.labelStyle}
                         />
                       </PieChart>
                     </ResponsiveContainer>

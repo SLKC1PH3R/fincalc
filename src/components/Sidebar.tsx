@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState, Suspense } from 'react'
 import type { ComponentType, CSSProperties } from 'react'
@@ -31,6 +31,15 @@ const ENVELOPE_COLORS: Record<EnvelopeType, string> = {
   LIVRET: '#34d399', IMMOBILIER: '#f472b6', PEA: '#818cf8',
   AV: '#fb923c', CTO: '#38bdf8', CRYPTO: '#f59e0b', PER: '#a78bfa', CASH: '#94a3b8',
 }
+const ENVELOPE_LABELS: Record<EnvelopeType, string> = {
+  LIVRET: 'Livret', IMMOBILIER: 'Immobilier', PEA: 'PEA',
+  AV: 'Ass. Vie', CTO: 'CTO', CRYPTO: 'Crypto', PER: 'PER', CASH: 'Trésorerie',
+}
+const ENVELOPE_DEFAULT_NAMES: Record<EnvelopeType, string> = {
+  LIVRET: 'Mon Livret', IMMOBILIER: 'Mon Immobilier', PEA: 'Mon PEA',
+  AV: 'Mon AV', CTO: 'Mon CTO', CRYPTO: 'Mon Crypto', PER: 'Mon PER', CASH: 'Ma Trésorerie',
+}
+const ENVELOPE_TYPES: EnvelopeType[] = ['LIVRET', 'PEA', 'AV', 'CTO', 'CRYPTO', 'PER', 'IMMOBILIER', 'CASH']
 
 // ── Sections statiques (hors Patrimoine) ─────────────────────────────────────
 const NAV_SECTIONS = [
@@ -91,6 +100,9 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [patrimoineCollapsed, setPatrimoineCollapsed] = useState(false)
+  const [addMenuOpen, setAddMenuOpen] = useState(false)
+  const [addingType, setAddingType] = useState<EnvelopeType | null>(null)
+  const router = useRouter()
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
     const next = new Set(prev)
@@ -110,6 +122,27 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setEnvelopes(data) })
       .catch(() => {})
+  }
+
+  const handleAddEnvelope = async (type: EnvelopeType) => {
+    if (addingType) return
+    setAddingType(type)
+    try {
+      const res = await fetch('/api/patrimoine/envelopes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, name: ENVELOPE_DEFAULT_NAMES[type] }),
+      })
+      if (!res.ok) throw new Error()
+      const created = await res.json()
+      window.dispatchEvent(new Event('patrimoine-updated'))
+      setAddMenuOpen(false)
+      router.push(`/dashboard/patrimoine/${created.id}`)
+    } catch {
+      // silently fail
+    } finally {
+      setAddingType(null)
+    }
   }
 
   const deleteSim = async (id: string) => {
@@ -310,22 +343,46 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                   </Link>
                 )}
 
-                {/* Bouton Ajouter */}
+                {/* Bouton Ajouter — sous-menu */}
                 {!collapsed && (
-                  <Link
-                    href="/dashboard/patrimoine"
-                    className="sb-link flex items-center gap-2 rounded-lg px-2.5 py-1.5"
-                    style={{ color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.color = 'var(--sb-text)'
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.color = 'var(--sb-text-dim)'
-                    }}
-                  >
-                    <Plus className="h-3 w-3 flex-shrink-0" />
-                    <span className="text-xs">Ajouter une enveloppe</span>
-                  </Link>
+                  <div>
+                    <button
+                      onClick={() => setAddMenuOpen(v => !v)}
+                      className="sb-link flex items-center gap-2 rounded-lg px-2.5 py-1.5 w-full"
+                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <Plus className="h-3 w-3 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)' }} />
+                      <span className="text-xs flex-1">Ajouter une enveloppe</span>
+                      <ChevronDown className="h-3 w-3 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                    </button>
+                    {addMenuOpen && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, padding: '4px 4px 4px 8px' }}>
+                        {ENVELOPE_TYPES.map(type => {
+                          const Icon = ENVELOPE_ICONS[type]
+                          const color = ENVELOPE_COLORS[type]
+                          const isLoading = addingType === type
+                          return (
+                            <button
+                              key={type}
+                              onClick={() => handleAddEnvelope(type)}
+                              disabled={!!addingType}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 5,
+                                padding: '5px 7px', borderRadius: 6, border: 'none',
+                                background: color + '14', cursor: addingType ? 'wait' : 'pointer',
+                                opacity: addingType && !isLoading ? 0.5 : 1,
+                              }}
+                            >
+                              <Icon className="h-2.5 w-2.5 flex-shrink-0" style={{ color }} />
+                              <span style={{ fontSize: 11, color: 'var(--sb-text)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                {isLoading ? '…' : ENVELOPE_LABELS[type]}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

@@ -766,8 +766,23 @@ function PeaCtoCryptoSection({
   const [showAddPos, setShowAddPos] = useState(false)
   const [newPos, setNewPos] = useState({ assetType: 'ETF' as AssetType, symbol: '', name: '', quantity: '', pru: '', isin: '' })
   const [addingPos, setAddingPos] = useState(false)
+  const [etfMatch, setEtfMatch] = useState<ETFInfo | null>(null)
 
   const pf = (k: keyof typeof newPos) => (e: React.ChangeEvent<HTMLInputElement>) => setNewPos(p => ({ ...p, [k]: e.target.value }))
+
+  const handleSymbolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    const found = newPos.assetType === 'ETF' ? lookupByTicker(val) : null
+    setEtfMatch(found)
+    setNewPos(p => ({ ...p, symbol: val, ...(found ? { isin: p.isin || found.isin, name: p.name || found.name } : {}) }))
+  }
+
+  const handleIsinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    const found = newPos.assetType === 'ETF' ? lookupByIsin(val) : null
+    setEtfMatch(found)
+    setNewPos(p => ({ ...p, isin: val, ...(found ? { symbol: p.symbol || found.ticker, name: p.name || found.name } : {}) }))
+  }
 
   const perf = totalInvested > 0 ? ((totalMarketValue - totalInvested) / totalInvested) * 100 : 0
   const perfAbs = totalMarketValue - totalInvested
@@ -798,6 +813,7 @@ function PeaCtoCryptoSection({
       const res = await fetch('/api/portfolio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) throw new Error()
       setNewPos({ assetType: 'ETF', symbol: '', name: '', quantity: '', pru: '', isin: '' })
+      setEtfMatch(null)
       setShowAddPos(false)
       onReload()
     } catch { toast({ title: 'Erreur ajout position', variant: 'destructive' }) }
@@ -929,14 +945,24 @@ function PeaCtoCryptoSection({
                 </div>
                 <div>
                   <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Symbole</Label>
-                  <Input value={newPos.symbol} onChange={pf('symbol')} placeholder={isCrypto ? 'BTC' : 'CW8.PA'} style={{ width: 100 }} />
+                  <Input value={newPos.symbol} onChange={handleSymbolChange} placeholder={isCrypto ? 'BTC' : 'CW8.PA'} style={{ width: 100 }} />
                 </div>
                 <div>
-                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>ISIN (optionnel)</Label>
-                  <Input value={newPos.isin} onChange={pf('isin')} placeholder="FR0011…" style={{ width: 140 }} />
+                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
+                    ISIN
+                    {etfMatch && (
+                      <span style={{ marginLeft: 6, fontSize: 10, color: '#34d399', fontWeight: 600 }}>✓ reconnu</span>
+                    )}
+                  </Label>
+                  <Input value={newPos.isin} onChange={handleIsinChange} placeholder="FR0011…" style={{ width: 140 }} />
                 </div>
                 <div>
-                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Nom</Label>
+                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
+                    Nom
+                    {etfMatch && (
+                      <span style={{ marginLeft: 6, fontSize: 10, color: '#34d399', fontWeight: 600 }}>{etfMatch.ter * 100}% TER</span>
+                    )}
+                  </Label>
                   <Input value={newPos.name} onChange={pf('name')} placeholder="Amundi MSCI World" style={{ width: 180 }} />
                 </div>
                 <div>
@@ -1267,7 +1293,7 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Section AV
-// ─────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────��────────────────────────────────────
 function AVSection({ envelope, onSave }: { envelope: Envelope; onSave: (m: Record<string, unknown>) => Promise<void> }) {
   const meta = envelope.metadata
   const isSetup = Object.keys(meta).length > 0

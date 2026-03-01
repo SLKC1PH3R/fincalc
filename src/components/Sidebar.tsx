@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState, Suspense } from 'react'
-import type { ComponentType } from 'react'
+import type { ComponentType, CSSProperties } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
@@ -23,7 +23,7 @@ interface PatrimoineEnvelope {
   name: string
 }
 
-const ENVELOPE_ICONS: Record<EnvelopeType, ComponentType<{ className?: string }>> = {
+const ENVELOPE_ICONS: Record<EnvelopeType, ComponentType<{ className?: string; style?: CSSProperties }>> = {
   LIVRET: PiggyBank, IMMOBILIER: Building2, PEA: TrendingUp,
   AV: Shield, CTO: TrendingUp, CRYPTO: Bitcoin, PER: Landmark, CASH: Wallet,
 }

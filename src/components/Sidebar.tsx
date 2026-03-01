@@ -15,6 +15,12 @@ import { useTheme } from '@/contexts/ThemeContext'
 
 const NAV_SECTIONS = [
   {
+    title: 'Patrimoine',
+    items: [
+      { href: '/dashboard/portfolio', label: 'Mon Portefeuille', icon: PieChart },
+    ]
+  },
+  {
     title: 'Épargne',
     items: [
       { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp },
@@ -42,12 +48,6 @@ const NAV_SECTIONS = [
     items: [
       { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent },
       { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator },
-    ]
-  },
-  {
-    title: 'Patrimoine',
-    items: [
-      { href: '/dashboard/portfolio', label: 'Mon Portefeuille', icon: PieChart },
     ]
   },
   {

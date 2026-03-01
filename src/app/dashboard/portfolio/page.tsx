@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useState, useEffect, useMemo, useCallback } from 'react'
+import { Suspense, useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -10,8 +10,8 @@ import { useToast } from '@/components/ui/use-toast'
 import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
-  RefreshCw, Plus, Pencil, Trash2, TrendingUp, TrendingDown,
-  X, Check, Layers, ArrowRight, Flame, Calculator,
+  RefreshCw, Plus, Pencil, Trash2, TrendingUp,
+  X, Check, Layers, ArrowRight, Flame, Calculator, Settings2,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -50,9 +50,9 @@ const ASSET_LABELS: Record<AssetType, string> = {
 const ASSET_EXAMPLES: Record<AssetType, string> = {
   STOCK: 'ex: AAPL, AIR.PA, MSFT',
   ETF: 'ex: CW8.PA, IWDA.AS, SPY',
-  CRYPTO: 'ex: BTC, ETH, SOL',
-  SCPI: 'ex: Corum Origin, Primopierre',
-  LIVRET: 'ex: Livret A, LDDS, LEP',
+  CRYPTO: 'BTC, ETH, SOL...',
+  SCPI: 'ex: Corum Origin',
+  LIVRET: '',
   CASH: 'ex: Compte courant BNP',
 }
 
@@ -61,10 +61,43 @@ const ASSET_COLORS: Record<AssetType, string> = {
   SCPI: '#f472b6', LIVRET: '#34d399', CASH: '#94a3b8',
 }
 
-const PIE_COLORS = ['#8b96fc', '#38bdf8', '#fb923c', '#f472b6', '#34d399', '#94a3b8']
-
-// Tickers crypto qui nécessitent l'API CoinGecko (pas Finnhub)
 const MANUAL_ASSET_TYPES: AssetType[] = ['SCPI', 'LIVRET', 'CASH']
+
+// Livrets français prédéfinis { symbol, name, rate (indicatif) }
+const LIVRETS_PREDEFINIS = [
+  { symbol: 'LIVRET_A', name: 'Livret A', rate: 2.4 },
+  { symbol: 'LDDS', name: 'LDDS', rate: 2.4 },
+  { symbol: 'LEP', name: 'LEP (Livret d\'Épargne Populaire)', rate: 3.5 },
+  { symbol: 'LIVRET_JEUNE', name: 'Livret Jeune', rate: 4.0 },
+  { symbol: 'PEL', name: 'PEL (Plan Épargne Logement)', rate: 2.25 },
+  { symbol: 'CEL', name: 'CEL (Compte Épargne Logement)', rate: 1.5 },
+  { symbol: 'LIVRET_B', name: 'Livret B (épargne bancaire)', rate: 0.5 },
+  { symbol: 'AUTRE_LIVRET', name: 'Autre livret', rate: 0 },
+]
+
+// Mapping ticker → nom pour la crypto autocomplete
+const CRYPTO_LIST = [
+  { symbol: 'BTC', name: 'Bitcoin' }, { symbol: 'ETH', name: 'Ethereum' },
+  { symbol: 'SOL', name: 'Solana' }, { symbol: 'BNB', name: 'BNB' },
+  { symbol: 'XRP', name: 'Ripple' }, { symbol: 'ADA', name: 'Cardano' },
+  { symbol: 'AVAX', name: 'Avalanche' }, { symbol: 'DOT', name: 'Polkadot' },
+  { symbol: 'MATIC', name: 'Polygon' }, { symbol: 'LINK', name: 'Chainlink' },
+  { symbol: 'UNI', name: 'Uniswap' }, { symbol: 'LTC', name: 'Litecoin' },
+  { symbol: 'DOGE', name: 'Dogecoin' }, { symbol: 'SHIB', name: 'Shiba Inu' },
+  { symbol: 'ATOM', name: 'Cosmos' },
+]
+
+const LS_KEY = 'portfolio_hidden_indices'
+
+function getHiddenIndices(): Set<string> {
+  try {
+    const v = localStorage.getItem(LS_KEY)
+    return v ? new Set<string>(JSON.parse(v) as string[]) : new Set<string>()
+  } catch { return new Set<string>() }
+}
+function saveHiddenIndices(hidden: Set<string>) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify([...hidden])) } catch {}
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function fmtCompact(n: number): string {
@@ -78,14 +111,13 @@ function fmtPct(n: number, sign = true): string {
   return `${s}${n.toFixed(2)} %`
 }
 
-// ── Composant : badge type d'actif ──────────────────────────────────────────
+// ── Badge type d'actif ───────────────────────────────────────────────────────
 function AssetBadge({ type }: { type: AssetType }) {
   return (
     <span style={{
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
       padding: '2px 7px', borderRadius: 100,
-      background: ASSET_COLORS[type] + '18',
-      color: ASSET_COLORS[type],
+      background: ASSET_COLORS[type] + '18', color: ASSET_COLORS[type],
       border: `1px solid ${ASSET_COLORS[type]}35`,
     }}>
       {ASSET_LABELS[type]}
@@ -93,21 +125,203 @@ function AssetBadge({ type }: { type: AssetType }) {
   )
 }
 
-// ── Composant : variation avec flèche ────────────────────────────────────────
-function Change({ value, pct, size = 'sm' }: { value: number; pct: number; size?: 'sm' | 'md' }) {
-  const pos = value >= 0
+// ── Widget mini-indice ───────────────────────────────────────────────────────
+function IndexChip({ label, price, changePct, isRate }: IndexData) {
+  const pos = changePct >= 0
   const color = pos ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)'
-  const Icon = pos ? TrendingUp : TrendingDown
-  const fs = size === 'md' ? 14 : 12
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, color, fontSize: fs, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-      <Icon style={{ width: fs - 1, height: fs - 1 }} />
-      {pos ? '+' : ''}{fmt(value)} ({fmtPct(pct)})
-    </span>
+    <div style={{
+      padding: '12px 14px', borderRadius: 12,
+      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+      display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 110,
+    }}>
+      <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+        {price == null ? '—' : isRate ? `${price} %` : fmtCompact(price)}
+      </span>
+      {!isRate && (
+        <span style={{ fontSize: 11, color, fontWeight: 600 }}>
+          {pos ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)} %
+        </span>
+      )}
+    </div>
   )
 }
 
-// ── Dialog : Ajouter / Modifier une position ─────────────────────────────────
+// ── Modal Gérer les indices ──────────────────────────────────────────────────
+function GererIndicesModal({
+  open, onClose, indices, hiddenSymbols, onToggle,
+}: {
+  open: boolean
+  onClose: () => void
+  indices: IndexData[]
+  hiddenSymbols: Set<string>
+  onToggle: (symbol: string) => void
+}) {
+  if (!open) return null
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 300,
+      background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+    }} onClick={onClose}>
+      <div style={{
+        background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+        borderRadius: 20, padding: 24, width: '100%', maxWidth: 380,
+        boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+      }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Indices affichés</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+            <X style={{ width: 16, height: 16, color: 'var(--text-muted-c)' }} />
+          </button>
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 16 }}>
+          Cochez les indices à afficher dans le widget Marchés.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {indices.map(idx => {
+            const visible = !hiddenSymbols.has(idx.symbol)
+            return (
+              <button key={idx.symbol} onClick={() => onToggle(idx.symbol)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px',
+                  borderRadius: 10, border: '1px solid var(--card-dark-border)',
+                  background: visible ? 'rgba(241,192,134,0.06)' : 'transparent',
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                  borderColor: visible ? 'rgba(241,192,134,0.3)' : 'var(--card-dark-border)',
+                }}>
+                <div style={{
+                  width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                  background: visible ? '#f1c086' : 'transparent',
+                  border: `2px solid ${visible ? '#f1c086' : 'var(--text-subtle)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {visible && <Check style={{ width: 11, height: 11, color: '#000' }} />}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{idx.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{idx.symbol}</div>
+                </div>
+                {idx.price != null && (
+                  <div style={{ fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
+                    {idx.isRate ? `${idx.price} %` : fmtCompact(idx.price)}
+                  </div>
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <Button onClick={onClose} style={{ width: '100%', marginTop: 16, background: '#f1c086', color: '#000', border: 'none' }}>
+          Fermer
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ── Autocomplete symbol (STOCK/ETF) ─────────────────────────────────────────
+function SymbolAutocomplete({
+  value, onChange, onSelect, assetType,
+}: {
+  value: string
+  onChange: (v: string) => void
+  onSelect: (symbol: string, name: string) => void
+  assetType: AssetType
+}) {
+  const [results, setResults] = useState<{ symbol: string; name: string; type?: string }[]>([])
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (!value || value.length < 1) { setResults([]); setOpen(false); return }
+
+    if (assetType === 'CRYPTO') {
+      const q = value.toUpperCase()
+      const matches = CRYPTO_LIST.filter(c => c.symbol.startsWith(q) || c.name.toUpperCase().includes(q))
+      setResults(matches)
+      setOpen(matches.length > 0)
+      return
+    }
+
+    if (assetType === 'STOCK' || assetType === 'ETF') {
+      setLoading(true)
+      debounceRef.current = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/portfolio/search?q=${encodeURIComponent(value)}`)
+          if (res.ok) {
+            const data = await res.json()
+            setResults(data)
+            setOpen(data.length > 0)
+          }
+        } catch {}
+        setLoading(false)
+      }, 350)
+    }
+  }, [value, assetType])
+
+  // Fermer si clic dehors
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [])
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      <div style={{ position: 'relative' }}>
+        <Input
+          placeholder={ASSET_EXAMPLES[assetType]}
+          value={value}
+          onChange={e => { onChange(e.target.value); if (!e.target.value) setOpen(false) }}
+          onFocus={() => results.length > 0 && setOpen(true)}
+          autoComplete="off"
+        />
+        {loading && (
+          <RefreshCw style={{ width: 12, height: 12, position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-subtle)', animation: 'spin 1s linear infinite' }} />
+        )}
+      </div>
+      {open && results.length > 0 && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 600,
+          background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+          borderRadius: 10, marginTop: 4, overflow: 'hidden',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        }}>
+          {results.map((r, i) => (
+            <button key={i}
+              onMouseDown={e => { e.preventDefault(); onSelect(r.symbol, r.name); setOpen(false) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                padding: '9px 12px', background: 'none', border: 'none', cursor: 'pointer',
+                textAlign: 'left', transition: 'background 0.1s',
+                borderBottom: i < results.length - 1 ? '1px solid var(--section-border)' : 'none',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums', minWidth: 52 }}>
+                {r.symbol}
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {r.name}
+              </span>
+              {r.type && (
+                <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-subtle)', flexShrink: 0 }}>{r.type}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Dialog Ajouter / Modifier ────────────────────────────────────────────────
 function PositionDialog({
   open, onClose, onSaved, editPosition,
 }: {
@@ -144,6 +358,13 @@ function PositionDialog({
 
   const set = (k: string) => (v: string) => setForm(p => ({ ...p, [k]: v }))
   const isManual = MANUAL_ASSET_TYPES.includes(form.assetType)
+  const isLivret = form.assetType === 'LIVRET'
+  const isCryptoOrStock = form.assetType === 'STOCK' || form.assetType === 'ETF' || form.assetType === 'CRYPTO'
+
+  const handleLivretSelect = (symbol: string) => {
+    const livret = LIVRETS_PREDEFINIS.find(l => l.symbol === symbol)
+    if (livret) setForm(p => ({ ...p, symbol: livret.symbol, name: livret.name }))
+  }
 
   const handleSubmit = async () => {
     if (!form.symbol || !form.name || !form.quantity || !form.pru) {
@@ -165,7 +386,7 @@ function PositionDialog({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             assetType: form.assetType,
-            symbol: form.assetType === 'CRYPTO' ? form.symbol.toUpperCase() : form.symbol,
+            symbol: isCryptoOrStock ? form.symbol.toUpperCase() : form.symbol,
             name: form.name,
             quantity: +form.quantity,
             pru: +form.pru,
@@ -207,11 +428,11 @@ function PositionDialog({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Type — désactivé en édition */}
+          {/* Type d'actif */}
           {!editPosition && (
             <div className="space-y-1.5">
               <Label>Type d&apos;actif</Label>
-              <Select value={form.assetType} onValueChange={v => set('assetType')(v as AssetType)}>
+              <Select value={form.assetType} onValueChange={v => setForm(p => ({ ...p, assetType: v as AssetType, symbol: '', name: '' }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {(Object.keys(ASSET_LABELS) as AssetType[]).map(t => (
@@ -222,17 +443,39 @@ function PositionDialog({
             </div>
           )}
 
-          {/* Symbole — désactivé en édition */}
+          {/* Symbole — autocomplete pour STOCK/ETF/CRYPTO, select pour LIVRET */}
           {!editPosition && (
             <div className="space-y-1.5">
               <Label>
-                {isManual ? 'Identifiant / Nom court' : 'Symbole'}
+                {isLivret ? 'Livret' : isManual ? 'Identifiant' : 'Symbole'}
               </Label>
-              <Input
-                placeholder={ASSET_EXAMPLES[form.assetType]}
-                value={form.symbol}
-                onChange={e => set('symbol')(e.target.value)}
-              />
+              {isLivret ? (
+                <Select value={form.symbol} onValueChange={handleLivretSelect}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisir un livret…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LIVRETS_PREDEFINIS.map(l => (
+                      <SelectItem key={l.symbol} value={l.symbol}>
+                        {l.name}{l.rate > 0 ? ` — ${l.rate} %` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : isCryptoOrStock ? (
+                <SymbolAutocomplete
+                  value={form.symbol}
+                  assetType={form.assetType}
+                  onChange={v => set('symbol')(v)}
+                  onSelect={(symbol, name) => setForm(p => ({ ...p, symbol, name }))}
+                />
+              ) : (
+                <Input
+                  placeholder={ASSET_EXAMPLES[form.assetType]}
+                  value={form.symbol}
+                  onChange={e => set('symbol')(e.target.value)}
+                />
+              )}
             </div>
           )}
 
@@ -246,7 +489,7 @@ function PositionDialog({
             />
           </div>
 
-          {/* Quantité + PRU côte à côte */}
+          {/* Quantité + PRU */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className="space-y-1.5">
               <Label>{isManual ? 'Montant (€)' : 'Quantité'}</Label>
@@ -258,17 +501,17 @@ function PositionDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label>PRU (€)</Label>
+              <Label>{isLivret ? 'Valeur unitaire (€)' : 'PRU (€)'}</Label>
               <Input
                 type="number"
-                placeholder="150"
+                placeholder={isLivret ? '1' : '150'}
                 value={form.pru}
                 onChange={e => set('pru')(e.target.value)}
               />
             </div>
           </div>
 
-          {/* Devise (stocks seulement) */}
+          {/* Devise (stocks/ETFs) */}
           {!editPosition && (form.assetType === 'STOCK' || form.assetType === 'ETF') && (
             <div className="space-y-1.5">
               <Label>Devise du marché</Label>
@@ -282,10 +525,17 @@ function PositionDialog({
             </div>
           )}
 
-          {/* Note SCPI/LIVRET/CASH */}
-          {isManual && (
+          {/* Info livret */}
+          {isLivret && (
             <p style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
-              Pour ce type d'actif, la valorisation est mise à jour manuellement via le PRU × quantité. Aucune API n'est appelée.
+              Pour un livret, entrez le montant déposé en "Montant" et laissez la valeur unitaire à 1. Les taux sont indicatifs.
+            </p>
+          )}
+
+          {/* Info SCPI/CASH */}
+          {(form.assetType === 'SCPI' || form.assetType === 'CASH') && (
+            <p style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
+              Valorisation manuelle : valeur = PRU × quantité. Aucune API n&apos;est appelée.
             </p>
           )}
 
@@ -293,35 +543,14 @@ function PositionDialog({
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <Button variant="outline" onClick={onClose} style={{ flex: 1 }}>Annuler</Button>
             <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
-              {saving ? <RefreshCw style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} /> : <Check style={{ width: 14, height: 14 }} />}
+              {saving
+                ? <RefreshCw style={{ width: 14, height: 14, marginRight: 5, animation: 'spin 1s linear infinite' }} />
+                : <Check style={{ width: 14, height: 14, marginRight: 5 }} />}
               {editPosition ? 'Mettre à jour' : 'Ajouter'}
             </Button>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-// ── Composant : widget mini-indice ───────────────────────────────────────────
-function IndexChip({ label, price, changePct, isRate }: IndexData & { label: string }) {
-  const pos = changePct >= 0
-  const color = pos ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)'
-  return (
-    <div style={{
-      padding: '12px 14px', borderRadius: 12,
-      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-      display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 110,
-    }}>
-      <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
-      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-        {price == null ? '—' : isRate ? `${price} %` : fmtCompact(price)}
-      </span>
-      {!isRate && (
-        <span style={{ fontSize: 11, color, fontWeight: 600 }}>
-          {pos ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)} %
-        </span>
-      )}
     </div>
   )
 }
@@ -339,8 +568,26 @@ function PortfolioPageInner() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editPosition, setEditPosition] = useState<Position | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [gererOpen, setGererOpen] = useState(false)
+  const [hiddenIndices, setHiddenIndices] = useState<Set<string>>(new Set<string>())
 
-  // ── Chargement des positions ──
+  // Charger les préférences d'indices depuis localStorage
+  useEffect(() => {
+    setHiddenIndices(getHiddenIndices())
+  }, [])
+
+  const toggleIndex = (symbol: string) => {
+    setHiddenIndices(prev => {
+      const next = new Set<string>(prev)
+      if (next.has(symbol)) next.delete(symbol); else next.add(symbol)
+      saveHiddenIndices(next)
+      return next
+    })
+  }
+
+  const visibleIndices = useMemo(() => indices.filter(idx => !hiddenIndices.has(idx.symbol)), [indices, hiddenIndices])
+
+  // ── Chargement des positions
   const loadPositions = useCallback(async () => {
     const res = await fetch('/api/portfolio')
     if (res.ok) {
@@ -351,13 +598,9 @@ function PortfolioPageInner() {
     return []
   }, [])
 
-  // ── Chargement des prix ──
+  // ── Chargement des prix (toujours appelé même sans positions)
   const loadPrices = useCallback(async (pos: Position[]) => {
     const priceable = pos.filter(p => !MANUAL_ASSET_TYPES.includes(p.assetType))
-    if (!priceable.length && pos.length === 0) {
-      setLoading(false)
-      return
-    }
     try {
       const res = await fetch('/api/portfolio/prices', {
         method: 'POST',
@@ -374,7 +617,6 @@ function PortfolioPageInner() {
     setRefreshing(false)
   }, [])
 
-  // ── Init ──
   useEffect(() => {
     loadPositions().then(pos => loadPrices(pos))
   }, [loadPositions, loadPrices])
@@ -404,7 +646,7 @@ function PortfolioPageInner() {
     }
   }
 
-  // ── Calculs dérivés ──
+  // ── Calculs dérivés
   const enriched = useMemo(() => positions.map(p => {
     const priceData = prices[p.symbol]
     const isManual = MANUAL_ASSET_TYPES.includes(p.assetType)
@@ -427,7 +669,6 @@ function PortfolioPageInner() {
     return enriched.reduce((best, p) => p.plPct > best.plPct ? p : best, enriched[0])
   }, [enriched])
 
-  // Répartition par classe pour le camembert
   const pieData = useMemo(() => {
     const byType: Record<string, number> = {}
     for (const p of enriched) {
@@ -442,7 +683,6 @@ function PortfolioPageInner() {
 
   const hasETFOrStock = enriched.some(p => p.assetType === 'ETF' || p.assetType === 'STOCK')
 
-  // ── Rendu ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
 
@@ -470,30 +710,10 @@ function PortfolioPageInner() {
       {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          {
-            label: 'Valeur totale',
-            value: loading ? '—' : fmtCompact(totalValue),
-            sub: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
-          },
-          {
-            label: 'Plus/Moins-value',
-            value: loading ? '—' : (totalPL >= 0 ? '+' : '') + fmt(totalPL),
-            sub: loading ? '' : fmtPct(totalPLPct),
-            colored: true,
-            positive: totalPL >= 0,
-          },
-          {
-            label: 'Investi',
-            value: loading ? '—' : fmtCompact(totalCost),
-            sub: 'Coût de revient total',
-          },
-          {
-            label: 'Meilleure perf.',
-            value: bestPerformer ? fmtPct(bestPerformer.plPct) : '—',
-            sub: bestPerformer?.name ?? 'Aucune position',
-            colored: true,
-            positive: (bestPerformer?.plPct ?? 0) >= 0,
-          },
+          { label: 'Valeur totale', value: loading ? '—' : fmtCompact(totalValue), sub: `${positions.length} position${positions.length !== 1 ? 's' : ''}` },
+          { label: 'Plus/Moins-value', value: loading ? '—' : (totalPL >= 0 ? '+' : '') + fmt(totalPL), sub: loading ? '' : fmtPct(totalPLPct), colored: true, positive: totalPL >= 0 },
+          { label: 'Investi', value: loading ? '—' : fmtCompact(totalCost), sub: 'Coût de revient total' },
+          { label: 'Meilleure perf.', value: bestPerformer ? fmtPct(bestPerformer.plPct) : '—', sub: bestPerformer?.name ?? 'Aucune position', colored: true, positive: (bestPerformer?.plPct ?? 0) >= 0 },
         ].map((k, i) => (
           <Card key={i}>
             <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
@@ -510,11 +730,8 @@ function PortfolioPageInner() {
       {/* Camembert + Indices */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* Répartition */}
         <Card>
-          <CardHeader>
-            <CardTitle>Répartition par classe d&apos;actif</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Répartition par classe d&apos;actif</CardTitle></CardHeader>
           <CardContent>
             {pieData.length === 0 ? (
               <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
@@ -532,11 +749,9 @@ function PortfolioPageInner() {
                   <Tooltip
                     formatter={(v: number) => [fmtCompact(v), '']}
                     contentStyle={{ background: chart.tooltip.background, border: `1px solid ${chart.tooltip.border}`, borderRadius: 8, fontSize: 12, color: chart.tooltip.color }}
-                    itemStyle={chart.itemStyle}
-                    labelStyle={chart.labelStyle}
+                    itemStyle={chart.itemStyle} labelStyle={chart.labelStyle}
                   />
-                  <Legend
-                    iconType="circle" iconSize={8}
+                  <Legend iconType="circle" iconSize={8}
                     formatter={(value) => <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{value}</span>}
                   />
                 </PieChart>
@@ -548,19 +763,40 @@ function PortfolioPageInner() {
         {/* Indices */}
         <Card>
           <CardHeader>
-            <CardTitle>Marchés &amp; Indices</CardTitle>
-            <CardDescription>Données temps réel via Finnhub &amp; CoinGecko</CardDescription>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
+                <CardTitle>Marchés &amp; Indices</CardTitle>
+                <CardDescription style={{ marginTop: 4 }}>Finnhub &amp; CoinGecko · temps réel</CardDescription>
+              </div>
+              <button onClick={() => setGererOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600,
+                  color: 'var(--text-subtle)', background: 'var(--row-hover)',
+                  border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '5px 10px',
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-em)'; e.currentTarget.style.borderColor = 'var(--text-muted-c)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-subtle)'; e.currentTarget.style.borderColor = 'var(--card-dark-border)' }}>
+                <Settings2 style={{ width: 11, height: 11 }} />
+                Gérer
+              </button>
+            </div>
           </CardHeader>
           <CardContent>
-            {indices.length === 0 ? (
-              <div style={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
-                {loading ? 'Chargement...' : 'Cliquez sur Actualiser pour charger les indices'}
+            {loading ? (
+              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+                Chargement...
+              </div>
+            ) : visibleIndices.length === 0 ? (
+              <div style={{ height: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <p style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Tous les indices sont masqués</p>
+                <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                  Gérer les indices
+                </button>
               </div>
             ) : (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                {indices.map((idx, i) => (
-                  <IndexChip key={i} {...idx} />
-                ))}
+                {visibleIndices.map((idx, i) => <IndexChip key={i} {...idx} />)}
               </div>
             )}
           </CardContent>
@@ -572,7 +808,7 @@ function PortfolioPageInner() {
         <CardHeader>
           <CardTitle>Positions détaillées</CardTitle>
           <CardDescription>
-            {loading ? 'Chargement...' : `${positions.length} position${positions.length !== 1 ? 's' : ''} · Valorisation ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
+            {loading ? 'Chargement...' : `${positions.length} position${positions.length !== 1 ? 's' : ''} · ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -637,21 +873,16 @@ function PortfolioPageInner() {
                       </td>
                       <td style={{ padding: '11px 8px', textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
-                          <button
-                            onClick={() => { setEditPosition(p); setDialogOpen(true) }}
+                          <button onClick={() => { setEditPosition(p); setDialogOpen(true) }}
                             style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted-c)'; e.currentTarget.style.color = 'var(--text-em)' }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}
-                          >
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
                             <Pencil style={{ width: 12, height: 12 }} />
                           </button>
-                          <button
-                            onClick={() => handleDelete(p.id)}
-                            disabled={deletingId === p.id}
+                          <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
                             style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.color = 'hsl(0 72% 51%)' }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}
-                          >
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
                             <Trash2 style={{ width: 12, height: 12 }} />
                           </button>
                         </div>
@@ -665,7 +896,7 @@ function PortfolioPageInner() {
         </CardContent>
       </Card>
 
-      {/* Insight cards — liens vers simulateurs */}
+      {/* Insight cards */}
       {totalValue > 0 && (
         <div>
           <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
@@ -674,36 +905,32 @@ function PortfolioPageInner() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                icon: TrendingUp,
-                color: '#818cf8',
+                icon: TrendingUp, color: '#818cf8',
                 title: 'Projetez votre patrimoine',
                 desc: `Vos ${fmtCompact(totalValue)} actuels investis à 7 %/an pendant 20 ans…`,
                 href: `/dashboard/compound?restore=${encodeURIComponent(JSON.stringify({ capital: Math.round(totalValue), monthly: 500, rate: 7, years: 20, frequency: 12 }))}`,
                 cta: 'Simuler les intérêts composés',
               },
               {
-                icon: Flame,
-                color: '#fb923c',
+                icon: Flame, color: '#fb923c',
                 title: 'Objectif FI/RE',
                 desc: 'À quel âge pourrez-vous vivre de vos rentes ? Calculez votre indépendance financière.',
                 href: '/dashboard/fire',
                 cta: 'Calculer mon FI/RE',
               },
-              ...(hasETFOrStock ? [{
-                icon: Calculator,
-                color: '#34d399',
+              hasETFOrStock ? {
+                icon: Calculator, color: '#34d399',
                 title: 'DCA — Investissement régulier',
                 desc: 'Simulez l\'impact d\'un versement mensuel sur la durée.',
                 href: '/dashboard/dca',
                 cta: 'Simuler le DCA',
-              }] : [{
-                icon: Calculator,
-                color: '#34d399',
+              } : {
+                icon: Calculator, color: '#34d399',
                 title: 'Taux d\'épargne',
                 desc: 'Calculez combien vous pouvez économiser chaque mois.',
                 href: '/dashboard/savings-rate',
                 cta: 'Calculer mon taux d\'épargne',
-              }]),
+              },
             ].map((card, i) => (
               <Link key={i} href={card.href} style={{ textDecoration: 'none' }}>
                 <div style={{
@@ -731,12 +958,19 @@ function PortfolioPageInner() {
         </div>
       )}
 
-      {/* Dialog */}
+      {/* Modals */}
       <PositionDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onSaved={handleSaved}
         editPosition={editPosition}
+      />
+      <GererIndicesModal
+        open={gererOpen}
+        onClose={() => setGererOpen(false)}
+        indices={indices}
+        hiddenSymbols={hiddenIndices}
+        onToggle={toggleIndex}
       />
     </div>
   )

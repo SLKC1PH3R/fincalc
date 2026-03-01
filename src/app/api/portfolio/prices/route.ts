@@ -14,11 +14,15 @@ const COINGECKO_IDS: Record<string, string> = {
   DOGE: 'dogecoin', SHIB: 'shiba-inu', ATOM: 'cosmos',
 }
 
-// Indices fixes à fetcher
-const INDICES = [
+// Indices boursiers toujours fetchés
+const STOCK_INDICES = [
   { symbol: '^FCHI', label: 'CAC 40' },
   { symbol: '^GSPC', label: 'S&P 500' },
+  { symbol: '^IXIC', label: 'NASDAQ' },
 ]
+
+// Cryptos affichées en index
+const CRYPTO_INDICES = ['BTC', 'ETH']
 
 type PositionInput = { id: string; assetType: string; symbol: string; currency: string }
 
@@ -30,11 +34,7 @@ async function finnhubQuote(symbol: string): Promise<{ price: number; change: nu
     if (!res.ok) return null
     const d = await res.json()
     if (!d.c || d.c === 0) return null
-    return {
-      price: d.c,
-      change: d.d ?? 0,
-      changePct: d.dp ?? 0,
-    }
+    return { price: d.c, change: d.d ?? 0, changePct: d.dp ?? 0 }
   } catch {
     return null
   }
@@ -76,7 +76,7 @@ async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { pric
   }
 }
 
-// POST — récupère les prix pour une liste de positions + indices
+// POST — récupère les prix pour une liste de positions + indices fixes
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
@@ -85,31 +85,23 @@ export async function POST(req: NextRequest) {
 
   const stockSymbols = positions.filter(p => p.assetType === 'STOCK' || p.assetType === 'ETF').map(p => p.symbol)
   const cryptoTickers = positions.filter(p => p.assetType === 'CRYPTO').map(p => p.symbol)
-
-  // USD→EUR si des stocks en USD existent
   const hasUsdPositions = positions.some(p => (p.assetType === 'STOCK' || p.assetType === 'ETF') && p.currency === 'USD')
-  const [eurRate, cryptoPrices, ...stockQuotes] = await Promise.all([
+
+  // Tous les cryptos nécessaires : positions + indices
+  const allCryptoTickers = [...new Set([...cryptoTickers, ...CRYPTO_INDICES])]
+
+  // Fetch en parallèle : taux EUR, cryptos, stocks positions, indices boursiers
+  const [eurRate, cryptoPricesMap, ...restQuotes] = await Promise.all([
     hasUsdPositions ? usdToEur() : Promise.resolve(1),
-    cryptoTickers.length ? coinGeckoPrices(cryptoTickers) : Promise.resolve({}),
+    coinGeckoPrices(allCryptoTickers),
     ...stockSymbols.map(s => finnhubQuote(s)),
-    // Indices (toujours fetchés)
-    ...INDICES.map(idx => finnhubQuote(idx.symbol).then(q => ({ idx, q }))),
+    ...STOCK_INDICES.map(idx => finnhubQuote(idx.symbol)),
   ])
 
-  // Reconstruction des indices (derniers éléments du Promise.all)
-  // On re-fetch les indices séparément car Promise.all mélange stock + indices
-  const [indiceResults] = await Promise.all([
-    Promise.all(INDICES.map(async idx => {
-      const q = await finnhubQuote(idx.symbol)
-      return { label: idx.label, symbol: idx.symbol, ...q }
-    })),
-  ])
+  const stockQuotes = restQuotes.slice(0, stockSymbols.length) as (typeof restQuotes[number])[]
+  const indiceQuotes = restQuotes.slice(stockSymbols.length) as (typeof restQuotes[number])[]
 
-  // Bitcoin index via CoinGecko
-  const btcPrices = await coinGeckoPrices(['BTC'])
-  const btcIndex = { label: 'Bitcoin', symbol: 'BTC', price: btcPrices.BTC?.price ?? null, changePct: btcPrices.BTC?.changePct ?? 0 }
-
-  // Construire la map de prix par position
+  // Map de prix par position
   const prices: Record<string, { priceEur: number; changePct: number }> = {}
   stockSymbols.forEach((symbol, i) => {
     const q = stockQuotes[i] as { price: number; change: number; changePct: number } | null
@@ -121,16 +113,31 @@ export async function POST(req: NextRequest) {
       changePct: q.changePct,
     }
   })
-  for (const [ticker, data] of Object.entries(cryptoPrices as Record<string, { price: number; changePct: number }>)) {
-    prices[ticker] = { priceEur: data.price, changePct: data.changePct }
+  for (const [ticker, data] of Object.entries(cryptoPricesMap as Record<string, { price: number; changePct: number }>)) {
+    if (cryptoTickers.includes(ticker)) {
+      prices[ticker] = { priceEur: data.price, changePct: data.changePct }
+    }
   }
+
+  // Indices boursiers
+  const stockIndiceResults = STOCK_INDICES.map((idx, i) => {
+    const q = indiceQuotes[i] as { price: number; changePct: number } | null
+    return { label: idx.label, symbol: idx.symbol, price: q?.price ?? null, changePct: q?.changePct ?? 0 }
+  })
+
+  // Indices crypto
+  const cryptoIndiceResults = CRYPTO_INDICES.map(ticker => {
+    const d = (cryptoPricesMap as Record<string, { price: number; changePct: number }>)[ticker]
+    const labels: Record<string, string> = { BTC: 'Bitcoin', ETH: 'Ethereum' }
+    return { label: labels[ticker] ?? ticker, symbol: ticker, price: d?.price ?? null, changePct: d?.changePct ?? 0 }
+  })
 
   return NextResponse.json({
     prices,
     indices: [
-      ...indiceResults,
-      btcIndex,
-      { label: 'Livret A', symbol: 'LIVRET_A', price: 3, changePct: 0, isRate: true },
+      ...stockIndiceResults,
+      ...cryptoIndiceResults,
+      { label: 'Livret A', symbol: 'LIVRET_A', price: 2.4, changePct: 0, isRate: true },
     ],
     eurRate,
   })

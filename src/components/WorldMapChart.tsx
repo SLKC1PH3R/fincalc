@@ -124,7 +124,7 @@ export const WorldMapChart = memo(function WorldMapChart({
                 geographies.map(geo => {
                   const numericId = Number(geo.id)
                   const region = getRegion(numericId)
-                  const countryName: string = geo.properties?.name ?? ''
+                  const countryName = String(geo.properties?.name ?? '')
 
                   return (
                     <Geography

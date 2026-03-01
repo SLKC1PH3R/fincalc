@@ -2,10 +2,10 @@
 set -e
 
 echo "🚀 Démarrage FinCalc..."
-echo "📦 Lancement des migrations Prisma..."
+echo "📦 Synchronisation du schéma Prisma (db push)..."
 
-# Run migrations using the local prisma binary
-/app/node_modules/prisma/build/index.js migrate deploy --schema=/app/prisma/schema.prisma
+# Sync schema to DB (no migration files needed)
+/app/node_modules/prisma/build/index.js db push --schema=/app/prisma/schema.prisma --accept-data-loss
 
 echo "🌱 Seed de la base de données..."
 

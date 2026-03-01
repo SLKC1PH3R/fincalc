@@ -831,7 +831,7 @@ function PortfolioPageInner() {
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
                     {['Nom', 'Type', 'Qté / Montant', 'PRU', 'Valeur actuelle', '+/- €', '+/- %', ''].map((h, i) => (
-                      <th key={i} style={{ padding: '8px 12px', textAlign: i > 2 ? 'right' : 'left', fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
+                      <th key={i} style={{ padding: '8px 12px', textAlign: i >= 2 ? 'right' : 'left', fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
                         {h}
                       </th>
                     ))}

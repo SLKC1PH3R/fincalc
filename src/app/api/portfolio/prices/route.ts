@@ -50,7 +50,7 @@ async function yahooQuote(symbol: string): Promise<{ price: number; changePct: n
   }
 }
 
-// Finnhub — pour les positions individuelles (actions/ETFs en portefeuille)
+// Finnhub — US stocks (plan gratuit)
 async function finnhubQuote(symbol: string): Promise<{ price: number; changePct: number } | null> {
   try {
     const res = await fetch(
@@ -64,6 +64,14 @@ async function finnhubQuote(symbol: string): Promise<{ price: number; changePct:
   } catch {
     return null
   }
+}
+
+// Récupère le prix d'une position : Finnhub en priorité, Yahoo Finance en fallback
+// (Yahoo supporte .PA, .AS, .DE, .MI, .MC... sans clé API)
+async function getPositionPrice(symbol: string): Promise<{ price: number; changePct: number } | null> {
+  const finnhub = await finnhubQuote(symbol)
+  if (finnhub) return finnhub
+  return yahooQuote(symbol)
 }
 
 // Taux USD→EUR via Yahoo Finance (fallback 0.92)
@@ -123,8 +131,8 @@ export async function POST(req: NextRequest) {
   const [eurRate, cryptoPricesMap, ...restQuotes] = await Promise.all([
     hasUsdPositions ? usdToEur() : Promise.resolve(1),
     coinGeckoPrices(allCryptoTickers),
-    // Positions stocks/ETFs → Finnhub (supporte les actions individuelles)
-    ...stockSymbols.map(s => finnhubQuote(s)),
+    // Positions stocks/ETFs → Finnhub + fallback Yahoo Finance (pour .PA, .AS, etc.)
+    ...stockSymbols.map(s => getPositionPrice(s)),
     // Indices widget → Yahoo Finance (Finnhub free ne supporte pas les indices ^GSPC etc.)
     ...STOCK_INDICES.map(idx => yahooQuote(idx.symbol)),
   ])

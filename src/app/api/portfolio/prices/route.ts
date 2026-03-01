@@ -113,19 +113,28 @@ async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { pric
   }
 }
 
-// POST — récupère les prix pour les positions + les indices fixes du widget
+type CustomIndex = { symbol: string; label: string; type: 'stock' | 'crypto' }
+
+// POST — récupère les prix pour les positions + les indices fixes du widget + les indices custom
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
-  const { positions }: { positions: PositionInput[] } = await req.json()
+  const { positions, customIndices = [] }: {
+    positions: PositionInput[]
+    customIndices?: CustomIndex[]
+  } = await req.json()
 
   const stockSymbols = positions.filter(p => p.assetType === 'STOCK' || p.assetType === 'ETF').map(p => p.symbol)
   const cryptoTickers = positions.filter(p => p.assetType === 'CRYPTO').map(p => p.symbol)
   const hasUsdPositions = positions.some(p => (p.assetType === 'STOCK' || p.assetType === 'ETF') && p.currency === 'USD')
 
-  // Tous les cryptos nécessaires (positions + indices crypto)
-  const allCryptoTickers = [...new Set([...cryptoTickers, ...CRYPTO_INDICES])]
+  // Indices custom
+  const customStockIndices = customIndices.filter(c => c.type === 'stock')
+  const customCryptoTickers = customIndices.filter(c => c.type === 'crypto').map(c => c.symbol)
+
+  // Tous les cryptos nécessaires (positions + indices crypto fixes + custom)
+  const allCryptoTickers = [...new Set([...cryptoTickers, ...CRYPTO_INDICES, ...customCryptoTickers])]
 
   // Fetch en parallèle
   const [eurRate, cryptoPricesMap, ...restQuotes] = await Promise.all([
@@ -133,12 +142,15 @@ export async function POST(req: NextRequest) {
     coinGeckoPrices(allCryptoTickers),
     // Positions stocks/ETFs → Finnhub + fallback Yahoo Finance (pour .PA, .AS, etc.)
     ...stockSymbols.map(s => getPositionPrice(s)),
-    // Indices widget → Yahoo Finance (Finnhub free ne supporte pas les indices ^GSPC etc.)
+    // Indices fixes widget → Yahoo Finance
     ...STOCK_INDICES.map(idx => yahooQuote(idx.symbol)),
+    // Indices custom stock → Yahoo Finance
+    ...customStockIndices.map(c => yahooQuote(c.symbol)),
   ])
 
   const stockQuotes = restQuotes.slice(0, stockSymbols.length) as ({ price: number; changePct: number } | null)[]
-  const indiceQuotes = restQuotes.slice(stockSymbols.length) as ({ price: number; changePct: number } | null)[]
+  const indiceQuotes = restQuotes.slice(stockSymbols.length, stockSymbols.length + STOCK_INDICES.length) as ({ price: number; changePct: number } | null)[]
+  const customStockQuotes = restQuotes.slice(stockSymbols.length + STOCK_INDICES.length) as ({ price: number; changePct: number } | null)[]
 
   // Map de prix par position
   const prices: Record<string, { priceEur: number; changePct: number }> = {}
@@ -159,18 +171,32 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Indices boursiers (Yahoo Finance)
+  // Indices boursiers fixes (Yahoo Finance)
   const stockIndiceResults = STOCK_INDICES.map((idx, i) => {
     const q = indiceQuotes[i]
     return { label: idx.label, symbol: idx.symbol, price: q?.price ?? null, changePct: q?.changePct ?? 0 }
   })
 
-  // Indices crypto (CoinGecko)
+  // Indices crypto fixes (CoinGecko)
   const cryptoIndiceResults = CRYPTO_INDICES.map(ticker => {
     const d = cryptoMap[ticker]
     const labels: Record<string, string> = { BTC: 'Bitcoin', ETH: 'Ethereum' }
     return { label: labels[ticker] ?? ticker, symbol: ticker, price: d?.price ?? null, changePct: d?.changePct ?? 0 }
   })
+
+  // Indices custom stock (Yahoo Finance)
+  const customStockResults = customStockIndices.map((c, i) => {
+    const q = customStockQuotes[i]
+    return { label: c.label, symbol: c.symbol, price: q?.price ?? null, changePct: q?.changePct ?? 0 }
+  })
+
+  // Indices custom crypto (CoinGecko)
+  const customCryptoResults = customIndices
+    .filter(c => c.type === 'crypto')
+    .map(c => {
+      const d = cryptoMap[c.symbol]
+      return { label: c.label, symbol: c.symbol, price: d?.price ?? null, changePct: d?.changePct ?? 0 }
+    })
 
   return NextResponse.json({
     prices,
@@ -178,6 +204,8 @@ export async function POST(req: NextRequest) {
       ...stockIndiceResults,
       ...cryptoIndiceResults,
       { label: 'Livret A', symbol: 'LIVRET_A', price: 2.4, changePct: 0, isRate: true },
+      ...customStockResults,
+      ...customCryptoResults,
     ],
     eurRate,
   })

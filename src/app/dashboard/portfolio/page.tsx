@@ -87,16 +87,22 @@ const CRYPTO_LIST = [
   { symbol: 'ATOM', name: 'Cosmos' },
 ]
 
-const LS_KEY = 'portfolio_hidden_indices'
-
-function getHiddenIndices(): Set<string> {
-  try {
-    const v = localStorage.getItem(LS_KEY)
-    return v ? new Set<string>(JSON.parse(v) as string[]) : new Set<string>()
-  } catch { return new Set<string>() }
+interface ManagedIndices {
+  removed: string[]  // default symbols removed by user
+  custom: { symbol: string; label: string; type: 'stock' | 'crypto' }[]
 }
-function saveHiddenIndices(hidden: Set<string>) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify([...hidden])) } catch {}
+
+const LS_MANAGED_KEY = 'portfolio_managed_indices'
+const DEFAULT_SYMBOLS = ['^FCHI', '^GSPC', '^IXIC', 'BTC', 'ETH', 'LIVRET_A']
+
+function getManagedIndices(): ManagedIndices {
+  try {
+    const v = localStorage.getItem(LS_MANAGED_KEY)
+    return v ? JSON.parse(v) as ManagedIndices : { removed: [], custom: [] }
+  } catch { return { removed: [], custom: [] } }
+}
+function saveManagedIndices(m: ManagedIndices) {
+  try { localStorage.setItem(LS_MANAGED_KEY, JSON.stringify(m)) } catch {}
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -145,7 +151,7 @@ function IndexChip({ label, price, changePct, isRate }: IndexData) {
     }}>
       <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
       <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-        {price == null ? '—' : isRate ? `${price} %` : fmtCompact(price)}
+        {price == null ? '—' : isRate ? `${price} %` : fmt(price)}
       </span>
       {!isRate && (
         <span style={{ fontSize: 11, color, fontWeight: 600 }}>
@@ -158,14 +164,52 @@ function IndexChip({ label, price, changePct, isRate }: IndexData) {
 
 // ── Modal Gérer les indices ──────────────────────────────────────────────────
 function GererIndicesModal({
-  open, onClose, indices, hiddenSymbols, onToggle,
+  open, onClose, onSaved, activeIndices,
 }: {
   open: boolean
   onClose: () => void
-  indices: IndexData[]
-  hiddenSymbols: Set<string>
-  onToggle: (symbol: string) => void
+  onSaved: () => void
+  activeIndices: IndexData[]
 }) {
+  const [addSymbol, setAddSymbol] = useState('')
+  const [addLabel, setAddLabel] = useState('')
+  const [addType, setAddType] = useState<'stock' | 'crypto'>('stock')
+
+  const managed = getManagedIndices()
+  const hasRemovedDefaults = managed.removed.length > 0
+
+  const handleDelete = (symbol: string) => {
+    const m = getManagedIndices()
+    if (DEFAULT_SYMBOLS.includes(symbol)) {
+      if (!m.removed.includes(symbol)) m.removed.push(symbol)
+    } else {
+      m.custom = m.custom.filter(c => c.symbol !== symbol)
+    }
+    saveManagedIndices(m)
+    onSaved()
+  }
+
+  const handleAdd = () => {
+    const sym = addSymbol.trim().toUpperCase()
+    if (!sym || !addLabel.trim()) return
+    const m = getManagedIndices()
+    m.removed = m.removed.filter(s => s !== sym)
+    if (!m.custom.some(c => c.symbol === sym)) {
+      m.custom.push({ symbol: sym, label: addLabel.trim(), type: addType })
+    }
+    saveManagedIndices(m)
+    setAddSymbol('')
+    setAddLabel('')
+    onSaved()
+  }
+
+  const handleRestore = () => {
+    const m = getManagedIndices()
+    m.removed = []
+    saveManagedIndices(m)
+    onSaved()
+  }
+
   if (!open) return null
   return (
     <div style={{
@@ -175,54 +219,110 @@ function GererIndicesModal({
     }} onClick={onClose}>
       <div style={{
         background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-        borderRadius: 20, padding: 24, width: '100%', maxWidth: 380,
-        boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+        borderRadius: 20, padding: 24, width: '100%', maxWidth: 420,
+        boxShadow: '0 24px 64px rgba(0,0,0,0.5)', maxHeight: '85vh', overflowY: 'auto',
       }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Indices affichés</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Marchés &amp; Indices</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X style={{ width: 16, height: 16, color: 'var(--text-muted-c)' }} />
           </button>
         </div>
-        <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 16 }}>
-          Cochez les indices à afficher dans le widget Marchés.
+
+        {/* Active indices */}
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
+          Indices actifs
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {indices.map(idx => {
-            const visible = !hiddenSymbols.has(idx.symbol)
-            return (
-              <button key={idx.symbol} onClick={() => onToggle(idx.symbol)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px',
-                  borderRadius: 10, border: '1px solid var(--card-dark-border)',
-                  background: visible ? 'rgba(241,192,134,0.06)' : 'transparent',
-                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                  borderColor: visible ? 'rgba(241,192,134,0.3)' : 'var(--card-dark-border)',
-                }}>
-                <div style={{
-                  width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                  background: visible ? '#f1c086' : 'transparent',
-                  border: `2px solid ${visible ? '#f1c086' : 'var(--text-subtle)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {visible && <Check style={{ width: 11, height: 11, color: '#000' }} />}
-                </div>
+        {activeIndices.length === 0 ? (
+          <p style={{ fontSize: 13, color: 'var(--text-subtle)', textAlign: 'center', padding: '12px 0', marginBottom: 12 }}>Aucun indice actif</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+            {activeIndices.map(idx => (
+              <div key={idx.symbol} style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
+                borderRadius: 10, border: '1px solid var(--card-dark-border)',
+                background: 'var(--row-hover)',
+              }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{idx.label}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{idx.symbol}</div>
                 </div>
                 {idx.price != null && (
                   <div style={{ fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
-                    {idx.isRate ? `${idx.price} %` : fmtCompact(idx.price)}
+                    {idx.isRate ? `${idx.price} %` : fmt(idx.price)}
                   </div>
                 )}
-              </button>
-            )
-          })}
+                <button onClick={() => handleDelete(idx.symbol)}
+                  style={{
+                    background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6,
+                    padding: '3px 6px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s', flexShrink: 0,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.color = 'hsl(0 72% 51%)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
+                  <Trash2 style={{ width: 11, height: 11 }} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {hasRemovedDefaults && (
+          <button onClick={handleRestore}
+            style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', marginBottom: 16, display: 'block' }}>
+            Restaurer les indices par défaut
+          </button>
+        )}
+
+        {/* Separator */}
+        <div style={{ borderTop: '1px solid var(--card-dark-border)', margin: '16px 0' }} />
+
+        {/* Add form */}
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+          Ajouter un indice
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div>
+              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Symbole</label>
+              <Input
+                placeholder="ex: AAPL, ^DJI, SOL"
+                value={addSymbol}
+                onChange={e => setAddSymbol(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAdd()}
+                style={{ fontSize: 13 }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Libellé</label>
+              <Input
+                placeholder="ex: Apple, Dow Jones"
+                value={addLabel}
+                onChange={e => setAddLabel(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAdd()}
+                style={{ fontSize: 13 }}
+              />
+            </div>
+          </div>
+          <div>
+            <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Type</label>
+            <Select value={addType} onValueChange={v => setAddType(v as 'stock' | 'crypto')}>
+              <SelectTrigger style={{ fontSize: 13 }}><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="stock">Action / Indice boursier (Yahoo Finance)</SelectItem>
+                <SelectItem value="crypto">Crypto (CoinGecko)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={handleAdd}
+            disabled={!addSymbol.trim() || !addLabel.trim()}
+            style={{ background: '#f1c086', color: '#000', border: 'none', fontSize: 13 }}>
+            <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
+            Ajouter
+          </Button>
         </div>
-        <Button onClick={onClose} style={{ width: '100%', marginTop: 16, background: '#f1c086', color: '#000', border: 'none' }}>
-          Fermer
-        </Button>
       </div>
     </div>
   )
@@ -577,23 +677,6 @@ function PortfolioPageInner() {
   const [editPosition, setEditPosition] = useState<Position | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [gererOpen, setGererOpen] = useState(false)
-  const [hiddenIndices, setHiddenIndices] = useState<Set<string>>(new Set<string>())
-
-  // Charger les préférences d'indices depuis localStorage
-  useEffect(() => {
-    setHiddenIndices(getHiddenIndices())
-  }, [])
-
-  const toggleIndex = (symbol: string) => {
-    setHiddenIndices(prev => {
-      const next = new Set<string>(prev)
-      if (next.has(symbol)) next.delete(symbol); else next.add(symbol)
-      saveHiddenIndices(next)
-      return next
-    })
-  }
-
-  const visibleIndices = useMemo(() => indices.filter(idx => !hiddenIndices.has(idx.symbol)), [indices, hiddenIndices])
 
   // ── Chargement des positions
   const loadPositions = useCallback(async () => {
@@ -609,16 +692,21 @@ function PortfolioPageInner() {
   // ── Chargement des prix (toujours appelé même sans positions)
   const loadPrices = useCallback(async (pos: Position[]) => {
     const priceable = pos.filter(p => !MANUAL_ASSET_TYPES.includes(p.assetType))
+    const managed = getManagedIndices()
     try {
       const res = await fetch('/api/portfolio/prices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ positions: priceable.map(p => ({ id: p.id, assetType: p.assetType, symbol: p.symbol, currency: p.currency })) }),
+        body: JSON.stringify({
+          positions: priceable.map(p => ({ id: p.id, assetType: p.assetType, symbol: p.symbol, currency: p.currency })),
+          customIndices: managed.custom,
+        }),
       })
       if (res.ok) {
         const data = await res.json()
         setPrices(data.prices ?? {})
-        setIndices(data.indices ?? [])
+        const serverIndices = (data.indices ?? []) as IndexData[]
+        setIndices(serverIndices.filter(idx => !managed.removed.includes(idx.symbol)))
       }
     } catch { /* silently fail */ }
     setLoading(false)
@@ -795,7 +883,7 @@ function PortfolioPageInner() {
               <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
                 Chargement...
               </div>
-            ) : visibleIndices.length === 0 ? (
+            ) : indices.length === 0 ? (
               <div style={{ height: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 <p style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Tous les indices sont masqués</p>
                 <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
@@ -804,7 +892,7 @@ function PortfolioPageInner() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                {visibleIndices.map((idx, i) => <IndexChip key={i} {...idx} />)}
+                {indices.map((idx, i) => <IndexChip key={i} {...idx} />)}
               </div>
             )}
           </CardContent>
@@ -976,9 +1064,8 @@ function PortfolioPageInner() {
       <GererIndicesModal
         open={gererOpen}
         onClose={() => setGererOpen(false)}
-        indices={indices}
-        hiddenSymbols={hiddenIndices}
-        onToggle={toggleIndex}
+        onSaved={() => loadPrices(positions)}
+        activeIndices={indices}
       />
     </div>
   )

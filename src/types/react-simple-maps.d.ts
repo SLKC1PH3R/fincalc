@@ -30,12 +30,21 @@ declare module 'react-simple-maps' {
     [key: string]: unknown
   }
 
+  export interface GeographyStyle {
+    fill?: string
+    stroke?: string
+    strokeWidth?: number
+    outline?: string
+    cursor?: string
+    [key: string]: unknown
+  }
+
   export interface GeographyProps extends SVGProps<SVGPathElement> {
     geography: Geography
     style?: {
-      default?: SVGProps<SVGPathElement>
-      hover?: SVGProps<SVGPathElement>
-      pressed?: SVGProps<SVGPathElement>
+      default?: GeographyStyle
+      hover?: GeographyStyle
+      pressed?: GeographyStyle
     }
     [key: string]: unknown
   }

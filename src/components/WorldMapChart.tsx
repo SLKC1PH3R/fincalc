@@ -152,13 +152,11 @@ export const WorldMapChart = memo(function WorldMapChart({
                           fill: getCountryColor(region, allocation, false, isDark),
                           stroke: strokeColor,
                           strokeWidth: 0.5,
-                          outline: 'none',
                         },
                         hover: {
                           fill: getCountryColor(region, allocation, true, isDark),
                           stroke: strokeHover,
                           strokeWidth: 0.7,
-                          outline: 'none',
                           cursor: 'pointer',
                         },
                         pressed: {

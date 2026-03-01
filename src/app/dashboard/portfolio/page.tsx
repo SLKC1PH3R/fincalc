@@ -106,6 +106,14 @@ function fmtCompact(n: number): string {
   return fmt(n)
 }
 
+// Montant avec 2 décimales (pour le tableau : PRU, cours, +/- €)
+function fmtEur(n: number): string {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency', currency: 'EUR',
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
+  }).format(n)
+}
+
 function fmtPct(n: number, sign = true): string {
   const s = sign && n > 0 ? '+' : ''
   return `${s}${n.toFixed(2)} %`
@@ -851,19 +859,19 @@ function PortfolioPageInner() {
                         {p.quantity % 1 === 0 ? p.quantity.toLocaleString('fr-FR') : p.quantity.toFixed(4)}
                       </td>
                       <td style={{ padding: '11px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: 'var(--text-muted-c)' }}>
-                        {fmt(p.pru)}
+                        {fmtEur(p.pru)}
                       </td>
                       <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>
-                        {fmtCompact(p.currentValueEur)}
+                        {fmtEur(p.currentValueEur)}
                         {!p.isManual && p.currentPriceEur != null && (
                           <div style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginTop: 1 }}>
-                            @ {fmt(p.currentPriceEur)}
+                            @ {fmtEur(p.currentPriceEur)}
                           </div>
                         )}
                       </td>
                       <td style={{ padding: '11px 12px', textAlign: 'right' }}>
                         <span style={{ color: p.plEur >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                          {p.plEur >= 0 ? '+' : ''}{fmt(p.plEur)}
+                          {p.plEur >= 0 ? '+' : ''}{fmtEur(p.plEur)}
                         </span>
                       </td>
                       <td style={{ padding: '11px 12px', textAlign: 'right' }}>

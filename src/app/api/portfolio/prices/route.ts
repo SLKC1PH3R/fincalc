@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 const FINNHUB_KEY = process.env.FINNHUB_API_KEY ?? ''
 const FINNHUB = 'https://finnhub.io/api/v1'
 const COINGECKO = 'https://api.coingecko.com/api/v3'
+const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart'
 
 // Mapping ticker → CoinGecko ID
 const COINGECKO_IDS: Record<string, string> = {
@@ -14,40 +15,68 @@ const COINGECKO_IDS: Record<string, string> = {
   DOGE: 'dogecoin', SHIB: 'shiba-inu', ATOM: 'cosmos',
 }
 
-// Indices boursiers toujours fetchés
+// Indices boursiers (via Yahoo Finance — gratuit, pas de clé requise)
 const STOCK_INDICES = [
   { symbol: '^FCHI', label: 'CAC 40' },
   { symbol: '^GSPC', label: 'S&P 500' },
   { symbol: '^IXIC', label: 'NASDAQ' },
 ]
 
-// Cryptos affichées en index
+// Cryptos affichées dans le widget indices
 const CRYPTO_INDICES = ['BTC', 'ETH']
 
 type PositionInput = { id: string; assetType: string; symbol: string; currency: string }
 
-async function finnhubQuote(symbol: string): Promise<{ price: number; change: number; changePct: number } | null> {
+// Yahoo Finance — gratuit, supporte les indices majeurs
+async function yahooQuote(symbol: string): Promise<{ price: number; changePct: number } | null> {
   try {
-    const res = await fetch(`${FINNHUB}/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`, {
-      next: { revalidate: 60 },
-    })
+    const res = await fetch(
+      `${YAHOO}/${encodeURIComponent(symbol)}?interval=1d&range=1d`,
+      {
+        next: { revalidate: 60 },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FinCalc/1.0)' },
+      }
+    )
     if (!res.ok) return null
     const d = await res.json()
-    if (!d.c || d.c === 0) return null
-    return { price: d.c, change: d.d ?? 0, changePct: d.dp ?? 0 }
+    const meta = d?.chart?.result?.[0]?.meta
+    if (!meta?.regularMarketPrice) return null
+    const price: number = meta.regularMarketPrice
+    const prev: number = meta.previousClose ?? meta.chartPreviousClose ?? price
+    const changePct = prev > 0 ? ((price - prev) / prev) * 100 : 0
+    return { price, changePct }
   } catch {
     return null
   }
 }
 
+// Finnhub — pour les positions individuelles (actions/ETFs en portefeuille)
+async function finnhubQuote(symbol: string): Promise<{ price: number; changePct: number } | null> {
+  try {
+    const res = await fetch(
+      `${FINNHUB}/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`,
+      { next: { revalidate: 60 } }
+    )
+    if (!res.ok) return null
+    const d = await res.json()
+    if (!d.c || d.c === 0) return null
+    return { price: d.c, changePct: d.dp ?? 0 }
+  } catch {
+    return null
+  }
+}
+
+// Taux USD→EUR via Yahoo Finance (fallback 0.92)
 async function usdToEur(): Promise<number> {
   try {
-    const res = await fetch(`${FINNHUB}/forex/rates?base=USD&token=${FINNHUB_KEY}`, {
-      next: { revalidate: 3600 },
-    })
+    const res = await fetch(
+      `${YAHOO}/EURUSD=X?interval=1d&range=1d`,
+      { next: { revalidate: 3600 }, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FinCalc/1.0)' } }
+    )
     if (!res.ok) return 0.92
     const d = await res.json()
-    return d.quote?.EUR ?? 0.92
+    const price = d?.chart?.result?.[0]?.meta?.regularMarketPrice
+    return price ?? 0.92
   } catch {
     return 0.92
   }
@@ -76,7 +105,7 @@ async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { pric
   }
 }
 
-// POST — récupère les prix pour une liste de positions + indices fixes
+// POST — récupère les prix pour les positions + les indices fixes du widget
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
@@ -87,24 +116,26 @@ export async function POST(req: NextRequest) {
   const cryptoTickers = positions.filter(p => p.assetType === 'CRYPTO').map(p => p.symbol)
   const hasUsdPositions = positions.some(p => (p.assetType === 'STOCK' || p.assetType === 'ETF') && p.currency === 'USD')
 
-  // Tous les cryptos nécessaires : positions + indices
+  // Tous les cryptos nécessaires (positions + indices crypto)
   const allCryptoTickers = [...new Set([...cryptoTickers, ...CRYPTO_INDICES])]
 
-  // Fetch en parallèle : taux EUR, cryptos, stocks positions, indices boursiers
+  // Fetch en parallèle
   const [eurRate, cryptoPricesMap, ...restQuotes] = await Promise.all([
     hasUsdPositions ? usdToEur() : Promise.resolve(1),
     coinGeckoPrices(allCryptoTickers),
+    // Positions stocks/ETFs → Finnhub (supporte les actions individuelles)
     ...stockSymbols.map(s => finnhubQuote(s)),
-    ...STOCK_INDICES.map(idx => finnhubQuote(idx.symbol)),
+    // Indices widget → Yahoo Finance (Finnhub free ne supporte pas les indices ^GSPC etc.)
+    ...STOCK_INDICES.map(idx => yahooQuote(idx.symbol)),
   ])
 
-  const stockQuotes = restQuotes.slice(0, stockSymbols.length) as (typeof restQuotes[number])[]
-  const indiceQuotes = restQuotes.slice(stockSymbols.length) as (typeof restQuotes[number])[]
+  const stockQuotes = restQuotes.slice(0, stockSymbols.length) as ({ price: number; changePct: number } | null)[]
+  const indiceQuotes = restQuotes.slice(stockSymbols.length) as ({ price: number; changePct: number } | null)[]
 
   // Map de prix par position
   const prices: Record<string, { priceEur: number; changePct: number }> = {}
   stockSymbols.forEach((symbol, i) => {
-    const q = stockQuotes[i] as { price: number; change: number; changePct: number } | null
+    const q = stockQuotes[i]
     if (!q) return
     const pos = positions.find(p => p.symbol === symbol)
     const isUsd = pos?.currency === 'USD'
@@ -113,21 +144,22 @@ export async function POST(req: NextRequest) {
       changePct: q.changePct,
     }
   })
-  for (const [ticker, data] of Object.entries(cryptoPricesMap as Record<string, { price: number; changePct: number }>)) {
+  const cryptoMap = cryptoPricesMap as Record<string, { price: number; changePct: number }>
+  for (const [ticker, data] of Object.entries(cryptoMap)) {
     if (cryptoTickers.includes(ticker)) {
       prices[ticker] = { priceEur: data.price, changePct: data.changePct }
     }
   }
 
-  // Indices boursiers
+  // Indices boursiers (Yahoo Finance)
   const stockIndiceResults = STOCK_INDICES.map((idx, i) => {
-    const q = indiceQuotes[i] as { price: number; changePct: number } | null
+    const q = indiceQuotes[i]
     return { label: idx.label, symbol: idx.symbol, price: q?.price ?? null, changePct: q?.changePct ?? 0 }
   })
 
-  // Indices crypto
+  // Indices crypto (CoinGecko)
   const cryptoIndiceResults = CRYPTO_INDICES.map(ticker => {
-    const d = (cryptoPricesMap as Record<string, { price: number; changePct: number }>)[ticker]
+    const d = cryptoMap[ticker]
     const labels: Record<string, string> = { BTC: 'Bitcoin', ETH: 'Ethereum' }
     return { label: labels[ticker] ?? ticker, symbol: ticker, price: d?.price ?? null, changePct: d?.changePct ?? 0 }
   })

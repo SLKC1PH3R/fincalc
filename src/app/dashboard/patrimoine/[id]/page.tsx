@@ -714,12 +714,12 @@ function ImmobilierSection({ envelope, onSave, chartTheme }: {
             </div>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={equityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chartTheme.tickColor }} />
-                <YAxis tickFormatter={v => fmtCompact(v)} tick={{ fontSize: 11, fill: chartTheme.tickColor }} width={70} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chartTheme.tick }} />
+                <YAxis tickFormatter={v => fmtCompact(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} width={70} />
                 <Tooltip
                   formatter={(v: number, name: string) => [fmtEur(v), name === 'equity' ? 'Patrimoine net' : 'Capital restant dû']}
-                  contentStyle={{ background: chartTheme.tooltipBg, border: `1px solid ${chartTheme.tooltipBorder}`, borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ background: chartTheme.tooltip.background, border: `1px solid ${chartTheme.tooltip.border}`, borderRadius: 8, fontSize: 12 }}
                 />
                 <Area type="monotone" dataKey="equity" stroke="#34d399" fill="#34d39918" name="equity" strokeWidth={2} />
                 <Area type="monotone" dataKey="credit" stroke="#f472b6" fill="#f472b612" name="credit" strokeWidth={2} />
@@ -1245,12 +1245,12 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
               </div>
               <ResponsiveContainer width="100%" height={160}>
                 <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridStroke} />
-                  <XAxis dataKey="year" tickFormatter={v => `+${v}a`} tick={{ fontSize: 10, fill: chartTheme.tickColor }} />
-                  <YAxis tickFormatter={v => fmtCompact(v)} tick={{ fontSize: 10, fill: chartTheme.tickColor }} width={65} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                  <XAxis dataKey="year" tickFormatter={v => `+${v}a`} tick={{ fontSize: 10, fill: chartTheme.tick }} />
+                  <YAxis tickFormatter={v => fmtCompact(v)} tick={{ fontSize: 10, fill: chartTheme.tick }} width={65} />
                   <Tooltip
                     formatter={(v: number, name: string) => [fmtEur(v), name === 'current' ? `${pos.symbol}` : `${bestAlternative.ticker}`]}
-                    contentStyle={{ background: chartTheme.tooltipBg, border: `1px solid ${chartTheme.tooltipBorder}`, borderRadius: 8, fontSize: 11 }}
+                    contentStyle={{ background: chartTheme.tooltip.background, border: `1px solid ${chartTheme.tooltip.border}`, borderRadius: 8, fontSize: 11 }}
                   />
                   <Area type="monotone" dataKey="current" stroke="#94a3b8" fill="#94a3b812" name="current" strokeWidth={1.5} />
                   <Area type="monotone" dataKey="alternative" stroke="#34d399" fill="#34d39918" name="alternative" strokeWidth={2} />

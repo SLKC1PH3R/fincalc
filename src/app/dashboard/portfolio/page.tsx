@@ -805,9 +805,9 @@ function PortfolioPageInner() {
       {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Valeur totale', value: loading ? '—' : fmtCompact(totalValue), sub: `${positions.length} position${positions.length !== 1 ? 's' : ''}` },
+          { label: 'Valeur totale', value: loading ? '—' : fmt(totalValue), sub: `${positions.length} position${positions.length !== 1 ? 's' : ''}` },
           { label: 'Plus/Moins-value', value: loading ? '—' : (totalPL >= 0 ? '+' : '') + fmt(totalPL), sub: loading ? '' : fmtPct(totalPLPct), colored: true, positive: totalPL >= 0 },
-          { label: 'Investi', value: loading ? '—' : fmtCompact(totalCost), sub: 'Coût de revient total' },
+          { label: 'Investi', value: loading ? '—' : fmt(totalCost), sub: 'Coût de revient total' },
           { label: 'Meilleure perf.', value: bestPerformer ? fmtPct(bestPerformer.plPct) : '—', sub: bestPerformer?.name ?? 'Aucune position', colored: true, positive: (bestPerformer?.plPct ?? 0) >= 0 },
         ].map((k, i) => (
           <Card key={i}>

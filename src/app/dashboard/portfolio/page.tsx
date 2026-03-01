@@ -61,7 +61,7 @@ const ASSET_COLORS: Record<AssetType, string> = {
   SCPI: '#f472b6', LIVRET: '#34d399', CASH: '#94a3b8',
 }
 
-const PIE_COLORS = ['#818cf8', '#38bdf8', '#fb923c', '#f472b6', '#34d399', '#94a3b8']
+const PIE_COLORS = ['#8b96fc', '#38bdf8', '#fb923c', '#f472b6', '#34d399', '#94a3b8']
 
 // Tickers crypto qui nécessitent l'API CoinGecko (pas Finnhub)
 const MANUAL_ASSET_TYPES: AssetType[] = ['SCPI', 'LIVRET', 'CASH']

@@ -764,8 +764,9 @@ function PeaCtoCryptoSection({
 
   // Nouvelle position
   const [showAddPos, setShowAddPos] = useState(false)
-  const defaultAssetType: AssetType = isCrypto ? 'CRYPTO' : 'ETF'
-  const [newPos, setNewPos] = useState({ assetType: defaultAssetType, symbol: '', name: '', quantity: '', pru: '', isin: '' })
+  const [newPos, setNewPos] = useState<{ assetType: AssetType; symbol: string; name: string; quantity: string; pru: string; isin: string }>(
+    { assetType: isCrypto ? 'CRYPTO' : 'ETF', symbol: '', name: '', quantity: '', pru: '', isin: '' }
+  )
   const [addingPos, setAddingPos] = useState(false)
   const [etfMatch, setEtfMatch] = useState<ETFInfo | null>(null)
 

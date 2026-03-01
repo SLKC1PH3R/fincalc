@@ -66,12 +66,22 @@ async function finnhubQuote(symbol: string): Promise<{ price: number; changePct:
   }
 }
 
-// Récupère le prix d'une position : Finnhub en priorité, Yahoo Finance en fallback
-// (Yahoo supporte .PA, .AS, .DE, .MI, .MC... sans clé API)
+// Récupère le prix d'une position.
+// Ordre : Finnhub (US) + Yahoo (symbole brut) en parallèle,
+// puis si aucun résultat : tentative avec suffixes de places européennes courants.
 async function getPositionPrice(symbol: string): Promise<{ price: number; changePct: number } | null> {
-  const finnhub = await finnhubQuote(symbol)
+  // Si le symbole a déjà un suffixe d'exchange (.PA, .AS, …), aller direct sur Yahoo
+  if (/\.(PA|AS|DE|L|MI|SW|MC|BR|LS|ST|HE|CO|OL|VI)$/i.test(symbol)) {
+    return yahooQuote(symbol)
+  }
+  // Sinon : Finnhub (actions US) + Yahoo (sans suffixe) en parallèle
+  const [finnhub, yahoo] = await Promise.all([finnhubQuote(symbol), yahooQuote(symbol)])
   if (finnhub) return finnhub
-  return yahooQuote(symbol)
+  if (yahoo) return yahoo
+  // Fallback : essayer les places européennes courantes en parallèle
+  const suffixes = ['.PA', '.AS', '.DE', '.L', '.MI', '.SW', '.MC']
+  const results = await Promise.all(suffixes.map(s => yahooQuote(symbol + s)))
+  return results.find(r => r !== null) ?? null
 }
 
 // Taux USD→EUR via Yahoo Finance (fallback 0.92)

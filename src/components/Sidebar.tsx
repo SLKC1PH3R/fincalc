@@ -98,6 +98,7 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [envelopes, setEnvelopes] = useState<PatrimoineEnvelope[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
+  const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [addingType, setAddingType] = useState<EnvelopeType | null>(null)
@@ -264,7 +265,7 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
 
             {(collapsed || !collapsedSections.has('Patrimoine')) && (
               <div className="space-y-0.5">
-                {/* Vue d'ensemble — item principal */}
+                {/* Vue d'ensemble — item collapsible comme les simulations */}
                 <div>
                   <div className="flex items-center gap-0.5">
                     <Link
@@ -277,13 +278,34 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                       )}
                     >
                       <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
-                      {!collapsed && <span className="text-xs font-medium flex-1">Vue d'ensemble</span>}
+                      {!collapsed && (
+                        <>
+                          <span className="text-xs font-medium flex-1">Vue d'ensemble</span>
+                          {envelopes.length > 0 && (
+                            <span style={{ fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
+                              {envelopes.length}
+                            </span>
+                          )}
+                        </>
+                      )}
                     </Link>
+
+                    {!collapsed && (
+                      <button
+                        onClick={() => setPatrimoineExpanded(v => !v)}
+                        className="flex items-center justify-center h-6 w-6 rounded-md transition-colors flex-shrink-0"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <ChevronDown className="h-3 w-3" style={{ transform: patrimoineExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                      </button>
+                    )}
                   </div>
 
-                  {/* Enveloppes — sous-items indentés comme des simulations */}
-                  {!collapsed && (
-                    <div className="ml-4 mt-0.5 space-y-0.5">
+                  {/* Enveloppes + Ajouter — sous-items avec bordure gauche */}
+                  {!collapsed && patrimoineExpanded && (
+                    <div className="mt-0.5 ml-5 pl-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
                       {envelopes.slice(0, 10).map(env => {
                         const Icon = ENVELOPE_ICONS[env.type]
                         const color = ENVELOPE_COLORS[env.type]

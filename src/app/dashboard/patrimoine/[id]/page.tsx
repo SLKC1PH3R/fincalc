@@ -764,7 +764,8 @@ function PeaCtoCryptoSection({
 
   // Nouvelle position
   const [showAddPos, setShowAddPos] = useState(false)
-  const [newPos, setNewPos] = useState({ assetType: 'ETF' as AssetType, symbol: '', name: '', quantity: '', pru: '', isin: '' })
+  const defaultAssetType: AssetType = isCrypto ? 'CRYPTO' : 'ETF'
+  const [newPos, setNewPos] = useState({ assetType: defaultAssetType, symbol: '', name: '', quantity: '', pru: '', isin: '' })
   const [addingPos, setAddingPos] = useState(false)
   const [etfMatch, setEtfMatch] = useState<ETFInfo | null>(null)
 
@@ -812,7 +813,7 @@ function PeaCtoCryptoSection({
       }
       const res = await fetch('/api/portfolio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) throw new Error()
-      setNewPos({ assetType: 'ETF', symbol: '', name: '', quantity: '', pru: '', isin: '' })
+      setNewPos({ assetType: isCrypto ? 'CRYPTO' : 'ETF', symbol: '', name: '', quantity: '', pru: '', isin: '' })
       setEtfMatch(null)
       setShowAddPos(false)
       onReload()
@@ -934,19 +935,26 @@ function PeaCtoCryptoSection({
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Type</Label>
-                  <Select value={newPos.assetType} onValueChange={(v: AssetType) => setNewPos(p => ({ ...p, assetType: v }))}>
-                    <SelectTrigger style={{ width: 100 }}><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {(['ETF', 'STOCK', 'CRYPTO', 'SCPI', 'CASH'] as AssetType[]).map(t => (
-                        <SelectItem key={t} value={t}>{ASSET_LABELS[t]}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isCrypto ? (
+                    <div style={{ width: 100, height: 36, display: 'flex', alignItems: 'center', padding: '0 10px', borderRadius: 6, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', fontSize: 13, color: 'var(--text-muted-c)' }}>
+                      Crypto
+                    </div>
+                  ) : (
+                    <Select value={newPos.assetType} onValueChange={(v: AssetType) => setNewPos(p => ({ ...p, assetType: v }))}>
+                      <SelectTrigger style={{ width: 100 }}><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {(['ETF', 'STOCK', 'SCPI', 'CASH'] as AssetType[]).map(t => (
+                          <SelectItem key={t} value={t}>{ASSET_LABELS[t]}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
                 <div>
                   <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Symbole</Label>
                   <Input value={newPos.symbol} onChange={handleSymbolChange} placeholder={isCrypto ? 'BTC' : 'CW8.PA'} style={{ width: 100 }} />
                 </div>
+                {!isCrypto && (
                 <div>
                   <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
                     ISIN
@@ -956,6 +964,7 @@ function PeaCtoCryptoSection({
                   </Label>
                   <Input value={newPos.isin} onChange={handleIsinChange} placeholder="FR0011…" style={{ width: 140 }} />
                 </div>
+                )}
                 <div>
                   <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
                     Nom

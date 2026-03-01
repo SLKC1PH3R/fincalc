@@ -283,19 +283,18 @@ function GererIndicesModal({
           Ajouter un indice
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div>
               <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Symbole</label>
-              <Input
-                placeholder="ex: AAPL, ^DJI, SOL"
+              <SymbolAutocomplete
                 value={addSymbol}
-                onChange={e => setAddSymbol(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleAdd()}
-                style={{ fontSize: 13 }}
+                assetType={addType === 'crypto' ? 'CRYPTO' : 'STOCK'}
+                onChange={v => setAddSymbol(v)}
+                onSelect={(symbol, name) => { setAddSymbol(symbol); setAddLabel(name) }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Libellé</label>
+              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Libellé affiché</label>
               <Input
                 placeholder="ex: Apple, Dow Jones"
                 value={addLabel}

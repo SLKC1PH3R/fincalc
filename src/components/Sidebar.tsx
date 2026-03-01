@@ -145,6 +145,17 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
     }
   }
 
+  const deleteEnvelope = async (id: string) => {
+    setEnvelopes(prev => prev.filter(e => e.id !== id))
+    try {
+      await fetch(`/api/patrimoine/envelopes/${id}`, { method: 'DELETE' })
+      window.dispatchEvent(new Event('patrimoine-updated'))
+      if (pathname === `/dashboard/patrimoine/${id}`) router.push('/dashboard/patrimoine')
+    } catch {
+      loadEnvelopes() // restaure en cas d'erreur
+    }
+  }
+
   const deleteSim = async (id: string) => {
     setSims(prev => prev.filter(s => s.id !== id))
     try {
@@ -312,26 +323,38 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                         const href = `/dashboard/patrimoine/${env.id}`
                         const isActive = pathname === href
                         return (
-                          <Link
+                          <div
                             key={env.id}
-                            href={href}
-                            className={cn(
-                              'sb-link flex items-center gap-2 rounded-lg px-2 py-1.5',
-                              isActive && 'sb-link-active'
-                            )}
+                            className="group flex items-center rounded-lg"
+                            style={{ background: isActive ? 'var(--sb-active-bg)' : 'transparent' }}
+                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
+                            onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                           >
-                            <div style={{
-                              width: 12, height: 12, borderRadius: 3,
-                              background: color + '20', flexShrink: 0,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            }}>
-                              <Icon className="h-2 w-2" style={{ color }} />
-                            </div>
-                            <span className="text-xs flex-1 truncate" style={{ color: isActive ? 'var(--sb-text-strong)' : 'var(--sb-text)' }}>
-                              {env.name}
-                            </span>
-                            {isActive && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
-                          </Link>
+                            <Link
+                              href={href}
+                              className="flex items-center gap-2 py-1.5 px-2 flex-1 min-w-0 overflow-hidden"
+                              style={{ textDecoration: 'none' }}
+                            >
+                              <div style={{
+                                width: 12, height: 12, borderRadius: 3,
+                                background: color + '20', flexShrink: 0,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                <Icon className="h-2 w-2" style={{ color }} />
+                              </div>
+                              <span className="text-xs flex-1 truncate" style={{ color: isActive ? 'var(--sb-text-strong)' : 'var(--sb-text)', fontWeight: isActive ? 600 : 400 }}>
+                                {env.name}
+                              </span>
+                            </Link>
+                            <button
+                              onClick={e => { e.preventDefault(); e.stopPropagation(); deleteEnvelope(env.id) }}
+                              className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
+                              style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
                         )
                       })}
 

@@ -828,6 +828,26 @@ function PeaCtoCryptoSection({
     } catch { toast({ title: 'Erreur suppression', variant: 'destructive' }) }
   }
 
+  // Édition inline d'une position
+  const [editingPos, setEditingPos] = useState<{ id: string; quantity: string; pru: string } | null>(null)
+
+  const startEdit = (pos: Position) => setEditingPos({ id: pos.id, quantity: String(pos.quantity), pru: String(pos.pru) })
+  const cancelEdit = () => setEditingPos(null)
+
+  const savePosition = async () => {
+    if (!editingPos) return
+    try {
+      const res = await fetch(`/api/portfolio/${editingPos.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: parseFloat(editingPos.quantity), pru: parseFloat(editingPos.pru) }),
+      })
+      if (!res.ok) throw new Error()
+      setEditingPos(null)
+      onReload()
+    } catch { toast({ title: 'Erreur modification', variant: 'destructive' }) }
+  }
+
   // Géographie pour les ETFs/actions
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
     const positionsForGeo = positions
@@ -1009,9 +1029,12 @@ function PeaCtoCryptoSection({
                 </thead>
                 <tbody>
                   {positions.map(pos => {
+                    const isEditing = editingPos?.id === pos.id
                     const pd = prices[pos.symbol]
-                    const value = pd ? pd.priceEur * pos.quantity : pos.pru * pos.quantity
-                    const perf = pd ? ((pd.priceEur - pos.pru) / pos.pru) * 100 : null
+                    const qty = isEditing ? parseFloat(editingPos.quantity) || pos.quantity : pos.quantity
+                    const pru = isEditing ? parseFloat(editingPos.pru) || pos.pru : pos.pru
+                    const value = pd ? pd.priceEur * qty : pru * qty
+                    const perf = pd ? ((pd.priceEur - pru) / pru) * 100 : null
                     const color = perf === null ? 'var(--text-subtle)' : perf >= 0 ? '#34d399' : '#ef4444'
 
                     return (
@@ -1028,8 +1051,33 @@ function PeaCtoCryptoSection({
                           <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{pos.symbol}</div>
                           <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{pos.name}</div>
                         </td>
-                        <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{pos.quantity}</td>
-                        <td style={{ padding: '10px 16px', color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtEur(pos.pru)}</td>
+                        <td style={{ padding: '8px 16px', fontVariantNumeric: 'tabular-nums' }}>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={editingPos.quantity}
+                              onChange={e => setEditingPos(p => p ? { ...p, quantity: e.target.value } : null)}
+                              onKeyDown={e => { if (e.key === 'Enter') savePosition(); if (e.key === 'Escape') cancelEdit() }}
+                              style={{ width: 72, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                              autoFocus
+                            />
+                          ) : (
+                            <span style={{ color: 'var(--text-primary)' }}>{pos.quantity}</span>
+                          )}
+                        </td>
+                        <td style={{ padding: '8px 16px', fontVariantNumeric: 'tabular-nums' }}>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={editingPos.pru}
+                              onChange={e => setEditingPos(p => p ? { ...p, pru: e.target.value } : null)}
+                              onKeyDown={e => { if (e.key === 'Enter') savePosition(); if (e.key === 'Escape') cancelEdit() }}
+                              style={{ width: 90, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                            />
+                          ) : (
+                            <span style={{ color: 'var(--text-muted-c)' }}>{fmtEur(pos.pru)}</span>
+                          )}
+                        </td>
                         <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
                           {pd ? fmtEur(pd.priceEur) : <span style={{ color: 'var(--text-subtle)' }}>—</span>}
                         </td>
@@ -1037,10 +1085,26 @@ function PeaCtoCryptoSection({
                         <td style={{ padding: '10px 16px', fontWeight: 600, color, fontVariantNumeric: 'tabular-nums' }}>
                           {perf !== null ? `${perf >= 0 ? '+' : ''}${perf.toFixed(2)} %` : '—'}
                         </td>
-                        <td style={{ padding: '10px 16px' }}>
-                          <button onClick={() => deletePosition(pos.id)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
-                            <Trash2 style={{ width: 13, height: 13 }} />
-                          </button>
+                        <td style={{ padding: '8px 16px' }}>
+                          {isEditing ? (
+                            <div style={{ display: 'flex', gap: 2 }}>
+                              <button onClick={savePosition} style={{ padding: 4, borderRadius: 6, background: 'rgba(52,211,153,0.12)', border: 'none', cursor: 'pointer', color: '#34d399' }}>
+                                <Check style={{ width: 13, height: 13 }} />
+                              </button>
+                              <button onClick={cancelEdit} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                                <X style={{ width: 13, height: 13 }} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', gap: 2 }}>
+                              <button onClick={() => startEdit(pos)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                                <Pencil style={{ width: 13, height: 13 }} />
+                              </button>
+                              <button onClick={() => deletePosition(pos.id)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                                <Trash2 style={{ width: 13, height: 13 }} />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )

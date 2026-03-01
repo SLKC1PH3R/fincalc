@@ -155,7 +155,7 @@ export default function EnvelopeDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ positions: marketPositions }),
       })
-      if (res.ok) setPrices(await res.json())
+      if (res.ok) { const data = await res.json(); setPrices(data.prices ?? {}) }
     } catch { /* ignore */ }
     finally { setPricesLoading(false) }
   }, [])
@@ -205,7 +205,7 @@ export default function EnvelopeDetailPage() {
   // Valeur de marché
   const totalMarketValue = useMemo(() => {
     if (!envelope) return 0
-    if (envelope.totalValue !== null) return envelope.totalValue
+    if (envelope.totalValue != null) return envelope.totalValue
     return envelope.positions.reduce((s, p) => {
       const pd = prices[p.symbol]
       return s + (pd ? pd.priceEur * p.quantity : p.pru * p.quantity)

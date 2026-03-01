@@ -8,7 +8,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, PieChart, Plus, Landmark, Bitcoin,
+  Sun, Moon, Plus, Landmark, Bitcoin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -99,7 +99,6 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
   const [envelopes, setEnvelopes] = useState<PatrimoineEnvelope[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
-  const [patrimoineCollapsed, setPatrimoineCollapsed] = useState(false)
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [addingType, setAddingType] = useState<EnvelopeType | null>(null)
   const router = useRouter()
@@ -246,11 +245,11 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
             </Link>
           </div>
 
-          {/* ── Section Patrimoine dynamique ── */}
+          {/* ── Section Patrimoine — même pattern que les sections statiques ── */}
           <div>
             {!collapsed && (
               <button
-                onClick={() => setPatrimoineCollapsed(v => !v)}
+                onClick={() => toggleSection('Patrimoine')}
                 className="flex items-center justify-between w-full px-2 mb-1.5 group"
               >
                 <span className="text-[11px] font-semibold uppercase tracking-widest transition-colors"
@@ -258,132 +257,114 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
                   Patrimoine
                 </span>
                 <ChevronDown className="h-3 w-3 transition-all flex-shrink-0"
-                  style={{ color: 'var(--sb-text-dim)', transform: patrimoineCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+                  style={{ color: 'var(--sb-text-dim)', transform: collapsedSections.has('Patrimoine') ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
               </button>
             )}
             {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'var(--sb-divider)' }} />}
 
-            {(collapsed || !patrimoineCollapsed) && (
+            {(collapsed || !collapsedSections.has('Patrimoine')) && (
               <div className="space-y-0.5">
-                {/* Vue d'ensemble */}
-                <Link
-                  href="/dashboard/patrimoine"
-                  title={collapsed ? 'Vue d\'ensemble' : undefined}
-                  className={cn(
-                    'sb-link flex items-center gap-2.5 rounded-lg',
-                    collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                    pathname === '/dashboard/patrimoine' && 'sb-link-active'
-                  )}
-                >
-                  <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
-                  {!collapsed && <span className="text-xs font-medium flex-1">Vue d'ensemble</span>}
-                </Link>
-
-                {/* Mon Portefeuille (existant) */}
-                <Link
-                  href="/dashboard/portfolio"
-                  title={collapsed ? 'Mon Portefeuille' : undefined}
-                  className={cn(
-                    'sb-link flex items-center gap-2.5 rounded-lg',
-                    collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                    pathname === '/dashboard/portfolio' && 'sb-link-active'
-                  )}
-                >
-                  <PieChart className="h-3.5 w-3.5 flex-shrink-0" />
-                  {!collapsed && <span className="text-xs font-medium flex-1">Mon Portefeuille</span>}
-                </Link>
-
-                {/* Enveloppes dynamiques */}
-                {envelopes.slice(0, 10).map(env => {
-                  const Icon = ENVELOPE_ICONS[env.type]
-                  const color = ENVELOPE_COLORS[env.type]
-                  const href = `/dashboard/patrimoine/${env.id}`
-                  const isActive = pathname === href
-
-                  return (
+                {/* Vue d'ensemble — item principal */}
+                <div>
+                  <div className="flex items-center gap-0.5">
                     <Link
-                      key={env.id}
-                      href={href}
-                      title={collapsed ? env.name : undefined}
+                      href="/dashboard/patrimoine"
+                      title={collapsed ? 'Vue d\'ensemble' : undefined}
                       className={cn(
-                        'sb-link flex items-center gap-2.5 rounded-lg',
+                        'sb-link flex items-center gap-2.5 rounded-lg flex-1',
                         collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                        isActive && 'sb-link-active'
+                        pathname === '/dashboard/patrimoine' && 'sb-link-active'
                       )}
                     >
-                      {collapsed ? (
-                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                      ) : (
-                        <>
-                          <div style={{
-                            width: 14, height: 14, borderRadius: 4,
-                            background: color + '20', flexShrink: 0,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            <Icon className="h-2.5 w-2.5" style={{ color: color }} />
-                          </div>
-                          <span className="text-xs font-medium flex-1 truncate">{env.name}</span>
-                          {isActive && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
-                        </>
-                      )}
+                      <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
+                      {!collapsed && <span className="text-xs font-medium flex-1">Vue d'ensemble</span>}
                     </Link>
-                  )
-                })}
-
-                {/* Lien "voir tout" si > 10 */}
-                {!collapsed && envelopes.length > 10 && (
-                  <Link
-                    href="/dashboard/patrimoine"
-                    className="block px-2.5 py-1.5 rounded-lg text-[11px] transition-colors"
-                    style={{ color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-text)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
-                  >
-                    +{envelopes.length - 10} de plus…
-                  </Link>
-                )}
-
-                {/* Bouton Ajouter — sous-menu */}
-                {!collapsed && (
-                  <div>
-                    <button
-                      onClick={() => setAddMenuOpen(v => !v)}
-                      className="sb-link flex items-center gap-2 rounded-lg px-2.5 py-1.5 w-full"
-                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                    >
-                      <Plus className="h-3 w-3 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)' }} />
-                      <span className="text-xs flex-1">Ajouter une enveloppe</span>
-                      <ChevronDown className="h-3 w-3 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-                    </button>
-                    {addMenuOpen && (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, padding: '4px 4px 4px 8px' }}>
-                        {ENVELOPE_TYPES.map(type => {
-                          const Icon = ENVELOPE_ICONS[type]
-                          const color = ENVELOPE_COLORS[type]
-                          const isLoading = addingType === type
-                          return (
-                            <button
-                              key={type}
-                              onClick={() => handleAddEnvelope(type)}
-                              disabled={!!addingType}
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 5,
-                                padding: '5px 7px', borderRadius: 6, border: 'none',
-                                background: color + '14', cursor: addingType ? 'wait' : 'pointer',
-                                opacity: addingType && !isLoading ? 0.5 : 1,
-                              }}
-                            >
-                              <Icon className="h-2.5 w-2.5 flex-shrink-0" style={{ color }} />
-                              <span style={{ fontSize: 11, color: 'var(--sb-text)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                                {isLoading ? '…' : ENVELOPE_LABELS[type]}
-                              </span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    )}
                   </div>
-                )}
+
+                  {/* Enveloppes — sous-items indentés comme des simulations */}
+                  {!collapsed && (
+                    <div className="ml-4 mt-0.5 space-y-0.5">
+                      {envelopes.slice(0, 10).map(env => {
+                        const Icon = ENVELOPE_ICONS[env.type]
+                        const color = ENVELOPE_COLORS[env.type]
+                        const href = `/dashboard/patrimoine/${env.id}`
+                        const isActive = pathname === href
+                        return (
+                          <Link
+                            key={env.id}
+                            href={href}
+                            className={cn(
+                              'sb-link flex items-center gap-2 rounded-lg px-2 py-1.5',
+                              isActive && 'sb-link-active'
+                            )}
+                          >
+                            <div style={{
+                              width: 12, height: 12, borderRadius: 3,
+                              background: color + '20', flexShrink: 0,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              <Icon className="h-2 w-2" style={{ color }} />
+                            </div>
+                            <span className="text-xs flex-1 truncate" style={{ color: isActive ? 'var(--sb-text-strong)' : 'var(--sb-text)' }}>
+                              {env.name}
+                            </span>
+                            {isActive && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                          </Link>
+                        )
+                      })}
+
+                      {envelopes.length > 10 && (
+                        <Link
+                          href="/dashboard/patrimoine"
+                          className="block px-2 py-1 rounded-lg text-[11px]"
+                          style={{ color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                        >
+                          +{envelopes.length - 10} de plus…
+                        </Link>
+                      )}
+
+                      {/* Ajouter — sous-menu */}
+                      <div>
+                        <button
+                          onClick={() => setAddMenuOpen(v => !v)}
+                          className="sb-link flex items-center gap-2 rounded-lg px-2 py-1.5 w-full"
+                          style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                        >
+                          <Plus className="h-2.5 w-2.5 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)' }} />
+                          <span className="text-xs flex-1">Ajouter…</span>
+                          <ChevronDown className="h-2.5 w-2.5 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                        </button>
+                        {addMenuOpen && (
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: '3px 0 3px 4px' }}>
+                            {ENVELOPE_TYPES.map(type => {
+                              const Icon = ENVELOPE_ICONS[type]
+                              const color = ENVELOPE_COLORS[type]
+                              const isLoading = addingType === type
+                              return (
+                                <button
+                                  key={type}
+                                  onClick={() => handleAddEnvelope(type)}
+                                  disabled={!!addingType}
+                                  style={{
+                                    display: 'flex', alignItems: 'center', gap: 4,
+                                    padding: '4px 6px', borderRadius: 5, border: 'none',
+                                    background: color + '14', cursor: addingType ? 'wait' : 'pointer',
+                                    opacity: addingType && !isLoading ? 0.5 : 1,
+                                  }}
+                                >
+                                  <Icon className="h-2 w-2 flex-shrink-0" style={{ color }} />
+                                  <span style={{ fontSize: 10, color: 'var(--sb-text)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                    {isLoading ? '…' : ENVELOPE_LABELS[type]}
+                                  </span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

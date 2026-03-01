@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
   const body = await req.json()
-  const { assetType, symbol, name, quantity, pru, currency } = body
+  const { assetType, symbol, name, quantity, pru, currency, envelopeId } = body
 
   if (!assetType || !symbol || !name || quantity == null || pru == null) {
     return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
@@ -35,9 +35,18 @@ export async function POST(req: NextRequest) {
     update: {},
   })
 
+  // Vérifier que l'enveloppe appartient bien à cet utilisateur
+  if (envelopeId) {
+    const env = await prisma.patrimoineEnvelope.findFirst({
+      where: { id: envelopeId, portfolio: { userId: session.user.id } },
+    })
+    if (!env) return NextResponse.json({ error: 'Enveloppe introuvable' }, { status: 404 })
+  }
+
   const position = await prisma.portfolioPosition.create({
     data: {
       portfolioId: portfolio.id,
+      envelopeId: envelopeId ?? null,
       assetType,
       symbol: symbol.trim().toUpperCase(),
       name: name.trim(),

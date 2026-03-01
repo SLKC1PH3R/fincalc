@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd.exe /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install react-simple-maps 2>&1\")",
+      "Bash(cmd.exe /c \"where npm\")"
+    ]
+  }
+}

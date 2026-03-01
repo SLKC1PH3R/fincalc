@@ -1,5 +1,6 @@
 'use client'
-import { Suspense, useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { Suspense, useState, useEffect, useMemo, useCallback, useRef, type ComponentType } from 'react'
+import { useRouter } from 'next/navigation'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,11 +13,13 @@ import { fmt } from '@/lib/utils'
 import {
   RefreshCw, Plus, Pencil, Trash2, TrendingUp,
   X, Check, Layers, ArrowRight, Flame, Calculator, Settings2,
+  Building2, PiggyBank, Shield, Wallet, Landmark, Bitcoin, ChevronRight,
 } from 'lucide-react'
 import Link from 'next/link'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 type AssetType = 'STOCK' | 'ETF' | 'CRYPTO' | 'SCPI' | 'LIVRET' | 'CASH'
+type EnvelopeType = 'LIVRET' | 'IMMOBILIER' | 'PEA' | 'AV' | 'CTO' | 'CRYPTO' | 'PER' | 'CASH'
 
 interface Position {
   id: string
@@ -26,6 +29,17 @@ interface Position {
   quantity: number
   pru: number
   currency: string
+  envelopeId?: string | null
+}
+
+interface Envelope {
+  id: string
+  type: EnvelopeType
+  name: string
+  metadata: Record<string, unknown>
+  positions: Position[]
+  positionCount: number
+  totalValue: number | null
 }
 
 interface PriceData {
@@ -62,6 +76,33 @@ const ASSET_COLORS: Record<AssetType, string> = {
 }
 
 const MANUAL_ASSET_TYPES: AssetType[] = ['SCPI', 'LIVRET', 'CASH']
+
+// ── Config enveloppes ────────────────────────────────────────────────────────
+const ENVELOPE_TYPE_CONFIG: Record<EnvelopeType, {
+  label: string; description: string; color: string
+  icon: ComponentType<{ style?: object; className?: string }>; placeholder: string; assetClass: string
+}> = {
+  LIVRET:     { label: 'Livret réglementé', description: 'Livret A, LDDS, LEP, PEL…',          color: '#34d399', icon: PiggyBank,   placeholder: 'Mon Livret A',               assetClass: 'Épargne' },
+  IMMOBILIER: { label: 'Immobilier',        description: 'Résidence principale, locatif…',      color: '#f472b6', icon: Building2,   placeholder: 'Résidence principale',       assetClass: 'Immobilier' },
+  PEA:        { label: 'PEA',              description: 'Plan Épargne Actions — plafond 150 k€', color: '#818cf8', icon: TrendingUp,  placeholder: 'Mon PEA',                    assetClass: 'Actions' },
+  AV:         { label: 'Assurance Vie',     description: 'Contrat fonds euros ou UC',           color: '#fb923c', icon: Shield,      placeholder: 'Mon contrat AV',             assetClass: 'Épargne' },
+  CTO:        { label: 'Compte-Titres',     description: 'CTO sans limite de versements',       color: '#38bdf8', icon: TrendingUp,  placeholder: 'Mon CTO',                    assetClass: 'Actions' },
+  CRYPTO:     { label: 'Crypto',            description: 'Wallet, exchange (Ledger, Binance…)', color: '#f59e0b', icon: Bitcoin,     placeholder: 'Mon wallet crypto',           assetClass: 'Crypto' },
+  PER:        { label: 'PER',              description: 'Plan Épargne Retraite indiv./collectif', color: '#a78bfa', icon: Landmark,  placeholder: 'Mon PER',                    assetClass: 'Retraite' },
+  CASH:       { label: 'Liquidités',        description: 'Compte courant, épargne bancaire',    color: '#94a3b8', icon: Wallet,      placeholder: 'Compte courant BNP',         assetClass: 'Liquidités' },
+}
+
+const LIVRET_CONFIG: Record<string, { label: string; maxBalance: number | null; rate: number }> = {
+  LIVRET_A:     { label: 'Livret A',     maxBalance: 22_950, rate: 2.4 },
+  LDDS:         { label: 'LDDS',         maxBalance: 12_000, rate: 2.4 },
+  LEP:          { label: 'LEP',          maxBalance: 10_000, rate: 3.5 },
+  LIVRET_JEUNE: { label: 'Livret Jeune', maxBalance:  1_600, rate: 4.0 },
+  PEL:          { label: 'PEL',          maxBalance: 61_200, rate: 2.25 },
+  CEL:          { label: 'CEL',          maxBalance: 15_300, rate: 1.5 },
+  AUTRE:        { label: 'Autre livret', maxBalance: null,   rate: 0 },
+}
+
+const PEA_MAX_DEPOSITS = 150_000
 
 // Livrets français prédéfinis { symbol, name, rate (indicatif) }
 const LIVRETS_PREDEFINIS = [
@@ -662,6 +703,348 @@ function PositionDialog({
   )
 }
 
+// ── Wizard création enveloppe ────────────────────────────────────────────────
+function CreateEnvelopeWizard({ open, onClose, onCreated }: {
+  open: boolean; onClose: () => void; onCreated: () => void
+}) {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [type, setType] = useState<EnvelopeType | null>(null)
+  const [name, setName] = useState('')
+  const [meta, setMeta] = useState<Record<string, unknown>>({})
+  const [saving, setSaving] = useState(false)
+
+  const m = (k: string) => (v: unknown) => setMeta(p => ({ ...p, [k]: v }))
+
+  const reset = () => { setStep(1); setType(null); setName(''); setMeta({}); setSaving(false) }
+  const handleClose = () => { reset(); onClose() }
+
+  const handleTypeSelect = (t: EnvelopeType) => {
+    setType(t)
+    setName(ENVELOPE_TYPE_CONFIG[t].placeholder)
+    setStep(2)
+  }
+
+  const handleSubmit = async () => {
+    if (!type || !name.trim()) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/patrimoine/envelopes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, name: name.trim(), metadata: meta }),
+      })
+      if (!res.ok) throw new Error()
+      const envelope = await res.json()
+      toast({ variant: 'success', title: `✓ ${name} créé` })
+      onCreated()
+      handleClose()
+      router.push(`/dashboard/portfolio/${envelope.id}`)
+    } catch {
+      toast({ variant: 'destructive', title: 'Erreur lors de la création' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!open) return null
+
+  const cfg = type ? ENVELOPE_TYPE_CONFIG[type] : null
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={handleClose}>
+      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 540, boxShadow: '0 24px 64px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+          <div>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+              {step === 1 ? 'Ajouter une enveloppe' : step === 2 ? 'Nommer votre enveloppe' : `Configurer — ${cfg?.label}`}
+            </h2>
+            <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 2 }}>Étape {step} / 3</p>
+          </div>
+          <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+            <X style={{ width: 18, height: 18, color: 'var(--text-muted-c)' }} />
+          </button>
+        </div>
+
+        {/* Step 1 — Choisir le type */}
+        {step === 1 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {(Object.entries(ENVELOPE_TYPE_CONFIG) as [EnvelopeType, typeof ENVELOPE_TYPE_CONFIG[EnvelopeType]][]).map(([t, c]) => {
+              const Icon = c.icon
+              return (
+                <button key={t} onClick={() => handleTypeSelect(t)} style={{ background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = c.color + '60'; e.currentTarget.style.background = c.color + '10' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.background = 'var(--row-hover)' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: c.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                    <Icon style={{ width: 16, height: 16, color: c.color }} />
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{c.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{c.description}</div>
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Step 2 — Nom */}
+        {step === 2 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {cfg && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, background: cfg.color + '12', border: `1px solid ${cfg.color}30` }}>
+                <cfg.icon style={{ width: 20, height: 20, color: cfg.color }} />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{cfg.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.description}</div>
+                </div>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label>Nom de l&apos;enveloppe</Label>
+              <Input value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key === 'Enter' && name.trim() && setStep(3)} autoFocus />
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="outline" onClick={() => setStep(1)} style={{ flex: 1 }}>Retour</Button>
+              <Button onClick={() => setStep(3)} disabled={!name.trim()} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>Suivant</Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3 — Onboarding par type */}
+        {step === 3 && type && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+            {/* LIVRET */}
+            {type === 'LIVRET' && (<>
+              <div className="space-y-1.5">
+                <Label>Type de livret</Label>
+                <Select value={String(meta.livretType ?? '')} onValueChange={v => { m('livretType')(v); const lc = LIVRET_CONFIG[v]; if (lc) { m('rate')(lc.rate); m('maxBalance')(lc.maxBalance) } }}>
+                  <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(LIVRET_CONFIG).map(([k, lc]) => <SelectItem key={k} value={k}>{lc.label} — {lc.rate} %</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {meta.livretType && LIVRET_CONFIG[meta.livretType as string] && (
+                <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
+                  Taux : <strong>{LIVRET_CONFIG[meta.livretType as string].rate} %</strong>
+                  {LIVRET_CONFIG[meta.livretType as string].maxBalance != null && <> · Plafond légal : <strong>{(LIVRET_CONFIG[meta.livretType as string].maxBalance as number).toLocaleString('fr-FR')} €</strong></>}
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label>Solde actuel (€)</Label>
+                <Input type="number" placeholder="8 500" value={String(meta.balance ?? '')} onChange={e => m('balance')(+e.target.value)} />
+              </div>
+            </>)}
+
+            {/* IMMOBILIER */}
+            {type === 'IMMOBILIER' && (<>
+              <div className="space-y-1.5">
+                <Label>Type de bien</Label>
+                <Select value={String(meta.propertyType ?? '')} onValueChange={m('propertyType')}>
+                  <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RESIDENCE_PRINCIPALE">Résidence principale</SelectItem>
+                    <SelectItem value="INVESTISSEMENT">Investissement locatif</SelectItem>
+                    <SelectItem value="SCPI">SCPI / Pierre-papier</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5"><Label>Adresse</Label><Input placeholder="12 rue de la Paix, Paris" value={String(meta.address ?? '')} onChange={e => m('address')(e.target.value)} /></div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Surface (m²)</Label><Input type="number" placeholder="65" value={String(meta.surface ?? '')} onChange={e => m('surface')(+e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Prix d&apos;achat (€)</Label><Input type="number" placeholder="320 000" value={String(meta.purchasePrice ?? '')} onChange={e => m('purchasePrice')(+e.target.value)} /></div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Date d&apos;achat</Label><Input type="date" value={String(meta.purchaseDate ?? '')} onChange={e => m('purchaseDate')(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Valeur actuelle (€)</Label><Input type="number" placeholder="350 000" value={String(meta.currentValue ?? '')} onChange={e => m('currentValue')(+e.target.value)} /></div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Crédit immobilier ?</Label>
+                <Select value={String(meta.hasCredit ?? 'false')} onValueChange={v => m('hasCredit')(v === 'true')}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="false">Non — bien payé comptant</SelectItem>
+                    <SelectItem value="true">Oui — crédit en cours</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {meta.hasCredit === true && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="space-y-1.5"><Label>Capital restant dû (€)</Label><Input type="number" placeholder="180 000" value={String(meta.creditRemaining ?? '')} onChange={e => m('creditRemaining')(+e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>Taux (%)</Label><Input type="number" step="0.01" placeholder="2.5" value={String(meta.creditRate ?? '')} onChange={e => m('creditRate')(+e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>Mensualité (€)</Label><Input type="number" placeholder="1 200" value={String(meta.monthlyPayment ?? '')} onChange={e => m('monthlyPayment')(+e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>Fin du crédit</Label><Input type="date" value={String(meta.creditEndDate ?? '')} onChange={e => m('creditEndDate')(e.target.value)} /></div>
+                </div>
+              )}
+              {meta.propertyType === 'INVESTISSEMENT' && (
+                <div className="space-y-1.5"><Label>Loyer mensuel brut (€)</Label><Input type="number" placeholder="900" value={String(meta.rentalIncome ?? '')} onChange={e => m('rentalIncome')(+e.target.value)} /></div>
+              )}
+            </>)}
+
+            {/* PEA */}
+            {type === 'PEA' && (<>
+              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: '#818cf818', border: '1px solid #818cf830', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
+                Plafond de versements PEA : <strong>150 000 €</strong> · Exonération d&apos;IR après 5 ans de détention
+              </div>
+              <div className="space-y-1.5"><Label>Courtier</Label><Input placeholder="Saxo, Boursorama, Degiro…" value={String(meta.broker ?? '')} onChange={e => m('broker')(e.target.value)} /></div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Date d&apos;ouverture</Label><Input type="date" value={String(meta.openingDate ?? '')} onChange={e => m('openingDate')(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Total versements (€)</Label><Input type="number" placeholder="50 000" value={String(meta.depositsTotal ?? '')} onChange={e => m('depositsTotal')(+e.target.value)} /></div>
+              </div>
+              {meta.depositsTotal != null && Number(meta.depositsTotal) > 0 && (
+                <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+                  Headroom restant : <strong>{(PEA_MAX_DEPOSITS - Number(meta.depositsTotal)).toLocaleString('fr-FR')} €</strong> sur {PEA_MAX_DEPOSITS.toLocaleString('fr-FR')} €
+                </div>
+              )}
+            </>)}
+
+            {/* AV */}
+            {type === 'AV' && (<>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Assureur</Label><Input placeholder="Axa, Spirica, Generali…" value={String(meta.insurer ?? '')} onChange={e => m('insurer')(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Nom du contrat</Label><Input placeholder="Mon AV Spirica" value={String(meta.contractName ?? '')} onChange={e => m('contractName')(e.target.value)} /></div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Date d&apos;ouverture</Label><Input type="date" value={String(meta.openingDate ?? '')} onChange={e => m('openingDate')(e.target.value)} /></div>
+                <div className="space-y-1.5">
+                  <Label>Type</Label>
+                  <Select value={String(meta.avType ?? '')} onValueChange={m('avType')}>
+                    <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fonds_euros">Fonds euros</SelectItem>
+                      <SelectItem value="uc">Unités de compte (UC)</SelectItem>
+                      <SelectItem value="mixte">Mixte</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5"><Label>Valeur de rachat actuelle (€)</Label><Input type="number" placeholder="25 000" value={String(meta.surrenderValue ?? '')} onChange={e => m('surrenderValue')(+e.target.value)} /></div>
+            </>)}
+
+            {/* CTO */}
+            {type === 'CTO' && (<>
+              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+                Vous pourrez ajouter vos positions (actions, ETFs) depuis la page de l&apos;enveloppe.
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Courtier</Label><Input placeholder="Degiro, Saxo, Boursorama…" value={String(meta.broker ?? '')} onChange={e => m('broker')(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Date d&apos;ouverture</Label><Input type="date" value={String(meta.openingDate ?? '')} onChange={e => m('openingDate')(e.target.value)} /></div>
+              </div>
+            </>)}
+
+            {/* CRYPTO */}
+            {type === 'CRYPTO' && (<>
+              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+                Vous pourrez ajouter vos positions crypto depuis la page de l&apos;enveloppe.
+              </div>
+              <div className="space-y-1.5"><Label>Plateforme</Label><Input placeholder="Ledger, Trezor, Binance, Coinbase…" value={String(meta.platform ?? '')} onChange={e => m('platform')(e.target.value)} /></div>
+              <div className="space-y-1.5">
+                <Label>Type de wallet</Label>
+                <Select value={String(meta.walletType ?? '')} onValueChange={m('walletType')}>
+                  <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cold">Cold wallet (hardware)</SelectItem>
+                    <SelectItem value="hot">Hot wallet (logiciel)</SelectItem>
+                    <SelectItem value="exchange">Exchange centralisé (CEX)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>)}
+
+            {/* PER */}
+            {type === 'PER' && (<>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Prestataire</Label><Input placeholder="Linxea, Suravenir, Amundi…" value={String(meta.provider ?? '')} onChange={e => m('provider')(e.target.value)} /></div>
+                <div className="space-y-1.5">
+                  <Label>Type</Label>
+                  <Select value={String(meta.perType ?? '')} onValueChange={m('perType')}>
+                    <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="individuel">PER Individuel</SelectItem>
+                      <SelectItem value="collectif">PER Collectif (ex-PERCO)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5"><Label>Solde actuel (€)</Label><Input type="number" placeholder="15 000" value={String(meta.balance ?? '')} onChange={e => m('balance')(+e.target.value)} /></div>
+            </>)}
+
+            {/* CASH */}
+            {type === 'CASH' && (<>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="space-y-1.5"><Label>Banque</Label><Input placeholder="BNP, Société Générale, Boursorama…" value={String(meta.bank ?? '')} onChange={e => m('bank')(e.target.value)} /></div>
+                <div className="space-y-1.5">
+                  <Label>Type de compte</Label>
+                  <Select value={String(meta.accountType ?? '')} onValueChange={m('accountType')}>
+                    <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="courant">Compte courant</SelectItem>
+                      <SelectItem value="epargne">Compte épargne</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5"><Label>Solde actuel (€)</Label><Input type="number" placeholder="3 500" value={String(meta.balance ?? '')} onChange={e => m('balance')(+e.target.value)} /></div>
+            </>)}
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <Button variant="outline" onClick={() => setStep(2)} style={{ flex: 1 }}>Retour</Button>
+              <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
+                {saving ? <RefreshCw style={{ width: 13, height: 13, marginRight: 5, animation: 'spin 1s linear infinite' }} /> : <Check style={{ width: 13, height: 13, marginRight: 5 }} />}
+                Créer l&apos;enveloppe
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Carte enveloppe ──────────────────────────────────────────────────────────
+function EnvelopeCard({ envelope, computedValue }: { envelope: Envelope; computedValue: number }) {
+  const cfg = ENVELOPE_TYPE_CONFIG[envelope.type]
+  const Icon = cfg.icon
+  return (
+    <Link href={`/dashboard/portfolio/${envelope.id}`} style={{ textDecoration: 'none' }}>
+      <div style={{
+        background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+        borderRadius: 16, padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s',
+        position: 'relative', overflow: 'hidden',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = cfg.color + '50'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.transform = '' }}>
+        <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 0% 0%, ${cfg.color}0e, transparent 55%)`, pointerEvents: 'none' }} />
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.color + '20', border: `1px solid ${cfg.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon style={{ width: 17, height: 17, color: cfg.color }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)' }}>{envelope.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 1 }}>{cfg.label}</div>
+            </div>
+          </div>
+          <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', marginTop: 2 }} />
+        </div>
+        <div style={{ marginTop: 16, position: 'relative' }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+            {fmt(computedValue)}
+          </div>
+          {envelope.positionCount > 0 && (
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
+              {envelope.positionCount} position{envelope.positionCount !== 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 // ── Page principale ──────────────────────────────────────────────────────────
 function PortfolioPageInner() {
   const chart = useChartTheme()
@@ -676,6 +1059,8 @@ function PortfolioPageInner() {
   const [editPosition, setEditPosition] = useState<Position | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [gererOpen, setGererOpen] = useState(false)
+  const [envelopes, setEnvelopes] = useState<Envelope[]>([])
+  const [wizardOpen, setWizardOpen] = useState(false)
 
   // ── Chargement des positions
   const loadPositions = useCallback(async () => {
@@ -712,9 +1097,15 @@ function PortfolioPageInner() {
     setRefreshing(false)
   }, [])
 
+  const loadEnvelopes = useCallback(async () => {
+    const res = await fetch('/api/patrimoine/envelopes')
+    if (res.ok) setEnvelopes(await res.json())
+  }, [])
+
   useEffect(() => {
     loadPositions().then(pos => loadPrices(pos))
-  }, [loadPositions, loadPrices])
+    loadEnvelopes()
+  }, [loadPositions, loadPrices, loadEnvelopes])
 
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -724,6 +1115,7 @@ function PortfolioPageInner() {
   const handleSaved = async () => {
     const pos = await loadPositions()
     await loadPrices(pos)
+    await loadEnvelopes()
   }
 
   const handleDelete = async (id: string) => {
@@ -777,6 +1169,42 @@ function PortfolioPageInner() {
   }, [enriched])
 
   const hasETFOrStock = enriched.some(p => p.assetType === 'ETF' || p.assetType === 'STOCK')
+
+  // Valeur calculée pour chaque enveloppe : manuelle (metadata) ou marché (positions dans enriched)
+  const envelopeValues = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const env of envelopes) {
+      if (env.totalValue !== null) {
+        map[env.id] = env.totalValue
+      } else {
+        // PEA / CTO / CRYPTO → somme des positions liées
+        map[env.id] = enriched.filter(p => p.envelopeId === env.id).reduce((s, p) => s + p.currentValueEur, 0)
+      }
+    }
+    return map
+  }, [envelopes, enriched])
+
+  // Valeur total des enveloppes manuelles (LIVRET, AV, IMMO, CASH, PER)
+  const manualEnvelopeTotal = useMemo(() => envelopes.reduce((s, e) => s + (e.totalValue ?? 0), 0), [envelopes])
+
+  // Patrimoine net global = positions (enriched inclut les positions d'enveloppes marché) + enveloppes manuelles
+  const totalPatrimoine = useMemo(() => enriched.reduce((s, p) => s + p.currentValueEur, 0) + manualEnvelopeTotal, [enriched, manualEnvelopeTotal])
+
+  // Pie chart enrichi avec les classes d'actif des enveloppes manuelles
+  const globalPieData = useMemo(() => {
+    const byClass: Record<string, number> = {}
+    for (const p of enriched) {
+      const cls = p.assetType === 'STOCK' ? 'Actions' : p.assetType === 'ETF' ? 'Actions' : p.assetType === 'CRYPTO' ? 'Crypto' : p.assetType === 'SCPI' ? 'Immobilier' : p.assetType === 'LIVRET' ? 'Épargne' : 'Liquidités'
+      byClass[cls] = (byClass[cls] ?? 0) + p.currentValueEur
+    }
+    for (const env of envelopes) {
+      if (env.totalValue == null) continue
+      const cls = ENVELOPE_TYPE_CONFIG[env.type].assetClass
+      byClass[cls] = (byClass[cls] ?? 0) + env.totalValue
+    }
+    const CLASS_COLORS: Record<string, string> = { Actions: '#818cf8', Crypto: '#fb923c', Immobilier: '#f472b6', Épargne: '#34d399', Liquidités: '#94a3b8', Retraite: '#a78bfa' }
+    return Object.entries(byClass).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value: Math.round(value), color: CLASS_COLORS[name] ?? '#94a3b8' }))
+  }, [enriched, envelopes])
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">

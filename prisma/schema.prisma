@@ -77,26 +77,45 @@ model AllowedEmail {
 }
 
 model Portfolio {
-  id        String              @id @default(cuid())
-  userId    String              @unique
-  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String               @id @default(cuid())
+  userId    String               @unique
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   positions PortfolioPosition[]
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
+  envelopes PatrimoineEnvelope[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
 }
 
 model PortfolioPosition {
-  id          String    @id @default(cuid())
+  id          String              @id @default(cuid())
   portfolioId String
-  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
-  assetType   String    // STOCK | ETF | CRYPTO | SCPI | LIVRET | CASH
-  symbol      String    // AAPL, bitcoin, CW8.PA, "Livret A"...
-  name        String    // Nom d'affichage
+  portfolio   Portfolio           @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  envelopeId  String?
+  envelope    PatrimoineEnvelope? @relation(fields: [envelopeId], references: [id], onDelete: SetNull)
+  assetType   String              // STOCK | ETF | CRYPTO | SCPI | LIVRET | CASH
+  symbol      String              // AAPL, bitcoin, CW8.PA, "Livret A"...
+  name        String              // Nom d'affichage
   quantity    Float
-  pru         Float     // Prix de Revient Unitaire en EUR
-  currency    String    @default("EUR")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  pru         Float               // Prix de Revient Unitaire en EUR
+  currency    String              @default("EUR")
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([portfolioId])
+  @@index([envelopeId])
+}
+
+model PatrimoineEnvelope {
+  id          String              @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio           @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  type        String              // LIVRET | IMMOBILIER | PEA | AV | CTO | CRYPTO | PER | CASH
+  name        String
+  metadata    Json                @default("{}")
+  sortOrder   Int                 @default(0)
+  positions   PortfolioPosition[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
   @@index([portfolioId])
 }

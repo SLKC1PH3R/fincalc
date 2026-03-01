@@ -7,7 +7,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon
+  Sun, Moon, PieChart
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -42,6 +42,12 @@ const NAV_SECTIONS = [
     items: [
       { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent },
       { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator },
+    ]
+  },
+  {
+    title: 'Patrimoine',
+    items: [
+      { href: '/dashboard/portfolio', label: 'Mon Portefeuille', icon: PieChart },
     ]
   },
   {

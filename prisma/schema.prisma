@@ -19,6 +19,7 @@ model User {
   simulations    Simulation[]
   sessions       Session[]
   accounts       Account[]
+  portfolio      Portfolio?
 }
 
 model Account {
@@ -73,4 +74,29 @@ model AllowedEmail {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model Portfolio {
+  id        String              @id @default(cuid())
+  userId    String              @unique
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions PortfolioPosition[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model PortfolioPosition {
+  id          String    @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  assetType   String    // STOCK | ETF | CRYPTO | SCPI | LIVRET | CASH
+  symbol      String    // AAPL, bitcoin, CW8.PA, "Livret A"...
+  name        String    // Nom d'affichage
+  quantity    Float
+  pru         Float     // Prix de Revient Unitaire en EUR
+  currency    String    @default("EUR")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([portfolioId])
 }

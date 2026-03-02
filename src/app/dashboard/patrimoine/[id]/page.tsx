@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo, useCallback, type ComponentType } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef, type ComponentType } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Legend } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
@@ -770,6 +770,43 @@ function PeaCtoCryptoSection({
   const [addingPos, setAddingPos] = useState(false)
   const [etfMatch, setEtfMatch] = useState<ETFInfo | null>(null)
 
+  // Recherche live (autocomplete)
+  type SearchResult = { symbol: string; name: string; type: 'ETF' | 'STOCK' | 'CRYPTO'; isin?: string }
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const triggerSearch = useCallback((q: string) => {
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    if (q.length < 2) { setSearchResults([]); setSearchOpen(false); return }
+    setSearchLoading(true)
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const type = isCrypto ? 'crypto' : 'stock'
+        const res = await fetch(`/api/portfolio/search?q=${encodeURIComponent(q)}&type=${type}`)
+        const data: SearchResult[] = await res.json()
+        setSearchResults(data)
+        setSearchOpen(data.length > 0)
+      } catch { setSearchResults([]) }
+      finally { setSearchLoading(false) }
+    }, 300)
+  }, [isCrypto])
+
+  const selectSearchResult = (r: SearchResult) => {
+    const found = r.type === 'ETF' ? lookupByTicker(r.symbol) : null
+    setEtfMatch(found)
+    setNewPos(p => ({
+      ...p,
+      symbol: r.symbol,
+      name: p.name || r.name,
+      isin: p.isin || r.isin || (found ? found.isin : '') || '',
+      assetType: isCrypto ? 'CRYPTO' : (r.type === 'ETF' ? 'ETF' : p.assetType),
+    }))
+    setSearchResults([])
+    setSearchOpen(false)
+  }
+
   const pf = (k: keyof typeof newPos) => (e: React.ChangeEvent<HTMLInputElement>) => setNewPos(p => ({ ...p, [k]: e.target.value }))
 
   const handleSymbolChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -777,6 +814,7 @@ function PeaCtoCryptoSection({
     const found = newPos.assetType === 'ETF' ? lookupByTicker(val) : null
     setEtfMatch(found)
     setNewPos(p => ({ ...p, symbol: val, ...(found ? { isin: p.isin || found.isin, name: p.name || found.name } : {}) }))
+    triggerSearch(val)
   }
 
   const handleIsinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -784,6 +822,8 @@ function PeaCtoCryptoSection({
     const found = newPos.assetType === 'ETF' ? lookupByIsin(val) : null
     setEtfMatch(found)
     setNewPos(p => ({ ...p, isin: val, ...(found ? { symbol: p.symbol || found.ticker, name: p.name || found.name } : {}) }))
+    // Résolution ISIN live quand longueur correcte
+    if (val.length >= 12) triggerSearch(val)
   }
 
   const perf = totalInvested > 0 ? ((totalMarketValue - totalInvested) / totalInvested) * 100 : 0
@@ -971,9 +1011,44 @@ function PeaCtoCryptoSection({
                     </Select>
                   )}
                 </div>
-                <div>
-                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Symbole</Label>
-                  <Input value={newPos.symbol} onChange={handleSymbolChange} placeholder={isCrypto ? 'BTC' : 'CW8.PA'} style={{ width: 100 }} />
+                <div style={{ position: 'relative' }}>
+                  <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
+                    Symbole {searchLoading && <span style={{ color: 'var(--text-subtle)', fontSize: 10 }}>…</span>}
+                  </Label>
+                  <Input
+                    value={newPos.symbol}
+                    onChange={handleSymbolChange}
+                    placeholder={isCrypto ? 'BTC, ETH…' : 'CW8, ASML…'}
+                    style={{ width: 130 }}
+                    onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+                    onFocus={() => searchResults.length > 0 && setSearchOpen(true)}
+                    autoComplete="off"
+                  />
+                  {searchOpen && searchResults.length > 0 && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, zIndex: 50,
+                      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                      borderRadius: 8, marginTop: 4, minWidth: 280, maxHeight: 220, overflowY: 'auto',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    }}>
+                      {searchResults.map((r, i) => (
+                        <div
+                          key={r.symbol + i}
+                          onMouseDown={() => selectSearchResult(r)}
+                          style={{
+                            padding: '7px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                            borderBottom: '1px solid var(--section-border)',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'monospace', minWidth: 56, flexShrink: 0 }}>{r.symbol}</span>
+                          <span style={{ fontSize: 11, color: 'var(--text-muted-c)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: r.type === 'ETF' ? '#60a5fa' : r.type === 'CRYPTO' ? '#f59e0b' : '#34d399', flexShrink: 0 }}>{r.type}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {!isCrypto && (
                 <div>

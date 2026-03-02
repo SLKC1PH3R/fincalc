@@ -7,12 +7,20 @@ const FINNHUB = 'https://finnhub.io/api/v1'
 const COINGECKO = 'https://api.coingecko.com/api/v3'
 const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart'
 
-// Mapping ticker → CoinGecko ID
+// Mapping ticker → CoinGecko ID (top cryptos + fallback vers ticker.toLowerCase())
 const COINGECKO_IDS: Record<string, string> = {
   BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', BNB: 'binancecoin',
   XRP: 'ripple', ADA: 'cardano', AVAX: 'avalanche-2', DOT: 'polkadot',
   MATIC: 'matic-network', LINK: 'chainlink', UNI: 'uniswap', LTC: 'litecoin',
   DOGE: 'dogecoin', SHIB: 'shiba-inu', ATOM: 'cosmos',
+  TRX: 'tron', TON: 'the-open-network', SUI: 'sui', APT: 'aptos',
+  OP: 'optimism', ARB: 'arbitrum', FIL: 'filecoin', ICP: 'internet-computer',
+  NEAR: 'near', VET: 'vechain', ALGO: 'algorand', HBAR: 'hedera-hashgraph',
+  SAND: 'the-sandbox', MANA: 'decentraland', AXS: 'axie-infinity',
+  AAVE: 'aave', CRV: 'curve-dao-token', MKR: 'maker', SNX: 'synthetix-network-token',
+  FTM: 'fantom', CELO: 'celo', ZEC: 'zcash', XMR: 'monero', BCH: 'bitcoin-cash',
+  ETC: 'ethereum-classic', PEPE: 'pepe', WIF: 'dogwifcoin', BONK: 'bonk',
+  SEI: 'sei-network', INJ: 'injective-protocol', PYTH: 'pyth-network',
 }
 
 // Indices boursiers (via Yahoo Finance — gratuit, pas de clé requise)
@@ -101,8 +109,13 @@ async function usdToEur(): Promise<number> {
 }
 
 async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { price: number; changePct: number }>> {
-  const ids = tickers.map(t => COINGECKO_IDS[t]).filter(Boolean)
-  if (!ids.length) return {}
+  if (!tickers.length) return {}
+  // Résolution : table connue en priorité, sinon ticker.toLowerCase() comme fallback
+  const tickerToId: Record<string, string> = {}
+  for (const t of tickers) {
+    tickerToId[t] = COINGECKO_IDS[t] ?? t.toLowerCase()
+  }
+  const ids = [...new Set(Object.values(tickerToId))]
   try {
     const res = await fetch(
       `${COINGECKO}/simple/price?ids=${ids.join(',')}&vs_currencies=eur&include_24hr_change=true`,
@@ -112,7 +125,7 @@ async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { pric
     const d = await res.json()
     const result: Record<string, { price: number; changePct: number }> = {}
     for (const ticker of tickers) {
-      const id = COINGECKO_IDS[ticker]
+      const id = tickerToId[ticker]
       if (id && d[id]) {
         result[ticker] = { price: d[id].eur, changePct: d[id].eur_24h_change ?? 0 }
       }

@@ -36,6 +36,7 @@ interface Position {
   assetType: AssetType
   symbol: string
   name: string
+  isin?: string | null
   quantity: number
   pru: number
   currency: string

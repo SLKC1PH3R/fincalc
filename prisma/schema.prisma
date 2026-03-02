@@ -95,6 +95,7 @@ model PortfolioPosition {
   assetType   String              // STOCK | ETF | CRYPTO | SCPI | LIVRET | CASH
   symbol      String              // AAPL, bitcoin, CW8.PA, "Livret A"...
   name        String              // Nom d'affichage
+  isin        String?             // Code ISIN (optionnel)
   quantity    Float
   pru         Float               // Prix de Revient Unitaire en EUR
   currency    String              @default("EUR")

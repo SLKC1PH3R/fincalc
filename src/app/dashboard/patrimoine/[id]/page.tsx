@@ -956,7 +956,7 @@ function PeaCtoCryptoSection({
   }, [isCrypto])
 
   const selectSearchResult = (r: SearchResult) => {
-    const found = r.type === 'ETF' ? lookupByTicker(r.symbol) : null
+    const found = r.type === 'ETF' ? (lookupByTicker(r.symbol) ?? (r.isin ? lookupByIsin(r.isin) : null)) : null
     setEtfMatch(found)
     setNewPos(p => ({
       ...p,
@@ -1436,8 +1436,8 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
   const posValue = pd ? pd.priceEur * pos.quantity : pos.pru * pos.quantity
   const [expanded, setExpanded] = useState(false)
 
-  // Chercher dans la base (par symbole ou ISIN)
-  const etfInfo: ETFInfo | null = lookupByTicker(pos.symbol) ?? null
+  // Chercher dans la base : ticker d'abord, puis ISIN si le ticker Yahoo diffère
+  const etfInfo: ETFInfo | null = lookupByTicker(pos.symbol) ?? (pos.isin ? lookupByIsin(pos.isin) : null)
   const alternatives = etfInfo ? getAlternatives(etfInfo.isin) : []
   const bestAlternative = alternatives.length > 0 ? alternatives.reduce((best, alt) => alt.ter < best.ter ? alt : best) : null
 

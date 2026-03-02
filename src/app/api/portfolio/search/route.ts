@@ -18,11 +18,42 @@ function isIsinLike(q: string): boolean {
   return /^[A-Z]{2}[A-Z0-9]{10}$/i.test(q.trim())
 }
 
-// Finnhub — résolution ISIN → profil
+const YAHOO_SEARCH = 'https://query1.finance.yahoo.com/v1/finance/search'
+
+// Résolution ISIN : Yahoo Finance en priorité (ticker exact = même source que les prix),
+// puis Finnhub en fallback.
 async function searchByIsin(isin: string): Promise<SearchResult[]> {
+  const upper = isin.toUpperCase()
+
+  // 1. Yahoo Finance search — retourne le ticker Yahoo qui sera utilisé pour les prix
   try {
     const res = await fetch(
-      `${FINNHUB}/stock/profile2?isin=${isin.toUpperCase()}&token=${FINNHUB_KEY}`,
+      `${YAHOO_SEARCH}?q=${upper}&quotesCount=3&newsCount=0&enableFuzzyQuery=false`,
+      {
+        next: { revalidate: 300 },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FinCalc/1.0)' },
+      }
+    )
+    if (res.ok) {
+      const d = await res.json()
+      const quotes: { symbol: string; longname?: string; shortname?: string; quoteType?: string }[] =
+        d?.quotes ?? []
+      if (quotes.length > 0) {
+        const q = quotes[0]
+        return [{
+          symbol: q.symbol,
+          name: q.longname || q.shortname || q.symbol,
+          type: q.quoteType === 'ETF' ? 'ETF' : 'STOCK',
+          isin: upper,
+        }]
+      }
+    }
+  } catch { /* fall through */ }
+
+  // 2. Fallback Finnhub profile2
+  try {
+    const res = await fetch(
+      `${FINNHUB}/stock/profile2?isin=${upper}&token=${FINNHUB_KEY}`,
       { next: { revalidate: 300 } }
     )
     if (!res.ok) return []
@@ -32,7 +63,7 @@ async function searchByIsin(isin: string): Promise<SearchResult[]> {
       symbol: d.ticker,
       name: d.name ?? d.ticker,
       type: 'STOCK',
-      isin: isin.toUpperCase(),
+      isin: upper,
     }]
   } catch { return [] }
 }

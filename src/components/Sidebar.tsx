@@ -89,9 +89,10 @@ interface SimEntry { id: string; type: string; name: string; inputs: Record<stri
 interface SidebarProps {
   user: { name?: string | null; email?: string | null; image?: string | null }
   isAdmin?: boolean
+  isDemo?: boolean
 }
 
-function SidebarInner({ user, isAdmin }: SidebarProps) {
+function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const activeSimId = searchParams.get('sim')
@@ -240,6 +241,26 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
             </button>
           )}
         </div>
+
+        {/* ── Demo banner ── */}
+        {isDemo && (
+          <div style={{ padding: collapsed ? '6px 0' : '0 8px 8px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 6,
+              justifyContent: 'center',
+              background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)',
+              borderRadius: 8, padding: collapsed ? '5px 6px' : '5px 10px',
+              width: '100%',
+            }}>
+              <span style={{ fontSize: 13, flexShrink: 0 }}>🔒</span>
+              {!collapsed && (
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#fb923c', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                  MODE DÉMO · LECTURE SEULE
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">

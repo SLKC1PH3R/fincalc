@@ -10,11 +10,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session) redirect('/login')
 
   const isAdmin = session.user.email === process.env.ADMIN_EMAIL
+  const isDemo = session.user.email === 'demo@digitalstack.cloud'
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
-        <Sidebar user={session.user} isAdmin={isAdmin} />
+        <Sidebar user={session.user} isAdmin={isAdmin} isDemo={isDemo} />
         <DashboardShell>{children}</DashboardShell>
       </div>
     </SidebarProvider>

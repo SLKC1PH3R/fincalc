@@ -23,7 +23,10 @@ import {
   Star,
   Clock,
   Layers,
-  Globe
+  Globe,
+  Euro,
+  Percent,
+  Bitcoin
 } from 'lucide-react'
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -111,14 +114,14 @@ const ROADMAP_PHASES = [
 
 // ─── Floating financial icons ─────────────────────────────────────────────
 const FLOAT_ICONS = [
-  { icon: '€', x: 8, y: 15, size: 28, delay: 0, dur: 6, opacity: 0.12 },
-  { icon: '📈', x: 88, y: 10, size: 32, delay: 1.2, dur: 5, opacity: 0.15 },
-  { icon: '🏠', x: 75, y: 60, size: 26, delay: 0.5, dur: 7, opacity: 0.12 },
-  { icon: '💰', x: 5, y: 65, size: 24, delay: 2, dur: 5.5, opacity: 0.1 },
-  { icon: '%', x: 92, y: 80, size: 22, delay: 1.5, dur: 6.5, opacity: 0.1 },
-  { icon: '📊', x: 50, y: 5, size: 20, delay: 0.8, dur: 4.5, opacity: 0.1 },
-  { icon: '🏦', x: 20, y: 85, size: 22, delay: 3, dur: 6, opacity: 0.1 },
-  { icon: '₿', x: 60, y: 88, size: 20, delay: 2.5, dur: 5, opacity: 0.08 },
+  { Icon: Euro, x: 8, y: 15, size: 28, delay: 0, dur: 6, opacity: 0.14, color: GOLD },
+  { Icon: TrendingUp, x: 88, y: 10, size: 30, delay: 1.2, dur: 5, opacity: 0.16, color: '#34d399' },
+  { Icon: Home, x: 75, y: 60, size: 26, delay: 0.5, dur: 7, opacity: 0.14, color: '#a78bfa' },
+  { Icon: PiggyBank, x: 5, y: 65, size: 24, delay: 2, dur: 5.5, opacity: 0.12, color: GOLD },
+  { Icon: Percent, x: 92, y: 80, size: 22, delay: 1.5, dur: 6.5, opacity: 0.12, color: '#38bdf8' },
+  { Icon: BarChart3, x: 50, y: 5, size: 22, delay: 0.8, dur: 4.5, opacity: 0.12, color: '#34d399' },
+  { Icon: Building2, x: 20, y: 85, size: 22, delay: 3, dur: 6, opacity: 0.12, color: '#fb923c' },
+  { Icon: Bitcoin, x: 60, y: 88, size: 20, delay: 2.5, dur: 5, opacity: 0.1, color: '#f97316' },
 ]
 
 // ─── Counter animation hook ───────────────────────────────────────────────
@@ -345,6 +348,226 @@ function DashboardPreview() {
   )
 }
 
+// ─── Interactive Compound Interest Demo ───────────────────────────────────
+function InteractiveDemo() {
+  const [capital, setCapital] = useState(10000)
+  const [monthly, setMonthly] = useState(300)
+  const [rate, setRate] = useState(7)
+  const [years, setYears] = useState(20)
+
+  // Compute yearly data points (fast enough to do inline)
+  const data: { invested: number; value: number }[] = []
+  let value = capital
+  let invested = capital
+  for (let y = 0; y <= years; y++) {
+    data.push({ invested: Math.round(invested), value: Math.round(value) })
+    for (let m = 0; m < 12; m++) {
+      value = (value + monthly) * (1 + rate / 100 / 12)
+      invested += monthly
+    }
+  }
+
+  const finalValue = data[data.length - 1].value
+  const totalInvested = data[data.length - 1].invested
+  const gains = finalValue - totalInvested
+  const rendement = Math.round((gains / totalInvested) * 100)
+
+  const fmtK = (n: number) =>
+    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2)} M€`
+      : n >= 1000 ? `${Math.round(n / 1000)} k€`
+        : `${n} €`
+
+  // SVG inline chart
+  const W = 500; const H = 110
+  const maxV = finalValue
+  const toX = (i: number) => (i / (data.length - 1)) * W
+  const toY = (v: number) => H - (v / maxV) * H * 0.88 - 4
+  const pathValue = data.map((d, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(d.value).toFixed(1)}`).join(' ')
+  const pathInvested = data.map((d, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(d.invested).toFixed(1)}`).join(' ')
+  const areaValue = pathValue + ` L${W},${H} L0,${H} Z`
+  const areaInvested = pathInvested + ` L${W},${H} L0,${H} Z`
+
+  return (
+    <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 28 }}>
+      {/* KPIs */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Valeur finale estimée</p>
+          <p style={{ fontSize: 28, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', color: GOLD, lineHeight: 1 }}>{fmtK(finalValue)}</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', marginTop: 4 }}>après {years} ans · <span style={{ color: '#34d399' }}>+{fmtK(gains)}</span> d&apos;intérêts</p>
+        </div>
+        <div style={{ display: 'flex', gap: 20 }}>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: '#34d399', lineHeight: 1 }}>{rendement}%</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Rendement net</p>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{fmtK(totalInvested)}</p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Capital investi</p>
+          </div>
+        </div>
+      </div>
+
+      {/* SVG Chart */}
+      <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: 110 }}>
+          <defs>
+            <linearGradient id="demo-grad-v" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
+              <stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
+            </linearGradient>
+            <linearGradient id="demo-grad-i" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#34d399" stopOpacity="0.14" />
+              <stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
+            </linearGradient>
+          </defs>
+          <path d={areaValue} fill="url(#demo-grad-v)" />
+          <path d={areaInvested} fill="url(#demo-grad-i)" />
+          <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
+          <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 20, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ width: 16, height: 2, background: GOLD, borderRadius: 1 }} />
+          Valeur finale
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <svg width="16" height="2"><line x1="0" y1="1" x2="16" y2="1" stroke="#34d399" strokeWidth="1.5" strokeDasharray="4,2" /></svg>
+          Capital investi
+        </div>
+      </div>
+
+      {/* Sliders */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px 24px' }}>
+        {(
+          [
+            { label: 'Capital initial', value: capital, min: 1000, max: 100000, step: 500, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
+            { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly },
+            { label: 'Rendement annuel', value: rate, min: 1, max: 15, step: 0.5, display: `${rate} %/an`, set: setRate },
+            { label: 'Durée', value: years, min: 5, max: 40, step: 1, display: `${years} ans`, set: setYears },
+          ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]
+        ).map(({ label, value, min, max, step, display, set }) => (
+          <div key={label}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.33)' }}>{label}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: GOLD }}>{display}</span>
+            </div>
+            <input
+              type="range" min={min} max={max} step={step} value={value}
+              onChange={e => set(Number(e.target.value))}
+              style={{ width: '100%', accentColor: GOLD, cursor: 'pointer', height: 3 }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <p style={{ marginTop: 16, fontSize: 10, color: 'rgba(255,255,255,0.16)', textAlign: 'center' }}>
+        Simulation indicative · rendement constant hypothétique · sans frais ni fiscalité
+      </p>
+    </div>
+  )
+}
+
+// ─── Competitor Comparison Table ──────────────────────────────────────────
+type FeatureVal = true | false | null
+const COMPETITOR_FEATURES: { label: string; fincalc: FeatureVal; finary: FeatureVal; bank: FeatureVal }[] = [
+  { label: '100 % gratuit',                  fincalc: true,  finary: null,  bank: false },
+  { label: 'Intérêts composés',              fincalc: true,  finary: null,  bank: false },
+  { label: 'Simulateur FI/RE',               fincalc: true,  finary: false, bank: false },
+  { label: 'Simulateur retraite',            fincalc: true,  finary: null,  bank: false },
+  { label: 'Calcul impôts IR / TMI',         fincalc: true,  finary: false, bank: false },
+  { label: 'DCA / Investissement régulier',  fincalc: true,  finary: null,  bank: false },
+  { label: 'Acheter vs Louer',               fincalc: true,  finary: false, bank: false },
+  { label: 'Fiscalité française 2026',       fincalc: true,  finary: null,  bank: false },
+  { label: 'Sans données bancaires',         fincalc: true,  finary: false, bank: false },
+  { label: 'Zéro publicité',                 fincalc: true,  finary: null,  bank: false },
+]
+
+function CompetitorTable() {
+  const cols = [
+    { name: 'FinCalc', key: 'fincalc' as const, highlight: true, color: GOLD },
+    { name: 'Finary', key: 'finary' as const, highlight: false, color: 'rgba(255,255,255,0.45)' },
+    { name: 'Votre banque', key: 'bank' as const, highlight: false, color: 'rgba(255,255,255,0.32)' },
+  ]
+  return (
+    <section id="comparatif" style={{ padding: '80px 20px 60px' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto' }}>
+        <RevealSection>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Comparatif</SectionTag>
+            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
+              FinCalc vs les alternatives
+            </h2>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', marginTop: 12, lineHeight: 1.7 }}>
+              Des simulateurs conçus pour les investisseurs français, pas pour les banques.
+            </p>
+          </div>
+        </RevealSection>
+
+        <RevealSection delay={100}>
+          <div style={{ border: `1px solid ${GOLD_BORDER}`, borderRadius: 20, overflow: 'hidden' }}>
+            {/* Header row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 130px', background: '#0c0c0c', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ padding: '14px 20px' }} />
+              {cols.map(col => (
+                <div key={col.name} style={{
+                  padding: '14px 8px',
+                  textAlign: 'center',
+                  background: col.highlight ? GOLD_GLOW : 'transparent',
+                  borderLeft: '1px solid rgba(255,255,255,0.05)',
+                  borderTop: col.highlight ? `2px solid ${GOLD}60` : '2px solid transparent',
+                }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: col.color }}>{col.name}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Feature rows */}
+            {COMPETITOR_FEATURES.map((f, i) => (
+              <RevealSection key={f.label} delay={i * 30}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 120px 120px 130px',
+                  borderBottom: i < COMPETITOR_FEATURES.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                  background: i % 2 === 0 ? 'rgba(255,255,255,0.01)' : 'transparent',
+                }}>
+                  <div style={{ padding: '12px 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{f.label}</div>
+                  {cols.map(col => {
+                    const val = f[col.key]
+                    return (
+                      <div key={col.key} style={{
+                        padding: '12px 8px',
+                        textAlign: 'center',
+                        background: col.highlight ? GOLD_GLOW : 'transparent',
+                        borderLeft: '1px solid rgba(255,255,255,0.04)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {val === true && <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check style={{ width: 12, height: 12, color: '#34d399' }} /></div>}
+                        {val === false && <X style={{ width: 14, height: 14, color: 'rgba(255,255,255,0.18)' }} />}
+                        {val === null && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', background: 'rgba(255,255,255,0.04)', borderRadius: 100, padding: '2px 8px' }}>partiel</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              </RevealSection>
+            ))}
+
+            {/* Footer note */}
+            <div style={{ padding: '12px 20px', background: '#080808', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
+                Comparaison basée sur les offres publiques au 1er trimestre 2026. Finary = offre gratuite limitée. &quot;Votre banque&quot; = conseiller bancaire traditionnel.
+              </p>
+            </div>
+          </div>
+        </RevealSection>
+      </div>
+    </section>
+  )
+}
+
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -482,14 +705,20 @@ export function LandingClient() {
             position: 'absolute',
             left: `${f.x}%`,
             top: `${f.y}%`,
-            fontSize: f.size,
             opacity: f.opacity,
             pointerEvents: 'none',
-            userSelect: 'none',
             animation: `float-slow ${f.dur}s ease-in-out infinite ${f.delay}s`,
-            filter: 'blur(0.5px)',
+            width: f.size + 18,
+            height: f.size + 18,
+            borderRadius: '50%',
+            background: f.color + '18',
+            border: `1px solid ${f.color}28`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(2px)',
           }}>
-            {f.icon}
+            <f.Icon style={{ width: Math.round(f.size * 0.52), height: Math.round(f.size * 0.52), color: f.color }} />
           </div>
         ))}
 
@@ -558,6 +787,26 @@ export function LandingClient() {
         {/* Dashboard preview */}
         <div style={{ width: '100%', marginTop: 64, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(30px)', transition: 'all 1s ease 0.3s' }}>
           <DashboardPreview />
+        </div>
+      </section>
+
+      {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
+      <section id="demo" style={{ padding: '0 20px 80px' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <SectionTag><TrendingUp style={{ width: 11, height: 11 }} /> Essayez maintenant</SectionTag>
+              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', fontWeight: 400, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+                Voyez votre épargne fructifier
+              </h2>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', marginTop: 10, lineHeight: 1.7 }}>
+                Manipulez les curseurs — aucun compte requis.
+              </p>
+            </div>
+          </RevealSection>
+          <RevealSection delay={100}>
+            <InteractiveDemo />
+          </RevealSection>
         </div>
       </section>
 
@@ -776,6 +1025,9 @@ export function LandingClient() {
         </div>
       </section>
 
+      {/* ── COMPETITOR TABLE ──────────────────────────────────────────── */}
+      <CompetitorTable />
+
       {/* ── CTA BANNER ────────────────────────────────────────────────── */}
       <section style={{ padding: '40px 20px 80px' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -827,7 +1079,7 @@ export function LandingClient() {
             {/* Produit */}
             <div>
               <h4 style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Produit</h4>
-              {[['#modules', 'Calculateurs'], ['#how', 'Comment ça marche'], ['#roadmap', 'Roadmap'], ['#why', 'Nos engagements'], ['#security', 'Protection'], ['/login', 'Créer un compte']].map(([href, label]) => (
+              {[['#demo', 'Démo interactive'], ['#modules', 'Calculateurs'], ['#how', 'Comment ça marche'], ['#comparatif', 'Comparatif'], ['#roadmap', 'Roadmap'], ['#why', 'Nos engagements'], ['#security', 'Protection'], ['/login', 'Créer un compte']].map(([href, label]) => (
                 <a key={href} href={href} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>

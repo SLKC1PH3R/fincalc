@@ -195,7 +195,7 @@ function EnvelopeCompareInner() {
             </label>
           </div>
 
-          <SaveSimulation type="envelope-compare" name="PEA vs CTO vs AV" inputs={inputs as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
+          <SaveSimulation type="envelope-compare" name="PEA vs CTO vs AV" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
         </div>
 
         {/* ── Results ── */}

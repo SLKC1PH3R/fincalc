@@ -139,7 +139,7 @@ function FlatTaxInner() {
             </label>
           </div>
 
-          <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
+          <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
         </div>
 
         {/* ── Results ── */}

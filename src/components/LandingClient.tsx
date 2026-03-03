@@ -807,7 +807,7 @@ export function LandingClient() {
           </p>
 
           {/* CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 48 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
             <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 12, fontSize: 14, fontWeight: 600, background: GOLD, color: '#000', textDecoration: 'none', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${GOLD}50` }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
@@ -818,6 +818,23 @@ export function LandingClient() {
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
               Voir les modules
             </a>
+          </div>
+
+          {/* Demo hint */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
+            <Link href="/login" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 16px', borderRadius: 20,
+              background: 'rgba(251,146,60,0.07)', border: '1px solid rgba(251,146,60,0.2)',
+              textDecoration: 'none', transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.13)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.35)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.07)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.2)' }}
+            >
+              <span style={{ fontSize: 13 }}>⚡</span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#fb923c' }}>Essayer sans s&apos;inscrire</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>— compte démo disponible sur la page de connexion</span>
+            </Link>
           </div>
 
           {/* Stats */}

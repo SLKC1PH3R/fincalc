@@ -6,9 +6,11 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { TrendingUp, Loader2, Eye, EyeOff } from 'lucide-react'
+import { TrendingUp, Loader2, Eye, EyeOff, Zap } from 'lucide-react'
 
 const GOLD = '#f1c086'
+const DEMO_EMAIL = 'demo@digitalstack.cloud'
+const DEMO_PASSWORD = 'demo@2026'
 
 function GoogleIcon() {
   return (
@@ -120,6 +122,18 @@ function AuthForm() {
   const handleGoogle = async () => {
     setLoadingGoogle(true)
     await signIn('google', { callbackUrl: '/dashboard' })
+  }
+
+  const loginAsDemo = async () => {
+    setLoading(true)
+    setError('')
+    const res = await signIn('credentials', { email: DEMO_EMAIL, password: DEMO_PASSWORD, redirect: false })
+    if (res?.ok) {
+      router.push('/dashboard')
+    } else {
+      setError('Compte démo temporairement indisponible.')
+      setLoading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -296,6 +310,36 @@ function AuthForm() {
           {/* Form area */}
           <div className="flex-1 flex flex-col justify-center">
             <div style={{ maxWidth: 380, margin: '0 auto', width: '100%' }}>
+
+              {/* ── Demo account card ── */}
+              <button
+                onClick={loginAsDemo}
+                disabled={loading || loadingGoogle}
+                style={{
+                  width: '100%', marginBottom: 16, padding: '12px 16px',
+                  borderRadius: 12, cursor: loading || loadingGoogle ? 'not-allowed' : 'pointer',
+                  border: '1px solid rgba(251,146,60,0.3)',
+                  background: 'rgba(251,146,60,0.06)',
+                  textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
+                  opacity: loading || loadingGoogle ? 0.6 : 1,
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { if (!loading && !loadingGoogle) { e.currentTarget.style.background = 'rgba(251,146,60,0.11)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.5)' } }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.06)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.3)' }}
+              >
+                <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {loading ? <Loader2 style={{ width: 14, height: 14, color: '#fb923c', animation: 'spin 1s linear infinite' }} /> : <Zap style={{ width: 14, height: 14, color: '#fb923c' }} />}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#fb923c', marginBottom: 2 }}>Accès démo instantané</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <span>{DEMO_EMAIL}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+                    <span>Mot de passe : {DEMO_PASSWORD}</span>
+                  </p>
+                </div>
+                <span style={{ fontSize: 11, color: 'rgba(251,146,60,0.7)', flexShrink: 0, fontWeight: 500 }}>→</span>
+              </button>
 
               {/* ── Tab toggle — the flip trigger ── */}
               <div style={{

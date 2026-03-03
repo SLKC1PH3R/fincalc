@@ -210,9 +210,9 @@ async function main() {
     { envelope: 'AV Linxea Spirit 2', assetType: 'SCPI', symbol: 'REMAKE', name: 'Remake Live (SCPI)', isin: null, quantity: 20, pru: 204, currency: 'EUR' },
 
     // CTO Degiro
-    { envelope: 'CTO Degiro', assetType: 'ACTION', symbol: 'ASML', name: 'ASML Holding NV', isin: 'NL0010273215', quantity: 2, pru: 680, currency: 'EUR' },
+    { envelope: 'CTO Degiro', assetType: 'STOCK', symbol: 'ASML.AS', name: 'ASML Holding NV', isin: 'NL0010273215', quantity: 2, pru: 680, currency: 'EUR' },
     { envelope: 'CTO Degiro', assetType: 'ETF', symbol: 'VWCE', name: 'Vanguard FTSE All-World UCITS ETF', isin: 'IE00BK5BQT80', quantity: 15, pru: 102, currency: 'EUR' },
-    { envelope: 'CTO Degiro', assetType: 'ACTION', symbol: 'MC', name: 'LVMH Moët Hennessy Louis Vuitton', isin: 'FR0000121014', quantity: 2, pru: 780, currency: 'EUR' },
+    { envelope: 'CTO Degiro', assetType: 'STOCK', symbol: 'MC.PA', name: 'LVMH Moët Hennessy Louis Vuitton', isin: 'FR0000121014', quantity: 2, pru: 780, currency: 'EUR' },
 
     // PER Individuel Linxea
     { envelope: 'PER Individuel Linxea', assetType: 'ETF', symbol: 'CW8', name: 'Amundi MSCI World UCITS ETF', isin: 'LU1681043599', quantity: 30, pru: 285, currency: 'EUR' },

@@ -619,3 +619,196 @@ export function calcBudget(i: BudgetInputs): BudgetResults {
 
   return { needs, needsPct, needsTarget: i.netIncome * 0.5, wants, wantsPct, wantsTarget: i.netIncome * 0.3, savingsTotal, savingsPct, savingsTarget: i.netIncome * 0.2, balance, categories, analysis: { score, message, tips } }
 }
+
+// ─── Flat Tax vs Barème IR ────────────────────────────────────────────────
+
+export interface FlatTaxInputs {
+  amount: number                              // Revenus du capital bruts
+  incomeType: 'dividends' | 'capital_gains' | 'interest'
+  tmi: number                                 // 0 | 11 | 30 | 41 | 45
+  revenuTravail: number                       // Revenus d'activité annuels (pour tranches)
+  parts: number
+  isCouple: boolean
+}
+
+export interface FlatTaxRegime {
+  abattement: number
+  csgDed: number
+  baseIR: number
+  ir: number
+  ps: number
+  total: number
+  effectiveRate: number
+}
+
+export interface FlatTaxResults {
+  flatTax: FlatTaxRegime
+  bareme: FlatTaxRegime
+  recommended: 'flat_tax' | 'bareme'
+  saving: number
+  chartData: { amount: number; flatTax: number; bareme: number }[]
+  optimalRegime: 'flat_tax' | 'bareme'
+}
+
+const IR_BRACKETS = [
+  { min: 0,       max: 11294,   rate: 0 },
+  { min: 11294,   max: 28797,   rate: 0.11 },
+  { min: 28797,   max: 82341,   rate: 0.30 },
+  { min: 82341,   max: 177106,  rate: 0.41 },
+  { min: 177106,  max: Infinity, rate: 0.45 },
+]
+
+function calcIRMarginal(base: number, parts: number): number {
+  const perPart = base / parts
+  let ir = 0
+  for (const b of IR_BRACKETS) {
+    const taxable = Math.max(0, Math.min(perPart, b.max) - b.min)
+    ir += taxable * b.rate
+  }
+  return ir * parts
+}
+
+export function calcFlatTax(i: FlatTaxInputs): FlatTaxResults {
+  const PS = 0.172
+
+  // ── Flat Tax (PFU 30%)
+  const ftPS = i.amount * PS
+  const ftIR = i.amount * 0.128
+  const ftTotal = ftIR + ftPS
+  const flatTax: FlatTaxRegime = {
+    abattement: 0, csgDed: 0, baseIR: i.amount,
+    ir: ftIR, ps: ftPS, total: ftTotal,
+    effectiveRate: i.amount > 0 ? ftTotal / i.amount * 100 : 0,
+  }
+
+  // ── Barème réel
+  const abattement = i.incomeType === 'dividends' ? i.amount * 0.40 : 0
+  const baseAfterAbt = i.amount - abattement
+  const csgDed = baseAfterAbt * 0.068  // CSG déductible uniquement au barème
+  const baseIR = Math.max(0, baseAfterAbt - csgDed)
+  const totalBase = i.revenuTravail + baseIR
+  const irTotal = calcIRMarginal(totalBase, i.parts)
+  const irWork  = calcIRMarginal(i.revenuTravail, i.parts)
+  const irCapital = Math.max(0, irTotal - irWork)
+  const bmPS = i.amount * PS
+  const bmTotal = irCapital + bmPS
+  const bareme: FlatTaxRegime = {
+    abattement, csgDed, baseIR,
+    ir: irCapital, ps: bmPS, total: bmTotal,
+    effectiveRate: i.amount > 0 ? bmTotal / i.amount * 100 : 0,
+  }
+
+  const recommended = flatTax.total <= bareme.total ? 'flat_tax' : 'bareme'
+  const saving = Math.abs(flatTax.total - bareme.total)
+
+  // Chart: flat tax vs barème for 10 amount steps 0→max or 0→100k
+  const maxChart = Math.max(i.amount, 10000)
+  const chartData = Array.from({ length: 11 }, (_, k) => {
+    const a = (k / 10) * maxChart
+    const ft = a * 0.30
+    // simplified barème curve at current params
+    const abt = i.incomeType === 'dividends' ? a * 0.40 : 0
+    const base = (a - abt) * (1 - 0.068)
+    const tot = i.revenuTravail + base
+    const irT = calcIRMarginal(tot, i.parts)
+    const irW = calcIRMarginal(i.revenuTravail, i.parts)
+    const bm = Math.max(0, irT - irW) + a * PS
+    return { amount: Math.round(a), flatTax: Math.round(ft), bareme: Math.round(bm) }
+  })
+
+  return { flatTax, bareme, recommended, saving, chartData, optimalRegime: recommended }
+}
+
+// ─── PEA vs CTO vs Assurance-vie ─────────────────────────────────────────
+
+export interface EnvelopeCompareInputs {
+  capital: number
+  monthly: number
+  rateGross: number      // % annuel brut
+  years: number
+  tmi: number            // 0 | 11 | 30 | 41 | 45
+  isCouple: boolean
+  peaOpenYears: number   // années déjà ouvertes (pour calculer la maturité fiscale PEA)
+}
+
+export interface EnvelopeResult {
+  grossValue: number
+  totalInvested: number
+  grossGain: number
+  taxPS: number
+  taxIR: number
+  taxTotal: number
+  netValue: number
+  netGain: number
+  netAnnualRate: number
+}
+
+export interface EnvelopeCompareResults {
+  pea: EnvelopeResult
+  cto: EnvelopeResult
+  av: EnvelopeResult
+  best: 'pea' | 'cto' | 'av'
+  chartData: { year: number; pea: number; cto: number; av: number }[]
+}
+
+function growEnvelope(capital: number, monthly: number, annualRate: number, years: number): { value: number; invested: number } {
+  const monthlyRate = annualRate / 100 / 12
+  let value = capital
+  for (let m = 0; m < years * 12; m++) {
+    value = value * (1 + monthlyRate) + monthly
+  }
+  return { value: Math.round(value), invested: Math.round(capital + monthly * years * 12) }
+}
+
+function calcOneEnvelope(i: EnvelopeCompareInputs, years: number, type: 'pea' | 'cto' | 'av'): EnvelopeResult {
+  const PS = 0.172
+  const avAbattement = i.isCouple ? 9200 : 4600
+  const { value: grossValue, invested: totalInvested } = growEnvelope(i.capital, i.monthly, i.rateGross, years)
+  const grossGain = Math.max(0, grossValue - totalInvested)
+
+  let taxIR = 0, taxPS = 0
+  if (type === 'pea') {
+    const mature = (i.peaOpenYears + years) >= 5
+    taxPS = mature ? grossGain * PS : grossGain * 0.30
+    taxIR = 0
+  } else if (type === 'cto') {
+    taxPS = grossGain * PS
+    taxIR = grossGain * 0.128
+  } else {
+    // AV ≥ 8 ans hypothèse (abattement annuel)
+    taxPS = grossGain * PS
+    taxIR = Math.max(0, grossGain - avAbattement) * 0.075
+  }
+
+  const taxTotal = taxIR + taxPS
+  const netValue = grossValue - taxTotal
+  const netGain = netValue - totalInvested
+  const netAnnualRate = totalInvested > 0 && years > 0 ? (Math.pow(netValue / totalInvested, 1 / years) - 1) * 100 : 0
+  return { grossValue, totalInvested, grossGain, taxPS, taxIR, taxTotal, netValue, netGain, netAnnualRate }
+}
+
+export function calcEnvelopeCompare(i: EnvelopeCompareInputs): EnvelopeCompareResults {
+  const pea = calcOneEnvelope(i, i.years, 'pea')
+  const cto = calcOneEnvelope(i, i.years, 'cto')
+  const av  = calcOneEnvelope(i, i.years, 'av')
+
+  const best: 'pea' | 'cto' | 'av' = pea.netValue >= cto.netValue && pea.netValue >= av.netValue
+    ? 'pea' : av.netValue >= cto.netValue ? 'av' : 'cto'
+
+  const maxY = Math.min(i.years, 40)
+  const step = Math.max(1, Math.floor(maxY / 20))
+  const chartData: { year: number; pea: number; cto: number; av: number }[] = [
+    { year: 0, pea: i.capital, cto: i.capital, av: i.capital }
+  ]
+  for (let y = step; y < maxY; y += step) {
+    chartData.push({
+      year: y,
+      pea: calcOneEnvelope(i, y, 'pea').netValue,
+      cto: calcOneEnvelope(i, y, 'cto').netValue,
+      av:  calcOneEnvelope(i, y, 'av').netValue,
+    })
+  }
+  chartData.push({ year: maxY, pea: pea.netValue, cto: cto.netValue, av: av.netValue })
+
+  return { pea, cto, av, best, chartData }
+}

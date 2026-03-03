@@ -348,6 +348,53 @@ function DashboardPreview() {
   )
 }
 
+// ─── Live Rates Widget ────────────────────────────────────────────────────
+interface RateItem { value: number; label: string; unit: string; trend: 'up' | 'down' | 'stable' }
+interface RatesData {
+  livretA: RateItem; oat10y: RateItem; bce: RateItem; inflation: RateItem
+  live?: { oat: boolean; bce: boolean }
+}
+
+function RatesWidget() {
+  const [rates, setRates] = useState<RatesData | null>(null)
+  useEffect(() => {
+    fetch('/api/rates').then(r => r.ok ? r.json() : null).then(d => { if (d) setRates(d) }).catch(() => {})
+  }, [])
+
+  if (!rates) return null
+
+  const items = [
+    { key: 'livretA',   ...rates.livretA,   color: '#34d399' },
+    { key: 'oat10y',    ...rates.oat10y,    color: '#38bdf8' },
+    { key: 'bce',       ...rates.bce,       color: '#a78bfa' },
+    { key: 'inflation', ...rates.inflation, color: '#fb923c' },
+  ] as const
+
+  const arrow = (t: 'up' | 'down' | 'stable') => t === 'up' ? '↑' : t === 'down' ? '↓' : '→'
+  const arrowColor = (t: 'up' | 'down' | 'stable') => t === 'up' ? '#f87171' : t === 'down' ? '#34d399' : 'rgba(255,255,255,0.3)'
+
+  return (
+    <div style={{ padding: '10px 20px 0' }}>
+      <div style={{
+        maxWidth: 820, margin: '0 auto',
+        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8,
+        background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 12, padding: '10px 16px',
+      }}>
+        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginRight: 4, whiteSpace: 'nowrap' }}>Taux en direct</span>
+        {items.map(item => (
+          <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: item.color + '10', border: `1px solid ${item.color}20`, borderRadius: 8 }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>{item.label}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: item.color, whiteSpace: 'nowrap' }}>{item.value.toFixed(2)}{item.unit}</span>
+            <span style={{ fontSize: 10, color: arrowColor(item.trend) }}>{arrow(item.trend)}</span>
+          </div>
+        ))}
+        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.18)', marginLeft: 'auto', whiteSpace: 'nowrap' }}>Données indicatives · mise à jour automatique</span>
+      </div>
+    </div>
+  )
+}
+
 // ─── Interactive Compound Interest Demo ───────────────────────────────────
 function InteractiveDemo() {
   const [capital, setCapital] = useState(10000)
@@ -789,6 +836,9 @@ export function LandingClient() {
           <DashboardPreview />
         </div>
       </section>
+
+      {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
+      <RatesWidget />
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
       <section id="demo" style={{ padding: '0 20px 80px' }}>

@@ -8,18 +8,30 @@ datasource db {
 }
 
 model User {
-  id             String       @id @default(cuid())
-  email          String       @unique
-  emailVerified  DateTime?    // Requis par NextAuth PrismaAdapter
+  id             String            @id @default(cuid())
+  email          String            @unique
+  emailVerified  DateTime?         // Requis par NextAuth PrismaAdapter
   name           String?
-  password       String?      // Nullable — null pour les comptes Google OAuth
-  image          String?      // Avatar URL ou base64
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  password       String?           // Nullable — null pour les comptes Google OAuth
+  image          String?           // Avatar URL ou base64
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   simulations    Simulation[]
   sessions       Session[]
   accounts       Account[]
   portfolio      Portfolio?
+  scores         PatrimoineScore[]
+}
+
+model PatrimoineScore {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int
+  details   Json     // { savings, emergency, diversification, retirement, fiscal, debt }
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {
@@ -57,15 +69,16 @@ model VerificationToken {
 }
 
 model Simulation {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  name      String
-  inputs    Json
-  results   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  userId     String
+  type       String
+  name       String
+  inputs     Json
+  results    Json
+  shareToken String?  @unique  // null = privé, token UUID = lien public actif
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, type])
 }

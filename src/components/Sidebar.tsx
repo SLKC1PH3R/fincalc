@@ -8,7 +8,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Plus, Landmark, Bitcoin,
+  Sun, Moon, Plus, Landmark, Bitcoin, Award,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -63,6 +63,8 @@ const NAV_SECTIONS = [
     title: 'Fiscal & Retraite',
     items: [
       { href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt },
+      { href: '/dashboard/flat-tax', label: 'Flat Tax vs Barème', icon: Receipt },
+      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV', icon: Wallet },
       { href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank },
     ],
   },
@@ -241,8 +243,8 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
 
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
-          {/* Synthèse — standalone */}
-          <div>
+          {/* Synthèse + Score — standalone */}
+          <div className="space-y-0.5">
             <Link
               href="/dashboard"
               title={collapsed ? 'Synthèse' : undefined}
@@ -254,6 +256,18 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
             >
               <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
               {!collapsed && <span className="text-xs font-medium">Synthèse</span>}
+            </Link>
+            <Link
+              href="/dashboard/score"
+              title={collapsed ? 'Score Patrimonial' : undefined}
+              className={cn(
+                'sb-link flex items-center gap-2.5 rounded-lg',
+                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
+                pathname === '/dashboard/score' && 'sb-link-active'
+              )}
+            >
+              <Award className="h-3.5 w-3.5 flex-shrink-0" />
+              {!collapsed && <span className="text-xs font-medium">Score Patrimonial</span>}
             </Link>
           </div>
 

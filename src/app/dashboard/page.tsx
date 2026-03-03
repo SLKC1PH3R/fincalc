@@ -22,6 +22,8 @@ import {
   ChevronRight,
   ChevronDown,
   Percent,
+  ArrowRight,
+  AlertCircle,
 } from 'lucide-react'
 
 interface Simulation {
@@ -40,6 +42,8 @@ const MODULES = [
   { href: '/dashboard/mortgage', label: 'Prêt Immobilier', icon: Building2, desc: 'Mensualités & TAEG', tag: 'Immobilier', color: '#f472b6' },
   { href: '/dashboard/rental', label: 'Rentabilité Locative', icon: Wallet, desc: 'Cashflow locatif', tag: 'Immobilier', color: '#2dd4bf' },
   { href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt, desc: 'Calcul IR & TMI', tag: 'Fiscal', color: '#fb7185' },
+  { href: '/dashboard/flat-tax', label: 'Flat Tax vs Barème', icon: Receipt, desc: 'PFU 30% ou barème IR', tag: 'Fiscal', color: '#38bdf8' },
+  { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV', icon: Wallet, desc: 'Comparez les enveloppes', tag: 'Fiscal', color: '#818cf8' },
   { href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank, desc: 'Pension & PER', tag: 'Fiscal', color: '#fbbf24' },
   { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent, desc: 'Analyse de votre épargne', tag: 'Budget', color: '#818cf8' },
   { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator, desc: "Règle d'or", tag: 'Budget', color: '#a3e635' },
@@ -53,9 +57,37 @@ const TYPE_META: Record<string, { label: string; color: string; icon: any }> = {
   mortgage:     { label: 'Prêt',      color: '#f472b6', icon: Building2 },
   rental:       { label: 'Locatif',   color: '#2dd4bf', icon: Wallet },
   tax:          { label: 'Impôts',    color: '#fb7185', icon: Receipt },
-  retirement:   { label: 'Retraite',  color: '#fbbf24', icon: PiggyBank },
+  'flat-tax':        { label: 'Flat Tax',  color: '#38bdf8', icon: Receipt },
+  'envelope-compare': { label: 'PEA/CTO/AV', color: '#818cf8', icon: Wallet },
+  retirement:        { label: 'Retraite',  color: '#fbbf24', icon: PiggyBank },
   'savings-rate': { label: "Taux épargne", color: '#818cf8', icon: Percent },
   budget:       { label: 'Budget',    color: '#a3e635', icon: Calculator },
+}
+
+function scoreInfo(s: number): { label: string; color: string } {
+  if (s >= 90) return { label: 'Excellent', color: '#f1c086' }
+  if (s >= 80) return { label: 'Très bien', color: '#34d399' }
+  if (s >= 60) return { label: 'Bien', color: '#fbbf24' }
+  if (s >= 40) return { label: 'En progression', color: '#fb923c' }
+  return { label: 'À améliorer', color: '#f87171' }
+}
+
+function MiniGauge({ score, color }: { score: number; color: string }) {
+  const r = 28, cx = 36, cy = 36
+  const startAngle = 210, totalArc = 300
+  const filledArc = (score / 100) * totalArc
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const pt = (a: number) => ({ x: cx + r * Math.cos(toRad(a)), y: cy + r * Math.sin(toRad(a)) })
+  const ts = pt(startAngle), te = pt(startAngle + totalArc), fe = pt(startAngle + filledArc)
+  return (
+    <svg width={72} height={72} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
+      <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 1 1 ${te.x} ${te.y}`} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} strokeLinecap="round" />
+      {score > 0 && (
+        <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 ${filledArc > 180 ? 1 : 0} 1 ${fe.x} ${fe.y}`} fill="none" stroke={color} strokeWidth={5} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 4px ${color}80)` }} />
+      )}
+      <text x={cx} y={cy + 6} textAnchor="middle" fill={color} fontSize={15} fontWeight={700} fontFamily="system-ui">{score}</text>
+    </svg>
+  )
 }
 
 function timeAgo(dateStr: string) {
@@ -71,11 +103,23 @@ export default function HomePage() {
   const [sims, setSims] = useState<Simulation[]>([])
   const [loaded, setLoaded] = useState(false)
   const [recentOpen, setRecentOpen] = useState(true)
+  const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[] } | null>(null)
 
   useEffect(() => {
     fetch('/api/simulations').then(r => r.json()).then(data => {
       if (Array.isArray(data)) setSims(data)
     }).finally(() => setLoaded(true))
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/score')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return
+        const si = scoreInfo(d.score)
+        setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [] })
+      })
+      .catch(() => {})
   }, [])
 
   const firstName = session?.user?.name?.split(' ')[0] || ''
@@ -143,6 +187,38 @@ export default function HomePage() {
                 : <div key={i}>{card}</div>
             })}
           </div>
+
+          {/* Score widget */}
+          {scoreWidget && (
+            <Link href="/dashboard/score" style={{ textDecoration: 'none', display: 'block', marginBottom: 16 }}>
+              <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreWidget.color}28`, borderRadius: 16, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = scoreWidget.color + '55')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = scoreWidget.color + '28')}>
+                <MiniGauge score={scoreWidget.score} color={scoreWidget.color} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Score Patrimonial</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', border: `1px solid ${scoreWidget.color}30`, borderRadius: 6, padding: '1px 7px' }}>{scoreWidget.label}</span>
+                  </div>
+                  {scoreWidget.quickActions.length > 0 ? (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {scoreWidget.quickActions.slice(0, 2).map((qa, i) => (
+                        <span key={i} style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>
+                          <span style={{ color: '#34d399', fontWeight: 600 }}>+{qa.pts}pts</span> · {qa.label}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Profil complet — voir le détail</span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--text-subtle)', flexShrink: 0 }}>
+                  <span>Détail</span>
+                  <ArrowRight style={{ width: 12, height: 12 }} />
+                </div>
+              </div>
+            </Link>
+          )}
 
           {/* Charts — only if data */}
           {loaded && totalSims > 0 && (

@@ -153,7 +153,7 @@ function FlatTaxInner() {
                 Régime recommandé : <span style={{ color: recColor }}>{recLabel}</span>
               </p>
               <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
-                Économie de {fmt(res.saving)} par rapport à l'autre régime · Taux effectif {res[res.recommended].effectiveRate.toFixed(1)}%
+                Économie de {fmt(res.saving)} par rapport à l'autre régime · Taux effectif {(res.recommended === 'flat_tax' ? res.flatTax : res.bareme).effectiveRate.toFixed(1)}%
               </p>
             </div>
           </div>

@@ -191,7 +191,7 @@ export async function GET() {
   }
 
   // Store score
-  await prisma.patrimoineScore.create({ data: { userId, score: total, details } })
+  await prisma.patrimoineScore.create({ data: { userId, score: total, details: details as object } })
 
   // History (last 12 entries)
   const history = await prisma.patrimoineScore.findMany({

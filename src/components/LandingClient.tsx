@@ -352,7 +352,29 @@ function DashboardPreview() {
 interface RateItem { value: number; label: string; unit: string; trend: 'up' | 'down' | 'stable' }
 interface RatesData {
   livretA: RateItem; oat10y: RateItem; bce: RateItem; inflation: RateItem
+  immo15y: RateItem; immo20y: RateItem; immo25y: RateItem; creditConso: RateItem
   live?: { oat: boolean; bce: boolean }
+}
+
+function RateTile({ item, color, category }: { item: RateItem & { key: string }; color: string; category: string }) {
+  const trendIcon = item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : '→'
+  const trendLabel = item.trend === 'up' ? 'En hausse' : item.trend === 'down' ? 'En baisse' : 'Stable'
+  const trendColor = item.trend === 'up' ? '#f87171' : item.trend === 'down' ? '#34d399' : 'rgba(255,255,255,0.25)'
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
+      borderLeft: `3px solid ${color}`, borderRadius: 10, padding: '12px 14px',
+      display: 'flex', flexDirection: 'column', gap: 2,
+    }}>
+      <span style={{ fontSize: 9, fontWeight: 600, color: `${color}99`, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{category}</span>
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{item.label}</span>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+        <span style={{ fontSize: 24, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-0.03em' }}>{item.value.toFixed(2)}</span>
+        <span style={{ fontSize: 13, color: `${color}80`, fontWeight: 600 }}>%</span>
+      </div>
+      <span style={{ fontSize: 10, color: trendColor, marginTop: 2 }}>{trendIcon} {trendLabel}</span>
+    </div>
+  )
 }
 
 function RatesWidget() {
@@ -363,33 +385,36 @@ function RatesWidget() {
 
   if (!rates) return null
 
-  const items = [
-    { key: 'livretA',   ...rates.livretA,   color: '#34d399' },
-    { key: 'oat10y',    ...rates.oat10y,    color: '#38bdf8' },
-    { key: 'bce',       ...rates.bce,       color: '#a78bfa' },
-    { key: 'inflation', ...rates.inflation, color: '#fb923c' },
-  ] as const
-
-  const arrow = (t: 'up' | 'down' | 'stable') => t === 'up' ? '↑' : t === 'down' ? '↓' : '→'
-  const arrowColor = (t: 'up' | 'down' | 'stable') => t === 'up' ? '#f87171' : t === 'down' ? '#34d399' : 'rgba(255,255,255,0.3)'
+  const groups = [
+    { category: 'Épargne',  color: '#34d399', items: [{ key: 'livretA',   ...rates.livretA }] },
+    { category: 'Marché',   color: '#38bdf8', items: [{ key: 'oat10y',    ...rates.oat10y }] },
+    { category: 'Banque',   color: '#a78bfa', items: [{ key: 'bce',       ...rates.bce }] },
+    { category: 'Macro',    color: '#fb923c', items: [{ key: 'inflation', ...rates.inflation }] },
+    { category: 'Crédit immo', color: '#f472b6', items: [
+      { key: 'immo15y', ...rates.immo15y },
+      { key: 'immo20y', ...rates.immo20y },
+      { key: 'immo25y', ...rates.immo25y },
+    ]},
+    { category: 'Crédit conso', color: '#ef4444', items: [{ key: 'creditConso', ...rates.creditConso }] },
+  ]
 
   return (
-    <div style={{ padding: '10px 20px 0' }}>
-      <div style={{
-        maxWidth: 820, margin: '0 auto',
-        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8,
-        background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 12, padding: '10px 16px',
-      }}>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginRight: 4, whiteSpace: 'nowrap' }}>Taux en direct</span>
-        {items.map(item => (
-          <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: item.color + '10', border: `1px solid ${item.color}20`, borderRadius: 8 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>{item.label}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: item.color, whiteSpace: 'nowrap' }}>{item.value.toFixed(2)}{item.unit}</span>
-            <span style={{ fontSize: 10, color: arrowColor(item.trend) }}>{arrow(item.trend)}</span>
+    <div style={{ padding: '20px 20px 0' }}>
+      <div style={{ maxWidth: 920, margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>Taux en direct</span>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
           </div>
-        ))}
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.18)', marginLeft: 'auto', whiteSpace: 'nowrap' }}>Données indicatives · mise à jour automatique</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.18)' }}>Données indicatives · mise à jour automatique</span>
+        </div>
+        {/* Grid — 4 cols single rates + 3 cols immo block */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
+          {groups.flatMap(g => g.items.map(item => (
+            <RateTile key={item.key} item={item} color={g.color} category={g.category} />
+          )))}
+        </div>
       </div>
     </div>
   )
@@ -401,6 +426,7 @@ function InteractiveDemo() {
   const [monthly, setMonthly] = useState(300)
   const [rate, setRate] = useState(7)
   const [years, setYears] = useState(20)
+  const [hoverPct, setHoverPct] = useState<number | null>(null)
 
   // Compute yearly data points (fast enough to do inline)
   const data: { invested: number; value: number }[] = []
@@ -440,7 +466,7 @@ function InteractiveDemo() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Valeur finale estimée</p>
-          <p style={{ fontSize: 28, fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic', color: GOLD, lineHeight: 1 }}>{fmtK(finalValue)}</p>
+          <p style={{ fontSize: 32, fontWeight: 800, color: GOLD, lineHeight: 1, letterSpacing: '-0.03em' }}>{fmtK(finalValue)}</p>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', marginTop: 4 }}>après {years} ans · <span style={{ color: '#34d399' }}>+{fmtK(gains)}</span> d&apos;intérêts</p>
         </div>
         <div style={{ display: 'flex', gap: 20 }}>
@@ -456,24 +482,70 @@ function InteractiveDemo() {
       </div>
 
       {/* SVG Chart */}
-      <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 14 }}>
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: 110 }}>
-          <defs>
-            <linearGradient id="demo-grad-v" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
-              <stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
-            </linearGradient>
-            <linearGradient id="demo-grad-i" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#34d399" stopOpacity="0.14" />
-              <stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
-            </linearGradient>
-          </defs>
-          <path d={areaValue} fill="url(#demo-grad-v)" />
-          <path d={areaInvested} fill="url(#demo-grad-i)" />
-          <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
-          <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
-        </svg>
-      </div>
+      {(() => {
+        const hovIdx = hoverPct !== null ? Math.round(hoverPct * (data.length - 1)) : null
+        const hd = hovIdx !== null ? data[hovIdx] : null
+        return (
+          <div style={{ borderRadius: 10, overflow: 'visible', marginBottom: 14, position: 'relative', cursor: 'crosshair' }}
+            onMouseMove={e => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              setHoverPct(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)))
+            }}
+            onMouseLeave={() => setHoverPct(null)}
+          >
+            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: 110, borderRadius: 10, overflow: 'hidden' }}>
+              <defs>
+                <linearGradient id="demo-grad-v" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
+                  <stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
+                </linearGradient>
+                <linearGradient id="demo-grad-i" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#34d399" stopOpacity="0.14" />
+                  <stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
+                </linearGradient>
+              </defs>
+              <path d={areaValue} fill="url(#demo-grad-v)" />
+              <path d={areaInvested} fill="url(#demo-grad-i)" />
+              <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
+              <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
+              {hovIdx !== null && hd && (
+                <>
+                  <line x1={toX(hovIdx)} y1={0} x2={toX(hovIdx)} y2={H} stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+                  <circle cx={toX(hovIdx)} cy={toY(hd.value)} r={3.5} fill={GOLD} stroke="#0c0c0c" strokeWidth="1.5" />
+                  <circle cx={toX(hovIdx)} cy={toY(hd.invested)} r={3.5} fill="#34d399" stroke="#0c0c0c" strokeWidth="1.5" />
+                </>
+              )}
+            </svg>
+            {/* HTML Tooltip overlay */}
+            {hovIdx !== null && hd && hoverPct !== null && (
+              <div style={{
+                position: 'absolute',
+                top: 6,
+                left: hoverPct > 0.6 ? 'auto' : `calc(${(hoverPct * 100).toFixed(1)}% + 10px)`,
+                right: hoverPct > 0.6 ? `calc(${((1 - hoverPct) * 100).toFixed(1)}% + 10px)` : 'auto',
+                background: 'rgba(8,8,8,0.95)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 8, padding: '8px 12px',
+                pointerEvents: 'none', zIndex: 10, minWidth: 148,
+              }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Année {hovIdx}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Valeur</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{fmtK(hd.value)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Investi</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>{fmtK(hd.invested)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 4, marginTop: 2 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Gains</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>+{fmtK(hd.value - hd.invested)}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 20, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
@@ -858,7 +930,7 @@ export function LandingClient() {
       <RatesWidget />
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
-      <section id="demo" style={{ padding: '0 20px 80px' }}>
+      <section id="demo" style={{ padding: '60px 20px 80px' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>

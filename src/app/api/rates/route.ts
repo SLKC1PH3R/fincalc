@@ -2,10 +2,14 @@ import { NextResponse } from 'next/server'
 
 // Static / semi-static fallback data
 const FALLBACK = {
-  livretA:   { value: 2.4,  label: 'Livret A',   unit: '%', trend: 'stable' as const },
-  oat10y:    { value: 3.45, label: 'OAT 10 ans', unit: '%', trend: 'up'     as const },
-  bce:       { value: 2.65, label: 'Taux BCE',   unit: '%', trend: 'down'   as const },
-  inflation: { value: 1.1,  label: 'Inflation',  unit: '%', trend: 'down'   as const },
+  livretA:     { value: 2.4,  label: 'Livret A',       unit: '%', trend: 'stable' as const },
+  oat10y:      { value: 3.45, label: 'OAT 10 ans',     unit: '%', trend: 'up'     as const },
+  bce:         { value: 2.65, label: 'Taux BCE',        unit: '%', trend: 'down'   as const },
+  inflation:   { value: 1.1,  label: 'Inflation FR',   unit: '%', trend: 'down'   as const },
+  immo15y:     { value: 3.10, label: 'Crédit immo 15a', unit: '%', trend: 'stable' as const },
+  immo20y:     { value: 3.30, label: 'Crédit immo 20a', unit: '%', trend: 'stable' as const },
+  immo25y:     { value: 3.50, label: 'Crédit immo 25a', unit: '%', trend: 'stable' as const },
+  creditConso: { value: 5.80, label: 'Crédit conso',   unit: '%', trend: 'stable' as const },
 }
 
 async function fetchOAT(): Promise<number | null> {
@@ -41,11 +45,15 @@ export async function GET() {
   const [oat, bce] = await Promise.all([fetchOAT(), fetchBCERate()])
 
   const rates = {
-    livretA:   FALLBACK.livretA,
-    oat10y:    { ...FALLBACK.oat10y,   value: oat  ?? FALLBACK.oat10y.value  },
-    bce:       { ...FALLBACK.bce,      value: bce  ?? FALLBACK.bce.value     },
-    inflation: FALLBACK.inflation,
-    updatedAt: new Date().toISOString(),
+    livretA:     FALLBACK.livretA,
+    oat10y:      { ...FALLBACK.oat10y,    value: oat ?? FALLBACK.oat10y.value },
+    bce:         { ...FALLBACK.bce,       value: bce ?? FALLBACK.bce.value },
+    inflation:   FALLBACK.inflation,
+    immo15y:     FALLBACK.immo15y,
+    immo20y:     FALLBACK.immo20y,
+    immo25y:     FALLBACK.immo25y,
+    creditConso: FALLBACK.creditConso,
+    updatedAt:   new Date().toISOString(),
     live: { oat: oat !== null, bce: bce !== null },
   }
 

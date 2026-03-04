@@ -264,28 +264,21 @@
   }
 }
 
-/* Professional grid + gradient overlay (replaces noise-bg) */
+/* Professional grid background — z-index: -1 so content always on top */
 .grid-bg { position: relative; }
 .grid-bg::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.030) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.030) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
   background-size: 64px 64px;
   pointer-events: none;
   z-index: 0;
 }
-/* Radial fade so grid fades toward center/bottom */
-.grid-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, transparent 40%, #050505 100%);
-  pointer-events: none;
-  z-index: 0;
-}
+/* All direct children must be above the grid */
+.grid-bg > * { position: relative; z-index: 1; }
 
 /* Mobile responsive fixes */
 @media (max-width: 768px) {

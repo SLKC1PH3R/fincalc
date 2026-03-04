@@ -31,8 +31,8 @@ interface Simulation {
   inputs: Record<string, any>; results: Record<string, any>; createdAt: string
 }
 
-const GOLD = '#f1c086'
-const GOLD_BORDER = 'rgba(241,192,134,0.2)'
+const GOLD = '#f97316'
+const GOLD_BORDER = 'rgba(249,115,22,0.2)'
 
 const MODULES = [
   { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp, desc: 'Effet boule de neige', tag: 'Épargne', color: '#34d399' },
@@ -65,7 +65,7 @@ const TYPE_META: Record<string, { label: string; color: string; icon: any }> = {
 }
 
 function scoreInfo(s: number): { label: string; color: string } {
-  if (s >= 90) return { label: 'Excellent', color: '#f1c086' }
+  if (s >= 90) return { label: 'Excellent', color: '#f97316' }
   if (s >= 80) return { label: 'Très bien', color: '#34d399' }
   if (s >= 60) return { label: 'Bien', color: '#fbbf24' }
   if (s >= 40) return { label: 'En progression', color: '#fb923c' }

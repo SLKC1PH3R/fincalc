@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { TrendingUp, Loader2, Eye, EyeOff, Zap } from 'lucide-react'
 
-const GOLD = '#f1c086'
+const GOLD = '#f97316'
 const DEMO_EMAIL = 'demo@digitalstack.cloud'
 const DEMO_PASSWORD = 'demo@2026'
 

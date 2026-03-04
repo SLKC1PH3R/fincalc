@@ -459,7 +459,7 @@ function LivretSection({ envelope, onSave, toast }: {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {[
             { label: 'Solde', value: fmtEur(balanceNum), color: '#34d399' },
-            { label: 'Taux en cours', value: `${rate} %`, color: '#f1c086', sub: 'Taux réglementé' },
+            { label: 'Taux en cours', value: `${rate} %`, color: '#f97316', sub: 'Taux réglementé' },
             { label: 'Intérêts annuels estimés', value: fmtEur(projectedInterest), color: '#818cf8' },
             ...(maxBalance ? [{ label: 'Plafond légal', value: fmtEur(maxBalance), color: '#94a3b8', sub: `Reste ${fmtEur(Math.max(0, maxBalance - balanceNum))}` }] : []),
           ].map(kpi => (
@@ -1113,7 +1113,7 @@ function PeaCtoCryptoSection({
       {positions.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
           {[
-            { label: 'Valeur de marché', value: fmtCompact(totalMarketValue), color: '#f1c086', sub: pricesLoading ? 'Mise à jour…' : 'Prix temps réel' },
+            { label: 'Valeur de marché', value: fmtCompact(totalMarketValue), color: '#f97316', sub: pricesLoading ? 'Mise à jour…' : 'Prix temps réel' },
             { label: 'Investi (PRU)', value: fmtCompact(totalInvested), color: '#818cf8' },
             { label: 'Performance', value: `${perf >= 0 ? '+' : ''}${perf.toFixed(2)} %`, color: perf >= 0 ? '#34d399' : '#ef4444', sub: `${perfAbs >= 0 ? '+' : ''}${fmtCompact(perfAbs)}` },
             { label: 'Nb positions', value: String(positions.length), color: '#38bdf8' },
@@ -1399,7 +1399,7 @@ function EtfOptimisationSection({ positions, prices, chartTheme }: {
     <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
       <CardContent style={{ padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <Zap style={{ width: 16, height: 16, color: '#f1c086' }} />
+          <Zap style={{ width: 16, height: 16, color: '#f97316' }} />
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Optimisation ETF</span>
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 16 }}>
@@ -1752,7 +1752,7 @@ function PERSection({ envelope, onSave }: { envelope: Envelope; onSave: (m: Reco
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
           {[
             { label: 'Valeur du PER', value: fmtEur(balanceNum), color: '#a78bfa' },
-            { label: 'TMI actuelle', value: `${tmiNum} %`, color: '#f1c086' },
+            { label: 'TMI actuelle', value: `${tmiNum} %`, color: '#f97316' },
             ...(contribNum > 0 ? [{ label: 'Économie fiscale', value: fmtEur(taxSaving), color: '#34d399', sub: `pour ${fmtEur(contribNum)} versés` }] : []),
           ].map(kpi => (
             <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>

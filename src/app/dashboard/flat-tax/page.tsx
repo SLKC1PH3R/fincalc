@@ -132,7 +132,7 @@ function FlatTaxInner() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
+            <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f97316' }} />
             <label htmlFor="couple" style={{ fontSize: 12, color: 'var(--text-em)', cursor: 'pointer' }}>
               Déclaration en couple
               <Tip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />

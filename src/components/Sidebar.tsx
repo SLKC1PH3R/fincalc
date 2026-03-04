@@ -204,8 +204,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               <div className="flex items-center justify-between">
                 <Link href="/dashboard" className="flex items-center gap-2.5 group">
                   <div className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105"
-                    style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)' }}>
-                    <TrendingUp className="h-4 w-4" style={{ color: '#f1c086' }} />
+                    style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
+                    <TrendingUp className="h-4 w-4" style={{ color: '#0a0a0a' }} />
                   </div>
                   <span className="font-bold text-base tracking-tight" style={{ color: 'var(--sb-text-strong)' }}>FinCalc</span>
                 </Link>
@@ -221,8 +221,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <img src={user.image} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10" />
                 ) : (
                   <div className="h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)' }}>
-                    <span className="text-[11px] font-bold" style={{ color: '#f1c086' }}>
+                    style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
+                    <span className="text-[11px] font-bold" style={{ color: '#0a0a0a' }}>
                       {(user.name || user.email || 'U')[0].toUpperCase()}
                     </span>
                   </div>
@@ -236,8 +236,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           ) : (
             <button onClick={toggle} title="Ouvrir le menu"
               className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform hover:scale-105"
-              style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)' }}>
-              <TrendingUp className="h-4 w-4" style={{ color: '#f1c086' }} />
+              style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
+              <TrendingUp className="h-4 w-4" style={{ color: '#0a0a0a' }} />
             </button>
           )}
         </div>
@@ -328,7 +328,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                         <>
                           <span className="text-xs font-medium flex-1">Vue d'ensemble</span>
                           {envelopes.length > 0 && (
-                            <span style={{ fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
+                            <span style={{ fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
                               {envelopes.length}
                             </span>
                           )}
@@ -493,11 +493,11 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                 <>
                                   <span className="text-xs flex-1 truncate font-medium">{item.label}</span>
                                   {itemSims.length > 0 ? (
-                                    <span style={{ fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
+                                    <span style={{ fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
                                       {itemSims.length}
                                     </span>
                                   ) : isActive ? (
-                                    <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />
+                                    <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />
                                   ) : null}
                                 </>
                               )}
@@ -524,7 +524,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                   <div
                                     key={sim.id}
                                     className="group flex items-center rounded-md transition-colors"
-                                    style={{ background: isActiveSim ? 'rgba(241,192,134,0.08)' : 'transparent' }}
+                                    style={{ background: isActiveSim ? 'rgba(249,115,22,0.08)' : 'transparent' }}
                                     onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
                                     onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                                   >
@@ -534,13 +534,13 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                       style={{
                                         fontSize: 11,
                                         textDecoration: 'none',
-                                        color: isActiveSim ? '#f1c086' : 'var(--sb-sim-text)',
+                                        color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)',
                                         fontWeight: isActiveSim ? 600 : 400,
                                       }}
                                       onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
                                       onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
                                     >
-                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />}
                                       <span className="truncate">{sim.name}</span>
                                     </Link>
                                     <button

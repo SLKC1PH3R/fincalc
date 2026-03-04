@@ -378,7 +378,7 @@ function RentalPageInner() {
                   onClick={() => setActiveAptId(apt.id)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={activeAptId === apt.id
-                    ? { background: 'rgba(241,192,134,0.1)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                    ? { background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)', color: 'var(--sb-text-strong)' }
                     : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                 >
                   {apt.name}
@@ -522,7 +522,7 @@ function RentalPageInner() {
                   onClick={() => setResultTab('global')}
                   className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
                   style={resultTab === 'global'
-                    ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                    ? { background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.2)', color: 'var(--sb-text-strong)' }
                     : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                 >
                   Global
@@ -533,7 +533,7 @@ function RentalPageInner() {
                     onClick={() => setResultTab(apt.id)}
                     className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
                     style={resultTab === apt.id
-                      ? { background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.2)', color: 'var(--sb-text-strong)' }
+                      ? { background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.2)', color: 'var(--sb-text-strong)' }
                       : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
                   >
                     {apt.name}

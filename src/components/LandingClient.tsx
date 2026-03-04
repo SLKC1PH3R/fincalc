@@ -269,6 +269,140 @@ function MiniMortgage() {
   )
 }
 
+function MiniDCA() {
+  const bars = 12, W = 280, H = 80, gap = 4
+  const bw = (W - (bars - 1) * gap) / bars
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      <defs>
+        <linearGradient id="prv-dca-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+      {Array.from({ length: bars }, (_, i) => {
+        const h = ((i + 1) / bars) * (H - 14) + 4
+        return <rect key={i} x={i * (bw + gap)} y={H - h} width={bw} height={h} rx={2} fill="url(#prv-dca-g)" />
+      })}
+      <line x1={0} y1={H * 0.38} x2={W} y2={H * 0.38} stroke="rgba(56,189,248,0.4)" strokeWidth="1.5" strokeDasharray="5,3" />
+    </svg>
+  )
+}
+function MiniAcheterVsLouer() {
+  const W = 280, H = 80
+  const buy = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    return `${(t * W).toFixed(1)},${(H - 6 - Math.pow(t, 1.2) * (H - 14)).toFixed(1)}`
+  })
+  const rent = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    return `${(t * W).toFixed(1)},${(H - 6 - t * 0.68 * (H - 14)).toFixed(1)}`
+  })
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      <defs>
+        <linearGradient id="prv-avl-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={`M 0,${H} L ${buy.join(' L ')} L ${W},${H} Z`} fill="url(#prv-avl-g)" />
+      <path d={`M ${buy.join(' L ')}`} fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinejoin="round" />
+      <path d={`M ${rent.join(' L ')}`} fill="none" stroke="#a78bfa" strokeWidth="1.5" strokeDasharray="4,3" strokeLinejoin="round" strokeOpacity="0.45" />
+    </svg>
+  )
+}
+function MiniLocatif() {
+  const W = 280, H = 78, bars = 10, gap = 5
+  const bw = (W - (bars - 1) * gap) / bars
+  const cfs = [0.60, 0.62, -0.20, 0.64, 0.65, 0.63, 0.68, 0.66, 0.70, 0.72]
+  const zeroY = H * 0.28
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      <line x1={0} y1={zeroY} x2={W} y2={zeroY} stroke="rgba(45,212,191,0.15)" strokeWidth="1" />
+      {cfs.map((cf, i) => {
+        const h = Math.max(2, Math.abs(cf) * (H - zeroY - 4))
+        return <rect key={i} x={i * (bw + gap)} y={cf >= 0 ? zeroY - h : zeroY} width={bw} height={h} rx={2} fill={cf >= 0 ? '#2dd4bf' : '#f87171'} opacity={cf >= 0 ? 0.75 : 0.65} />
+      })}
+    </svg>
+  )
+}
+function MiniImpots() {
+  const W = 280, H = 80
+  const data = [
+    { net: 0.72, ir: 0.14, ps: 0.14 },
+    { net: 0.60, ir: 0.22, ps: 0.18 },
+    { net: 0.48, ir: 0.32, ps: 0.20 },
+  ]
+  const cols = data.length, totalW = W / cols
+  const bw = totalW * 0.6, offsetX = (totalW - bw) / 2
+  const maxH = H - 12
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      {data.map((d, i) => {
+        const x = i * totalW + offsetX
+        const netH = d.net * maxH, irH = d.ir * maxH, psH = d.ps * maxH
+        return (
+          <g key={i}>
+            <rect x={x} y={H - netH - irH - psH} width={bw} height={psH} rx={2} fill="rgba(251,113,133,0.45)" />
+            <rect x={x} y={H - netH - irH} width={bw} height={irH} rx={2} fill="rgba(251,113,133,0.8)" />
+            <rect x={x} y={H - netH} width={bw} height={netH} rx={2} fill="rgba(251,113,133,0.28)" />
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+function MiniRetraite() {
+  const W = 280, H = 80, retireAt = 0.65
+  const accPts = Array.from({ length: 14 }, (_, i) => {
+    const t = (i / 13) * retireAt
+    return `${(t * W).toFixed(1)},${(H - 6 - Math.pow(t / retireAt, 1.6) * (H - 18)).toFixed(1)}`
+  })
+  const retireX = retireAt * W
+  const topY = H - 6 - (H - 18) * 0.94
+  const penY = H - 6 - (H - 18) * 0.55
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      <defs>
+        <linearGradient id="prv-ret-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x={retireX} y={topY} width={W - retireX} height={penY - topY} fill="rgba(251,191,36,0.08)" />
+      <path d={`M 0,${H} L ${accPts.join(' L ')} L ${retireX},${H} Z`} fill="url(#prv-ret-g)" />
+      <path d={`M ${accPts.join(' L ')}`} fill="none" stroke="#fbbf24" strokeWidth="2" strokeLinejoin="round" />
+      <line x1={retireX} y1={topY} x2={W} y2={topY} stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="5,3" strokeOpacity="0.4" />
+      <line x1={retireX} y1={penY} x2={W} y2={penY} stroke="#fbbf24" strokeWidth="2" />
+      <line x1={retireX} y1={6} x2={retireX} y2={H - 4} stroke="rgba(251,191,36,0.25)" strokeWidth="1" strokeDasharray="3,3" />
+    </svg>
+  )
+}
+function MiniBudget() {
+  const W = 280, H = 78, barH = 24, y = (H - barH) / 2
+  const segments = [
+    { w: 0.50, opacity: 0.80, label: '50%', sub: 'Besoins' },
+    { w: 0.30, opacity: 0.52, label: '30%', sub: 'Envies' },
+    { w: 0.20, opacity: 0.32, label: '20%', sub: 'Épargne' },
+  ]
+  let x = 0
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      {segments.map((s, i) => {
+        const sw = s.w * (W - 4); const rx = x; x += sw + 2
+        return (
+          <g key={i}>
+            <rect x={rx} y={y} width={sw} height={barH} rx={4} fill="#a3e635" opacity={s.opacity} />
+            <text x={rx + sw / 2} y={y + barH / 2 + 1} textAnchor="middle" dominantBaseline="middle" fill="rgba(0,0,0,0.75)" fontSize="10" fontWeight="800">{s.label}</text>
+            <text x={rx + sw / 2} y={y + barH + 11} textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize="9">{s.sub}</text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
 // ─── Bento featured card ──────────────────────────────────────────────────
 function BentoFeaturedCard({ mod, preview }: { mod: typeof MODULES[0]; preview: React.ReactNode }) {
   const [hovered, setHovered] = useState(false)
@@ -1159,13 +1293,14 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          {/* Regular modules grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
-            {[1, 3, 5, 6, 7, 8].map((idx, i) => (
-              <RevealSection key={idx} delay={i * 50}>
-                <ModuleCard mod={MODULES[idx]} index={i} />
-              </RevealSection>
-            ))}
+          {/* Remaining modules — all bento with mini charts */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
+            <RevealSection delay={0}><BentoFeaturedCard mod={MODULES[1]} preview={<MiniDCA />} /></RevealSection>
+            <RevealSection delay={60}><BentoFeaturedCard mod={MODULES[3]} preview={<MiniAcheterVsLouer />} /></RevealSection>
+            <RevealSection delay={120}><BentoFeaturedCard mod={MODULES[5]} preview={<MiniLocatif />} /></RevealSection>
+            <RevealSection delay={180}><BentoFeaturedCard mod={MODULES[6]} preview={<MiniImpots />} /></RevealSection>
+            <RevealSection delay={240}><BentoFeaturedCard mod={MODULES[7]} preview={<MiniRetraite />} /></RevealSection>
+            <RevealSection delay={300}><BentoFeaturedCard mod={MODULES[8]} preview={<MiniBudget />} /></RevealSection>
           </div>
 
         </div>

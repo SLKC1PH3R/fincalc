@@ -449,6 +449,8 @@ function InteractiveDemo() {
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2)} M€`
       : n >= 1000 ? `${Math.round(n / 1000)} k€`
         : `${n} €`
+  const fmtFull = (n: number) =>
+    n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €'
 
   // SVG inline chart
   const W = 500; const H = 110
@@ -526,20 +528,20 @@ function InteractiveDemo() {
                 background: 'rgba(8,8,8,0.95)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: 8, padding: '8px 12px',
-                pointerEvents: 'none', zIndex: 10, minWidth: 148,
+                pointerEvents: 'none', zIndex: 10, minWidth: 190,
               }}>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Année {hovIdx}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Valeur</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{fmtK(hd.value)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{fmtFull(hd.value)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Investi</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>{fmtK(hd.invested)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>{fmtFull(hd.invested)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 4, marginTop: 2 }}>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Gains</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>+{fmtK(hd.value - hd.invested)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>+{fmtFull(hd.value - hd.invested)}</span>
                 </div>
               </div>
             )}

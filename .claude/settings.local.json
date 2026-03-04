@@ -5,7 +5,11 @@
       "Bash(cmd.exe /c \"where npm\")",
       "Bash(npx tsc --noEmit --project tsconfig.json)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(unzip -o \"Kimi_Agent_Refonte site pro.zip\" -d \"Kimi_Agent_Refonte site pro\")",
+      "Bash(node -e \":*)",
+      "Bash(npx node -e \"const fs=require\\(''fs''\\);let c=fs.readFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx'',''utf8''\\);const l=c.split\\(''\\\\n''\\);for\\(let i=0;i<l.length;i++\\){if\\(\\(l[i].includes\\(''<h1 ''\\)||l[i].includes\\(''<h2 ''\\)\\)&&l[i].includes\\(''fontWeight: 400''\\)\\){l[i]=l[i].replace\\(''fontWeight: 400'',''fontWeight: 800''\\);}};fs.writeFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx'',l.join\\(''\\\\n''\\),''utf8''\\);console.log\\(''done''\\);\")",
+      "Bash(/c/Users/jerem/AppData/Local/Programs/Python/Python314/python.exe -c \":*)"
     ]
   }
 }

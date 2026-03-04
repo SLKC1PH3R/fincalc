@@ -563,7 +563,7 @@ function RevealSection({ children, delay = 0, style: extraStyle }: { children: R
 // ─── Tag badge ────────────────────────────────────────────────────────────
 function SectionTag({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 100, background: 'transparent', border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
       {children}
     </div>
   )
@@ -741,11 +741,65 @@ function RateBigCard({ label, value, sublabel, color, cta, trend }: {
   )
 }
 
+function RateRow({ name, rate, sublabel, note, trend, color, bold = false }: {
+  name: string; rate: string; sublabel?: string; note?: string; trend?: 'up'|'down'|'stable'; color: string; bold?: boolean
+}) {
+  const trendEl = trend === 'up'
+    ? <TrendingUp style={{ width: 14, height: 14, color: '#f87171', flexShrink: 0 }} />
+    : trend === 'down'
+    ? <TrendingUp style={{ width: 14, height: 14, color: '#34d399', transform: 'rotate(180deg)', flexShrink: 0 }} />
+    : <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', transition: 'background 0.15s', cursor: 'default' }}
+      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>{name}</span>
+          {note && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>({note})</span>}
+        </div>
+        {sublabel && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sublabel}</span>}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <span style={{ fontSize: bold ? 22 : 20, fontWeight: 800, color, letterSpacing: '-0.02em' }}>{rate}</span>
+        {trendEl}
+      </div>
+    </div>
+  )
+}
+
+function RatePanel({ title, icon: Icon, iconColor, iconBg, children, footer }: {
+  title: string; icon: React.ElementType; iconColor: string; iconBg: string;
+  children: React.ReactNode; footer?: React.ReactNode
+}) {
+  return (
+    <div style={{
+      flex: 1, minWidth: 280,
+      background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+      border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '24px',
+      display: 'flex', flexDirection: 'column', gap: 0,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Icon style={{ width: 20, height: 20, color: iconColor }} />
+        </div>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>{title}</h3>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        {children}
+      </div>
+      {footer && <div style={{ marginTop: 16 }}>{footer}</div>}
+    </div>
+  )
+}
+
 function RatesWidget() {
   const [rates, setRates] = useState<RatesData | null>(null)
   useEffect(() => {
     fetch('/api/rates').then(r => r.ok ? r.json() : null).then(d => { if (d) setRates(d) }).catch(() => {})
   }, [])
+
+  const fmt = (v: number) => v.toFixed(2).replace('.', ',') + ' %'
 
   return (
     <section id="rates" style={{ padding: '80px 20px 100px' }}>
@@ -753,15 +807,19 @@ function RatesWidget() {
 
         {/* Header */}
         <RevealSection>
-          <div style={{ marginBottom: 60 }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <SectionTag>
               <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
-              Taux en Direct
+              Mis à jour automatiquement
             </SectionTag>
-            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.025em', marginTop: 8 }}>
-              Les taux qui pilotent<br />vos décisions financières
+            <h2 style={{ fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+              Les taux qui pilotent vos{' '}
+              <span style={{
+                background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+              }}>décisions financières</span>
             </h2>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.32)', marginTop: 12, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.32)' }}>
               Données indicatives · mise à jour automatique chaque heure
               {rates?.live?.oat || rates?.live?.bce
                 ? <span style={{ marginLeft: 10, color: '#34d399', fontSize: 12 }}>● Temps réel</span>
@@ -775,53 +833,44 @@ function RatesWidget() {
             <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 13 }}>Chargement des taux…</span>
           </div>
         ) : (
-          <>
-            {/* Épargne réglementée */}
-            <RevealSection delay={0}>
-              <div style={{ marginBottom: 48 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#34d399' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Épargne réglementée</span>
-                </div>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <RateBigCard label="Livret A" value={rates.livretA.value} sublabel="Plafond 22 950 €" color="#34d399" trend={rates.livretA.trend} />
-                  <RateBigCard label="LDDS" value={rates.ldds.value} sublabel="Plafond 12 000 €" color="#34d399" trend={rates.ldds.trend} />
-                  <RateBigCard label="LEP" value={rates.lep.value} sublabel="Plafond 10 000 € · sous conditions de revenus" color="#34d399" trend={rates.lep.trend} />
-                </div>
-              </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'stretch' }}>
+            {/* Panel 1 — Épargne réglementée */}
+            <RevealSection delay={0} style={{ flex: '1 1 280px' }}>
+              <RatePanel title="Épargne réglementée" icon={PiggyBank} iconColor="#34d399" iconBg="rgba(52,211,153,0.1)">
+                <RateRow name="Livret A" rate={fmt(rates.livretA.value)} sublabel="Plafond 22 950 €" trend={rates.livretA.trend} color="#34d399" bold />
+                <RateRow name="LDDS" rate={fmt(rates.ldds.value)} sublabel="Plafond 12 000 €" trend={rates.ldds.trend} color="#34d399" bold />
+                <RateRow name="LEP" rate={fmt(rates.lep.value)} sublabel="Plafond 10 000 €" note="sous conditions" trend={rates.lep.trend} color="#34d399" bold />
+              </RatePanel>
             </RevealSection>
 
-            {/* Crédit immobilier */}
-            <RevealSection delay={80}>
-              <div style={{ marginBottom: 48 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#f472b6' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Crédit immobilier</span>
-                </div>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo15y.value} sublabel="sur 15 ans" color="#f472b6" trend={rates.immo15y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
-                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo20y.value} sublabel="sur 20 ans" color="#f472b6" trend={rates.immo20y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
-                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo25y.value} sublabel="sur 25 ans" color="#f472b6" trend={rates.immo25y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
-                </div>
-              </div>
+            {/* Panel 2 — Crédit immobilier */}
+            <RevealSection delay={80} style={{ flex: '1 1 280px' }}>
+              <RatePanel
+                title="Crédit immobilier"
+                icon={Home} iconColor={GOLD} iconBg={GOLD_DARK}
+                footer={
+                  <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.18)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = GOLD_DARK }}>
+                    Simuler mon prêt <ArrowRight style={{ width: 14, height: 14 }} />
+                  </Link>
+                }>
+                <RateRow name="Meilleur taux" sublabel="sur 15 ans" rate={fmt(rates.immo15y.value)} trend={rates.immo15y.trend} color={GOLD} bold />
+                <RateRow name="Meilleur taux" sublabel="sur 20 ans" rate={fmt(rates.immo20y.value)} trend={rates.immo20y.trend} color={GOLD} bold />
+                <RateRow name="Meilleur taux" sublabel="sur 25 ans" rate={fmt(rates.immo25y.value)} trend={rates.immo25y.trend} color={GOLD} bold />
+              </RatePanel>
             </RevealSection>
 
-            {/* Marchés & Macro */}
-            <RevealSection delay={160}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#38bdf8' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Marchés & Macro</span>
-                </div>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <RateBigCard label="OAT 10 ans" value={rates.oat10y.value} sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État française"} color="#38bdf8" trend={rates.oat10y.trend} />
-                  <RateBigCard label="Taux BCE" value={rates.bce.value} sublabel={rates.live?.bce ? 'Banque Centrale Européenne · Live' : 'Banque Centrale Européenne'} color="#a78bfa" trend={rates.bce.trend} />
-                  <RateBigCard label="Inflation FR" value={rates.inflation.value} sublabel="Indice des prix à la consommation" color="#fb923c" trend={rates.inflation.trend} />
-                  <RateBigCard label="Crédit conso" value={rates.creditConso.value} sublabel="Taux moyen du marché" color="#ef4444" trend={rates.creditConso.trend} />
-                </div>
-              </div>
+            {/* Panel 3 — Marchés & Macro */}
+            <RevealSection delay={160} style={{ flex: '1 1 280px' }}>
+              <RatePanel title="Marchés & Macro" icon={TrendingUp} iconColor="#fbbf24" iconBg="rgba(251,191,36,0.1)">
+                <RateRow name="OAT 10 ans" sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État"} rate={fmt(rates.oat10y.value)} trend={rates.oat10y.trend} color="#38bdf8" />
+                <RateRow name="Taux BCE" sublabel={rates.live?.bce ? 'BCE · Live' : 'Banque Centrale Européenne'} rate={fmt(rates.bce.value)} trend={rates.bce.trend} color="#a78bfa" />
+                <RateRow name="Inflation FR" sublabel="Indice des prix" rate={fmt(rates.inflation.value)} trend={rates.inflation.trend} color="#fb923c" />
+                <RateRow name="Crédit conso" sublabel="Taux moyen" rate={fmt(rates.creditConso.value)} trend={rates.creditConso.trend} color="#f87171" />
+              </RatePanel>
             </RevealSection>
-          </>
+          </div>
         )}
 
       </div>
@@ -1028,8 +1077,9 @@ function CompetitorTable() {
         <RevealSection>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Comparatif</SectionTag>
-            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
-              FinCalc vs les alternatives
+            <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+              FinCalc vs les{' '}
+              <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>alternatives</span>
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', marginTop: 12, lineHeight: 1.7 }}>
               Des simulateurs conçus pour les investisseurs français, pas pour les banques.
@@ -1113,7 +1163,7 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div style={{ background: '#060606', color: '#fff', minHeight: '100vh', fontFamily: "'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div className="noise-bg" style={{ background: '#050505', color: '#fff', minHeight: '100vh', fontFamily: "'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{
@@ -1270,7 +1320,7 @@ export function LandingClient() {
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2.4rem,6vw,4.2rem)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: 24 }}>
+          <h1 style={{ fontSize: 'clamp(2.8rem,6.5vw,4.8rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.035em', color: '#fff', marginBottom: 24 }}>
             Prenez le contrôle de votre{' '}
             <span style={{
               fontStyle: 'italic',
@@ -1326,8 +1376,12 @@ export function LandingClient() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
             {[{ v: '13', l: 'Calculateurs' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
               <div key={s.l} style={{ textAlign: 'center' }}>
-                <span style={{ display: 'block', fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.8rem', fontStyle: 'italic', color: GOLD }}>{s.v}</span>
-                <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 2 }}>{s.l}</span>
+                <span style={{
+                  display: 'block', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.03em',
+                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                }}>{s.v}</span>
+                <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 2 }}>{s.l}</span>
               </div>
             ))}
           </div>
@@ -1348,8 +1402,9 @@ export function LandingClient() {
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <SectionTag><TrendingUp style={{ width: 11, height: 11 }} /> Essayez maintenant</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', fontWeight: 400, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-                Voyez votre épargne fructifier
+              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
+                Voyez votre épargne{' '}
+                <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>fructifier</span>
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', marginTop: 10, lineHeight: 1.7 }}>
                 Manipulez les curseurs — aucun compte requis.
@@ -1369,12 +1424,16 @@ export function LandingClient() {
           {/* Header */}
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Calculateurs</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2rem,5vw,3.4rem)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
-                Optimisez votre patrimoine
+              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> 13 calculateurs</SectionTag>
+              <h2 style={{ fontSize: 'clamp(2rem,5vw,3.4rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+                Tous les outils pour{' '}
+                <span style={{
+                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                }}>maîtriser vos finances</span>
               </h2>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)', marginTop: 14, lineHeight: 1.7 }}>
-                13 simulateurs financiers précis pour toutes les décisions qui comptent.
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)', margin: '0', lineHeight: 1.7, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
+                Des simulateurs complets et gratuits pour chaque aspect de votre vie financière.
               </p>
             </div>
           </RevealSection>
@@ -1422,7 +1481,7 @@ export function LandingClient() {
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 64 }}>
               <SectionTag><Clock style={{ width: 11, height: 11 }} /> En 3 étapes</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0' }}>
                 Comment ça marche ?
               </h2>
             </div>
@@ -1432,7 +1491,7 @@ export function LandingClient() {
             {HOW.map((step, i) => (
               <RevealSection key={i} delay={i * 120} style={{ height: '100%' }}>
                 <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden', height: '100%', boxSizing: 'border-box' }}>
-                  <div style={{ position: 'absolute', top: -10, right: 16, fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
+                  <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
                     {step.step}
                   </div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 10, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, marginBottom: 20 }}>
@@ -1460,9 +1519,13 @@ export function LandingClient() {
 
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <SectionTag><Star style={{ width: 11, height: 11 }} /> Nos engagements</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
-                Pourquoi FinCalc ?
+              <SectionTag><Star style={{ width: 11, height: 11 }} /> Pourquoi FinCalc</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+                Conçu pour les{' '}
+                <span style={{
+                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                }}>investisseurs exigeants</span>
               </h2>
             </div>
           </RevealSection>
@@ -1494,8 +1557,9 @@ export function LandingClient() {
             <RevealSection>
               <div style={{ marginBottom: 44, position: 'relative' }}>
                 <SectionTag><Shield style={{ width: 11, height: 11 }} /> Protection</SectionTag>
-                <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 400, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
-                  Sécurité & confidentialité
+                <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
+                  Sécurité &{' '}
+                  <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>confidentialité</span>
                 </h2>
                 <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginTop: 12, maxWidth: 500 }}>
                   Vos données personnelles et financières sont traitées avec le plus haut niveau de sécurité.
@@ -1523,87 +1587,74 @@ export function LandingClient() {
       </section>
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
-      <section id="roadmap" style={{ padding: '80px 20px 100px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+      <section id="roadmap" style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(251,191,36,0.03), transparent)' }}>
+        <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <RevealSection>
-            <div style={{ marginBottom: 52 }}>
-              <SectionTag><Globe style={{ width: 11, height: 11 }} /> Ce qui arrive</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em' }}>
-                Roadmap
+            <div style={{ textAlign: 'center', marginBottom: 56 }}>
+              <SectionTag><Clock style={{ width: 11, height: 11 }} /> Évolution continue</SectionTag>
+              <h2 style={{ fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+                Ce qui arrive sur{' '}
+                <span style={{
+                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                }}>FinCalc</span>
               </h2>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', marginTop: 12, lineHeight: 1.7 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.32)', maxWidth: 500, margin: '0 auto' }}>
                 FinCalc évolue en continu. Voici les fonctionnalités déjà disponibles et ce qui arrive.
               </p>
             </div>
           </RevealSection>
 
-          {/* Vertical timeline */}
-          <div style={{ position: 'relative' }}>
-            {/* Gradient line */}
-            <div style={{ position: 'absolute', left: 14, top: 28, bottom: 28, width: 1, background: 'linear-gradient(to bottom, #34d399 0%, #34d399 42%, rgba(249,115,22,0.55) 60%, rgba(255,255,255,0.08) 100%)', pointerEvents: 'none' }} />
-
-            {ROADMAP_PHASES.map((phase, pi) => (
-              <div key={phase.id} style={{ marginBottom: pi < ROADMAP_PHASES.length - 1 ? 40 : 0 }}>
-                {/* Phase header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 }}>
+          {/* Phase grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+            {ROADMAP_PHASES.map((phase, pi) => {
+              const barColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.15)'
+              const badgeBg = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.06)'
+              const badgeColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.35)'
+              return (
+                <RevealSection key={phase.id} delay={pi * 80}>
                   <div style={{
-                    width: 28, height: 28, borderRadius: '50%', flexShrink: 0, position: 'relative', zIndex: 1,
-                    background: phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(249,115,22,0.12)' : 'rgba(255,255,255,0.05)',
-                    border: `1.5px solid ${phase.id === 'done' ? 'rgba(52,211,153,0.4)' : phase.id === 'wip' ? 'rgba(249,115,22,0.3)' : 'rgba(255,255,255,0.15)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: phase.id === 'done' ? '0 0 14px rgba(52,211,153,0.3)' : phase.id === 'wip' ? '0 0 14px rgba(249,115,22,0.2)' : 'none',
+                    background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20,
+                    overflow: 'hidden', position: 'relative',
                   }}>
-                    {phase.id === 'done' && <Check style={{ width: 12, height: 12, color: '#34d399' }} />}
-                    {phase.id === 'wip' && <Clock style={{ width: 12, height: 12, color: GOLD }} />}
-                    {phase.id === 'planned' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.25)' }} />}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: phase.color, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                      {phase.label}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 100, padding: '1px 9px' }}>
-                      {phase.items.length}
-                    </span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: phase.id === 'done' ? 'rgba(52,211,153,0.55)' : phase.id === 'wip' ? `${GOLD}88` : 'rgba(255,255,255,0.18)', letterSpacing: '0.02em' }}>
-                      {phase.period}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Items */}
-                <div style={{ paddingLeft: 44, display: 'flex', flexDirection: 'column', gap: 7 }}>
-                  {phase.items.map((item, i) => (
-                    <RevealSection key={i} delay={pi * 80 + i * 35}>
-                      <div
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-                          background: phase.id === 'done' ? 'rgba(52,211,153,0.05)' : phase.id === 'wip' ? 'rgba(249,115,22,0.06)' : 'rgba(255,255,255,0.02)',
-                          border: `1px solid ${phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.05)'}`,
-                          borderRadius: 12, padding: '13px 16px', transition: 'border-color 0.2s',
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = phase.id === 'done' ? 'rgba(52,211,153,0.32)' : phase.id === 'wip' ? 'rgba(249,115,22,0.4)' : 'rgba(255,255,255,0.12)' }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.05)' }}
-                      >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: phase.id === 'planned' ? 'rgba(255,255,255,0.38)' : 'rgba(255,255,255,0.85)', marginBottom: 2, lineHeight: 1.3 }}>{item.label}</p>
-                          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.26)', lineHeight: 1.5 }}>{item.desc}</p>
+                    {/* Status color bar */}
+                    <div style={{ height: 3, background: barColor, borderRadius: '0 0 2px 2px', marginBottom: 0 }} />
+                    <div style={{ padding: '20px 20px 24px' }}>
+                      {/* Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{phase.period}</span>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: badgeColor, background: badgeBg, border: `1px solid ${barColor}40`, padding: '3px 10px', borderRadius: 100, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                          {phase.label}
                         </div>
-                        {phase.id === 'done' && (
-                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Check style={{ width: 10, height: 10, color: '#34d399' }} />
-                          </div>
-                        )}
-                        {phase.id === 'wip' && (
-                          <div style={{ fontSize: 9, fontWeight: 700, color: GOLD, background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.22)', padding: '2px 8px', borderRadius: 100, flexShrink: 0, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>
-                            EN COURS
-                          </div>
-                        )}
                       </div>
-                    </RevealSection>
-                  ))}
-                </div>
-              </div>
-            ))}
+                      {/* Items list */}
+                      <ul style={{ display: 'flex', flexDirection: 'column', gap: 10, listStyle: 'none', padding: 0, margin: 0 }}>
+                        {phase.items.slice(0, phase.id === 'planned' ? 6 : undefined).map((item, i) => (
+                          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                            <Check style={{
+                              width: 14, height: 14, flexShrink: 0, marginTop: 2,
+                              color: phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.2)',
+                            }} />
+                            <div>
+                              <p style={{ fontSize: 13, fontWeight: 500, color: phase.id === 'planned' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.82)', lineHeight: 1.3 }}>{item.label}</p>
+                              {item.desc && phase.id !== 'planned' && (
+                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 2, lineHeight: 1.45 }}>{item.desc}</p>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                        {phase.id === 'planned' && phase.items.length > 6 && (
+                          <li style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', paddingLeft: 24 }}>
+                            + {phase.items.length - 6} autres fonctionnalités…
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </RevealSection>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -1615,10 +1666,14 @@ export function LandingClient() {
       <section style={{ padding: '40px 20px 80px' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <RevealSection>
-            <div style={{ background: `linear-gradient(135deg, ${GOLD}10 0%, rgba(52,211,153,0.04) 100%)`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 28, padding: 'clamp(40px,5vw,64px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 50% 0%, ${GOLD}15, transparent 55%)`, pointerEvents: 'none' }} />
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em', marginBottom: 14, position: 'relative' }}>
-                Prêt à reprendre le contrôle de vos finances ?
+            <div style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid rgba(249,115,22,0.2)`, borderRadius: 28, padding: 'clamp(40px,5vw,64px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, rgba(249,115,22,0.08), transparent)`, pointerEvents: 'none' }} />
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 14, position: 'relative', color: '#fff' }}>
+                Prêt à reprendre le contrôle{' '}
+                <span style={{
+                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                }}>de vos finances ?</span>
               </h2>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)', lineHeight: 1.75, marginBottom: 32, position: 'relative' }}>
                 Gratuit, sans carte bancaire, sans engagement.<br />

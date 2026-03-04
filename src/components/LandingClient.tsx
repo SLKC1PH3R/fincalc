@@ -45,6 +45,10 @@ const MODULES = [
   { icon: Receipt, label: 'Impôts IR', desc: 'Calcul IR, TMI, comparaison frais réels vs abattement 10%.', tag: 'Fiscal', color: '#fb7185' },
   { icon: PiggyBank, label: 'Simulateur Retraite', desc: 'Pension estimée et optimisation de votre PER pour 2026.', tag: 'Fiscal', color: '#fbbf24' },
   { icon: Calculator, label: 'Budget 50/30/20', desc: 'Répartition de vos dépenses selon la règle d\'or des finances perso.', tag: 'Budget', color: '#a3e635' },
+  { icon: BarChart3, label: 'Flat Tax vs Barème', desc: 'Comparez le PFU 30% au barème progressif selon votre TMI et type de revenus.', tag: 'Fiscal', color: '#38bdf8' },
+  { icon: Layers, label: 'PEA vs CTO vs AV', desc: 'Simulez la fiscalité nette de chaque enveloppe d\'investissement sur la durée.', tag: 'Investissement', color: '#c084fc' },
+  { icon: Percent, label: 'Taux d\'épargne', desc: 'Calculez et optimisez votre taux d\'épargne mensuel selon vos revenus et objectifs.', tag: 'Budget', color: '#34d399' },
+  { icon: Star, label: 'Score Patrimonial', desc: 'Obtenez votre score global et des recommandations concrètes sur 6 piliers patrimoniaux.', tag: 'Patrimoine', color: '#f1c086' },
 ]
 
 const SECURITY = [
@@ -399,6 +403,103 @@ function MiniBudget() {
           </g>
         )
       })}
+    </svg>
+  )
+}
+
+function MiniFlatTax() {
+  const W = 280, H = 80
+  const data = [
+    { ft: 0.30, br: 0.11 },
+    { ft: 0.30, br: 0.30 },
+    { ft: 0.30, br: 0.45 },
+  ]
+  const groupW = W / data.length, bw = groupW * 0.32, maxH = H - 12
+  const refY = H - 0.30 * maxH
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      {data.map((d, i) => {
+        const cx = (i + 0.5) * groupW
+        return (
+          <g key={i}>
+            <rect x={cx - bw - 3} y={H - d.ft * maxH} width={bw} height={d.ft * maxH} rx={2} fill="rgba(56,189,248,0.85)" />
+            <rect x={cx + 3} y={H - d.br * maxH} width={bw} height={d.br * maxH} rx={2} fill="rgba(56,189,248,0.35)" />
+          </g>
+        )
+      })}
+      <line x1={0} y1={refY} x2={W} y2={refY} stroke="rgba(56,189,248,0.5)" strokeWidth="1" strokeDasharray="4,3" />
+    </svg>
+  )
+}
+function MiniPEAvsCTO() {
+  const W = 280, H = 80
+  const pea = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    return `${(t * W).toFixed(1)},${(H - 5 - Math.pow(t, 1.35) * (H - 14)).toFixed(1)}`
+  })
+  const av = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    return `${(t * W).toFixed(1)},${(H - 5 - Math.pow(t, 1.45) * 0.88 * (H - 14)).toFixed(1)}`
+  })
+  const cto = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    return `${(t * W).toFixed(1)},${(H - 5 - Math.pow(t, 1.55) * 0.76 * (H - 14)).toFixed(1)}`
+  })
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 80, display: 'block', marginBottom: 4 }}>
+      <defs>
+        <linearGradient id="prv-pea-g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#c084fc" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#c084fc" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={`M 0,${H} L ${pea.join(' L ')} L ${W},${H} Z`} fill="url(#prv-pea-g)" />
+      <path d={`M ${pea.join(' L ')}`} fill="none" stroke="#c084fc" strokeWidth="2" strokeLinejoin="round" />
+      <path d={`M ${av.join(' L ')}`} fill="none" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="4,2" strokeOpacity="0.55" strokeLinejoin="round" />
+      <path d={`M ${cto.join(' L ')}`} fill="none" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="2,2" strokeOpacity="0.32" strokeLinejoin="round" />
+    </svg>
+  )
+}
+function MiniTauxEpargne() {
+  const W = 280, H = 78, bars = 8, gap = 6
+  const bw = (W - (bars - 1) * gap) / bars
+  const rates = [0.18, 0.22, 0.15, 0.25, 0.28, 0.20, 0.30, 0.32]
+  const maxH = H - 10
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      {rates.map((r, i) => {
+        const saveH = r * maxH, expH = (1 - r) * maxH
+        const x = i * (bw + gap)
+        return (
+          <g key={i}>
+            <rect x={x} y={H - saveH - expH} width={bw} height={expH} rx={2} fill="rgba(52,211,153,0.18)" />
+            <rect x={x} y={H - saveH} width={bw} height={saveH} rx={2} fill="#34d399" opacity={0.8} />
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+function MiniScore() {
+  const W = 280, H = 84, score = 73
+  const cx = W * 0.36, cy = H * 0.52, r = 27, sw = 7
+  const perim = 2 * Math.PI * r
+  const arcLen = 0.67 * perim
+  const filledLen = (score / 100) * arcLen
+  const rot = -90 - 0.67 * 180
+  const pillars = [0.75, 0.60, 0.82, 0.90, 0.55, 0.70]
+  const pillarColors = ['#34d399', '#fbbf24', '#38bdf8', '#f472b6', '#fb923c', '#a78bfa']
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 84, display: 'block', marginBottom: 4 }}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={sw}
+        strokeDasharray={`${arcLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={GOLD} strokeWidth={sw} strokeLinecap="round"
+        strokeDasharray={`${filledLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+      <text x={cx} y={cy - 1} textAnchor="middle" dominantBaseline="middle" fill={GOLD} fontSize="17" fontWeight="800">{score}</text>
+      <text x={cx} y={cy + 12} textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize="8">/ 100</text>
+      {pillars.map((h, i) => (
+        <rect key={i} x={W * 0.62 + i * 17} y={H - 6 - h * (H - 18)} width={11} height={h * (H - 18)} rx={3} fill={pillarColors[i]} opacity={0.6} />
+      ))}
     </svg>
   )
 }
@@ -1280,9 +1381,23 @@ export function LandingClient() {
             <RevealSection delay={160}><BentoFeaturedCard mod={MODULES[4]} preview={<MiniMortgage />} /></RevealSection>
           </div>
 
-          {/* CTA strip */}
+          {/* Remaining modules — all bento with mini charts */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginBottom: 12 }}>
+            <RevealSection delay={0}><BentoFeaturedCard mod={MODULES[1]} preview={<MiniDCA />} /></RevealSection>
+            <RevealSection delay={60}><BentoFeaturedCard mod={MODULES[3]} preview={<MiniAcheterVsLouer />} /></RevealSection>
+            <RevealSection delay={120}><BentoFeaturedCard mod={MODULES[5]} preview={<MiniLocatif />} /></RevealSection>
+            <RevealSection delay={180}><BentoFeaturedCard mod={MODULES[6]} preview={<MiniImpots />} /></RevealSection>
+            <RevealSection delay={240}><BentoFeaturedCard mod={MODULES[7]} preview={<MiniRetraite />} /></RevealSection>
+            <RevealSection delay={300}><BentoFeaturedCard mod={MODULES[8]} preview={<MiniBudget />} /></RevealSection>
+            <RevealSection delay={360}><BentoFeaturedCard mod={MODULES[9]} preview={<MiniFlatTax />} /></RevealSection>
+            <RevealSection delay={420}><BentoFeaturedCard mod={MODULES[10]} preview={<MiniPEAvsCTO />} /></RevealSection>
+            <RevealSection delay={480}><BentoFeaturedCard mod={MODULES[11]} preview={<MiniTauxEpargne />} /></RevealSection>
+            <RevealSection delay={540}><BentoFeaturedCard mod={MODULES[12]} preview={<MiniScore />} /></RevealSection>
+          </div>
+
+          {/* CTA strip — after all 9 cards */}
           <RevealSection delay={100}>
-            <div style={{ textAlign: 'center', padding: '52px 0 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+            <div style={{ textAlign: 'center', padding: '52px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>9 simulateurs · 100 % gratuit · sans carte bancaire</p>
               <Link href="/login"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'all 0.2s' }}
@@ -1292,16 +1407,6 @@ export function LandingClient() {
               </Link>
             </div>
           </RevealSection>
-
-          {/* Remaining modules — all bento with mini charts */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
-            <RevealSection delay={0}><BentoFeaturedCard mod={MODULES[1]} preview={<MiniDCA />} /></RevealSection>
-            <RevealSection delay={60}><BentoFeaturedCard mod={MODULES[3]} preview={<MiniAcheterVsLouer />} /></RevealSection>
-            <RevealSection delay={120}><BentoFeaturedCard mod={MODULES[5]} preview={<MiniLocatif />} /></RevealSection>
-            <RevealSection delay={180}><BentoFeaturedCard mod={MODULES[6]} preview={<MiniImpots />} /></RevealSection>
-            <RevealSection delay={240}><BentoFeaturedCard mod={MODULES[7]} preview={<MiniRetraite />} /></RevealSection>
-            <RevealSection delay={300}><BentoFeaturedCard mod={MODULES[8]} preview={<MiniBudget />} /></RevealSection>
-          </div>
 
         </div>
       </section>

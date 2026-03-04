@@ -10,7 +10,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -214,6 +214,45 @@ export default function PatrimoinePage() {
           Ajouter une enveloppe
         </Button>
       </div>
+
+      {/* ── Category cards ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
+          {[
+            { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Building2,  color: '#f472b6', types: ['IMMOBILIER'] },
+            { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp, color: '#818cf8', types: ['PEA','CTO','AV','PER'] },
+            { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank,  color: '#34d399', types: ['LIVRET'] },
+            { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin,    color: '#f59e0b', types: ['CRYPTO'] },
+            { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet,     color: '#94a3b8', types: ['CASH'] },
+            { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard, color: '#f87171', types: [] },
+          ].map(cat => {
+            const Icon = cat.icon
+            const catValue = envelopes
+              .filter(e => (cat.types as string[]).includes(e.type))
+              .reduce((s, e) => s + (e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)), 0)
+            const count = envelopes.filter(e => (cat.types as string[]).includes(e.type)).length
+            return (
+              <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
+                <div
+                  style={{ padding: '14px 16px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = cat.color + '55'; (e.currentTarget as HTMLElement).style.background = cat.color + '08' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 8, background: cat.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Icon style={{ width: 13, height: 13, color: cat.color }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>{cat.label}</span>
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: cat.color, fontVariantNumeric: 'tabular-nums' }}>
+                    {cat.types.length === 0 ? '—' : catValue > 0 ? fmtCompact(catValue) : count > 0 ? `${count} env.` : <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Vide</span>}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      )}
 
       {/* ── KPI ── */}
       {loading ? (

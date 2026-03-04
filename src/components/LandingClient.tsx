@@ -1163,7 +1163,7 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div className="noise-bg" style={{ background: '#050505', color: '#fff', minHeight: '100vh', fontFamily: "'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div className="grid-bg" style={{ background: '#050505', color: '#fff', minHeight: '100vh', fontFamily: "'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{

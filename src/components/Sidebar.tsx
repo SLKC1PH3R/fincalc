@@ -1,85 +1,68 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState, Suspense } from 'react'
-import type { ComponentType, CSSProperties } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Plus, Landmark, Bitcoin, Award,
+  Sun, Moon, Bitcoin, Award, CreditCard,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
 import { useTheme } from '@/contexts/ThemeContext'
 
-// ── Types enveloppes ──────────────────────────────────────────────────────────
-type EnvelopeType = 'LIVRET' | 'IMMOBILIER' | 'PEA' | 'AV' | 'CTO' | 'CRYPTO' | 'PER' | 'CASH'
+// ── Patrimoine categories ─────────────────────────────────────────────────────
+const PATRIMOINE_CATEGORIES = [
+  { href: '/dashboard/patrimoine',            label: "Vue d'ensemble",    icon: BarChart3  },
+  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Building2  },
+  { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
+  { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
+  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
+  { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
+  { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
+]
 
-interface PatrimoineEnvelope {
-  id: string
-  type: EnvelopeType
-  name: string
-}
-
-const ENVELOPE_ICONS: Record<EnvelopeType, ComponentType<{ className?: string; style?: CSSProperties }>> = {
-  LIVRET: PiggyBank, IMMOBILIER: Building2, PEA: TrendingUp,
-  AV: Shield, CTO: TrendingUp, CRYPTO: Bitcoin, PER: Landmark, CASH: Wallet,
-}
-const ENVELOPE_COLORS: Record<EnvelopeType, string> = {
-  LIVRET: '#34d399', IMMOBILIER: '#f472b6', PEA: '#818cf8',
-  AV: '#fb923c', CTO: '#38bdf8', CRYPTO: '#f59e0b', PER: '#a78bfa', CASH: '#94a3b8',
-}
-const ENVELOPE_LABELS: Record<EnvelopeType, string> = {
-  LIVRET: 'Livret', IMMOBILIER: 'Immobilier', PEA: 'PEA',
-  AV: 'Ass. Vie', CTO: 'CTO', CRYPTO: 'Crypto', PER: 'PER', CASH: 'Trésorerie',
-}
-const ENVELOPE_DEFAULT_NAMES: Record<EnvelopeType, string> = {
-  LIVRET: 'Mon Livret', IMMOBILIER: 'Mon Immobilier', PEA: 'Mon PEA',
-  AV: 'Mon AV', CTO: 'Mon CTO', CRYPTO: 'Mon Crypto', PER: 'Mon PER', CASH: 'Ma Trésorerie',
-}
-const ENVELOPE_TYPES: EnvelopeType[] = ['LIVRET', 'PEA', 'AV', 'CTO', 'CRYPTO', 'PER', 'IMMOBILIER', 'CASH']
-
-// ── Sections statiques (hors Patrimoine) ─────────────────────────────────────
+// ── Static nav sections ───────────────────────────────────────────────────────
 const NAV_SECTIONS = [
   {
     title: 'Épargne',
     items: [
-      { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp },
-      { href: '/dashboard/dca', label: 'DCA', icon: RefreshCw },
-      { href: '/dashboard/fire', label: 'FI/RE', icon: Flame },
+      { href: '/dashboard/compound',   label: 'Intérêts Composés', icon: TrendingUp },
+      { href: '/dashboard/dca',        label: 'DCA',               icon: RefreshCw  },
+      { href: '/dashboard/fire',       label: 'FI/RE',             icon: Flame      },
     ],
   },
   {
     title: 'Immobilier',
     items: [
-      { href: '/dashboard/buyrent', label: 'Acheter vs Louer', icon: Home },
-      { href: '/dashboard/mortgage', label: 'Prêt Immobilier', icon: Building2 },
-      { href: '/dashboard/rental', label: 'Rentabilité Locative', icon: Wallet },
+      { href: '/dashboard/buyrent',  label: 'Acheter vs Louer',    icon: Home      },
+      { href: '/dashboard/mortgage', label: 'Prêt Immobilier',     icon: Building2 },
+      { href: '/dashboard/rental',   label: 'Rentabilité Locative', icon: Wallet   },
     ],
   },
   {
     title: 'Fiscal & Retraite',
     items: [
-      { href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt },
-      { href: '/dashboard/flat-tax', label: 'Flat Tax vs Barème', icon: Receipt },
-      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV', icon: Wallet },
-      { href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank },
+      { href: '/dashboard/tax',              label: 'Impôts IR',          icon: Receipt   },
+      { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème', icon: Receipt   },
+      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',  icon: Wallet    },
+      { href: '/dashboard/retirement',       label: 'Retraite',           icon: PiggyBank },
     ],
   },
   {
     title: 'Budget',
     items: [
-      { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent },
-      { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator },
+      { href: '/dashboard/savings-rate', label: "Taux d'épargne",  icon: Percent    },
+      { href: '/dashboard/budget',       label: 'Budget 50/30/20', icon: Calculator },
     ],
   },
   {
     title: 'Compte',
     items: [
       { href: '/dashboard/settings', label: 'Mon compte', icon: Settings },
-      { href: '/dashboard/history', label: 'Historique', icon: History },
+      { href: '/dashboard/history',  label: 'Historique', icon: History  },
     ],
   },
 ]
@@ -99,13 +82,9 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const { collapsed, toggle } = useSidebar()
   const { theme, toggleTheme } = useTheme()
   const [sims, setSims] = useState<SimEntry[]>([])
-  const [envelopes, setEnvelopes] = useState<PatrimoineEnvelope[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
-  const [addMenuOpen, setAddMenuOpen] = useState(false)
-  const [addingType, setAddingType] = useState<EnvelopeType | null>(null)
-  const router = useRouter()
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
     const next = new Set(prev)
@@ -120,67 +99,22 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       .catch(() => {})
   }
 
-  const loadEnvelopes = () => {
-    fetch('/api/patrimoine/envelopes')
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setEnvelopes(data) })
-      .catch(() => {})
-  }
-
-  const handleAddEnvelope = async (type: EnvelopeType) => {
-    if (addingType) return
-    setAddingType(type)
-    try {
-      const res = await fetch('/api/patrimoine/envelopes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, name: ENVELOPE_DEFAULT_NAMES[type] }),
-      })
-      if (!res.ok) throw new Error()
-      const created = await res.json()
-      window.dispatchEvent(new Event('patrimoine-updated'))
-      setAddMenuOpen(false)
-      router.push(`/dashboard/patrimoine/${created.id}`)
-    } catch {
-      // silently fail
-    } finally {
-      setAddingType(null)
-    }
-  }
-
-  const deleteEnvelope = async (id: string) => {
-    setEnvelopes(prev => prev.filter(e => e.id !== id))
-    try {
-      await fetch(`/api/patrimoine/envelopes/${id}`, { method: 'DELETE' })
-      window.dispatchEvent(new Event('patrimoine-updated'))
-      if (pathname === `/dashboard/patrimoine/${id}`) router.push('/dashboard/patrimoine')
-    } catch {
-      loadEnvelopes() // restaure en cas d'erreur
-    }
-  }
-
-  const deleteSim = async (id: string) => {
-    setSims(prev => prev.filter(s => s.id !== id))
-    try {
-      await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' })
-    } catch {}
-  }
-
   useEffect(() => {
     loadSims()
-    loadEnvelopes()
     window.addEventListener('simulation-saved', loadSims)
-    window.addEventListener('patrimoine-updated', loadEnvelopes)
-    return () => {
-      window.removeEventListener('simulation-saved', loadSims)
-      window.removeEventListener('patrimoine-updated', loadEnvelopes)
-    }
+    return () => { window.removeEventListener('simulation-saved', loadSims) }
   }, [])
 
   useEffect(() => {
-    if (!pathname.startsWith('/dashboard/')) return
-    setExpandedHref(pathname)
+    if (pathname.startsWith('/dashboard/')) setExpandedHref(pathname)
   }, [pathname])
+
+  const deleteSim = async (id: string) => {
+    setSims(prev => prev.filter(s => s.id !== id))
+    try { await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' }) } catch {}
+  }
+
+  const W = collapsed ? 64 : 272
 
   return (
     <>
@@ -189,329 +123,203 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={toggle} />
       )}
 
-      <aside className={cn(
-        'fixed left-0 top-0 h-full flex flex-col z-40 transition-all duration-200 border-r',
-        collapsed ? '-translate-x-full md:translate-x-0 md:w-14' : 'translate-x-0 w-64 md:w-56'
-      )} style={{ background: 'var(--sb-bg)', borderRightColor: 'var(--sb-border)' }}>
+      <aside
+        className={cn(
+          'fixed left-0 top-0 h-full flex flex-col z-40 transition-all duration-200',
+          collapsed ? '-translate-x-full md:translate-x-0' : 'translate-x-0'
+        )}
+        style={{
+          width: W,
+          background: 'var(--sb-bg)',
+          // Transparent separator: shadow instead of hard border
+          boxShadow: '4px 0 28px rgba(0,0,0,0.18), 1px 0 0 var(--sb-border)',
+        }}
+      >
 
-        {/* ── Logo header ── */}
-        <div className={cn(
-          'flex-shrink-0 border-b transition-all duration-200',
-          collapsed ? 'h-14 px-3 flex items-center justify-center' : 'px-4 pt-5 pb-4'
-        )} style={{ borderBottomColor: 'var(--sb-border)' }}>
+        {/* ── Logo / header ── */}
+        <div className={cn('flex-shrink-0 transition-all duration-200', collapsed ? 'h-16 px-3 flex items-center justify-center' : 'px-5 pt-6 pb-5')}>
           {!collapsed ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Link href="/dashboard" className="flex items-center gap-2.5 group">
-                  <div className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105"
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <Link href="/dashboard" className="flex items-center gap-3 group">
+                  <div className="h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
                     style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
-                    <TrendingUp className="h-4 w-4" style={{ color: '#0a0a0a' }} />
+                    <TrendingUp style={{ color: '#0a0a0a', width: 18, height: 18 }} />
                   </div>
-                  <span className="font-bold text-base tracking-tight" style={{ color: 'var(--sb-text-strong)' }}>FinCalc</span>
+                  <span className="font-bold text-lg tracking-tight" style={{ color: 'var(--sb-text-strong)' }}>FinCalc</span>
                 </Link>
-                <button onClick={toggle} className="transition-colors p-1 rounded-md"
+                <button onClick={toggle} className="p-1.5 rounded-lg transition-colors"
                   style={{ color: 'var(--sb-text-dim)' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-text)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}>
                   <PanelLeftClose className="h-4 w-4" />
                 </button>
               </div>
-              <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg" style={{ background: 'var(--sb-profile-bg)' }}>
+              {/* User card */}
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: 'var(--sb-profile-bg)' }}>
                 {user.image ? (
-                  <img src={user.image} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10" />
+                  <img src={user.image} alt="" className="h-8 w-8 rounded-full object-cover flex-shrink-0 ring-1 ring-white/10" />
                 ) : (
-                  <div className="h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0"
+                  <div className="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
-                    <span className="text-[11px] font-bold" style={{ color: '#0a0a0a' }}>
+                    <span className="text-xs font-bold" style={{ color: '#0a0a0a' }}>
                       {(user.name || user.email || 'U')[0].toUpperCase()}
                     </span>
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold truncate" style={{ color: 'var(--sb-text)' }}>{user.name || 'Utilisateur'}</p>
-                  <p className="text-[10px] truncate" style={{ color: 'var(--sb-text-dim)' }}>{user.email}</p>
+                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--sb-text-strong)' }}>{user.name || 'Utilisateur'}</p>
+                  <p className="text-xs truncate" style={{ color: 'var(--sb-text-dim)' }}>{user.email}</p>
                 </div>
               </div>
             </div>
           ) : (
-            <button onClick={toggle} title="Ouvrir le menu"
-              className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform hover:scale-105"
+            <button onClick={toggle} title="Ouvrir"
+              className="h-9 w-9 rounded-xl flex items-center justify-center transition-transform hover:scale-105"
               style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
-              <TrendingUp className="h-4 w-4" style={{ color: '#0a0a0a' }} />
+              <TrendingUp style={{ color: '#0a0a0a', width: 18, height: 18 }} />
             </button>
           )}
         </div>
 
-        {/* ── Demo banner ── */}
+        {/* Demo banner */}
         {isDemo && (
-          <div style={{ padding: collapsed ? '6px 0' : '0 8px 8px', display: 'flex', justifyContent: 'center' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 6,
-              justifyContent: 'center',
-              background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)',
-              borderRadius: 8, padding: collapsed ? '5px 6px' : '5px 10px',
-              width: '100%',
-            }}>
+          <div style={{ padding: collapsed ? '4px 8px' : '0 12px 8px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)', borderRadius: 8, padding: '5px 10px', width: '100%' }}>
               <span style={{ fontSize: 13, flexShrink: 0 }}>🔒</span>
-              {!collapsed && (
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#fb923c', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-                  MODE DÉMO · LECTURE SEULE
-                </span>
-              )}
+              {!collapsed && <span style={{ fontSize: 10, fontWeight: 600, color: '#fb923c', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>MODE DÉMO · LECTURE SEULE</span>}
             </div>
           </div>
         )}
 
         {/* ── Nav ── */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
-          {/* Synthèse + Score — standalone */}
-          <div className="space-y-0.5">
-            <Link
-              href="/dashboard"
-              title={collapsed ? 'Synthèse' : undefined}
-              className={cn(
-                'sb-link flex items-center gap-2.5 rounded-lg',
-                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                pathname === '/dashboard' && 'sb-link-active'
-              )}
-            >
-              <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
-              {!collapsed && <span className="text-xs font-medium">Synthèse</span>}
-            </Link>
-            <Link
-              href="/dashboard/score"
-              title={collapsed ? 'Score Patrimonial' : undefined}
-              className={cn(
-                'sb-link flex items-center gap-2.5 rounded-lg',
-                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                pathname === '/dashboard/score' && 'sb-link-active'
-              )}
-            >
-              <Award className="h-3.5 w-3.5 flex-shrink-0" />
-              {!collapsed && <span className="text-xs font-medium">Score Patrimonial</span>}
-            </Link>
+        <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '12px 8px' : '12px 12px' }}>
+
+          {/* Synthèse + Score */}
+          <div style={{ marginBottom: 10 }}>
+            {[
+              { href: '/dashboard', label: 'Synthèse', icon: BarChart3 },
+              { href: '/dashboard/score', label: 'Score Patrimonial', icon: Award },
+            ].map(item => {
+              const isActive = pathname === item.href
+              return (
+                <Link key={item.href} href={item.href} title={collapsed ? item.label : undefined}
+                  className={cn('sb-link flex items-center gap-3 rounded-xl mb-0.5', collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2.5', isActive && 'sb-link-active')}>
+                  <item.icon className="flex-shrink-0" style={{ width: 18, height: 18 }} />
+                  {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
+                </Link>
+              )
+            })}
           </div>
 
-          {/* ── Section Patrimoine — même pattern que les sections statiques ── */}
-          <div>
+          {/* Patrimoine section */}
+          <div style={{ marginBottom: 8 }}>
             {!collapsed && (
-              <button
-                onClick={() => toggleSection('Patrimoine')}
-                className="flex items-center justify-between w-full px-2 mb-1.5 group"
-              >
-                <span className="text-[11px] font-semibold uppercase tracking-widest transition-colors"
-                  style={{ color: 'var(--sb-text-section)' }}>
-                  Patrimoine
-                </span>
-                <ChevronDown className="h-3 w-3 transition-all flex-shrink-0"
-                  style={{ color: 'var(--sb-text-dim)', transform: collapsedSections.has('Patrimoine') ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+              <button onClick={() => toggleSection('Patrimoine')} className="flex items-center justify-between w-full px-3 mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--sb-text-section)' }}>Patrimoine</span>
+                <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--sb-text-dim)', transform: collapsedSections.has('Patrimoine') ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
               </button>
             )}
-            {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'var(--sb-divider)' }} />}
+            {collapsed && <div className="h-px mx-1 mb-2" style={{ background: 'var(--sb-divider)' }} />}
 
             {(collapsed || !collapsedSections.has('Patrimoine')) && (
-              <div className="space-y-0.5">
-                {/* Vue d'ensemble — item collapsible comme les simulations */}
-                <div>
-                  <div className="flex items-center gap-0.5">
-                    <Link
-                      href="/dashboard/patrimoine"
-                      title={collapsed ? 'Vue d\'ensemble' : undefined}
-                      className={cn(
-                        'sb-link flex items-center gap-2.5 rounded-lg flex-1',
-                        collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                        pathname === '/dashboard/patrimoine' && 'sb-link-active'
-                      )}
-                    >
-                      <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
-                      {!collapsed && (
-                        <>
-                          <span className="text-xs font-medium flex-1">Vue d'ensemble</span>
-                          {envelopes.length > 0 && (
-                            <span style={{ fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
-                              {envelopes.length}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </Link>
-
-                    {!collapsed && (
-                      <button
-                        onClick={() => setPatrimoineExpanded(v => !v)}
-                        className="flex items-center justify-center h-6 w-6 rounded-md transition-colors flex-shrink-0"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                      >
-                        <ChevronDown className="h-3 w-3" style={{ transform: patrimoineExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Enveloppes + Ajouter — sous-items avec bordure gauche */}
-                  {!collapsed && patrimoineExpanded && (
-                    <div className="mt-0.5 ml-5 pl-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
-                      {envelopes.slice(0, 10).map(env => {
-                        const Icon = ENVELOPE_ICONS[env.type]
-                        const color = ENVELOPE_COLORS[env.type]
-                        const href = `/dashboard/patrimoine/${env.id}`
-                        const isActive = pathname === href
-                        return (
-                          <div
-                            key={env.id}
-                            className="group flex items-center rounded-lg"
-                            style={{ background: isActive ? 'var(--sb-active-bg)' : 'transparent' }}
-                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                            onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                          >
-                            <Link
-                              href={href}
-                              className="flex items-center gap-2 py-1.5 px-2 flex-1 min-w-0 overflow-hidden"
-                              style={{ textDecoration: 'none' }}
-                            >
-                              <div style={{
-                                width: 12, height: 12, borderRadius: 3,
-                                background: color + '20', flexShrink: 0,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              }}>
-                                <Icon className="h-2 w-2" style={{ color }} />
-                              </div>
-                              <span className="text-xs flex-1 truncate" style={{ color: isActive ? 'var(--sb-text-strong)' : 'var(--sb-text)', fontWeight: isActive ? 600 : 400 }}>
-                                {env.name}
-                              </span>
-                            </Link>
-                            <button
-                              onClick={e => { e.preventDefault(); e.stopPropagation(); deleteEnvelope(env.id) }}
-                              className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                              style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </div>
-                        )
-                      })}
-
-                      {envelopes.length > 10 && (
-                        <Link
-                          href="/dashboard/patrimoine"
-                          className="block px-2 py-1 rounded-lg text-[11px]"
-                          style={{ color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                        >
-                          +{envelopes.length - 10} de plus…
-                        </Link>
-                      )}
-
-                      {/* Ajouter — sous-menu */}
-                      <div>
-                        <button
-                          onClick={() => setAddMenuOpen(v => !v)}
-                          className="sb-link flex items-center gap-2 rounded-lg px-2 py-1.5 w-full"
-                          style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                        >
-                          <Plus className="h-2.5 w-2.5 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)' }} />
-                          <span className="text-xs flex-1">Ajouter…</span>
-                          <ChevronDown className="h-2.5 w-2.5 flex-shrink-0" style={{ transition: 'transform 0.2s', transform: addMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-                        </button>
-                        {addMenuOpen && (
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: '3px 0 3px 4px' }}>
-                            {ENVELOPE_TYPES.map(type => {
-                              const Icon = ENVELOPE_ICONS[type]
-                              const color = ENVELOPE_COLORS[type]
-                              const isLoading = addingType === type
-                              return (
-                                <button
-                                  key={type}
-                                  onClick={() => handleAddEnvelope(type)}
-                                  disabled={!!addingType}
-                                  style={{
-                                    display: 'flex', alignItems: 'center', gap: 4,
-                                    padding: '4px 6px', borderRadius: 5, border: 'none',
-                                    background: color + '14', cursor: addingType ? 'wait' : 'pointer',
-                                    opacity: addingType && !isLoading ? 0.5 : 1,
-                                  }}
-                                >
-                                  <Icon className="h-2 w-2 flex-shrink-0" style={{ color }} />
-                                  <span style={{ fontSize: 10, color: 'var(--sb-text)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                                    {isLoading ? '…' : ENVELOPE_LABELS[type]}
-                                  </span>
-                                </button>
-                              )
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+              <div>
+                {/* Vue d'ensemble + toggle */}
+                <div className="flex items-center gap-0.5 mb-0.5">
+                  <Link href="/dashboard/patrimoine" title={collapsed ? "Vue d'ensemble" : undefined}
+                    className={cn('sb-link flex items-center gap-3 rounded-xl flex-1', collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2.5', pathname === '/dashboard/patrimoine' && 'sb-link-active')}>
+                    <BarChart3 className="flex-shrink-0" style={{ width: 18, height: 18 }} />
+                    {!collapsed && <span className="text-sm font-medium flex-1">Vue d'ensemble</span>}
+                  </Link>
+                  {!collapsed && (
+                    <button onClick={() => setPatrimoineExpanded(v => !v)}
+                      className="h-7 w-7 flex items-center justify-center rounded-lg flex-shrink-0"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+                      <ChevronDown className="h-3.5 w-3.5" style={{ transform: patrimoineExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                    </button>
                   )}
                 </div>
+
+                {/* Category sub-links — expanded */}
+                {!collapsed && patrimoineExpanded && (
+                  <div className="mt-0.5 ml-4 pl-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
+                    {PATRIMOINE_CATEGORIES.slice(1).map(cat => {
+                      const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
+                      return (
+                        <Link key={cat.href} href={cat.href}
+                          className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all text-sm', isActive ? 'sb-link-active' : 'sb-link')}>
+                          <cat.icon style={{ width: 15, height: 15, flexShrink: 0 }} />
+                          <span>{cat.label}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Category icons — collapsed */}
+                {collapsed && PATRIMOINE_CATEGORIES.slice(1).map(cat => {
+                  const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
+                  return (
+                    <Link key={cat.href} href={cat.href} title={cat.label}
+                      className={cn('sb-link flex items-center justify-center rounded-xl mb-0.5 px-2 py-2.5', isActive && 'sb-link-active')}>
+                      <cat.icon style={{ width: 18, height: 18 }} />
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>
 
-          {/* ── Sections statiques ── */}
+          {/* Static sections */}
           {NAV_SECTIONS.map((section) => {
             const isSectionCollapsed = collapsedSections.has(section.title)
             return (
-              <div key={section.title}>
+              <div key={section.title} style={{ marginBottom: 8 }}>
                 {!collapsed && (
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className="flex items-center justify-between w-full px-2 mb-1.5 group"
-                  >
-                    <span className="text-[11px] font-semibold uppercase tracking-widest transition-colors"
-                      style={{ color: 'var(--sb-text-section)' }}>
-                      {section.title}
-                    </span>
-                    <ChevronDown className="h-3 w-3 transition-all flex-shrink-0"
-                      style={{ color: 'var(--sb-text-dim)', transform: isSectionCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+                  <button onClick={() => toggleSection(section.title)} className="flex items-center justify-between w-full px-3 mb-2">
+                    <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--sb-text-section)' }}>{section.title}</span>
+                    <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--sb-text-dim)', transform: isSectionCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
                   </button>
                 )}
-                {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'var(--sb-divider)' }} />}
+                {collapsed && <div className="h-px mx-1 mb-2" style={{ background: 'var(--sb-divider)' }} />}
+
                 {(collapsed || !isSectionCollapsed) && (
                   <div className="space-y-0.5">
                     {section.items.map((item) => {
                       const isActive = pathname === item.href
                       const type = item.href.split('/').pop()
-                      const itemSims = type && type !== 'dashboard' ? sims.filter(s => s.type === type) : []
+                      const itemSims = type ? sims.filter(s => s.type === type) : []
                       const isExpanded = expandedHref === item.href
 
                       return (
                         <div key={item.href}>
                           <div className="flex items-center gap-0.5">
-                            <Link
-                              href={item.href}
-                              title={collapsed ? item.label : undefined}
-                              className={cn(
-                                'sb-link flex items-center gap-2.5 rounded-lg flex-1 min-w-0',
-                                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                                isActive && 'sb-link-active'
-                              )}
-                            >
-                              <item.icon className="h-3.5 w-3.5 flex-shrink-0 transition-colors" />
+                            <Link href={item.href} title={collapsed ? item.label : undefined}
+                              className={cn('sb-link flex items-center gap-3 rounded-xl flex-1 min-w-0', collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2.5', isActive && 'sb-link-active')}>
+                              <item.icon className="flex-shrink-0" style={{ width: 18, height: 18 }} />
                               {!collapsed && (
                                 <>
-                                  <span className="text-xs flex-1 truncate font-medium">{item.label}</span>
+                                  <span className="text-sm flex-1 truncate font-medium">{item.label}</span>
                                   {itemSims.length > 0 ? (
-                                    <span style={{ fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.12)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
+                                    <span style={{ fontSize: 10, color: '#f97316', background: 'rgba(249,115,22,0.12)', padding: '1px 6px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
                                       {itemSims.length}
                                     </span>
                                   ) : isActive ? (
-                                    <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />
+                                    <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />
                                   ) : null}
                                 </>
                               )}
                             </Link>
 
                             {!collapsed && itemSims.length > 0 && (
-                              <button
-                                onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
-                                className="flex items-center justify-center h-6 w-6 rounded-md transition-colors flex-shrink-0"
+                              <button onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
+                                className="h-7 w-7 flex items-center justify-center rounded-lg flex-shrink-0"
                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
                                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                              >
-                                <ChevronDown className="h-3 w-3" style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                                onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+                                <ChevronDown className="h-3.5 w-3.5" style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
                               </button>
                             )}
                           </div>
@@ -521,43 +329,30 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                               {itemSims.slice(0, 6).map(sim => {
                                 const isActiveSim = activeSimId === sim.id
                                 return (
-                                  <div
-                                    key={sim.id}
-                                    className="group flex items-center rounded-md transition-colors"
+                                  <div key={sim.id} className="group flex items-center rounded-lg"
                                     style={{ background: isActiveSim ? 'rgba(249,115,22,0.08)' : 'transparent' }}
                                     onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                                    onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                                  >
-                                    <Link
-                                      href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                      className="flex items-center gap-1.5 py-1.5 px-2 flex-1 min-w-0 overflow-hidden"
-                                      style={{
-                                        fontSize: 11,
-                                        textDecoration: 'none',
-                                        color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)',
-                                        fontWeight: isActiveSim ? 600 : 400,
-                                      }}
+                                    onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+                                    <Link href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                      className="flex items-center gap-2 py-1.5 px-2.5 flex-1 min-w-0"
+                                      style={{ fontSize: 12, textDecoration: 'none', color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
                                       onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
-                                      onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
-                                    >
+                                      onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}>
                                       {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />}
                                       <span className="truncate">{sim.name}</span>
                                     </Link>
-                                    <button
-                                      onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                                    <button onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
                                       className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                                      style={{ color: 'var(--sb-text-dim)' }}
-                                      title="Supprimer"
-                                    >
+                                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                                      title="Supprimer">
                                       <Trash2 className="h-3 w-3" />
                                     </button>
                                   </div>
                                 )
                               })}
                               {itemSims.length > 6 && (
-                                <Link href="/dashboard/history"
-                                  className="block py-1.5 px-2 rounded-md transition-colors"
-                                  style={{ fontSize: 11, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                                <Link href="/dashboard/history" className="block py-1.5 px-2.5 rounded-lg"
+                                  style={{ fontSize: 12, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
                                   onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
                                   onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}>
                                   +{itemSims.length - 6} de plus…
@@ -576,63 +371,44 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
           {/* Admin */}
           {isAdmin && (
-            <div>
-              {!collapsed && (
-                <p className="text-[11px] font-semibold uppercase tracking-widest px-2 mb-1.5"
-                  style={{ color: 'var(--sb-text-section)' }}>Admin</p>
-              )}
-              {collapsed && <div className="h-px mx-2 mb-2" style={{ background: 'var(--sb-divider)' }} />}
+            <div style={{ marginBottom: 8 }}>
+              {!collapsed && <p className="text-[11px] font-bold uppercase tracking-widest px-3 mb-2" style={{ color: 'var(--sb-text-section)' }}>Admin</p>}
+              {collapsed && <div className="h-px mx-1 mb-2" style={{ background: 'var(--sb-divider)' }} />}
               <Link href="/dashboard/admin" title={collapsed ? 'Administration' : undefined}
-                className={cn(
-                  'sb-link flex items-center gap-2.5 rounded-lg',
-                  collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
-                  pathname === '/dashboard/admin' && 'sb-link-active'
-                )}>
-                <Shield className="h-3.5 w-3.5 flex-shrink-0" />
-                {!collapsed && <span className="text-xs font-medium">Administration</span>}
+                className={cn('sb-link flex items-center gap-3 rounded-xl', collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2.5', pathname === '/dashboard/admin' && 'sb-link-active')}>
+                <Shield className="flex-shrink-0" style={{ width: 18, height: 18 }} />
+                {!collapsed && <span className="text-sm font-medium">Administration</span>}
               </Link>
             </div>
           )}
         </nav>
 
         {/* ── Footer ── */}
-        <div className="border-t p-2 flex-shrink-0 space-y-0.5" style={{ borderTopColor: 'var(--sb-border)' }}>
+        <div className="flex-shrink-0 space-y-0.5" style={{ borderTop: '1px solid var(--sb-border)', padding: collapsed ? '8px' : '8px 12px' }}>
           {collapsed && (
-            <button onClick={toggle} className="w-full flex justify-center py-2 transition-colors"
+            <button onClick={toggle} className="w-full flex justify-center py-2.5 rounded-xl transition-all"
               style={{ color: 'var(--sb-text-dim)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-text)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+              onMouseEnter={e => { (e.currentTarget.style.color = 'var(--sb-text)'); (e.currentTarget.style.background = 'var(--sb-hover-bg)') }}
+              onMouseLeave={e => { (e.currentTarget.style.color = 'var(--sb-text-dim)'); (e.currentTarget.style.background = 'transparent') }}
               title="Ouvrir">
               <PanelLeftOpen className="h-4 w-4" />
             </button>
           )}
-          <button
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-            className={cn(
-              'w-full flex items-center gap-2.5 rounded-lg text-xs transition-all',
-              collapsed ? 'justify-center py-2 px-2' : 'px-2.5 py-2'
-            )}
-            style={{ color: 'var(--sb-text-dim)' }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--sb-text)'; e.currentTarget.style.background = 'var(--sb-hover-bg)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--sb-text-dim)'; e.currentTarget.style.background = 'transparent' }}
-          >
-            {theme === 'dark'
-              ? <Sun className="h-3.5 w-3.5 flex-shrink-0" />
-              : <Moon className="h-3.5 w-3.5 flex-shrink-0" />}
-            {!collapsed && <span>{theme === 'dark' ? 'Mode clair' : 'Mode sombre'}</span>}
-          </button>
-          <button
-            onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
-            title={collapsed ? 'Déconnexion' : undefined}
-            className={cn(
-              'w-full flex items-center gap-2.5 rounded-lg text-xs transition-all',
-              collapsed ? 'justify-center py-2 px-2' : 'px-2.5 py-2'
-            )}
+          <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+            className={cn('w-full flex items-center gap-3 rounded-xl text-sm transition-all', collapsed ? 'justify-center py-2.5 px-2' : 'px-3 py-2.5')}
             style={{ color: 'var(--sb-text-dim)' }}
             onMouseEnter={e => { e.currentTarget.style.color = 'var(--sb-text)'; e.currentTarget.style.background = 'var(--sb-hover-bg)' }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--sb-text-dim)'; e.currentTarget.style.background = 'transparent' }}>
-            <LogOut className="h-3.5 w-3.5" />
+            {theme === 'dark' ? <Sun className="flex-shrink-0" style={{ width: 18, height: 18 }} /> : <Moon className="flex-shrink-0" style={{ width: 18, height: 18 }} />}
+            {!collapsed && <span>{theme === 'dark' ? 'Mode clair' : 'Mode sombre'}</span>}
+          </button>
+          <button onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
+            title={collapsed ? 'Déconnexion' : undefined}
+            className={cn('w-full flex items-center gap-3 rounded-xl text-sm transition-all', collapsed ? 'justify-center py-2.5 px-2' : 'px-3 py-2.5')}
+            style={{ color: 'var(--sb-text-dim)' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--sb-text)'; e.currentTarget.style.background = 'var(--sb-hover-bg)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--sb-text-dim)'; e.currentTarget.style.background = 'transparent' }}>
+            <LogOut className="flex-shrink-0" style={{ width: 18, height: 18 }} />
             {!collapsed && <span>Déconnexion</span>}
           </button>
         </div>

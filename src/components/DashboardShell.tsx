@@ -11,7 +11,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   return (
     <div className={cn(
       'flex-1 min-h-screen flex flex-col transition-all duration-200',
-      collapsed ? 'md:ml-14 ml-0' : 'md:ml-56 ml-0'
+      collapsed ? 'md:ml-16 ml-0' : 'md:ml-[272px] ml-0'
     )}>
       {/* Mobile top bar */}
       <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0 border-b"

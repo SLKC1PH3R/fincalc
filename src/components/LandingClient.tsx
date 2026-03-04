@@ -207,6 +207,107 @@ function ModuleCard({ mod, index }: { mod: typeof MODULES[0]; index: number }) {
   )
 }
 
+// ─── Mini chart previews for bento cards ─────────────────────────────────
+function MiniCompound() {
+  const W = 280, H = 88
+  const valuePts = Array.from({ length: 30 }, (_, i) => {
+    const t = i / 29
+    return `${(t * W).toFixed(1)},${(H - 4 - Math.pow(t, 1.8) * (H - 14)).toFixed(1)}`
+  })
+  const investLine = `M 0,${(H - 4).toFixed(1)} L ${W},${(H - 4 - (H - 14) * 0.44).toFixed(1)}`
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 88, marginBottom: 4, display: 'block' }}>
+      <defs>
+        <linearGradient id="prv-cv" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" /><stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={`M 0,${H} L ${valuePts.join(' L ')} L ${W},${H} Z`} fill="url(#prv-cv)" />
+      <path d={`M ${valuePts.join(' L ')}`} fill="none" stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
+      <path d={investLine} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" />
+    </svg>
+  )
+}
+function MiniFireChart() {
+  const W = 280, H = 82
+  const pts = Array.from({ length: 22 }, (_, i) => {
+    const t = i / 21
+    return `${(t * W).toFixed(1)},${(H - 6 - Math.pow(t, 1.4) * (H - 20)).toFixed(1)}`
+  })
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 82, marginBottom: 4, display: 'block' }}>
+      <defs>
+        <linearGradient id="prv-fg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fb923c" stopOpacity="0.25" /><stop offset="100%" stopColor="#fb923c" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <line x1={0} y1={15} x2={W} y2={15} stroke="rgba(251,146,60,0.35)" strokeWidth="1" strokeDasharray="6,4" />
+      <path d={`M 0,${H} L ${pts.join(' L ')} L ${W},${H} Z`} fill="url(#prv-fg)" />
+      <path d={`M ${pts.join(' L ')}`} fill="none" stroke="#fb923c" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx={W} cy={15} r={4.5} fill="#fb923c" opacity="0.9" />
+    </svg>
+  )
+}
+function MiniMortgage() {
+  const bars = 9, W = 280, H = 78, gap = 5
+  const bw = (W - (bars - 1) * gap) / bars
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, marginBottom: 4, display: 'block' }}>
+      {Array.from({ length: bars }, (_, i) => {
+        const t = i / (bars - 1)
+        const intH = Math.round(Math.max(3, (1 - t) * 36 + 4))
+        const capH = Math.round((0.9 - t * 0.4) * 30 + 7)
+        const x = i * (bw + gap)
+        return (
+          <g key={i}>
+            <rect x={x} y={H - intH - capH} width={bw} height={intH} rx={2} fill="rgba(244,114,182,0.5)" />
+            <rect x={x} y={H - capH} width={bw} height={capH} rx={2} fill="rgba(244,114,182,0.85)" />
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+// ─── Bento featured card ──────────────────────────────────────────────────
+function BentoFeaturedCard({ mod, preview }: { mod: typeof MODULES[0]; preview: React.ReactNode }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <Link href="/login" style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          background: '#0e0e0e',
+          border: `1px solid ${hovered ? mod.color + '45' : 'rgba(255,255,255,0.07)'}`,
+          borderRadius: 20, overflow: 'hidden',
+          transition: 'all 0.25s',
+          transform: hovered ? 'translateY(-4px)' : '',
+          boxShadow: hovered ? `0 24px 60px ${mod.color}18` : 'none',
+          height: '100%', display: 'flex', flexDirection: 'column',
+        }}
+      >
+        <div style={{ padding: '16px 16px 0', background: `linear-gradient(160deg, ${mod.color}0e, transparent 55%)` }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: mod.color + '1e', border: `1px solid ${mod.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <mod.icon style={{ width: 15, height: 15, color: mod.color }} />
+            </div>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: mod.color + 'aa' }}>{mod.tag}</span>
+          </div>
+          {preview}
+        </div>
+        <div style={{ padding: '12px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 6 }}>{mod.label}</h3>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.33)', lineHeight: 1.65, marginBottom: 14, flex: 1 }}>{mod.desc}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: hovered ? mod.color : 'rgba(255,255,255,0.22)', transition: 'color 0.2s' }}>
+            <span>Ouvrir</span><ArrowRight style={{ width: 11, height: 11 }} />
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 // ─── Section wrapper with reveal ─────────────────────────────────────────
 function RevealSection({ children, delay = 0, style: extraStyle }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   const { ref, visible } = useInView()
@@ -954,23 +1055,49 @@ export function LandingClient() {
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
+
+          {/* Header */}
           <RevealSection>
-            <div style={{ marginBottom: 56 }}>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
               <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Calculateurs</SectionTag>
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.025em', maxWidth: 480 }}>
-                Tout ce dont vous avez besoin{' '}
-                <span style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.35)' }}>pour piloter votre patrimoine</span>
+              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2rem,5vw,3.4rem)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.03em' }}>
+                Optimisez votre patrimoine
               </h2>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)', marginTop: 14, lineHeight: 1.7 }}>
+                9 simulateurs financiers précis pour toutes les décisions qui comptent.
+              </p>
             </div>
           </RevealSection>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
-            {MODULES.map((mod, i) => (
-              <RevealSection key={i} delay={i * 50}>
-                <ModuleCard mod={mod} index={i} />
+          {/* Bento — 3 featured cards with mini charts */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12, marginBottom: 12 }}>
+            <RevealSection delay={0}><BentoFeaturedCard mod={MODULES[0]} preview={<MiniCompound />} /></RevealSection>
+            <RevealSection delay={80}><BentoFeaturedCard mod={MODULES[2]} preview={<MiniFireChart />} /></RevealSection>
+            <RevealSection delay={160}><BentoFeaturedCard mod={MODULES[4]} preview={<MiniMortgage />} /></RevealSection>
+          </div>
+
+          {/* CTA strip */}
+          <RevealSection delay={100}>
+            <div style={{ textAlign: 'center', padding: '52px 0 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>9 simulateurs · 100 % gratuit · sans carte bancaire</p>
+              <Link href="/login"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${GOLD}55` }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+                Commencer gratuitement <ArrowRight style={{ width: 14, height: 14 }} />
+              </Link>
+            </div>
+          </RevealSection>
+
+          {/* Regular modules grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
+            {[1, 3, 5, 6, 7, 8].map((idx, i) => (
+              <RevealSection key={idx} delay={i * 50}>
+                <ModuleCard mod={MODULES[idx]} index={i} />
               </RevealSection>
             ))}
           </div>
+
         </div>
       </section>
 

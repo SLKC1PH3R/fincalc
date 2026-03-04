@@ -4,7 +4,8 @@
       "Bash(cmd.exe /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install react-simple-maps 2>&1\")",
       "Bash(cmd.exe /c \"where npm\")",
       "Bash(npx tsc --noEmit --project tsconfig.json)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(npx tsc --noEmit)"
     ]
   }
 }

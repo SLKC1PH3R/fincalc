@@ -452,28 +452,52 @@ function DashboardPreview() {
 // ─── Live Rates Widget ────────────────────────────────────────────────────
 interface RateItem { value: number; label: string; unit: string; trend: 'up' | 'down' | 'stable' }
 interface RatesData {
-  livretA: RateItem; oat10y: RateItem; bce: RateItem; inflation: RateItem
+  livretA: RateItem; ldds: RateItem; lep: RateItem
+  oat10y: RateItem; bce: RateItem; inflation: RateItem
   immo15y: RateItem; immo20y: RateItem; immo25y: RateItem; creditConso: RateItem
   live?: { oat: boolean; bce: boolean }
 }
 
-function RateTile({ item, color, category }: { item: RateItem & { key: string }; color: string; category: string }) {
-  const trendIcon = item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : '→'
-  const trendLabel = item.trend === 'up' ? 'En hausse' : item.trend === 'down' ? 'En baisse' : 'Stable'
-  const trendColor = item.trend === 'up' ? '#f87171' : item.trend === 'down' ? '#34d399' : 'rgba(255,255,255,0.25)'
+function RateBigCard({ label, value, sublabel, color, cta, trend }: {
+  label: string; value: number; sublabel: string; color: string
+  cta?: { text: string; href: string }; trend?: 'up' | 'down' | 'stable'
+}) {
+  const [hov, setHov] = useState(false)
+  const trendIcon = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'
+  const trendColor = trend === 'up' ? '#f87171' : trend === 'down' ? '#34d399' : 'rgba(255,255,255,0.22)'
+  const trendLabel = trend === 'up' ? 'En hausse' : trend === 'down' ? 'En baisse' : 'Stable'
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
-      borderLeft: `3px solid ${color}`, borderRadius: 10, padding: '12px 14px',
-      display: 'flex', flexDirection: 'column', gap: 2,
-    }}>
-      <span style={{ fontSize: 9, fontWeight: 600, color: `${color}99`, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{category}</span>
-      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{item.label}</span>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-        <span style={{ fontSize: 24, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-0.03em' }}>{item.value.toFixed(2)}</span>
-        <span style={{ fontSize: 13, color: `${color}80`, fontWeight: 600 }}>%</span>
+    <div
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{
+        flex: 1, minWidth: 'min(100%, 200px)',
+        background: hov ? '#111' : '#0c0c0c',
+        border: `1px solid ${hov ? color + '45' : 'rgba(255,255,255,0.07)'}`,
+        borderTop: `3px solid ${color}`,
+        borderRadius: 18, padding: '22px 20px 20px',
+        display: 'flex', flexDirection: 'column', gap: 5,
+        transition: 'all 0.2s',
+        boxShadow: hov ? `0 16px 48px ${color}14` : 'none',
+      }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.03em', lineHeight: 1.4 }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: '4px 0 2px' }}>
+        <span style={{ fontSize: 'clamp(34px,4vw,50px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>
+          {value.toFixed(2).replace('.', ',')}
+        </span>
+        <span style={{ fontSize: 22, fontWeight: 700, color, lineHeight: 1 }}>%</span>
       </div>
-      <span style={{ fontSize: 10, color: trendColor, marginTop: 2 }}>{trendIcon} {trendLabel}</span>
+      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.4 }}>{sublabel}</span>
+      {trend && (
+        <span style={{ fontSize: 11, color: trendColor, marginTop: 2 }}>{trendIcon} {trendLabel}</span>
+      )}
+      {cta && (
+        <Link href={cta.href}
+          style={{ marginTop: 10, padding: '10px 18px', borderRadius: 100, background: color, color: '#000', fontWeight: 700, fontSize: 13, textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+          {cta.text}
+        </Link>
+      )}
     </div>
   )
 }
@@ -484,40 +508,85 @@ function RatesWidget() {
     fetch('/api/rates').then(r => r.ok ? r.json() : null).then(d => { if (d) setRates(d) }).catch(() => {})
   }, [])
 
-  if (!rates) return null
-
-  const groups = [
-    { category: 'Épargne',  color: '#34d399', items: [{ key: 'livretA',   ...rates.livretA }] },
-    { category: 'Marché',   color: '#38bdf8', items: [{ key: 'oat10y',    ...rates.oat10y }] },
-    { category: 'Banque',   color: '#a78bfa', items: [{ key: 'bce',       ...rates.bce }] },
-    { category: 'Macro',    color: '#fb923c', items: [{ key: 'inflation', ...rates.inflation }] },
-    { category: 'Crédit immo', color: '#f472b6', items: [
-      { key: 'immo15y', ...rates.immo15y },
-      { key: 'immo20y', ...rates.immo20y },
-      { key: 'immo25y', ...rates.immo25y },
-    ]},
-    { category: 'Crédit conso', color: '#ef4444', items: [{ key: 'creditConso', ...rates.creditConso }] },
-  ]
-
   return (
-    <div style={{ padding: '20px 20px 0' }}>
-      <div style={{ maxWidth: 920, margin: '0 auto' }}>
+    <section id="rates" style={{ padding: '80px 20px 100px' }}>
+      <div style={{ maxWidth: 1152, margin: '0 auto' }}>
+
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>Taux en direct</span>
-            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
+        <RevealSection>
+          <div style={{ marginBottom: 60 }}>
+            <SectionTag>
+              <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
+              Taux en Direct
+            </SectionTag>
+            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.025em', marginTop: 8 }}>
+              Les taux qui pilotent<br />vos décisions financières
+            </h2>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.32)', marginTop: 12, lineHeight: 1.7 }}>
+              Données indicatives · mise à jour automatique chaque heure
+              {rates?.live?.oat || rates?.live?.bce
+                ? <span style={{ marginLeft: 10, color: '#34d399', fontSize: 12 }}>● Temps réel</span>
+                : null}
+            </p>
           </div>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.18)' }}>Données indicatives · mise à jour automatique</span>
-        </div>
-        {/* Grid — 4 cols single rates + 3 cols immo block */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
-          {groups.flatMap(g => g.items.map(item => (
-            <RateTile key={item.key} item={item} color={g.color} category={g.category} />
-          )))}
-        </div>
+        </RevealSection>
+
+        {!rates ? (
+          <div style={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 13 }}>Chargement des taux…</span>
+          </div>
+        ) : (
+          <>
+            {/* Épargne réglementée */}
+            <RevealSection delay={0}>
+              <div style={{ marginBottom: 48 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#34d399' }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Épargne réglementée</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <RateBigCard label="Livret A" value={rates.livretA.value} sublabel="Plafond 22 950 €" color="#34d399" trend={rates.livretA.trend} />
+                  <RateBigCard label="LDDS" value={rates.ldds.value} sublabel="Plafond 12 000 €" color="#34d399" trend={rates.ldds.trend} />
+                  <RateBigCard label="LEP" value={rates.lep.value} sublabel="Plafond 10 000 € · sous conditions de revenus" color="#34d399" trend={rates.lep.trend} />
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Crédit immobilier */}
+            <RevealSection delay={80}>
+              <div style={{ marginBottom: 48 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#f472b6' }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Crédit immobilier</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo15y.value} sublabel="sur 15 ans" color="#f472b6" trend={rates.immo15y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
+                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo20y.value} sublabel="sur 20 ans" color="#f472b6" trend={rates.immo20y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
+                  <RateBigCard label="Meilleur taux immobilier" value={rates.immo25y.value} sublabel="sur 25 ans" color="#f472b6" trend={rates.immo25y.trend} cta={{ text: 'Simuler mon prêt', href: '/login' }} />
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* Marchés & Macro */}
+            <RevealSection delay={160}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 16, borderRadius: 3, background: '#38bdf8' }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Marchés & Macro</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <RateBigCard label="OAT 10 ans" value={rates.oat10y.value} sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État française"} color="#38bdf8" trend={rates.oat10y.trend} />
+                  <RateBigCard label="Taux BCE" value={rates.bce.value} sublabel={rates.live?.bce ? 'Banque Centrale Européenne · Live' : 'Banque Centrale Européenne'} color="#a78bfa" trend={rates.bce.trend} />
+                  <RateBigCard label="Inflation FR" value={rates.inflation.value} sublabel="Indice des prix à la consommation" color="#fb923c" trend={rates.inflation.trend} />
+                  <RateBigCard label="Crédit conso" value={rates.creditConso.value} sublabel="Taux moyen du marché" color="#ef4444" trend={rates.creditConso.trend} />
+                </div>
+              </div>
+            </RevealSection>
+          </>
+        )}
+
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -569,8 +638,8 @@ function InteractiveDemo() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Valeur finale estimée</p>
-          <p style={{ fontSize: 32, fontWeight: 800, color: GOLD, lineHeight: 1, letterSpacing: '-0.03em' }}>{fmtK(finalValue)}</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', marginTop: 4 }}>après {years} ans · <span style={{ color: '#34d399' }}>+{fmtK(gains)}</span> d&apos;intérêts</p>
+          <p style={{ fontSize: 32, fontWeight: 800, color: GOLD, lineHeight: 1, letterSpacing: '-0.03em' }}>{fmtFull(finalValue)}</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', marginTop: 4 }}>après {years} ans · <span style={{ color: '#34d399' }}>+{fmtFull(gains)}</span> d&apos;intérêts</p>
         </div>
         <div style={{ display: 'flex', gap: 20 }}>
           <div style={{ textAlign: 'center' }}>
@@ -578,7 +647,7 @@ function InteractiveDemo() {
             <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Rendement net</p>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{fmtK(totalInvested)}</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{fmtFull(totalInvested)}</p>
             <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Capital investi</p>
           </div>
         </div>
@@ -827,7 +896,7 @@ export function LandingClient() {
 
           {/* Desktop links */}
           <div style={{ alignItems: 'center', gap: 24 }} className="hidden md:flex">
-            {[['#modules', 'Modules'], ['#how', 'Comment ça marche'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
+            {[['#modules', 'Modules'], ['#rates', 'Taux en Direct'], ['#how', 'Comment ça marche'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
               <a key={href} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
@@ -885,6 +954,7 @@ export function LandingClient() {
           <div style={{ padding: '16px 20px 20px' }}>
             {[
               ['#modules', 'Modules'],
+              ['#rates', 'Taux en Direct'],
               ['#how', 'Comment ça marche'],
               ['#why', 'Nos engagements'],
               ['#security', 'Sécurité'],

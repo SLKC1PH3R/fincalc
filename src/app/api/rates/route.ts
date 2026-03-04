@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 // Static / semi-static fallback data
 const FALLBACK = {
   livretA:     { value: 2.4,  label: 'Livret A',       unit: '%', trend: 'stable' as const },
+  ldds:        { value: 2.4,  label: 'LDDS',            unit: '%', trend: 'stable' as const },
+  lep:         { value: 3.5,  label: 'LEP',             unit: '%', trend: 'down'   as const },
   oat10y:      { value: 3.45, label: 'OAT 10 ans',     unit: '%', trend: 'up'     as const },
   bce:         { value: 2.65, label: 'Taux BCE',        unit: '%', trend: 'down'   as const },
   inflation:   { value: 1.1,  label: 'Inflation FR',   unit: '%', trend: 'down'   as const },
@@ -46,6 +48,8 @@ export async function GET() {
 
   const rates = {
     livretA:     FALLBACK.livretA,
+    ldds:        FALLBACK.ldds,
+    lep:         FALLBACK.lep,
     oat10y:      { ...FALLBACK.oat10y,    value: oat ?? FALLBACK.oat10y.value },
     bce:         { ...FALLBACK.bce,       value: bce ?? FALLBACK.bce.value },
     inflation:   FALLBACK.inflation,

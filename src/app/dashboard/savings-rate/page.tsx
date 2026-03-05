@@ -186,9 +186,15 @@ function SavingsRatePageInner() {
     if (!restoreParam) return
     try {
       const p = JSON.parse(restoreParam)
-      if (p.revenus) setRevenus(p.revenus)
-      if (p.investCats) setInvestCats(p.investCats)
-      if (p.depenseCats) setDepenseCats(p.depenseCats)
+      const migrateItems = (arr: any[]): LineItem[] =>
+        arr.map((x: any) => ({ id: x.id ?? uid(), name: x.name ?? x.label ?? '', value: x.value ?? x.amount ?? 0 }))
+      const migrateCats = (arr: any[], fallbackName: string): Category[] => {
+        if (arr[0]?.items !== undefined) return arr
+        return [{ id: uid(), name: fallbackName, items: migrateItems(arr) }]
+      }
+      if (p.revenus) setRevenus(migrateItems(p.revenus))
+      if (p.investCats) setInvestCats(migrateCats(p.investCats, 'Investissements'))
+      if (p.depenseCats) setDepenseCats(migrateCats(p.depenseCats, 'Dépenses'))
     } catch {}
   }, [restoreParam])
 

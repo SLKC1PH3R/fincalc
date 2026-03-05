@@ -223,8 +223,16 @@ function RentalPageInner() {
     try {
       const parsed = JSON.parse(restoreParam)
       if (parsed.apartments) {
-        setApartments(parsed.apartments)
-        setActiveAptId(parsed.apartments[0].id)
+        const migrated: Apartment[] = parsed.apartments.map((apt: any) => {
+          if (apt.inputs) return { ...apt, id: apt.id ?? String(Date.now()) }
+          return {
+            id: apt.id ?? String(Date.now()),
+            name: apt.name ?? apt.label ?? 'Appartement',
+            inputs: { ...DEFAULT_INPUTS, price: apt.price ?? apt.purchasePrice ?? DEFAULT_INPUTS.price, rent: apt.rent ?? DEFAULT_INPUTS.rent, charges: apt.charges ?? DEFAULT_INPUTS.charges, taxeFonciere: apt.taxeFonciere ?? DEFAULT_INPUTS.taxeFonciere, works: apt.works ?? DEFAULT_INPUTS.works },
+          }
+        })
+        setApartments(migrated)
+        setActiveAptId(migrated[0].id)
       } else {
         setApartments([{ id: '1', name: 'Appartement 1', inputs: parsed as RentalInputs }])
       }

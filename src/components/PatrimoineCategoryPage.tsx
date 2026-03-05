@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  ComposedChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, Eye, EyeOff,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -45,6 +45,7 @@ const ENVELOPE_TYPE_CONFIG: Record<EnvelopeType, {
   CASH:       { label: 'Liquidités',        description: 'Compte courant, épargne bancaire',     color: '#94a3b8', icon: Wallet,     assetClass: 'Liquidités' },
 }
 
+const NO_PL_TYPES: EnvelopeType[] = ['LIVRET', 'CASH', 'PER']
 const PEA_MAX = 150_000
 
 function computeMarketValue(env: Envelope): number {
@@ -94,11 +95,19 @@ export type Category = 'immobilier' | 'actions' | 'livrets' | 'autres' | 'compte
 export const CATEGORY_CONFIG: Record<Category, {
   label: string; types: EnvelopeType[]; color: string; description: string
 }> = {
-  immobilier: { label: 'Immobilier',       types: ['IMMOBILIER'],            color: '#f472b6', description: 'Résidence principale, locatif…' },
-  actions:    { label: 'Actions & Fonds',  types: ['PEA', 'CTO', 'AV', 'PER'], color: '#818cf8', description: 'PEA, CTO, Assurance Vie, PER' },
-  livrets:    { label: 'Livrets',          types: ['LIVRET'],                color: '#34d399', description: 'Livret A, LDDS, LEP, PEL…' },
-  autres:     { label: 'Autres actifs',    types: ['CRYPTO'],                color: '#f59e0b', description: 'Crypto, actifs alternatifs' },
-  comptes:    { label: 'Comptes bancaires',types: ['CASH'],                  color: '#94a3b8', description: 'Compte courant, épargne bancaire' },
+  immobilier: { label: 'Immobilier',        types: ['IMMOBILIER'],               color: '#f472b6', description: 'Résidence principale, locatif…' },
+  actions:    { label: 'Actions & Fonds',   types: ['PEA', 'CTO', 'AV', 'PER'], color: '#818cf8', description: 'PEA, CTO, Assurance Vie, PER' },
+  livrets:    { label: 'Livrets',           types: ['LIVRET'],                   color: '#34d399', description: 'Livret A, LDDS, LEP, PEL…' },
+  autres:     { label: 'Autres actifs',     types: ['CRYPTO'],                   color: '#f59e0b', description: 'Crypto, actifs alternatifs' },
+  comptes:    { label: 'Comptes bancaires', types: ['CASH'],                     color: '#94a3b8', description: 'Compte courant, épargne bancaire' },
+}
+
+const CATEGORY_TIPS: Record<Category, string> = {
+  immobilier: "Surveillez le prix/m² de votre secteur chaque trimestre. Un entretien régulier préserve 1.5 à 2% de valeur annuelle.",
+  actions:    "Priorisez le PEA après 5 ans pour la fiscalité avantageuse. Diversifiez entre PEA, CTO et AV selon vos besoins de liquidité.",
+  livrets:    "Gardez 3 mois de dépenses en épargne de précaution. Le surplus devrait migrer vers des enveloppes plus rémunératrices.",
+  autres:     "Limitez les cryptos à 5-10% du patrimoine total. Sécurisez les montants importants sur cold wallet (Ledger, Trezor).",
+  comptes:    "Un compte courant ne devrait pas dépasser 2-3 mois de dépenses. Transférez le surplus vers des enveloppes rémunérées.",
 }
 
 const PLACEHOLDERS: Record<EnvelopeType, string> = {
@@ -124,6 +133,10 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const [selectedType, setSelectedType] = useState<EnvelopeType | null>(null)
   const [envelopeName, setEnvelopeName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [visibleEnvs, setVisibleEnvs] = useState<Set<string>>(new Set())
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const load = async () => {
     try {
@@ -140,6 +153,19 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     [allEnvelopes, catCfg.types]
   )
 
+  // Init visible state when envelopes load
+  useEffect(() => {
+    setVisibleEnvs(prev => {
+      const next = new Set(prev)
+      envelopes.forEach(e => { if (!next.has(e.id)) next.add(e.id) })
+      return next
+    })
+  }, [envelopes.length])
+
+  const toggleEnv = (id: string) => setVisibleEnvs(prev => {
+    const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s
+  })
+
   const { totalValue, totalInvested } = useMemo(() => {
     let tv = 0, ti = 0
     for (const e of envelopes) { tv += computeMarketValue(e); ti += computeInvested(e) }
@@ -149,13 +175,22 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const pl = totalValue - totalInvested
   const plPct = totalInvested > 0 ? (pl / totalInvested) * 100 : 0
 
-  const chartData = useMemo(() => envelopes.map(env => ({
-    name: env.name.length > 14 ? env.name.slice(0, 14) + '…' : env.name,
-    fullName: env.name,
-    investi: computeInvested(env),
-    valeur: computeMarketValue(env),
-    color: ENVELOPE_TYPE_CONFIG[env.type].color,
-  })), [envelopes])
+  // 2-point area chart: Capital investi → Valeur actuelle
+  const areaData = useMemo(() => [
+    { x: 'Capital investi', ...Object.fromEntries(envelopes.map(e => [e.id, computeInvested(e)])) },
+    { x: 'Valeur actuelle', ...Object.fromEntries(envelopes.map(e => [e.id, computeMarketValue(e)])) },
+  ], [envelopes])
+
+  const bestEnv = useMemo(() => {
+    if (envelopes.length === 0) return null
+    return [...envelopes].sort((a, b) => {
+      const score = (e: Envelope) => {
+        const inv = computeInvested(e), val = computeMarketValue(e)
+        return inv > 0 && !NO_PL_TYPES.includes(e.type) ? (val - inv) / inv * 100 : val / 1e9
+      }
+      return score(b) - score(a)
+    })[0]
+  }, [envelopes])
 
   const handleCreate = async () => {
     if (!selectedType || !envelopeName.trim()) return
@@ -188,8 +223,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     t => [t, ENVELOPE_TYPE_CONFIG[t]] as [EnvelopeType, typeof ENVELOPE_TYPE_CONFIG[EnvelopeType]]
   )
 
-  const noPlRow = ['LIVRET', 'CASH', 'PER'] as EnvelopeType[]
-
   return (
     <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 0 48px' }}>
 
@@ -212,61 +245,122 @@ export default function PatrimoineCategoryPage({ category }: Props) {
         </Button>
       </div>
 
-      {/* KPIs */}
-      {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(155px, 1fr))', gap: 12 }}>
-          {[
-            { label: 'Valeur actuelle', value: fmtCompact(totalValue), color: catCfg.color },
-            { label: 'Capital investi', value: fmtCompact(totalInvested), color: '#94a3b8' },
-            { label: 'Plus-value', value: (pl >= 0 ? '+' : '') + fmtCompact(pl), sub: totalInvested > 0 ? `${plPct >= 0 ? '+' : ''}${plPct.toFixed(1)} %` : '—', color: pl >= 0 ? '#34d399' : '#f87171' },
-            { label: 'Enveloppes', value: String(envelopes.length), color: '#818cf8' },
-          ].map(kpi => (
-            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-              {'sub' in kpi && kpi.sub && <div style={{ fontSize: 11, color: kpi.color, marginTop: 2, fontWeight: 600 }}>{kpi.sub}</div>}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Chart avec toggles show/hide */}
+      {!loading && envelopes.length > 0 && mounted && (
+        <div style={{
+          background: 'var(--card-dark)',
+          border: `1px solid ${catCfg.color}30`,
+          borderRadius: 16,
+          padding: 24,
+        }}>
+          {/* Toggle buttons */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+            {envelopes.map(env => {
+              const cfg = ENVELOPE_TYPE_CONFIG[env.type]
+              const isVisible = visibleEnvs.has(env.id)
+              return (
+                <button
+                  key={env.id}
+                  onClick={() => toggleEnv(env.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 14px', borderRadius: 8,
+                    border: `1.5px solid ${cfg.color}`,
+                    background: isVisible ? `${cfg.color}20` : 'transparent',
+                    color: isVisible ? cfg.color : '#555',
+                    cursor: 'pointer', fontSize: 12, fontWeight: 500,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {isVisible
+                    ? <Eye style={{ width: 13, height: 13 }} />
+                    : <EyeOff style={{ width: 13, height: 13 }} />
+                  }
+                  {env.name}
+                </button>
+              )
+            })}
+          </div>
 
-      {/* Chart */}
-      {!loading && chartData.length > 0 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-          <CardContent style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>
-              Capital investi vs valeur actuelle
-            </div>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={chartData} barGap={4} barCategoryGap="32%">
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: chartTheme.tick }} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={v => fmtCompact(v as number)} tick={{ fontSize: 10, fill: chartTheme.tick }} axisLine={false} tickLine={false} width={64} />
-                <Tooltip
-                  formatter={(v: number, name: string) => [fmtCompact(v), name === 'investi' ? 'Capital investi' : 'Valeur actuelle']}
-                  contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
-                  itemStyle={chartTheme.itemStyle}
-                  labelStyle={chartTheme.labelStyle}
-                  labelFormatter={(_, p) => (p?.[0]?.payload as { fullName: string })?.fullName ?? ''}
-                />
-                <Bar dataKey="investi" fill="rgba(148,163,184,0.35)" radius={[4, 4, 0, 0]} name="investi" />
-                <Bar dataKey="valeur" radius={[4, 4, 0, 0]} name="valeur">
-                  {chartData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div style={{ display: 'flex', gap: 20, marginTop: 10, justifyContent: 'center' }}>
-              {[
-                { color: 'rgba(148,163,184,0.5)', label: 'Capital investi' },
-                { color: catCfg.color, label: 'Valeur actuelle' },
-              ].map(l => (
-                <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{l.label}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          {/* Area chart */}
+          <ResponsiveContainer width="100%" height={320}>
+            <ComposedChart data={areaData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
+              <defs>
+                {envelopes.map(env => {
+                  const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                  return (
+                    <linearGradient key={env.id} id={`grad-${env.id}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity={0.55} />
+                      <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+                    </linearGradient>
+                  )
+                })}
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+              <XAxis
+                dataKey="x"
+                tick={{ fontSize: 12, fill: chartTheme.tick }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tickFormatter={v => fmtCompact(v as number)}
+                tick={{ fontSize: 10, fill: chartTheme.tick }}
+                axisLine={false}
+                tickLine={false}
+                width={72}
+              />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null
+                  return (
+                    <div style={{
+                      background: '#090909',
+                      border: `2px solid ${catCfg.color}`,
+                      borderRadius: 10,
+                      padding: '10px 14px',
+                      fontSize: 12,
+                      minWidth: 160,
+                    }}>
+                      <p style={{ color: catCfg.color, fontWeight: 700, marginBottom: 8 }}>{label}</p>
+                      {payload.map((entry, i) => {
+                        const env = envelopes.find(e => e.id === entry.dataKey)
+                        if (!env) return null
+                        const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                        return (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                            <span style={{ color: color }}>{env.name}</span>
+                            <span style={{ color: '#fff', fontWeight: 600, marginLeft: 'auto', paddingLeft: 12 }}>
+                              {fmtCompact(entry.value as number)}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                }}
+              />
+              {envelopes.filter(e => visibleEnvs.has(e.id)).map(env => {
+                const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                return (
+                  <Area
+                    key={env.id}
+                    type="monotone"
+                    dataKey={env.id}
+                    stroke={color}
+                    strokeWidth={2.5}
+                    fill={`url(#grad-${env.id})`}
+                    fillOpacity={1}
+                    dot={{ r: 4, fill: color, strokeWidth: 0 }}
+                    activeDot={{ r: 6, fill: color, strokeWidth: 0 }}
+                    isAnimationActive
+                  />
+                )
+              })}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {/* Envelopes grid */}
@@ -299,7 +393,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               const Icon = cfg.icon
               const value = computeMarketValue(env)
               const invested = computeInvested(env)
-              const hasPL = invested > 0 && !noPlRow.includes(env.type)
+              const hasPL = invested > 0 && !NO_PL_TYPES.includes(env.type)
               const plEnv = value - invested
               const cap = getCapProgress(env)
 
@@ -359,6 +453,69 @@ export default function PatrimoineCategoryPage({ category }: Props) {
           </div>
         )}
       </div>
+
+      {/* Insights */}
+      {!loading && envelopes.length > 0 && (
+        <div style={{
+          background: 'var(--card-dark)',
+          border: `1px solid ${catCfg.color}20`,
+          borderRadius: 14,
+          padding: '20px 24px',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: catCfg.color, marginBottom: 16 }}>
+            📊 Insights
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+            {/* Meilleur performer */}
+            {bestEnv && (
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                  🏆 Meilleur performer
+                </div>
+                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
+                  <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>
+                    {bestEnv.name}
+                  </span>
+                  {' '}
+                  {(() => {
+                    const inv = computeInvested(bestEnv)
+                    const val = computeMarketValue(bestEnv)
+                    if (!NO_PL_TYPES.includes(bestEnv.type) && inv > 0 && val > inv) {
+                      const pct = (val - inv) / inv * 100
+                      return `avec +${pct.toFixed(1)}% de performance`
+                    }
+                    return `avec ${fmtCompact(computeMarketValue(bestEnv))} de valeur actuelle`
+                  })()}
+                </p>
+              </div>
+            )}
+
+            {/* Tendance */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                📈 Tendance
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
+                {pl > 100
+                  ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
+                  : pl < -100
+                  ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez les allocations.`
+                  : 'Vos actifs sont stables, sans variation significative.'}
+              </p>
+            </div>
+
+            {/* Conseil */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                💡 Conseil
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
+                {CATEGORY_TIPS[category]}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

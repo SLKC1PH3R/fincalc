@@ -757,51 +757,55 @@ const RATE_HISTORY = {
 }
 
 function MiniSparkline({ data, color, uid }: { data: number[]; color: string; uid: string }) {
-  const [hover, setHover] = useState<{ idx: number; clientX: number; clientY: number } | null>(null)
-  const W = 300, H = 52
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+  const W = 300, H = 52, PAD = 2
   const min = Math.min(...data), max = Math.max(...data)
   const range = max - min || 1
-  const toX = (i: number) => (i / (data.length - 1)) * W
+  const toX = (i: number) => PAD + (i / (data.length - 1)) * (W - PAD * 2)
   const toY = (v: number) => H - 4 - ((v - min) / range) * (H - 12)
   const pts = data.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
-  const area = pts + ` L${W},${H} L0,${H} Z`
+  const area = pts + ` L${toX(data.length - 1)},${H} L${toX(0)},${H} Z`
   const gid = `sg-${uid}`
+
+  const tipW = 80, tipH = 22
+  const tipX = hoverIdx !== null
+    ? Math.min(Math.max(toX(hoverIdx) - tipW / 2, 0), W - tipW)
+    : 0
+
   return (
-    <div style={{ position: 'relative', cursor: 'crosshair' }}
+    <svg
+      width="100%" height={H} viewBox={`0 0 ${W} ${H}`}
+      style={{ display: 'block', cursor: 'crosshair', overflow: 'visible' }}
       onMouseMove={e => {
         const rect = e.currentTarget.getBoundingClientRect()
         const xPct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-        setHover({ idx: Math.round(xPct * (data.length - 1)), clientX: e.clientX, clientY: e.clientY })
+        setHoverIdx(Math.round(xPct * (data.length - 1)))
       }}
-      onMouseLeave={() => setHover(null)}>
-      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-        <defs>
-          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <path d={area} fill={`url(#${gid})`} />
-        <path d={pts} stroke={color} strokeWidth={1.5} fill="none" />
-        {hover !== null && (
-          <>
-            <line x1={toX(hover.idx)} y1={0} x2={toX(hover.idx)} y2={H} stroke={color} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
-            <circle cx={toX(hover.idx)} cy={toY(data[hover.idx])} r={3.5} fill={color} />
-          </>
-        )}
-      </svg>
-      {hover !== null && (
-        <div style={{
-          position: 'fixed', top: hover.clientY - 42, left: hover.clientX + 14,
-          background: '#090909', border: `1px solid ${color}60`,
-          borderRadius: 8, padding: '4px 10px', fontSize: 11,
-          pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 1000,
-        }}>
-          <span style={{ color: 'rgba(255,255,255,0.4)', marginRight: 6 }}>{RATE_YEARS[hover.idx]}</span>
-          <span style={{ color, fontWeight: 700 }}>{data[hover.idx].toFixed(2)} %</span>
-        </div>
+      onMouseLeave={() => setHoverIdx(null)}
+    >
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${gid})`} />
+      <path d={pts} stroke={color} strokeWidth={1.5} fill="none" />
+      {hoverIdx !== null && (
+        <>
+          <line x1={toX(hoverIdx)} y1={0} x2={toX(hoverIdx)} y2={H} stroke={color} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+          <circle cx={toX(hoverIdx)} cy={toY(data[hoverIdx])} r={3.5} fill={color} />
+          <g transform={`translate(${tipX}, -28)`}>
+            <rect width={tipW} height={tipH} rx={5} fill="#0d0d0d" stroke={color} strokeOpacity={0.5} strokeWidth={1} />
+            <text x={tipW / 2} y={14} textAnchor="middle" fontSize={10}
+              fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">
+              <tspan fill="rgba(255,255,255,0.45)">{RATE_YEARS[hoverIdx]} · </tspan>
+              <tspan fill={color} fontWeight="700">{data[hoverIdx].toFixed(2)} %</tspan>
+            </text>
+          </g>
+        </>
       )}
-    </div>
+    </svg>
   )
 }
 

@@ -40,7 +40,11 @@ function CompoundPageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as CompoundInputs) } catch {}
+    try {
+      const parsed = JSON.parse(restoreParam)
+      if (parsed.initial !== undefined && parsed.capital === undefined) parsed.capital = parsed.initial
+      setInputs(parsed as CompoundInputs)
+    } catch {}
   }, [restoreParam])
   const r = useMemo(() => calcCompound(inputs), [inputs])
 
@@ -84,7 +88,7 @@ function CompoundPageInner() {
             ],
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
-          <SaveSimulation type="compound" name={`Composés ${inputs.capital.toLocaleString('fr')}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
+          <SaveSimulation type="compound" name={`Composés ${fmt(inputs.capital)}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
 

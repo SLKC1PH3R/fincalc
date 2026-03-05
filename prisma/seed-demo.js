@@ -54,10 +54,10 @@ async function main() {
   // ─── Simulations démo ─────────────────────────────────────────────────────────
   const sims = [
     { type: 'compound', name: 'Plan épargne MSCI World — 20 ans',
-      inputs: { initial: 15000, monthly: 400, rate: 8, years: 20 },
+      inputs: { capital: 15000, monthly: 400, rate: 8, years: 20, frequency: 12 },
       results: { finalValue: 295420, totalInvested: 111000, totalGain: 184420, multiple: 2.66, cagr: 8 } },
     { type: 'compound', name: 'Constitution apport immobilier — 7 ans',
-      inputs: { initial: 5000, monthly: 700, rate: 5, years: 7 },
+      inputs: { capital: 5000, monthly: 700, rate: 5, years: 7, frequency: 12 },
       results: { finalValue: 75840, totalInvested: 63800, totalGain: 12040, multiple: 1.19, cagr: 5 } },
     { type: 'dca', name: 'DCA mensuel ETF World — 10 ans',
       inputs: { monthly: 300, rate: 7, years: 10 },

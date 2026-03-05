@@ -741,8 +741,38 @@ function RateBigCard({ label, value, sublabel, color, cta, trend }: {
   )
 }
 
-function RateRow({ name, rate, sublabel, note, trend, color, bold = false }: {
-  name: string; rate: string; sublabel?: string; note?: string; trend?: 'up'|'down'|'stable'; color: string; bold?: boolean
+// Taux historiques annuels 2015–2025 (données indicatives)
+const RATE_HISTORY = {
+  livretA: [1.0, 0.75, 0.75, 0.75, 0.75, 0.5, 0.5, 1.0, 3.0, 3.0, 2.4],
+  ldds:    [1.0, 0.75, 0.75, 0.75, 0.75, 0.5, 0.5, 1.0, 3.0, 3.0, 2.4],
+  lep:     [1.25, 1.0, 1.0, 1.25, 1.25, 1.0, 1.0, 2.2, 6.1, 5.0, 3.5],
+}
+
+function MiniSparkline({ data, color }: { data: number[]; color: string }) {
+  const W = 300, H = 52
+  const min = Math.min(...data), max = Math.max(...data)
+  const range = max - min || 1
+  const toX = (i: number) => (i / (data.length - 1)) * W
+  const toY = (v: number) => H - 4 - ((v - min) / range) * (H - 12)
+  const pts = data.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+  const area = pts + ` L${W},${H} L0,${H} Z`
+  const gid = `sg${color.replace('#', '')}`
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${gid})`} />
+      <path d={pts} stroke={color} strokeWidth={1.5} fill="none" />
+    </svg>
+  )
+}
+
+function RateRow({ name, rate, sublabel, note, trend, color, bold = false, sparkData }: {
+  name: string; rate: string; sublabel?: string; note?: string; trend?: 'up'|'down'|'stable'; color: string; bold?: boolean; sparkData?: number[]
 }) {
   const trendEl = trend === 'up'
     ? <TrendingUp style={{ width: 14, height: 14, color: '#f87171', flexShrink: 0 }} />
@@ -750,20 +780,27 @@ function RateRow({ name, rate, sublabel, note, trend, color, bold = false }: {
     ? <TrendingUp style={{ width: 14, height: 14, color: '#34d399', transform: 'rotate(180deg)', flexShrink: 0 }} />
     : <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', transition: 'background 0.15s', cursor: 'default' }}
+    <div style={{ borderRadius: 12, background: 'rgba(255,255,255,0.02)', transition: 'background 0.15s', overflow: 'hidden' }}
       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
       onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>{name}</span>
-          {note && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>({note})</span>}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.85)' }}>{name}</span>
+            {note && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>({note})</span>}
+          </div>
+          {sublabel && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sublabel}</span>}
         </div>
-        {sublabel && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{sublabel}</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <span style={{ fontSize: bold ? 22 : 20, fontWeight: 800, color, letterSpacing: '-0.02em' }}>{rate}</span>
+          {trendEl}
+        </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <span style={{ fontSize: bold ? 22 : 20, fontWeight: 800, color, letterSpacing: '-0.02em' }}>{rate}</span>
-        {trendEl}
-      </div>
+      {sparkData && (
+        <div style={{ padding: '0 12px 8px' }}>
+          <MiniSparkline data={sparkData} color={color} />
+        </div>
+      )}
     </div>
   )
 }
@@ -836,10 +873,17 @@ function RatesWidget() {
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'stretch' }}>
             {/* Panel 1 — Épargne réglementée */}
             <RevealSection delay={0} style={{ flex: '1 1 280px' }}>
-              <RatePanel title="Épargne réglementée" icon={PiggyBank} iconColor="#34d399" iconBg="rgba(52,211,153,0.1)">
-                <RateRow name="Livret A" rate={fmt(rates.livretA.value)} sublabel="Plafond 22 950 €" trend={rates.livretA.trend} color="#34d399" bold />
-                <RateRow name="LDDS" rate={fmt(rates.ldds.value)} sublabel="Plafond 12 000 €" trend={rates.ldds.trend} color="#34d399" bold />
-                <RateRow name="LEP" rate={fmt(rates.lep.value)} sublabel="Plafond 10 000 €" note="sous conditions" trend={rates.lep.trend} color="#34d399" bold />
+              <RatePanel title="Épargne réglementée" icon={PiggyBank} iconColor="#34d399" iconBg="rgba(52,211,153,0.1)"
+                footer={
+                  <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.2)', color: '#34d399', fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(52,211,153,0.15)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(52,211,153,0.08)' }}>
+                    Simuler mes intérêts <ArrowRight style={{ width: 14, height: 14 }} />
+                  </Link>
+                }>
+                <RateRow name="Livret A" rate={fmt(rates.livretA.value)} sublabel="Plafond 22 950 €" trend={rates.livretA.trend} color="#34d399" bold sparkData={RATE_HISTORY.livretA} />
+                <RateRow name="LDDS" rate={fmt(rates.ldds.value)} sublabel="Plafond 12 000 €" trend={rates.ldds.trend} color="#34d399" bold sparkData={RATE_HISTORY.ldds} />
+                <RateRow name="LEP" rate={fmt(rates.lep.value)} sublabel="Plafond 10 000 €" note="sous conditions" trend={rates.lep.trend} color="#34d399" bold sparkData={RATE_HISTORY.lep} />
               </RatePanel>
             </RevealSection>
 
@@ -863,7 +907,14 @@ function RatesWidget() {
 
             {/* Panel 3 — Marchés & Macro */}
             <RevealSection delay={160} style={{ flex: '1 1 280px' }}>
-              <RatePanel title="Marchés & Macro" icon={TrendingUp} iconColor="#fbbf24" iconBg="rgba(251,191,36,0.1)">
+              <RatePanel title="Marchés & Macro" icon={TrendingUp} iconColor="#fbbf24" iconBg="rgba(251,191,36,0.1)"
+                footer={
+                  <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24', fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,191,36,0.15)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,191,36,0.08)' }}>
+                    Comparer PEA · CTO · AV <ArrowRight style={{ width: 14, height: 14 }} />
+                  </Link>
+                }>
                 <RateRow name="OAT 10 ans" sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État"} rate={fmt(rates.oat10y.value)} trend={rates.oat10y.trend} color="#38bdf8" />
                 <RateRow name="Taux BCE" sublabel={rates.live?.bce ? 'BCE · Live' : 'Banque Centrale Européenne'} rate={fmt(rates.bce.value)} trend={rates.bce.trend} color="#a78bfa" />
                 <RateRow name="Inflation FR" sublabel="Indice des prix" rate={fmt(rates.inflation.value)} trend={rates.inflation.trend} color="#fb923c" />

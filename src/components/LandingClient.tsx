@@ -1323,7 +1323,6 @@ export function LandingClient() {
           <h1 style={{ fontSize: 'clamp(2.8rem,6.5vw,4.8rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.035em', color: '#fff', marginBottom: 24 }}>
             Prenez le contrôle de votre{' '}
             <span style={{
-              fontStyle: 'italic',
               fontWeight: 700,
               background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
               backgroundSize: '200% auto',

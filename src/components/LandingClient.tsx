@@ -742,13 +742,22 @@ function RateBigCard({ label, value, sublabel, color, cta, trend }: {
 }
 
 // Taux historiques annuels 2015–2025 (données indicatives)
+const RATE_YEARS = ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025']
 const RATE_HISTORY = {
-  livretA: [1.0, 0.75, 0.75, 0.75, 0.75, 0.5, 0.5, 1.0, 3.0, 3.0, 2.4],
-  ldds:    [1.0, 0.75, 0.75, 0.75, 0.75, 0.5, 0.5, 1.0, 3.0, 3.0, 2.4],
-  lep:     [1.25, 1.0, 1.0, 1.25, 1.25, 1.0, 1.0, 2.2, 6.1, 5.0, 3.5],
+  livretA:   [1.0,  0.75, 0.75, 0.75, 0.75, 0.5,   0.5,  1.0,  3.0,  3.0,  2.4 ],
+  ldds:      [1.0,  0.75, 0.75, 0.75, 0.75, 0.5,   0.5,  1.0,  3.0,  3.0,  2.4 ],
+  lep:       [1.25, 1.0,  1.0,  1.25, 1.25, 1.0,   1.0,  2.2,  6.1,  5.0,  3.5 ],
+  immo15y:   [2.1,  1.75, 1.65, 1.5,  1.3,  1.1,   1.0,  1.2,  2.6,  3.6,  3.1 ],
+  immo20y:   [2.35, 1.95, 1.85, 1.65, 1.5,  1.2,   1.1,  1.4,  2.85, 3.8,  3.3 ],
+  immo25y:   [2.55, 2.15, 2.05, 1.85, 1.65, 1.35,  1.2,  1.6,  3.05, 4.0,  3.5 ],
+  oat10y:    [0.87, 0.68, 0.78, 0.71, 0.12, -0.34, -0.2, 0.2,  2.56, 2.98, 3.45],
+  bce:       [0.05, 0.0,  0.0,  0.0,  0.0,  0.0,   0.0,  0.5,  4.0,  4.5,  2.65],
+  inflation: [0.0,  0.2,  1.0,  1.8,  1.1,  0.5,   1.6,  5.2,  4.9,  2.1,  1.1 ],
+  conso:     [4.5,  4.2,  4.0,  3.9,  3.7,  3.5,   3.5,  4.0,  5.5,  6.0,  5.8 ],
 }
 
-function MiniSparkline({ data, color }: { data: number[]; color: string }) {
+function MiniSparkline({ data, color, uid }: { data: number[]; color: string; uid: string }) {
+  const [hover, setHover] = useState<{ idx: number; clientX: number; clientY: number } | null>(null)
   const W = 300, H = 52
   const min = Math.min(...data), max = Math.max(...data)
   const range = max - min || 1
@@ -756,18 +765,43 @@ function MiniSparkline({ data, color }: { data: number[]; color: string }) {
   const toY = (v: number) => H - 4 - ((v - min) / range) * (H - 12)
   const pts = data.map((v, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
   const area = pts + ` L${W},${H} L0,${H} Z`
-  const gid = `sg${color.replace('#', '')}`
+  const gid = `sg-${uid}`
   return (
-    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${gid})`} />
-      <path d={pts} stroke={color} strokeWidth={1.5} fill="none" />
-    </svg>
+    <div style={{ position: 'relative', cursor: 'crosshair' }}
+      onMouseMove={e => {
+        const rect = e.currentTarget.getBoundingClientRect()
+        const xPct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+        setHover({ idx: Math.round(xPct * (data.length - 1)), clientX: e.clientX, clientY: e.clientY })
+      }}
+      onMouseLeave={() => setHover(null)}>
+      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <path d={area} fill={`url(#${gid})`} />
+        <path d={pts} stroke={color} strokeWidth={1.5} fill="none" />
+        {hover !== null && (
+          <>
+            <line x1={toX(hover.idx)} y1={0} x2={toX(hover.idx)} y2={H} stroke={color} strokeWidth={1} strokeDasharray="3 2" opacity={0.5} />
+            <circle cx={toX(hover.idx)} cy={toY(data[hover.idx])} r={3.5} fill={color} />
+          </>
+        )}
+      </svg>
+      {hover !== null && (
+        <div style={{
+          position: 'fixed', top: hover.clientY - 42, left: hover.clientX + 14,
+          background: '#090909', border: `1px solid ${color}60`,
+          borderRadius: 8, padding: '4px 10px', fontSize: 11,
+          pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 1000,
+        }}>
+          <span style={{ color: 'rgba(255,255,255,0.4)', marginRight: 6 }}>{RATE_YEARS[hover.idx]}</span>
+          <span style={{ color, fontWeight: 700 }}>{data[hover.idx].toFixed(2)} %</span>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -798,7 +832,7 @@ function RateRow({ name, rate, sublabel, note, trend, color, bold = false, spark
       </div>
       {sparkData && (
         <div style={{ padding: '0 12px 8px' }}>
-          <MiniSparkline data={sparkData} color={color} />
+          <MiniSparkline data={sparkData} color={color} uid={`${name}${sublabel ?? ''}`.toLowerCase().replace(/[^a-z0-9]/g, '')} />
         </div>
       )}
     </div>
@@ -899,9 +933,9 @@ function RatesWidget() {
                     Simuler mon prêt <ArrowRight style={{ width: 14, height: 14 }} />
                   </Link>
                 }>
-                <RateRow name="Meilleur taux" sublabel="sur 15 ans" rate={fmt(rates.immo15y.value)} trend={rates.immo15y.trend} color={GOLD} bold />
-                <RateRow name="Meilleur taux" sublabel="sur 20 ans" rate={fmt(rates.immo20y.value)} trend={rates.immo20y.trend} color={GOLD} bold />
-                <RateRow name="Meilleur taux" sublabel="sur 25 ans" rate={fmt(rates.immo25y.value)} trend={rates.immo25y.trend} color={GOLD} bold />
+                <RateRow name="Meilleur taux" sublabel="sur 15 ans" rate={fmt(rates.immo15y.value)} trend={rates.immo15y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo15y} />
+                <RateRow name="Meilleur taux" sublabel="sur 20 ans" rate={fmt(rates.immo20y.value)} trend={rates.immo20y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo20y} />
+                <RateRow name="Meilleur taux" sublabel="sur 25 ans" rate={fmt(rates.immo25y.value)} trend={rates.immo25y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo25y} />
               </RatePanel>
             </RevealSection>
 
@@ -915,10 +949,10 @@ function RatesWidget() {
                     Comparer PEA · CTO · AV <ArrowRight style={{ width: 14, height: 14 }} />
                   </Link>
                 }>
-                <RateRow name="OAT 10 ans" sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État"} rate={fmt(rates.oat10y.value)} trend={rates.oat10y.trend} color="#38bdf8" />
-                <RateRow name="Taux BCE" sublabel={rates.live?.bce ? 'BCE · Live' : 'Banque Centrale Européenne'} rate={fmt(rates.bce.value)} trend={rates.bce.trend} color="#a78bfa" />
-                <RateRow name="Inflation FR" sublabel="Indice des prix" rate={fmt(rates.inflation.value)} trend={rates.inflation.trend} color="#fb923c" />
-                <RateRow name="Crédit conso" sublabel="Taux moyen" rate={fmt(rates.creditConso.value)} trend={rates.creditConso.trend} color="#f87171" />
+                <RateRow name="OAT 10 ans" sublabel={rates.live?.oat ? "Obligation d'État · Live" : "Obligation d'État"} rate={fmt(rates.oat10y.value)} trend={rates.oat10y.trend} color="#38bdf8" sparkData={RATE_HISTORY.oat10y} />
+                <RateRow name="Taux BCE" sublabel={rates.live?.bce ? 'BCE · Live' : 'Banque Centrale Européenne'} rate={fmt(rates.bce.value)} trend={rates.bce.trend} color="#a78bfa" sparkData={RATE_HISTORY.bce} />
+                <RateRow name="Inflation FR" sublabel="Indice des prix" rate={fmt(rates.inflation.value)} trend={rates.inflation.trend} color="#fb923c" sparkData={RATE_HISTORY.inflation} />
+                <RateRow name="Crédit conso" sublabel="Taux moyen" rate={fmt(rates.creditConso.value)} trend={rates.creditConso.trend} color="#f87171" sparkData={RATE_HISTORY.conso} />
               </RatePanel>
             </RevealSection>
           </div>

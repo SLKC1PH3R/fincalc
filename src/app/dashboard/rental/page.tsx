@@ -90,9 +90,9 @@ function buildSankeyData(
 function CustomSankeyNode(props: {
   x?: number; y?: number; width?: number; height?: number
   payload?: { name: string; value: number }
+  theme?: string
 }) {
-  const { theme } = useTheme()
-  const { x = 0, y = 0, width = 26, height = 0, payload } = props
+  const { x = 0, y = 0, width = 26, height = 0, payload, theme } = props
   if (!payload || height < 1) return null
   const name = payload.name
   const color = NODE_COLORS[name] ?? '#94a3b8'
@@ -207,6 +207,9 @@ function GlobalCashflowTable({ apartments, results }: { apartments: Apartment[];
 }
 
 function RentalPageInner() {
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const [apartments, setApartments] = useState<Apartment[]>([
     { id: '1', name: 'Appartement 1', inputs: { ...DEFAULT_INPUTS } }
   ])
@@ -543,24 +546,30 @@ function RentalPageInner() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <ResponsiveContainer width="100%" height={400}>
-              <Sankey
-                data={activeTabSankeyData}
-                nodePadding={20}
-                nodeWidth={26}
-                margin={{ top: 16, right: 160, bottom: 16, left: 120 }}
-                iterations={64}
-                node={(props: Parameters<typeof CustomSankeyNode>[0]) => <CustomSankeyNode {...props} />}
-                link={(props: Parameters<typeof CustomSankeyLink>[0]) => <CustomSankeyLink {...props} />}
-              >
-                <Tooltip
-                  formatter={(v: number) => [fmt(v), '']}
-                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
-                  itemStyle={{ color: 'var(--text-primary)' }}
-                  labelStyle={{ color: 'var(--text-muted-c)' }}
-                />
-              </Sankey>
-            </ResponsiveContainer>
+            {mounted ? (
+              <ResponsiveContainer width="100%" height={400}>
+                <Sankey
+                  data={activeTabSankeyData}
+                  nodePadding={20}
+                  nodeWidth={26}
+                  margin={{ top: 16, right: 160, bottom: 16, left: 120 }}
+                  iterations={64}
+                  node={(props: Parameters<typeof CustomSankeyNode>[0]) => <CustomSankeyNode {...props} theme={theme} />}
+                  link={(props: Parameters<typeof CustomSankeyLink>[0]) => <CustomSankeyLink {...props} />}
+                >
+                  <Tooltip
+                    formatter={(v: number) => [fmt(v), '']}
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
+                    itemStyle={{ color: 'var(--text-primary)' }}
+                    labelStyle={{ color: 'var(--text-muted-c)' }}
+                  />
+                </Sankey>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span className="text-sm text-muted-foreground">Chargement du graphique…</span>
+              </div>
+            )}
 
             {resultTab === 'global' ? (
               <GlobalCashflowTable apartments={apartments} results={results} />

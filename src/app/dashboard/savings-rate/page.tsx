@@ -174,6 +174,8 @@ function ItemRow({ item, onChange, onRemove, placeholder }: {
 }
 
 function SavingsRatePageInner() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const [revenus, setRevenus] = useState<LineItem[]>(DEFAULT_REVENUS)
   const [investCats, setInvestCats] = useState<Category[]>(DEFAULT_INVEST)
   const [depenseCats, setDepenseCats] = useState<Category[]>(DEFAULT_DEPENSES)
@@ -435,7 +437,9 @@ function SavingsRatePageInner() {
               <CardDescription>Revenus → Budget → Investissements &amp; Dépenses</CardDescription>
             </CardHeader>
             <CardContent>
-              {sankeyData.nodes.length > 0 ? (
+              {!mounted ? (
+                <div style={{ height: 480 }} />
+              ) : sankeyData.nodes.length > 0 ? (
                 <ResponsiveContainer width="100%" height={480}>
                   <Sankey
                     data={sankeyData}

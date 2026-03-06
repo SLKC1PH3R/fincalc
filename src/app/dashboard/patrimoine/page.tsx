@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -90,6 +90,49 @@ function fmtCompact(n: number): string {
   return fmt(n)
 }
 
+// ── Évolution simulée ─────────────────────────────────────────────────────────
+type TimeRange = '1j' | '1s' | '1m' | '1a' | 'max'
+
+function generateEvolutionData(totalValue: number, range: TimeRange) {
+  if (totalValue <= 0) return []
+  const cfg: Record<TimeRange, { n: number; yearsBack: number; vol: number }> = {
+    '1j':  { n: 25, yearsBack: 1 / 365,  vol: 0.006 },
+    '1s':  { n: 8,  yearsBack: 7 / 365,  vol: 0.010 },
+    '1m':  { n: 31, yearsBack: 1 / 12,   vol: 0.012 },
+    '1a':  { n: 13, yearsBack: 1,         vol: 0.040 },
+    'max': { n: 61, yearsBack: 5,         vol: 0.040 },
+  }
+  const { n, yearsBack, vol } = cfg[range]
+  const annualReturn = 0.065
+  const startValue = totalValue / Math.pow(1 + annualReturn, yearsBack)
+  const stepReturn = Math.pow(1 + annualReturn, yearsBack / n) - 1
+
+  // LCG seeded pour reproductibilité
+  let seed = (Math.floor(totalValue) * 17 + 12345) % 2_147_483_647
+  const rand = () => { seed = (seed * 16807) % 2_147_483_647; return seed / 2_147_483_647 }
+
+  const pts: number[] = [startValue]
+  for (let i = 1; i < n; i++) {
+    const prev = pts[pts.length - 1]
+    pts.push(Math.max(prev * (1 + stepReturn) + (rand() - 0.5) * 2 * vol * prev, startValue * 0.7))
+  }
+  // Normaliser pour que le dernier point = totalValue
+  const scale = totalValue / pts[pts.length - 1]
+  pts.forEach((_, i) => { pts[i] = Math.round(pts[i] * scale) })
+  pts[pts.length - 1] = Math.round(totalValue)
+
+  const now = new Date()
+  return pts.map((value, i) => {
+    const t = new Date(now.getTime() - (1 - i / (n - 1)) * yearsBack * 365.25 * 86_400_000)
+    let date: string
+    if (range === '1j') date = `${String(t.getHours()).padStart(2, '0')}h`
+    else if (range === '1s') date = t.toLocaleDateString('fr-FR', { weekday: 'short' })
+    else if (range === '1m') date = t.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+    else date = t.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+    return { date, value }
+  })
+}
+
 // ── Composant ─────────────────────────────────────────────────────────────────
 export default function PatrimoinePage() {
   const router = useRouter()
@@ -98,6 +141,7 @@ export default function PatrimoinePage() {
 
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
+  const [timeRange, setTimeRange] = useState<TimeRange>('1a')
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -162,6 +206,15 @@ export default function PatrimoinePage() {
     }
     return { ...geo, values, totalGeo: geo.totalValue }
   }, [envelopes, totalValue])
+
+  // Données évolution
+  const evolutionData = useMemo(() => generateEvolutionData(totalValue, timeRange), [totalValue, timeRange])
+  const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => d.value)) * 0.98 : 0, [evolutionData])
+  const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => d.value)) * 1.02 : 0, [evolutionData])
+  const evolChange = useMemo(() => {
+    if (evolutionData.length < 2) return 0
+    return evolutionData[evolutionData.length - 1].value - evolutionData[0].value
+  }, [evolutionData])
 
   // Créer une enveloppe
   const handleCreate = async () => {
@@ -254,82 +307,145 @@ export default function PatrimoinePage() {
         </div>
       )}
 
-      {/* ── KPI ── */}
-      {loading ? (
-        <div style={{ height: 80, display: 'flex', alignItems: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
-          Chargement…
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
-          {[
-            { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f97316' },
-            { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
-            { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
-          ].map(kpi => (
-            <div key={kpi.label} style={{
-              padding: '16px 20px', borderRadius: 12,
-              background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-            }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
-                {kpi.label}
+      {/* ── KPIs (gauche) + Pie charts (droite) ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'start' }}>
+          {/* KPIs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f97316' },
+              { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
+              { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{
+                padding: '16px 20px', borderRadius: 12,
+                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+              }}>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
+                  {kpi.label}
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
+                  {kpi.value}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
               </div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
-                {kpi.value}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
+            ))}
+          </div>
+
+          {/* Pie charts */}
+          {envelopes.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {[
+                { title: 'Par enveloppe', data: byType },
+                { title: 'Par classe d\'actifs', data: byClass },
+              ].map(chart => (
+                <Card key={chart.title} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+                  <CardContent style={{ padding: 16 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>
+                      {chart.title}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 100, height: 100, flexShrink: 0 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie data={chart.data} dataKey="value" innerRadius={28} outerRadius={48} paddingAngle={2}>
+                              {chart.data.map((entry, i) => (
+                                <Cell key={i} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              formatter={(v: number) => [fmtCompact(v), '']}
+                              contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }}
+                              itemStyle={chartTheme.itemStyle}
+                              labelStyle={chartTheme.labelStyle}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        {chart.data.map(d => (
+                          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ width: 7, height: 7, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 10, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {d.name}
+                            </span>
+                            <span style={{ fontSize: 10, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+                              {totalValue > 0 ? `${((d.value / totalValue) * 100).toFixed(0)}%` : '—'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13, minHeight: 120 }}>
+              Ajoutez des enveloppes pour voir les graphiques
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Charts répartition ── */}
-      {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {[
-            { title: 'Répartition par enveloppe', data: byType },
-            { title: 'Répartition par classe d\'actifs', data: byClass },
-          ].map(chart => (
-            <Card key={chart.title} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <CardContent style={{ padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
-                  {chart.title}
+      {/* ── Évolution du patrimoine ── */}
+      {!loading && totalValue > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Évolution du patrimoine
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 120, height: 120, flexShrink: 0 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={chart.data} dataKey="value" innerRadius={32} outerRadius={55} paddingAngle={2}>
-                          {chart.data.map((entry, i) => (
-                            <Cell key={i} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(v: number) => [fmtCompact(v), '']}
-                          contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
-                          itemStyle={chartTheme.itemStyle}
-                          labelStyle={chartTheme.labelStyle}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {chart.data.map(d => (
-                      <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                        <span style={{ fontSize: 11, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {d.name}
-                        </span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-                          {totalValue > 0 ? `${((d.value / totalValue) * 100).toFixed(1)} %` : '—'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
+                  Simulation estimée — {fmtCompact(totalValue)}
+                  {evolChange !== 0 && (
+                    <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
+                      {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)} sur la période
+                    </span>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </div>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
+                  <button key={r} onClick={() => setTimeRange(r)} style={{
+                    padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    background: timeRange === r ? '#f97316' : 'transparent',
+                    color: timeRange === r ? '#fff' : 'var(--text-subtle)',
+                    border: `1px solid ${timeRange === r ? '#f97316' : 'var(--card-dark-border)'}`,
+                    transition: 'all 0.15s',
+                  }}>
+                    {r === 'max' ? 'Max' : r}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{ height: 180, marginTop: 12 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="evolGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
+                    interval="preserveStartEnd" />
+                  <YAxis domain={[evolMin, evolMax]} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
+                    tickFormatter={v => fmtCompact(v)} width={64} />
+                  <Tooltip
+                    formatter={(v: number) => [fmtCompact(v), 'Patrimoine']}
+                    contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
+                    itemStyle={chartTheme.itemStyle}
+                    labelStyle={chartTheme.labelStyle}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2}
+                    fill="url(#evolGrad)" dot={false} activeDot={{ r: 4, fill: '#f97316' }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* ── Carte monde ── */}

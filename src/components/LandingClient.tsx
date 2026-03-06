@@ -691,7 +691,7 @@ interface RateItem { value: number; label: string; unit: string; trend: 'up' | '
 interface RatesData {
   livretA: RateItem; ldds: RateItem; lep: RateItem
   oat10y: RateItem; bce: RateItem; inflation: RateItem
-  immo15y: RateItem; immo20y: RateItem; immo25y: RateItem; creditConso: RateItem
+  immo10y?: RateItem; immo15y: RateItem; immo20y: RateItem; immo25y: RateItem; creditConso: RateItem
   live?: { oat: boolean; bce: boolean }
 }
 

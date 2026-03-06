@@ -457,91 +457,159 @@ export function calcDCA(i: DCAInputs): DCAResults {
   return { totalInvested, estimatedValue, avgCostBasis, units, gain, gainPct, chartData, vsLumpSum }
 }
 
-// ─── Retraite ────────────────────────────────────────────────────────────────
+// ─── Retraite (formules officielles 2026) ────────────────────────────────────
+
+// Constantes officielles 2026
+const PASS_2025          = 47_100   // Plafond Annuel Sécurité Sociale 2025
+const PASS_GROWTH        = 0.02     // Revalorisation annuelle estimée du PASS
+const QUARTERS_REQUIS    = 172      // 43 ans — nés après 1973
+const AGE_LEGAL          = 64       // Âge légal de départ depuis réforme 2023
+const AGE_AUTO_PLEIN     = 67       // Taux plein automatique
+const POINT_VALEUR_2025  = 1.4386   // Valeur de service point Agirc-Arrco (nov 2024)
+const POINT_VALEUR_GROWTH = 0.015   // Revalorisation annuelle estimée
+const POINT_ACHAT_2025   = 19.3768  // Valeur d'acquisition du point Agirc-Arrco 2025
+const TAUX_ARCO_T1       = 0.062    // Part répartition T1 (≤ PASS) pour acquisition de points
+const TAUX_ARCO_T2       = 0.170    // Part répartition T2 (> PASS)
 
 export interface RetirementInputs {
-  age: number            // Âge actuel
-  retirementAge: number  // Âge de départ
-  salary: number         // Salaire brut annuel actuel
-  quarters: number       // Trimestres validés
-  regime: 'prive' | 'fonctionnaire'
-  perAnnual: number      // Versements PER annuels
-  perRate: number        // Rendement PER %
-  savingsRate: number    // Taux épargne complémentaire %
-  investRate: number     // Rendement épargne %
+  age: number           // Âge actuel
+  quarters: number      // Trimestres validés à ce jour
+  pointsArrco: number   // Points Agirc-Arrco accumulés à ce jour
+  salary: number        // Salaire brut annuel actuel (€)
+  salaryGrowth: number  // Progression salariale estimée (%/an)
+  departureAge: number  // Âge de départ pour le scénario principal
+}
+
+export interface RetirementScenario {
+  age: number
+  trimestres: number
+  tauxPlein: boolean
+  autoTauxPlein: boolean
+  trimDecote: number    // Nb trimestres de décote appliqués
+  trimSurcote: number   // Nb trimestres de surcote accumulés
+  decotePct: number     // Décote en % (ex: 0.0125 = 1,25%)
+  surcotePct: number    // Surcote en % cumulée
+  tauxFinal: number     // Taux appliqué au SAM (entre ~0.25 et 0.75+)
+  sam: number           // Salaire Annuel Moyen nominal à cet âge
+  prorata: number       // min(trimestres, 172) / 172
+  pensionBase: number   // Retraite de base brute mensuelle
+  totalPoints: number   // Points Agirc-Arrco à cet âge
+  pensionArrco: number  // Retraite Agirc-Arrco brute mensuelle
+  pensionBrute: number  // Total brut mensuel
+  pensionNette: number  // Net après prélèvements (~84%)
+  replacementRate: number // Taux de remplacement vs salaire net actuel
 }
 
 export interface RetirementResults {
-  yearsToRetirement: number
-  quartersNeeded: number
-  quartersMissing: number
-  baseMonthly: number       // Retraite de base estimée
-  complementMonthly: number // Retraite complémentaire (Agirc/Arrco)
-  totalMonthly: number      // Total brut
-  netMonthly: number        // Net après prélèvements
-  replacementRate: number   // Taux de remplacement
-  perCapital: number        // Capital PER à la retraite
-  perMonthly: number        // Rente PER mensuelle
-  additionalSavings: number // Épargne complémentaire accumulée
-  totalIncome: number       // Revenu mensuel total
-  gap: number               // Écart vs salaire actuel net
+  scenarios: RetirementScenario[]
+  main: RetirementScenario
+  annualPtsArrco: number   // Points Agirc-Arrco gagnés par an (au salaire actuel)
+  ageQuotaPlein: number    // Âge où les 172 trimestres sont atteints
   analysis: { score: 'excellent' | 'bon' | 'moyen' | 'faible'; message: string; tips: string[] }
 }
 
 export function calcRetirement(i: RetirementInputs): RetirementResults {
-  const yearsToRetirement = i.retirementAge - i.age
-  const quartersNeeded = i.regime === 'prive' ? 172 : 167 // 43 ans / 41.75 ans
-  const quartersMissing = Math.max(0, quartersNeeded - i.quarters - yearsToRetirement * 4)
+  const pass0 = PASS_2025
+  const pointVal0 = POINT_VALEUR_2025
 
-  // Retraite de base (régime général) : SAM × taux × (trimestres / quartersNeeded)
-  const sam = i.salary * 0.75 // Salaire annuel moyen approx
-  const rate = quartersMissing === 0 ? 0.5 : 0.5 * (1 - quartersMissing * 0.00625)
-  const baseAnnual = sam * Math.max(0.25, rate)
-  const baseMonthly = baseAnnual / 12
+  // Âge d'obtention du taux plein (quota trimestres)
+  const trimManquants = Math.max(0, QUARTERS_REQUIS - i.quarters)
+  const ageQuotaPlein = i.age + trimManquants / 4
 
-  // Retraite complémentaire (Agirc-Arrco) : approximation 60% de la base
-  const complementMonthly = i.regime === 'prive' ? baseMonthly * 0.6 : baseMonthly * 0.4
+  // Points Agirc-Arrco accumulés par an au salaire actuel
+  const annualPtsArrco =
+    Math.min(i.salary, pass0) * TAUX_ARCO_T1 / POINT_ACHAT_2025 +
+    Math.max(0, i.salary - pass0) * TAUX_ARCO_T2 / POINT_ACHAT_2025
 
-  const totalMonthly = baseMonthly + complementMonthly
-  const netMonthly = totalMonthly * 0.84 // -16% prélèvements retraités
-  const netSalary = i.salary * 0.78 / 12  // Salaire net mensuel approx
-  const replacementRate = (netMonthly / netSalary) * 100
+  const scenarios: RetirementScenario[] = []
 
-  // PER
-  const perCapital = i.perAnnual > 0
-    ? i.perAnnual * ((Math.pow(1 + i.perRate / 100, yearsToRetirement) - 1) / (i.perRate / 100))
-    : 0
-  const perMonthly = perCapital > 0 ? perCapital / (20 * 12) : 0 // Rente sur 20 ans
+  for (let depAge = 62; depAge <= 70; depAge++) {
+    const years = depAge - i.age
+    if (years < 0) continue
 
-  // Épargne complémentaire
-  const annualSavings = (i.salary * 0.78) * (i.savingsRate / 100)
-  const additionalSavings = annualSavings > 0
-    ? annualSavings * ((Math.pow(1 + i.investRate / 100, yearsToRetirement) - 1) / (i.investRate / 100))
-    : 0
-  const addMonthly = additionalSavings / (20 * 12)
+    // Projections nominales à la date de départ
+    const salary_dep = i.salary * Math.pow(1 + i.salaryGrowth / 100, years)
+    const pass_dep   = pass0 * Math.pow(1 + PASS_GROWTH, years)
+    const pointVal_dep = pointVal0 * Math.pow(1 + POINT_VALEUR_GROWTH, years)
 
-  const totalIncome = netMonthly + perMonthly + addMonthly
-  const gap = netSalary - totalIncome
+    const trimestres   = i.quarters + years * 4
+    const tauxPleinQuota = trimestres >= QUARTERS_REQUIS
+    const autoTauxPlein  = depAge >= AGE_AUTO_PLEIN
+    const tauxPlein      = tauxPleinQuota || autoTauxPlein
+
+    // Décote (si ni quota ni auto-plein)
+    let trimDecote = 0
+    if (!tauxPlein) {
+      const trimManqQuota = Math.max(0, QUARTERS_REQUIS - trimestres)
+      const trimAvant67   = Math.max(0, (AGE_AUTO_PLEIN - depAge) * 4)
+      trimDecote = Math.min(20, Math.min(trimManqQuota, trimAvant67))
+    }
+    const decotePct = trimDecote * 0.0125
+
+    // Surcote (trimestres travaillés après que les 2 conditions sont simultanément remplies)
+    let trimSurcote = 0
+    if (depAge > AGE_LEGAL) {
+      const ageSurcoteStart = Math.max(AGE_LEGAL, ageQuotaPlein)
+      trimSurcote = Math.max(0, Math.floor((depAge - ageSurcoteStart) * 4))
+    }
+    const surcotePct = trimSurcote * 0.0125
+
+    // Taux appliqué (décote ou surcote, jamais les deux)
+    const tauxFinal = tauxPlein ? 0.50 + surcotePct : Math.max(0.25, 0.50 - decotePct)
+
+    // SAM : min(salaire projeté, PASS projeté) — approx 25 meilleures années
+    const sam = Math.min(salary_dep, pass_dep)
+
+    // Prorata trimestres de base
+    const prorata = Math.min(trimestres, QUARTERS_REQUIS) / QUARTERS_REQUIS
+
+    // Pension de base mensuelle brute (€ nominaux futurs)
+    const pensionBase = (sam / 12) * tauxFinal * prorata
+
+    // Points Agirc-Arrco à la date de départ
+    const totalPoints = i.pointsArrco + annualPtsArrco * years
+    const pensionArrco = (totalPoints * pointVal_dep) / 12
+
+    const pensionBrute = pensionBase + pensionArrco
+    const pensionNette = pensionBrute * 0.84  // ~16% prélèvements sociaux retraités
+
+    // Taux de remplacement vs salaire net actuel
+    const salNetActuel = i.salary * 0.78 / 12
+    const replacementRate = salNetActuel > 0 ? (pensionNette / salNetActuel) * 100 : 0
+
+    scenarios.push({
+      age: depAge, trimestres, tauxPlein, autoTauxPlein,
+      trimDecote, trimSurcote, decotePct, surcotePct,
+      tauxFinal, sam, prorata,
+      pensionBase, totalPoints, pensionArrco,
+      pensionBrute, pensionNette, replacementRate,
+    })
+  }
+
+  const main = scenarios.find(s => s.age === i.departureAge) ?? scenarios.find(s => s.age === AGE_LEGAL) ?? scenarios[0]!
 
   const score: RetirementResults['analysis']['score'] =
-    replacementRate >= 75 ? 'excellent'
-    : replacementRate >= 60 ? 'bon'
-    : replacementRate >= 45 ? 'moyen'
+    main.replacementRate >= 75 ? 'excellent'
+    : main.replacementRate >= 60 ? 'bon'
+    : main.replacementRate >= 45 ? 'moyen'
     : 'faible'
 
   const tips: string[] = []
-  if (quartersMissing > 0) tips.push(`Il vous manque ~${quartersMissing} trimestres pour le taux plein. La décote est de ${(quartersMissing * 0.625).toFixed(1)}%.`)
-  if (i.perAnnual === 0) tips.push('Aucun versement PER : déductible du revenu imposable, le PER est l\'outil retraite le plus efficace fiscalement.')
-  if (replacementRate < 60) tips.push('Taux de remplacement < 60% : constituez une épargne complémentaire via PEA ou assurance-vie pour combler l\'écart.')
-  if (yearsToRetirement > 20 && i.savingsRate === 0) tips.push('Avec ' + yearsToRetirement + ' ans devant vous, même 5% d\'épargne mensuelle produit un effet composé considérable.')
-  if (tips.length === 0) tips.push('Bonne préparation retraite. Vérifiez votre relevé de carrière sur Info-Retraite.fr chaque année.')
+  if (!main.tauxPlein && main.trimDecote > 0)
+    tips.push(`Décote de ${(main.decotePct * 100).toFixed(2)}% (${main.trimDecote} trimestres manquants). Cotiser jusqu'à ${Math.ceil(ageQuotaPlein)} ans suffit pour l'éviter.`)
+  if (main.trimSurcote > 0)
+    tips.push(`Surcote de ${(main.surcotePct * 100).toFixed(2)}% grâce à ${main.trimSurcote} trimestres supplémentaires. Chaque trimestre de plus vaut +1,25% de pension à vie.`)
+  if (!main.tauxPlein && main.age < AGE_AUTO_PLEIN)
+    tips.push(`Partir à ${AGE_AUTO_PLEIN} ans vous garantit le taux plein automatique sans condition de trimestres.`)
+  if (tips.length === 0)
+    tips.push('Vérifiez votre relevé de carrière sur info-retraite.fr chaque année pour détecter les trimestres manquants tôt.')
 
-  const message = score === 'excellent' ? `Excellent taux de remplacement (${replacementRate.toFixed(0)}%) — votre retraite sera confortable.`
-    : score === 'bon' ? `Taux de remplacement correct (${replacementRate.toFixed(0)}%). Quelques ajustements pour optimiser.`
-    : score === 'moyen' ? `Taux de remplacement de ${replacementRate.toFixed(0)}% — baisse de niveau de vie significative sans épargne complémentaire.`
-    : `Taux de remplacement faible (${replacementRate.toFixed(0)}%) — action urgente recommandée.`
+  const message = score === 'excellent' ? `Excellent taux de remplacement (${main.replacementRate.toFixed(0)}%) — votre retraite sera confortable.`
+    : score === 'bon' ? `Taux de remplacement correct (${main.replacementRate.toFixed(0)}%). Quelques ajustements pour optimiser.`
+    : score === 'moyen' ? `Taux de remplacement de ${main.replacementRate.toFixed(0)}% — baisse de niveau de vie notable sans épargne complémentaire.`
+    : `Taux de remplacement faible (${main.replacementRate.toFixed(0)}%) — constituez une épargne complémentaire dès maintenant.`
 
-  return { yearsToRetirement, quartersNeeded, quartersMissing, baseMonthly, complementMonthly, totalMonthly, netMonthly, replacementRate, perCapital, perMonthly, additionalSavings, totalIncome, gap, analysis: { score, message, tips } }
+  return { scenarios, main, annualPtsArrco, ageQuotaPlein, analysis: { score, message, tips } }
 }
 
 // ─── Budget 50/30/20 ─────────────────────────────────────────────────────────

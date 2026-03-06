@@ -1,19 +1,15 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
-import { calcRetirement, type RetirementInputs } from '@/lib/calculators'
-import { fmt, fmtPct } from '@/lib/utils'
+import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink } from 'lucide-react'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -22,244 +18,287 @@ function Tip({ text }: { text: string }) {
     <span className="relative inline-flex ml-1 align-middle">
       <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
         onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
+      {open && <span className="absolute z-50 left-5 -top-1 w-64 rounded-md border border-border bg-popover p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
     </span>
+  )
+}
+
+function fmtEur(n: number) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
+}
+function fmtPct(n: number) { return (n * 100).toFixed(2) + ' %' }
+
+function ScenarioRow({ s, selected, onClick }: { s: RetirementScenario; selected: boolean; onClick: () => void }) {
+  const borderColor = s.tauxPlein ? 'hsl(160 84% 39%)' : s.trimDecote > 10 ? 'hsl(0 72% 51%)' : 'hsl(38 92% 50%)'
+  return (
+    <tr
+      onClick={onClick}
+      className={cn(
+        'cursor-pointer border-b border-border transition-colors hover:bg-muted/30',
+        selected && 'bg-muted/50'
+      )}
+    >
+      <td className="px-3 py-2.5 text-sm font-medium tabular-nums">{s.age} ans</td>
+      <td className="px-3 py-2.5 text-sm tabular-nums text-muted-foreground">{s.trimestres}</td>
+      <td className="px-3 py-2.5 text-sm">
+        <span
+          className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium"
+          style={{ background: borderColor + '20', color: borderColor }}
+        >
+          {s.tauxPlein
+            ? (s.trimSurcote > 0 ? `+${(s.surcotePct * 100).toFixed(2)}% surcote` : 'Taux plein')
+            : `-${(s.decotePct * 100).toFixed(2)}% décote`}
+        </span>
+      </td>
+      <td className="px-3 py-2.5 text-sm tabular-nums text-right">{fmtEur(s.pensionBase)}</td>
+      <td className="px-3 py-2.5 text-sm tabular-nums text-right">{fmtEur(s.pensionArrco)}</td>
+      <td className="px-3 py-2.5 text-sm tabular-nums text-right font-semibold">{fmtEur(s.pensionBrute)}</td>
+      <td className="px-3 py-2.5 text-sm tabular-nums text-right text-muted-foreground">{s.replacementRate.toFixed(0)}%</td>
+    </tr>
   )
 }
 
 function RetirementPageInner() {
   const [inputs, setInputs] = useState<RetirementInputs>({
-    age: 35, retirementAge: 64, salary: 55000, quarters: 60,
-    regime: 'prive', perAnnual: 3000, perRate: 5, savingsRate: 10, investRate: 7
+    age: 35, quarters: 52, pointsArrco: 800,
+    salary: 48000, salaryGrowth: 1.5, departureAge: 64,
   })
-  const set = (k: keyof RetirementInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const set = (k: keyof RetirementInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
+
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as RetirementInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      // Migrate old format
+      if (p.retirementAge !== undefined && p.departureAge === undefined) p.departureAge = p.retirementAge
+      if (p.pointsArrco === undefined) p.pointsArrco = 800
+      if (p.salaryGrowth === undefined) p.salaryGrowth = 1.5
+      setInputs(p as RetirementInputs)
+    } catch {}
   }, [restoreParam])
 
   const r = useMemo(() => calcRetirement(inputs), [inputs])
+  const main = r.main
+
   const scoreConf = {
-    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-finance' },
-    bon:       { label: 'Bon',       Icon: TrendingUp,  color: 'text-blue-400' },
-    moyen:     { label: 'Moyen',     Icon: Minus,        color: 'text-amber-400' },
-    faible:    { label: 'Faible',    Icon: AlertCircle,  color: 'text-crimson-finance' },
+    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-finance', border: 'rgba(52,211,153,0.35)' },
+    bon:       { label: 'Bon',       Icon: TrendingUp,  color: 'text-blue-400',          border: 'rgba(96,165,250,0.35)' },
+    moyen:     { label: 'Moyen',     Icon: Minus,       color: 'text-amber-400',          border: 'rgba(251,191,36,0.35)' },
+    faible:    { label: 'Faible',    Icon: AlertCircle, color: 'text-crimson-finance',    border: 'rgba(239,68,68,0.35)' },
   }[r.analysis.score]
 
-  const gaugeColor = r.replacementRate >= 75 ? 'hsl(160 84% 39%)' : r.replacementRate >= 60 ? 'hsl(217 91% 60%)' : r.replacementRate >= 45 ? 'hsl(38 92% 50%)' : 'hsl(0 72% 51%)'
+  const gaugeColor =
+    main.replacementRate >= 75 ? 'hsl(160 84% 39%)'
+    : main.replacementRate >= 60 ? 'hsl(217 91% 60%)'
+    : main.replacementRate >= 45 ? 'hsl(38 92% 50%)'
+    : 'hsl(0 72% 51%)'
+
+  const salNetActuel = inputs.salary * 0.78 / 12
 
   return (
     <div className="space-y-6 animate-fade-in p-5 md:p-6">
 
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Simulateur Retraite</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Retraite de base · Complémentaire · PER · Épargne personnelle</p>
+          <h1 className="text-xl font-semibold tracking-tight">Simulateur Retraite 2026</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Régime général (CNAV) · Agirc-Arrco · Formules officielles</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => printReport({
-            title: 'Retraite',
-            subtitle: `Retraite de base · Complémentaire · PER · Épargne personnelle`,
+            title: 'Retraite 2026',
+            subtitle: `Régime général · Agirc-Arrco`,
             kpis: [
-              { label: 'Revenu retraite total', value: `${fmt(r.totalIncome)}/mois`, highlight: true, sub: `dont ${fmt(r.netMonthly)} retraite légale` },
-              { label: 'Taux de remplacement', value: fmtPct(r.replacementRate), sub: 'Cible : 75%+' },
-              { label: 'Années avant retraite', value: `${r.yearsToRetirement} ans`, sub: `Départ à ${inputs.retirementAge} ans` },
-              { label: 'Écart vs salaire net', value: `${fmt(r.gap)}/mois` },
+              { label: 'Pension brute', value: `${fmtEur(main.pensionBrute)}/mois`, highlight: true },
+              { label: 'dont base (CNAV)', value: `${fmtEur(main.pensionBase)}/mois` },
+              { label: 'dont Agirc-Arrco', value: `${fmtEur(main.pensionArrco)}/mois` },
+              { label: 'Taux de remplacement', value: `${main.replacementRate.toFixed(0)}%` },
             ],
             inputs: [
               { label: 'Âge actuel', value: `${inputs.age} ans` },
-              { label: 'Âge de départ', value: `${inputs.retirementAge} ans` },
-              { label: 'Salaire brut annuel', value: fmt(inputs.salary) },
               { label: 'Trimestres validés', value: String(inputs.quarters) },
-              { label: 'Versement PER annuel', value: fmt(inputs.perAnnual) },
-              { label: "Taux d'épargne perso", value: `${inputs.savingsRate}%` },
+              { label: 'Points Agirc-Arrco', value: inputs.pointsArrco.toFixed(2) },
+              { label: 'Salaire brut annuel', value: fmtEur(inputs.salary) },
+              { label: 'Âge de départ', value: `${inputs.departureAge} ans` },
             ],
-            sections: [{ title: 'Détail revenu retraite', items: [
-              { label: 'Retraite de base', value: `${fmt(r.baseMonthly)}/mois` },
-              { label: 'Retraite complémentaire', value: `${fmt(r.complementMonthly)}/mois` },
-              { label: 'Rente PER', value: `${fmt(r.perMonthly)}/mois` },
-              { label: 'Capital PER constitué', value: fmt(r.perCapital) },
-              { label: 'Épargne additionnelle', value: fmt(r.additionalSavings) },
-            ]}],
+            sections: [],
             tips: r.analysis.tips,
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
-          <SaveSimulation type="retirement" name={`Retraite ${inputs.retirementAge}ans`} inputs={inputs as any} results={r as any} />
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+          </Button>
+          <SaveSimulation type="retirement" name={`Retraite ${inputs.departureAge} ans`} inputs={inputs as any} results={r as any} />
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Revenu retraite total', value: fmt(r.totalIncome) + '/mois', sub: `dont ${fmt(r.netMonthly)} retraite légale` },
-          { label: 'Taux de remplacement', value: fmtPct(r.replacementRate), sub: 'Cible : 75%+' },
-          { label: 'Années avant retraite', value: `${r.yearsToRetirement} ans`, sub: `Départ à ${inputs.retirementAge} ans` },
-          { label: 'Écart vs salaire net', value: fmt(r.gap) + '/mois', sub: r.gap > 0 ? 'À combler' : '✓ Couvert' },
+          { label: 'Pension brute estimée', value: fmtEur(main.pensionBrute) + '/mois', sub: `à ${inputs.departureAge} ans`, color: gaugeColor },
+          { label: 'dont CNAV (base)', value: fmtEur(main.pensionBase) + '/mois', sub: `SAM ${fmtEur(main.sam)} · taux ${fmtPct(main.tauxFinal)}` },
+          { label: 'dont Agirc-Arrco', value: fmtEur(main.pensionArrco) + '/mois', sub: `${main.totalPoints.toFixed(0)} pts × ${(main.totalPoints > 0 ? main.pensionArrco * 12 / main.totalPoints : 1.44).toFixed(4)} €` },
+          { label: 'Taux de remplacement', value: main.replacementRate.toFixed(0) + '%', sub: `vs ${fmtEur(salNetActuel)}/mois net actuel` },
         ].map((k, i) => (
           <Card key={i}>
             <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
             <CardContent>
-              <div className="text-xl font-semibold tracking-tight">{k.value}</div>
-              {k.sub && <p className="text-xs text-muted-foreground mt-1">{k.sub}</p>}
+              <div className="text-xl font-semibold tracking-tight" style={i === 0 ? { color: k.color } : {}}>{k.value}</div>
+              <p className="text-xs text-muted-foreground mt-1 leading-snug">{k.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Params */}
+
+        {/* Paramètres */}
         <div className="space-y-4">
           <Card>
-            <CardHeader><CardTitle>Votre situation</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Votre situation actuelle</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1">Âge actuel<Tip text="Votre âge aujourd'hui." /></Label>
-                  <Input type="number" value={inputs.age} onChange={e => set('age')(+e.target.value)} />
+                  <Label>Âge actuel</Label>
+                  <Input type="number" min={18} max={66} value={inputs.age} onChange={e => set('age')(+e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1">Âge départ<Tip text="Âge légal minimum : 64 ans depuis 2023. Taux plein selon trimestres validés." /></Label>
-                  <Input type="number" value={inputs.retirementAge} onChange={e => set('retirementAge')(+e.target.value)} />
+                  <Label className="flex items-center gap-1">Trimestres
+                    <Tip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
+                  </Label>
+                  <Input type="number" min={0} max={200} value={inputs.quarters} onChange={e => set('quarters')(+e.target.value)} />
                 </div>
               </div>
+
               <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Salaire brut annuel<Tip text="Votre salaire brut actuel. Le calcul retraite est basé sur les 25 meilleures années (régime général)." /></Label>
-                <Input type="number" value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Trimestres validés<Tip text="Nombre de trimestres cotisés à ce jour. Visible sur votre relevé Info-Retraite.fr." /></Label>
-                <Input type="number" value={inputs.quarters} min={0} max={200} onChange={e => set('quarters')(+e.target.value)} />
+                <Label className="flex items-center gap-1">Points Agirc-Arrco
+                  <Tip text="Total de vos points Agirc-Arrco accumulés. Visible sur votre relevé info-retraite.fr ou agirc-arrco.fr." />
+                </Label>
+                <Input type="number" min={0} value={inputs.pointsArrco} onChange={e => set('pointsArrco')(+e.target.value)} />
                 <p className="text-[11px] text-muted-foreground">
-                  {r.quartersMissing > 0
-                    ? `⚠ Il manquera ~${r.quartersMissing} trimestre(s) pour le taux plein`
-                    : '✓ Taux plein atteint à la retraite'}
+                  ≈ {(inputs.pointsArrco * 1.4386 / 12).toFixed(0)} €/mois actuels · +{r.annualPtsArrco.toFixed(1)} pts/an au salaire actuel
                 </p>
               </div>
+
               <div className="space-y-1.5">
-                <Label>Régime</Label>
-                <Select value={inputs.regime} onValueChange={v => set('regime')(v as any)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="prive">Salarié privé (CNAV + Agirc-Arrco)</SelectItem>
-                    <SelectItem value="fonctionnaire">Fonctionnaire (CNRACL)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label className="flex items-center gap-1">Salaire brut annuel
+                  <Tip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
+                </Label>
+                <Input type="number" min={0} value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label className="flex items-center gap-1">Progression salariale
+                    <Tip text="Augmentation annuelle estimée de votre salaire. Impact fort sur le SAM à la retraite. Inflation historique ~2%." />
+                  </Label>
+                  <span className="text-sm font-medium">{inputs.salaryGrowth.toFixed(1)}%/an</span>
+                </div>
+                <Slider min={0} max={5} step={0.5} value={[inputs.salaryGrowth]} onValueChange={([v]) => set('salaryGrowth')(v)} />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Label>Âge de départ simulé</Label>
+                  <span className="text-sm font-medium">{inputs.departureAge} ans</span>
+                </div>
+                <Slider min={62} max={70} step={1} value={[inputs.departureAge]}
+                  onValueChange={([v]) => setInputs(p => ({ ...p, departureAge: v }))} />
               </div>
             </CardContent>
           </Card>
 
+          {/* Trimestres progress */}
           <Card>
-            <CardHeader><CardTitle>Épargne retraite</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Versement PER annuel<Tip text="Plan Épargne Retraite. Déductible du revenu imposable dans la limite de 10% du salaire brut." /></Label>
-                <Input type="number" value={inputs.perAnnual} onChange={e => set('perAnnual')(+e.target.value)} />
-                <p className="text-[11px] text-muted-foreground">Plafond déductible : {fmt(inputs.salary * 0.1)}/an</p>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Rendement PER<Tip text="Fonds euros sécurisé : 2-4%. Multisupport actions : 5-8%." /></Label>
-                  <span className="text-sm font-medium">{inputs.perRate}%</span>
+            <CardHeader className="pb-3"><CardTitle className="text-sm">Progression vers le taux plein</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                { label: 'Acquis à ce jour', value: inputs.quarters, max: 172, color: 'hsl(160 84% 39%)' },
+                { label: `À ${inputs.departureAge} ans`, value: Math.min(main.trimestres, 172), max: 172, color: gaugeColor },
+              ].map((row, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{row.label}</span>
+                    <span className="font-medium tabular-nums">{row.value} / 172 trim.</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(row.value / 172 * 100, 100)}%`, background: row.color }} />
+                  </div>
                 </div>
-                <Slider min={1} max={10} step={0.5} value={[inputs.perRate]} onValueChange={([v]) => set('perRate')(v)} />
-              </div>
-              <Separator />
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Taux d'épargne perso<Tip text="Épargne complémentaire hors PER (PEA, assurance-vie...) en % du salaire net." /></Label>
-                  <span className="text-sm font-medium">{inputs.savingsRate}%</span>
-                </div>
-                <Slider min={0} max={50} step={1} value={[inputs.savingsRate]} onValueChange={([v]) => set('savingsRate')(v)} />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Rendement épargne<Tip text="Rendement moyen de vos placements complémentaires." /></Label>
-                  <span className="text-sm font-medium">{inputs.investRate}%</span>
-                </div>
-                <Slider min={1} max={12} step={0.5} value={[inputs.investRate]} onValueChange={([v]) => set('investRate')(v)} />
-              </div>
+              ))}
+              <p className="text-[11px] text-muted-foreground">
+                Taux plein (quota) atteint à {Math.ceil(r.ageQuotaPlein)} ans
+                {r.ageQuotaPlein <= inputs.departureAge ? ' ✓' : ` — ${Math.ceil(r.ageQuotaPlein - inputs.departureAge)} ans avant départ`}
+              </p>
+              <a href="https://www.info-retraite.fr" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                <ExternalLink className="h-3 w-3" />Vérifier sur info-retraite.fr
+              </a>
             </CardContent>
           </Card>
         </div>
 
-        {/* Results */}
+        {/* Tableau des scénarios */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Estimation des revenus à la retraite</CardTitle>
-            <CardDescription>Projection à {inputs.retirementAge} ans — {r.yearsToRetirement} ans d'ici là</CardDescription>
+            <CardTitle>Scénarios de départ — 62 à 70 ans</CardTitle>
+            <CardDescription>Cliquez sur un âge pour le sélectionner comme scénario principal</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Gauge */}
-            <div className="flex items-center gap-6">
-              <div className="relative w-36 h-36 flex-shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadialBarChart cx="50%" cy="50%" innerRadius="65%" outerRadius="90%"
-                    startAngle={180} endAngle={0} data={[{ value: Math.min(r.replacementRate, 100), fill: gaugeColor }]}>
-                    <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                    <RadialBar background dataKey="value" cornerRadius={4} fill={gaugeColor} />
-                  </RadialBarChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-                  <span className="text-2xl font-semibold">{r.replacementRate.toFixed(0)}%</span>
-                  <span className="text-[10px] text-muted-foreground">remplacement</span>
-                </div>
-              </div>
-
-              <div className="flex-1 space-y-3">
-                <p className="text-sm text-muted-foreground">Décomposition des revenus mensuels estimés</p>
-                {[
-                  { label: 'Retraite de base', value: r.baseMonthly, color: 'bg-foreground' },
-                  { label: 'Retraite complémentaire', value: r.complementMonthly, color: 'bg-muted-foreground' },
-                  { label: 'Rente PER', value: r.perMonthly, color: 'bg-blue-400' },
-                  { label: 'Épargne perso (rente)', value: r.additionalSavings / (20 * 12), color: 'bg-emerald-finance' },
-                ].map((row, i) => (
-                  <div key={i} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">{row.label}</span>
-                      <span className="font-medium">{fmt(row.value)}/mois</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                      <div className={cn('h-full rounded-full', row.color)} style={{ width: `${Math.min(row.value / r.totalIncome * 100, 100)}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Detail table */}
-            <div className="rounded-md border border-border overflow-hidden">
+          <CardContent>
+            <div className="rounded-md border border-border overflow-auto">
               <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Départ</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Trim.</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Taux</th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Base CNAV</th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Agirc-Arrco</th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Total brut</th>
+                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Remplac.</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {[
-                    { label: 'Salaire net actuel', value: fmt(inputs.salary * 0.78 / 12) + '/mois' },
-                    { label: 'Retraite légale brute', value: fmt(r.totalMonthly) + '/mois' },
-                    { label: 'Retraite légale nette', value: fmt(r.netMonthly) + '/mois', bold: true },
-                    { label: 'Rente PER', value: fmt(r.perMonthly) + '/mois', sub: `Capital PER : ${fmt(r.perCapital)}` },
-                    { label: 'Épargne complémentaire', value: fmt(r.additionalSavings / (20*12)) + '/mois', sub: `Capital : ${fmt(r.additionalSavings)}` },
-                    { label: 'Total revenu mensuel', value: fmt(r.totalIncome) + '/mois', bold: true, highlight: true },
-                    { label: 'Écart vs salaire net', value: (r.gap > 0 ? '− ' : '+ ') + fmt(Math.abs(r.gap)) + '/mois', color: r.gap > 0 ? 'text-crimson-finance' : 'text-emerald-finance' },
-                  ].map((row, i) => (
-                    <tr key={i} className={cn('border-b border-border last:border-0', row.highlight && 'bg-muted/30')}>
-                      <td className="px-4 py-2.5 text-muted-foreground">{row.label}</td>
-                      <td className={cn('px-4 py-2.5 text-right font-medium tabular-nums', row.color, row.bold && 'text-foreground')}>{row.value}</td>
-                    </tr>
+                  {r.scenarios.map(s => (
+                    <ScenarioRow key={s.age} s={s} selected={s.age === inputs.departureAge}
+                      onClick={() => setInputs(p => ({ ...p, departureAge: s.age }))} />
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Détail scénario sélectionné */}
+            <div className="mt-4 rounded-md border border-border p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Détail — départ à {main.age} ans</span>
+                <span className="text-xs text-muted-foreground">{main.trimestres} trimestres validés</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
+                {[
+                  { label: 'SAM estimé (base calcul)', value: fmtEur(main.sam) + '/an' },
+                  { label: 'Taux appliqué', value: fmtPct(main.tauxFinal) + (main.tauxPlein ? ' (taux plein)' : ' (avec décote)') },
+                  { label: 'Prorata trimestres', value: (main.prorata * 100).toFixed(1) + '% (' + Math.min(main.trimestres, 172) + '/172)' },
+                  { label: 'Points Agirc-Arrco', value: main.totalPoints.toFixed(0) + ' pts' },
+                  { label: 'Pension brute/mois', value: fmtEur(main.pensionBrute) },
+                  { label: 'Pension nette/mois', value: fmtEur(main.pensionNette) + ' (−16%)' },
+                ].map((row, i) => (
+                  <div key={i} className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">{row.label}</span>
+                    <span className="font-medium tabular-nums">{row.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Synthèse */}
-      <Card style={{ borderColor: scoreConf.color.includes('emerald') || scoreConf.color.includes('blue') ? 'rgba(52,211,153,0.35)' : scoreConf.color.includes('amber') ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
+      {/* Analyse */}
+      <Card style={{ borderColor: scoreConf.border }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />
-            <CardTitle>Analyse — Taux de remplacement {scoreConf.label} ({r.replacementRate.toFixed(0)}%)</CardTitle>
+            <CardTitle>Analyse — {scoreConf.label} ({main.replacementRate.toFixed(0)}% de remplacement)</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -274,9 +313,15 @@ function RetirementPageInner() {
               </div>
             ))}
           </div>
+          <p className="text-[11px] text-muted-foreground border-t border-border pt-3">
+            Calcul basé sur les formules CNAV 2026 (SAM × taux × prorata ± décote/surcote) et Agirc-Arrco (points × valeur 1,4386€).
+            Montants en euros nominaux estimés à la date de départ. Les résultats exacts dépendent de votre relevé de carrière complet.
+          </p>
         </CardContent>
       </Card>
+
     </div>
   )
 }
+
 export default function RetirementPage() { return <Suspense><RetirementPageInner /></Suspense> }

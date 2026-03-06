@@ -142,6 +142,7 @@ export default function PatrimoinePage() {
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
+  const [pieTab, setPieTab] = useState<'enveloppe' | 'classe'>('enveloppe')
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -307,87 +308,6 @@ export default function PatrimoinePage() {
         </div>
       )}
 
-      {/* ── KPIs (gauche) + Pie charts (droite) ── */}
-      {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'start' }}>
-          {/* KPIs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[
-              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f97316' },
-              { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
-              { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
-            ].map(kpi => (
-              <div key={kpi.label} style={{
-                padding: '16px 20px', borderRadius: 12,
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-              }}>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
-                  {kpi.label}
-                </div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
-                  {kpi.value}
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pie charts */}
-          {envelopes.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {[
-                { title: 'Par enveloppe', data: byType },
-                { title: 'Par classe d\'actifs', data: byClass },
-              ].map(chart => (
-                <Card key={chart.title} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-                  <CardContent style={{ padding: 16 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>
-                      {chart.title}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 100, height: 100, flexShrink: 0 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie data={chart.data} dataKey="value" innerRadius={28} outerRadius={48} paddingAngle={2}>
-                              {chart.data.map((entry, i) => (
-                                <Cell key={i} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              formatter={(v: number) => [fmtCompact(v), '']}
-                              contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }}
-                              itemStyle={chartTheme.itemStyle}
-                              labelStyle={chartTheme.labelStyle}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        {chart.data.map(d => (
-                          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ width: 7, height: 7, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 10, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {d.name}
-                            </span>
-                            <span style={{ fontSize: 10, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-                              {totalValue > 0 ? `${((d.value / totalValue) * 100).toFixed(0)}%` : '—'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13, minHeight: 120 }}>
-              Ajoutez des enveloppes pour voir les graphiques
-            </div>
-          )}
-        </div>
-      )}
-
       {/* ── Évolution du patrimoine ── */}
       {!loading && totalValue > 0 && (
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
@@ -446,6 +366,108 @@ export default function PatrimoinePage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* ── KPIs (gauche) + Répartition tabulée (droite) ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'start' }}>
+          {/* KPIs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f97316' },
+              { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
+              { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{
+                padding: '16px 20px', borderRadius: 12,
+                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+              }}>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
+                  {kpi.label}
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
+                  {kpi.value}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Répartition — 1 carte avec onglets */}
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+            <CardContent style={{ padding: 20 }}>
+              {/* Tabs */}
+              <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                {(['enveloppe', 'classe'] as const).map(tab => (
+                  <button key={tab} onClick={() => setPieTab(tab)} style={{
+                    padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    background: pieTab === tab ? 'var(--text-primary)' : 'transparent',
+                    color: pieTab === tab ? 'var(--card-dark)' : 'var(--text-subtle)',
+                    border: `1px solid ${pieTab === tab ? 'var(--text-primary)' : 'var(--card-dark-border)'}`,
+                    transition: 'all 0.15s',
+                  }}>
+                    {tab === 'enveloppe' ? 'Par enveloppe' : 'Par classe d\'actifs'}
+                  </button>
+                ))}
+              </div>
+
+              {envelopes.length === 0 ? (
+                <div style={{ color: 'var(--text-subtle)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>
+                  Ajoutez des enveloppes pour voir la répartition
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+                  {/* Donut */}
+                  <div style={{ width: 130, height: 130, flexShrink: 0 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieTab === 'enveloppe' ? byType : byClass}
+                          dataKey="value" innerRadius={38} outerRadius={60} paddingAngle={2}
+                        >
+                          {(pieTab === 'enveloppe' ? byType : byClass).map((entry, i) => (
+                            <Cell key={i} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(v: number) => [fmtCompact(v), '']}
+                          contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }}
+                          itemStyle={chartTheme.itemStyle}
+                          labelStyle={chartTheme.labelStyle}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Bar list style budget */}
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                    {(pieTab === 'enveloppe' ? byType : byClass)
+                      .sort((a, b) => b.value - a.value)
+                      .map(d => {
+                        const pct = totalValue > 0 ? (d.value / totalValue) * 100 : 0
+                        return (
+                          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 100, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {d.name}
+                            </span>
+                            <div style={{ flex: 1, height: 5, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
+                              <div style={{ height: '100%', width: `${pct}%`, background: d.color, borderRadius: 999 }} />
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 600, fontVariantNumeric: 'tabular-nums', width: 56, textAlign: 'right', color: 'var(--text-primary)', flexShrink: 0 }}>
+                              {fmtCompact(d.value)}
+                            </span>
+                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 32, textAlign: 'right', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+                              {pct.toFixed(0)}%
+                            </span>
+                          </div>
+                        )
+                      })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* ── Carte monde ── */}

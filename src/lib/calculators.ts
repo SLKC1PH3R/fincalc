@@ -318,6 +318,7 @@ export interface RentalResults {
   annualCharges: number
   annualVacancyLoss: number
   netOperatingIncome: number
+  annualWorksDeduction: number  // Amortissement travaux annuel (works/10)
   taxableIncome: number
   tax: number
   roi: number
@@ -344,21 +345,24 @@ export function calcRental(i: RentalInputs): RentalResults {
   const annualLoan = monthlyLoan * 12
   const annualInterests = i.loanAmount > 0 ? i.loanAmount * (i.loanRate / 100) : 0
 
+  // Amortissement travaux : 10 ans (déductible en régime réel nu et LMNP)
+  const annualWorksDeduction = i.works > 0 ? i.works / 10 : 0
+
   // Tax by regime
   let taxableIncome = 0
   let tax = 0
   if (i.regime === 'nu') {
-    // Régime réel : déduction intérêts + charges
-    taxableIncome = Math.max(0, netOperatingIncome - annualInterests)
+    // Régime réel : déduction intérêts + charges + amortissement travaux
+    taxableIncome = Math.max(0, netOperatingIncome - annualInterests - annualWorksDeduction)
     tax = taxableIncome * (i.marginalRate / 100) * 1.172 // IR + PS 17.2%
   } else if (i.regime === 'meuble') {
-    // LMNP réel : abattement 50% micro-BIC ou réel
+    // Micro-BIC : abattement 50% forfaitaire (travaux non déductibles directement)
     taxableIncome = Math.max(0, effectiveRent * 0.5)
     tax = taxableIncome * (i.marginalRate / 100)
   } else {
-    // LMNP : amortissement ~ 0 fiscal pendant 10-15 ans
-    taxableIncome = 0
-    tax = 0
+    // LMNP réel : amortissement du bien + travaux → revenu fiscal souvent nul
+    taxableIncome = Math.max(0, netOperatingIncome - annualInterests - annualWorksDeduction)
+    tax = Math.max(0, taxableIncome * (i.marginalRate / 100))
   }
 
   const cashflowAnnual = netOperatingIncome - annualLoan - tax
@@ -390,7 +394,7 @@ export function calcRental(i: RentalInputs): RentalResults {
     : score === 'moyen' ? `Cashflow légèrement négatif (${fmt(cashflowMonthly)}/mois). Effort d'épargne limité.`
     : `Cashflow très négatif (${fmt(cashflowMonthly)}/mois). Revoir le montage.`
 
-  return { totalInvestment, grossYield, netYield, cashflowMonthly, cashflowAnnual, monthlyLoan, annualRent, annualCharges, annualVacancyLoss: vacancyLoss, netOperatingIncome, taxableIncome, tax, roi, breakevenYears, analysis: { score, message, tips } }
+  return { totalInvestment, grossYield, netYield, cashflowMonthly, cashflowAnnual, monthlyLoan, annualRent, annualCharges, annualVacancyLoss: vacancyLoss, netOperatingIncome, annualWorksDeduction, taxableIncome, tax, roi, breakevenYears, analysis: { score, message, tips } }
 }
 
 // ─── DCA ─────────────────────────────────────────────────────────────────────

@@ -135,6 +135,7 @@ function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>;
         { label: 'Assurance PNO', value: `− \u00a0${fmt(inputs.insurance)}`, negative: true },
         { label: 'Revenu net opérationnel', value: fmt(r.netOperatingIncome), bold: true, separator: true },
         { label: 'Remboursement crédit', value: `− \u00a0${fmt(r.monthlyLoan * 12)}`, negative: true },
+        ...(r.annualWorksDeduction > 0 && inputs.regime !== 'meuble' ? [{ label: `Amort. travaux (déd. ${fmt(r.annualWorksDeduction)}/an)`, value: `→ base imposable −${fmt(r.annualWorksDeduction)}`, negative: false }] : []),
         { label: `Impôts (${inputs.regime.toUpperCase()})`, value: `− \u00a0${fmt(r.tax)}`, negative: true },
         { label: 'Cashflow annuel net', value: fmt(r.cashflowAnnual), bold: true, cashflow: true },
       ].map((row, i, arr) => (

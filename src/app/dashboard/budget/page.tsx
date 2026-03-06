@@ -48,7 +48,23 @@ function BudgetPageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as BudgetInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      if (p.netIncome === undefined && p.income !== undefined) {
+        // Migrate old format: { income, needs(%), wants(%), savings(%) }
+        const inc = p.income as number
+        const n = inc * 0.5, w = inc * 0.3, s = inc * 0.2
+        setInputs({
+          netIncome: inc,
+          housing: Math.round(n * 0.58), food: Math.round(n * 0.21), transport: Math.round(n * 0.11),
+          health: Math.round(n * 0.03), utilities: Math.round(n * 0.05), otherNeeds: Math.round(n * 0.02),
+          leisure: Math.round(w * 0.25), shopping: Math.round(w * 0.30), restaurants: Math.round(w * 0.35), otherWants: Math.round(w * 0.10),
+          savings: Math.round(s * 0.50), debt: 0, otherSavings: Math.round(s * 0.50),
+        })
+      } else {
+        setInputs(p as BudgetInputs)
+      }
+    } catch {}
   }, [restoreParam])
 
   const r = useMemo(() => calcBudget(inputs), [inputs])

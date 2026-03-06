@@ -747,6 +747,8 @@ const RATE_HISTORY = {
   livretA:   [1.0,  0.75, 0.75, 0.75, 0.75, 0.5,   0.5,  1.0,  3.0,  3.0,  2.4 ],
   ldds:      [1.0,  0.75, 0.75, 0.75, 0.75, 0.5,   0.5,  1.0,  3.0,  3.0,  2.4 ],
   lep:       [1.25, 1.0,  1.0,  1.25, 1.25, 1.0,   1.0,  2.2,  6.1,  5.0,  3.5 ],
+  pel:       [2.5,  1.5,  1.0,  1.0,  1.0,  1.0,   1.0,  1.0,  2.0,  2.25, 1.75],
+  immo10y:   [1.85, 1.55, 1.45, 1.3,  1.1,  0.9,   0.85, 1.05, 2.35, 3.35, 2.9 ],
   immo15y:   [2.1,  1.75, 1.65, 1.5,  1.3,  1.1,   1.0,  1.2,  2.6,  3.6,  3.1 ],
   immo20y:   [2.35, 1.95, 1.85, 1.65, 1.5,  1.2,   1.1,  1.4,  2.85, 3.8,  3.3 ],
   immo25y:   [2.55, 2.15, 2.05, 1.85, 1.65, 1.35,  1.2,  1.6,  3.05, 4.0,  3.5 ],
@@ -922,6 +924,7 @@ function RatesWidget() {
                 <RateRow name="Livret A" rate={fmt(rates.livretA.value)} sublabel="Plafond 22 950 €" trend={rates.livretA.trend} color="#34d399" bold sparkData={RATE_HISTORY.livretA} />
                 <RateRow name="LDDS" rate={fmt(rates.ldds.value)} sublabel="Plafond 12 000 €" trend={rates.ldds.trend} color="#34d399" bold sparkData={RATE_HISTORY.ldds} />
                 <RateRow name="LEP" rate={fmt(rates.lep.value)} sublabel="Plafond 10 000 €" note="sous conditions" trend={rates.lep.trend} color="#34d399" bold sparkData={RATE_HISTORY.lep} />
+                <RateRow name="PEL" rate="1,75 %" sublabel="Plafond 61 200 €" note="ouverture 2024+" trend="down" color="#34d399" bold sparkData={RATE_HISTORY.pel} />
               </RatePanel>
             </RevealSection>
 
@@ -937,6 +940,7 @@ function RatesWidget() {
                     Simuler mon prêt <ArrowRight style={{ width: 14, height: 14 }} />
                   </Link>
                 }>
+                <RateRow name="Meilleur taux" sublabel="sur 10 ans" rate={fmt(rates.immo10y?.value ?? 2.9)} trend={rates.immo10y?.trend ?? 'down'} color={GOLD} bold sparkData={RATE_HISTORY.immo10y} />
                 <RateRow name="Meilleur taux" sublabel="sur 15 ans" rate={fmt(rates.immo15y.value)} trend={rates.immo15y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo15y} />
                 <RateRow name="Meilleur taux" sublabel="sur 20 ans" rate={fmt(rates.immo20y.value)} trend={rates.immo20y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo20y} />
                 <RateRow name="Meilleur taux" sublabel="sur 25 ans" rate={fmt(rates.immo25y.value)} trend={rates.immo25y.trend} color={GOLD} bold sparkData={RATE_HISTORY.immo25y} />

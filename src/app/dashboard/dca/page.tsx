@@ -35,7 +35,13 @@ function DCAPageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as DCAInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      if (p.rate !== undefined && p.targetRate === undefined) p.targetRate = p.rate
+      if (p.volatility === undefined) p.volatility = 15
+      if (p.initialPrice === undefined) p.initialPrice = 100
+      setInputs(p as DCAInputs)
+    } catch {}
   }, [restoreParam])
 
   const r = useMemo(() => calcDCA(inputs), [inputs])

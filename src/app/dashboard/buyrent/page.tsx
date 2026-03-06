@@ -35,7 +35,18 @@ function BuyRentPageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as BuyRentInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      setInputs({
+        price: p.price ?? p.purchasePrice ?? 300000,
+        down: p.down ?? p.downPayment ?? 60000,
+        loanRate: p.loanRate ?? 3.5,
+        rent: p.rent ?? p.monthlyRent ?? 1000,
+        years: p.years ?? 20,
+        appreciation: p.appreciation ?? p.propertyGrowth ?? 2,
+        investReturn: p.investReturn ?? 7,
+      })
+    } catch {}
   }, [restoreParam])
   const r = useMemo(() => calcBuyRent(inputs), [inputs])
 

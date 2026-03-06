@@ -46,6 +46,12 @@ const ENVELOPE_TYPE_CONFIG: Record<EnvelopeType, {
 }
 
 const NO_PL_TYPES: EnvelopeType[] = ['LIVRET', 'CASH', 'PER']
+
+// Palette for multi-envelope categories (distinct color per envelope index)
+const ENV_PALETTE = [
+  '#f472b6', '#818cf8', '#38bdf8', '#34d399', '#fb923c',
+  '#f59e0b', '#a78bfa', '#60a5fa', '#e879f9', '#94a3b8',
+]
 const PEA_MAX = 150_000
 
 function computeMarketValue(env: Envelope): number {
@@ -175,6 +181,12 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const pl = totalValue - totalInvested
   const plPct = totalInvested > 0 ? (pl / totalInvested) * 100 : 0
 
+  // Distinct color per envelope (avoids all envelopes same type = same color)
+  const envColorMap = useMemo(
+    () => new Map(envelopes.map((e, i) => [e.id, ENV_PALETTE[i % ENV_PALETTE.length]])),
+    [envelopes]
+  )
+
   // 2-point area chart: Capital investi → Valeur actuelle
   const areaData = useMemo(() => [
     { x: 'Capital investi', ...Object.fromEntries(envelopes.map(e => [e.id, computeInvested(e)])) },
@@ -256,8 +268,8 @@ export default function PatrimoineCategoryPage({ category }: Props) {
           {/* Toggle buttons */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
             {envelopes.map(env => {
-              const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const isVisible = visibleEnvs.has(env.id)
+              const envColor = envColorMap.get(env.id) ?? catCfg.color
               return (
                 <button
                   key={env.id}
@@ -265,9 +277,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6,
                     padding: '6px 14px', borderRadius: 8,
-                    border: `1.5px solid ${cfg.color}`,
-                    background: isVisible ? `${cfg.color}20` : 'transparent',
-                    color: isVisible ? cfg.color : '#555',
+                    border: `1.5px solid ${envColor}`,
+                    background: isVisible ? `${envColor}20` : 'transparent',
+                    color: isVisible ? envColor : '#555',
                     cursor: 'pointer', fontSize: 12, fontWeight: 500,
                     transition: 'all 0.15s',
                   }}
@@ -287,7 +299,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
             <ComposedChart data={areaData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
               <defs>
                 {envelopes.map(env => {
-                  const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                  const color = envColorMap.get(env.id) ?? catCfg.color
                   return (
                     <linearGradient key={env.id} id={`grad-${env.id}`} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={color} stopOpacity={0.55} />
@@ -326,7 +338,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       {payload.map((entry, i) => {
                         const env = envelopes.find(e => e.id === entry.dataKey)
                         if (!env) return null
-                        const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                        const color = envColorMap.get(env.id) ?? catCfg.color
                         return (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                             <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -342,7 +354,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                 }}
               />
               {envelopes.filter(e => visibleEnvs.has(e.id)).map(env => {
-                const color = ENVELOPE_TYPE_CONFIG[env.type].color
+                const color = envColorMap.get(env.id) ?? catCfg.color
                 return (
                   <Area
                     key={env.id}
@@ -391,6 +403,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
             {envelopes.map(env => {
               const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const Icon = cfg.icon
+              const envColor = envColorMap.get(env.id) ?? cfg.color
               const value = computeMarketValue(env)
               const invested = computeInvested(env)
               const hasPL = invested > 0 && !NO_PL_TYPES.includes(env.type)
@@ -401,13 +414,13 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                 <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
                   <div
                     style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = cfg.color + '60'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '60'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 10, background: cfg.color + '18', border: `1px solid ${cfg.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Icon style={{ width: 16, height: 16, color: cfg.color }} />
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: envColor + '18', border: `1px solid ${envColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Icon style={{ width: 16, height: 16, color: envColor }} />
                         </div>
                         <div>
                           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{env.name}</div>
@@ -436,7 +449,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                           </span>
                         </div>
                         <div style={{ height: 4, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${Math.min(100, (cap.current / cap.max) * 100).toFixed(1)}%`, background: cfg.color, borderRadius: 999 }} />
+                          <div style={{ height: '100%', width: `${Math.min(100, (cap.current / cap.max) * 100).toFixed(1)}%`, background: envColor, borderRadius: 999 }} />
                         </div>
                       </div>
                     )}

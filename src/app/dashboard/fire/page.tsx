@@ -35,7 +35,17 @@ function FirePageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as FireInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      if (p.currentSavings !== undefined && p.netWorth === undefined) {
+        // Migrate old format (currentAge, monthlyExpenses, monthlyInvestment, returnRate)
+        const monthlyExp = p.monthlyExpenses ?? 2000
+        const monthlyInv = p.monthlyInvestment ?? 1000
+        setInputs({ income: (monthlyExp + monthlyInv) * 12, expenses: monthlyExp * 12, netWorth: p.currentSavings, rate: p.returnRate ?? 7, withdrawalRate: p.withdrawalRate ?? 4 })
+      } else {
+        setInputs(p as FireInputs)
+      }
+    } catch {}
   }, [restoreParam])
   const r = useMemo(() => calcFire(inputs), [inputs])
 

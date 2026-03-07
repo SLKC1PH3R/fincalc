@@ -197,7 +197,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 }}
               >
                 {user.image ? (
-                  <img src={user.image} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0" style={{ ring: '1px solid rgba(249,115,22,0.2)' }} />
+                  <img src={user.image} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0 ring-1" style={{ outline: '1px solid rgba(249,115,22,0.2)' }} />
                 ) : (
                   <div
                     className="h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0"

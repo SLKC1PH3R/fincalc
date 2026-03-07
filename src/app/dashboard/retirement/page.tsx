@@ -157,7 +157,7 @@ function RetirementPageInner() {
           <Card>
             <CardHeader><CardTitle>Votre situation actuelle</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 items-end">
                 <div className="space-y-1.5">
                   <Label>Âge actuel</Label>
                   <Input type="number" min={18} max={66} value={inputs.age} onChange={e => set('age')(+e.target.value)} />

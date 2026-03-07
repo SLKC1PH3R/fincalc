@@ -39,10 +39,11 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.isAdmin = user.email === process.env.ADMIN_EMAIL
         token.isDemo = user.email === 'demo@digitalstack.cloud'
-        // Charger l'image depuis la DB à chaque nouvelle connexion
+        // Charger l'image + mettre à jour lastLoginAt
         try {
-          const dbUser = await prisma.user.findUnique({
+          const dbUser = await prisma.user.update({
             where: { id: user.id as string },
+            data: { lastLoginAt: new Date() },
             select: { image: true },
           })
           if (dbUser?.image) token.picture = dbUser.image

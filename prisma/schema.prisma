@@ -16,6 +16,7 @@ model User {
   image          String?           // Avatar URL ou base64
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
+  lastLoginAt    DateTime?
   simulations    Simulation[]
   sessions       Session[]
   accounts       Account[]

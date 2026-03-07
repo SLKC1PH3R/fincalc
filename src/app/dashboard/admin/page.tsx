@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface AdminUser {
   id: string; email: string; name: string | null; image: string | null
-  createdAt: string; _count: { simulations: number }
+  createdAt: string; lastLoginAt: string | null; _count: { simulations: number }
 }
 interface DemoSim {
   id: string; type: string; name: string
@@ -318,7 +318,13 @@ export default function AdminPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
+                          <div>{new Date(user.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                          {user.lastLoginAt
+                            ? <div className="mt-0.5" style={{ color: 'var(--text-subtle)' }}>↩ {new Date(user.lastLoginAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                            : <div className="mt-0.5" style={{ color: 'var(--text-subtle)' }}>↩ —</div>
+                          }
+                        </td>
                         <td className="px-4 py-3 text-center"><span className="text-sm font-medium">{user._count.simulations}</span></td>
                         <td className="px-4 py-3 text-right">
                           {!isMe ? (

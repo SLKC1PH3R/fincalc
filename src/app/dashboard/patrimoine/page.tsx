@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
+import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -142,7 +142,6 @@ export default function PatrimoinePage() {
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
-  const [pieTab, setPieTab] = useState<'enveloppe' | 'classe'>('enveloppe')
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -163,32 +162,7 @@ export default function PatrimoinePage() {
   useEffect(() => { loadEnvelopes() }, [])
 
   // Stats globales
-  const { totalValue, byType, byClass } = useMemo(() => {
-    let total = 0
-    const byTypeMap: Record<string, number> = {}
-    const byClassMap: Record<string, number> = {}
-
-    for (const env of envelopes) {
-      const v = computeMarketValue(env)
-      total += v
-      byTypeMap[env.type] = (byTypeMap[env.type] ?? 0) + v
-      const cls = ENVELOPE_TYPE_CONFIG[env.type].assetClass
-      byClassMap[cls] = (byClassMap[cls] ?? 0) + v
-    }
-
-    return {
-      totalValue: total,
-      byType: Object.entries(byTypeMap).map(([k, v]) => ({
-        name: ENVELOPE_TYPE_CONFIG[k as EnvelopeType].label,
-        value: v,
-        color: ENVELOPE_TYPE_CONFIG[k as EnvelopeType].color,
-      })),
-      byClass: Object.entries(byClassMap).map(([k, v]) => ({
-        name: k, value: v,
-        color: Object.values(ENVELOPE_TYPE_CONFIG).find(c => c.assetClass === k)?.color ?? '#94a3b8',
-      })),
-    }
-  }, [envelopes])
+  const totalValue = useMemo(() => envelopes.reduce((sum, e) => sum + computeMarketValue(e), 0), [envelopes])
 
   // Allocation géographique agrégée
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
@@ -395,101 +369,28 @@ export default function PatrimoinePage() {
             ))}
           </div>
 
-          {/* Répartition — 1 carte avec onglets */}
+          {/* Carte monde */}
           <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', flexDirection: 'column' }}>
-            <CardContent style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column' }}>
-              {/* Tabs */}
-              <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-                {(['enveloppe', 'classe'] as const).map(tab => (
-                  <button key={tab} onClick={() => setPieTab(tab)} style={{
-                    padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                    background: pieTab === tab ? 'var(--text-primary)' : 'transparent',
-                    color: pieTab === tab ? 'var(--card-dark)' : 'var(--text-subtle)',
-                    border: `1px solid ${pieTab === tab ? 'var(--text-primary)' : 'var(--card-dark-border)'}`,
-                    transition: 'all 0.15s',
-                  }}>
-                    {tab === 'enveloppe' ? 'Par enveloppe' : 'Par classe d\'actifs'}
-                  </button>
-                ))}
+            <CardContent style={{ padding: 20, flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+                Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
               </div>
-
-              {envelopes.length === 0 ? (
-                <div style={{ color: 'var(--text-subtle)', fontSize: 13, textAlign: 'center', padding: '24px 0', flex: 1 }}>
-                  Ajoutez des enveloppes pour voir la répartition
-                </div>
-              ) : (
-                <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1, overflow: 'hidden' }}>
-                  {/* Donut */}
-                  <div style={{ width: 110, height: 110, flexShrink: 0 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={pieTab === 'enveloppe' ? byType : byClass}
-                          dataKey="value" innerRadius={30} outerRadius={50} paddingAngle={2}
-                        >
-                          {(pieTab === 'enveloppe' ? byType : byClass).map((entry, i) => (
-                            <Cell key={i} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(v: number) => [fmtCompact(v), '']}
-                          contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }}
-                          itemStyle={chartTheme.itemStyle}
-                          labelStyle={chartTheme.labelStyle}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Bar list style budget */}
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
-                    {(pieTab === 'enveloppe' ? byType : byClass)
-                      .sort((a, b) => b.value - a.value)
-                      .map(d => {
-                        const pct = totalValue > 0 ? (d.value / totalValue) * 100 : 0
-                        return (
-                          <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 100, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {d.name}
-                            </span>
-                            <div style={{ flex: 1, height: 5, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
-                              <div style={{ height: '100%', width: `${pct}%`, background: d.color, borderRadius: 999 }} />
-                            </div>
-                            <span style={{ fontSize: 11, fontWeight: 600, fontVariantNumeric: 'tabular-nums', width: 56, textAlign: 'right', color: 'var(--text-primary)', flexShrink: 0 }}>
-                              {fmtCompact(d.value)}
-                            </span>
-                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 32, textAlign: 'right', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-                              {pct.toFixed(0)}%
-                            </span>
-                          </div>
-                        )
-                      })}
-                  </div>
-                </div>
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
+                {geoAlloc.totalGeo > 0
+                  ? <>Calculé sur {fmtCompact(geoAlloc.totalGeo)} d'actifs boursiers reconnus</>
+                  : 'Ajoutez des ETFs ou actions pour voir la répartition géographique'}
+              </div>
+              {geoAlloc.totalGeo > 0 && (
+                <WorldMapChart
+                  allocation={geoAlloc}
+                  values={geoAlloc.values}
+                  totalValue={geoAlloc.totalGeo}
+                  height={300}
+                />
               )}
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* ── Carte monde ── */}
-      {!loading && geoAlloc.totalGeo > 0 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-          <CardContent style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
-              Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
-              Calculé sur {fmtCompact(geoAlloc.totalGeo)} d'actifs boursiers reconnus
-            </div>
-            <WorldMapChart
-              allocation={geoAlloc}
-              values={geoAlloc.values}
-              totalValue={geoAlloc.totalGeo}
-              height={360}
-            />
-          </CardContent>
-        </Card>
       )}
 
       {/* ── Liste enveloppes ── */}

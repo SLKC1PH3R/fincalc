@@ -441,7 +441,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       <div style={{ fontSize: 12, fontWeight: 600 }}>
                         {isImmo ? (
                           <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
-                            Plus-value : {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)}
+                            Plus-value latente : {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)}
                           </span>
                         ) : (
                           <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>

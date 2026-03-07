@@ -370,7 +370,7 @@ export default function PatrimoinePage() {
 
       {/* ── KPIs (gauche) + Répartition tabulée (droite) ── */}
       {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'stretch' }}>
           {/* KPIs */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
@@ -379,8 +379,10 @@ export default function PatrimoinePage() {
               { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
             ].map(kpi => (
               <div key={kpi.label} style={{
+                flex: 1,
                 padding: '16px 20px', borderRadius: 12,
                 background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
               }}>
                 <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
                   {kpi.label}
@@ -394,8 +396,8 @@ export default function PatrimoinePage() {
           </div>
 
           {/* Répartition — 1 carte avec onglets */}
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-            <CardContent style={{ padding: 20 }}>
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', flexDirection: 'column' }}>
+            <CardContent style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column' }}>
               {/* Tabs */}
               <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
                 {(['enveloppe', 'classe'] as const).map(tab => (
@@ -412,18 +414,18 @@ export default function PatrimoinePage() {
               </div>
 
               {envelopes.length === 0 ? (
-                <div style={{ color: 'var(--text-subtle)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>
+                <div style={{ color: 'var(--text-subtle)', fontSize: 13, textAlign: 'center', padding: '24px 0', flex: 1 }}>
                   Ajoutez des enveloppes pour voir la répartition
                 </div>
               ) : (
-                <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1, overflow: 'hidden' }}>
                   {/* Donut */}
-                  <div style={{ width: 130, height: 130, flexShrink: 0 }}>
+                  <div style={{ width: 110, height: 110, flexShrink: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={pieTab === 'enveloppe' ? byType : byClass}
-                          dataKey="value" innerRadius={38} outerRadius={60} paddingAngle={2}
+                          dataKey="value" innerRadius={30} outerRadius={50} paddingAngle={2}
                         >
                           {(pieTab === 'enveloppe' ? byType : byClass).map((entry, i) => (
                             <Cell key={i} fill={entry.color} />
@@ -440,7 +442,7 @@ export default function PatrimoinePage() {
                   </div>
 
                   {/* Bar list style budget */}
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
                     {(pieTab === 'enveloppe' ? byType : byClass)
                       .sort((a, b) => b.value - a.value)
                       .map(d => {

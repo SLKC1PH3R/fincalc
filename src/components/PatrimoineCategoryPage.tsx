@@ -402,6 +402,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               const envColor = envColorMap.get(env.id) ?? cfg.color
               const value = computeMarketValue(env)
               const invested = computeInvested(env)
+              const isImmo = env.type === 'IMMOBILIER'
               const hasPL = invested > 0 && !NO_PL_TYPES.includes(env.type)
               const plEnv = value - invested
               const cap = getCapProgress(env)
@@ -426,13 +427,27 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', flexShrink: 0, marginTop: 4 }} />
                     </div>
 
+                    <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>
+                      {isImmo ? 'Prix du bien' : 'Valeur actuelle'}
+                    </div>
                     <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: hasPL || cap ? 8 : 0 }}>
-                      {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>}
+                      {isImmo
+                        ? (invested > 0 ? fmtCompact(invested) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>)
+                        : (value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>)
+                      }
                     </div>
 
                     {hasPL && invested > 0 && (
-                      <div style={{ fontSize: 12, color: plEnv >= 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>
-                        {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)} ({plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %)
+                      <div style={{ fontSize: 12, fontWeight: 600 }}>
+                        {isImmo ? (
+                          <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
+                            Plus-value : {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)}
+                          </span>
+                        ) : (
+                          <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
+                            {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)} ({plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %)
+                          </span>
+                        )}
                       </div>
                     )}
 

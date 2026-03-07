@@ -148,6 +148,38 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           }}
         />
 
+        {/* ── Top gold halo ── */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: -40,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 280,
+            height: 220,
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(249,115,22,0.16) 0%, transparent 68%)',
+            pointerEvents: 'none',
+            zIndex: -1,
+          }}
+        />
+
+        {/* ── Bottom gold halo ── */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            bottom: -30,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 260,
+            height: 180,
+            background: 'radial-gradient(ellipse at 50% 100%, rgba(249,115,22,0.11) 0%, transparent 68%)',
+            pointerEvents: 'none',
+            zIndex: -1,
+          }}
+        />
+
         {/* ── Logo / header ── */}
         <div className={cn(
           'flex-shrink-0 transition-all duration-200',

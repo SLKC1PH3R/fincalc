@@ -14,8 +14,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       collapsed ? 'md:ml-16 ml-0' : 'md:ml-[272px] ml-0'
     )}>
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0 border-b"
-        style={{ background: 'var(--sb-bg)', borderBottomColor: 'var(--sb-border)' }}>
+      <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0"
+        style={{ background: 'var(--sb-bg)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div className="flex items-center gap-3">
           <button onClick={toggle} style={{ color: 'var(--sb-text-dim)' }} className="transition-colors">
             <PanelLeftOpen className="h-5 w-5" />

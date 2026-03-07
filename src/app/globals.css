@@ -56,21 +56,23 @@
     --chart-fill-2: hsl(0 0% 45%);
     --chart-fill-3: hsl(0 0% 30%);
 
-    /* Sidebar — dark defaults */
-    --sb-bg: #0a0a0a;
-    --sb-border: rgba(255,255,255,0.05);
-    --sb-profile-bg: rgba(255,255,255,0.03);
-    --sb-text: rgba(255,255,255,0.65);
+    /* Sidebar — dark gold theme */
+    --sb-bg: #080809;
+    --sb-border: rgba(255,255,255,0.04);
+    --sb-profile-bg: rgba(249,115,22,0.05);
+    --sb-text: rgba(255,255,255,0.52);
     --sb-text-strong: #ffffff;
-    --sb-text-dim: rgba(255,255,255,0.22);
-    --sb-text-section: rgba(255,255,255,0.55);
-    --sb-hover-bg: rgba(255,255,255,0.04);
-    --sb-sim-text: rgba(255,255,255,0.30);
+    --sb-text-dim: rgba(255,255,255,0.18);
+    --sb-text-section: rgba(255,255,255,0.28);
+    --sb-hover-bg: rgba(255,255,255,0.045);
+    --sb-sim-text: rgba(255,255,255,0.28);
     --sb-sim-text-hover: rgba(255,255,255,0.72);
-    --sb-divider: rgba(255,255,255,0.05);
-    --sb-active-bg: rgba(249,115,22,0.10);
-    --sb-active-border: rgba(249,115,22,0.18);
+    --sb-divider: rgba(255,255,255,0.045);
+    --sb-active-bg: rgba(249,115,22,0.09);
+    --sb-active-border: transparent;
     --sb-active-text: #ffffff;
+    --sb-gold-start: #f97316;
+    --sb-gold-end: #fbbf24;
   }
 
   @keyframes float-slow {
@@ -349,7 +351,8 @@ html { scroll-behavior: smooth; }
 .sb-link {
   color: var(--sb-text);
   border: 1px solid transparent;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+  position: relative;
 }
 .sb-link:hover {
   color: var(--sb-text-strong);
@@ -359,7 +362,15 @@ html { scroll-behavior: smooth; }
   color: var(--sb-active-text) !important;
   background: var(--sb-active-bg) !important;
   border-color: var(--sb-active-border) !important;
+  box-shadow: inset 2px 0 0 #f97316;
 }
 .sb-link-active svg {
   color: #f97316 !important;
+}
+/* Gold gradient text helper */
+.sb-gold-text {
+  background: linear-gradient(135deg, #f97316 0%, #fbbf24 60%, #f97316 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

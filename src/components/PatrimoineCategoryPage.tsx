@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  AreaChart, ComposedChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3, Eye, EyeOff,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -180,7 +180,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const [selectedType, setSelectedType] = useState<EnvelopeType | null>(null)
   const [envelopeName, setEnvelopeName] = useState('')
   const [creating, setCreating] = useState(false)
-  const [visibleEnvs, setVisibleEnvs] = useState<Set<string>>(new Set())
   const [mounted, setMounted] = useState(false)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
 
@@ -200,19 +199,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     () => allEnvelopes.filter(e => (catCfg.types as string[]).includes(e.type)),
     [allEnvelopes, catCfg.types]
   )
-
-  // Init visible state when envelopes load
-  useEffect(() => {
-    setVisibleEnvs(prev => {
-      const next = new Set(prev)
-      envelopes.forEach(e => { if (!next.has(e.id)) next.add(e.id) })
-      return next
-    })
-  }, [envelopes.length])
-
-  const toggleEnv = (id: string) => setVisibleEnvs(prev => {
-    const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s
-  })
 
   const { totalValue, totalInvested } = useMemo(() => {
     let tv = 0, ti = 0
@@ -241,12 +227,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     () => new Map(envelopes.map((e, i) => [e.id, ENV_PALETTE[i % ENV_PALETTE.length]])),
     [envelopes]
   )
-
-  // 2-point area chart: Capital investi → Valeur actuelle
-  const areaData = useMemo(() => [
-    { x: 'Capital investi', ...Object.fromEntries(envelopes.map(e => [e.id, computeInvested(e)])) },
-    { x: 'Valeur actuelle', ...Object.fromEntries(envelopes.map(e => [e.id, computeMarketValue(e)])) },
-  ], [envelopes])
 
   const bestEnv = useMemo(() => {
     if (envelopes.length === 0) return null
@@ -387,124 +367,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               />
               <Area type="monotone" dataKey="value" stroke={catCfg.color} strokeWidth={2.5} fill="url(#evolGradCat)" fillOpacity={1} dot={false} activeDot={{ r: 5, fill: catCfg.color, strokeWidth: 0 }} />
             </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* Capital investi vs Valeur actuelle chart avec toggles show/hide */}
-      {!loading && envelopes.length > 0 && mounted && (
-        <div style={{
-          background: 'var(--card-dark)',
-          border: `1px solid ${catCfg.color}30`,
-          borderRadius: 16,
-          padding: 24,
-        }}>
-          {/* Toggle buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
-            {envelopes.map(env => {
-              const isVisible = visibleEnvs.has(env.id)
-              const envColor = envColorMap.get(env.id) ?? catCfg.color
-              return (
-                <button
-                  key={env.id}
-                  onClick={() => toggleEnv(env.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '6px 14px', borderRadius: 8,
-                    border: `1.5px solid ${envColor}`,
-                    background: isVisible ? `${envColor}20` : 'transparent',
-                    color: isVisible ? envColor : '#555',
-                    cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {isVisible
-                    ? <Eye style={{ width: 13, height: 13 }} />
-                    : <EyeOff style={{ width: 13, height: 13 }} />
-                  }
-                  {env.name}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Area chart */}
-          <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={areaData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
-              <defs>
-                {envelopes.map(env => {
-                  const color = envColorMap.get(env.id) ?? catCfg.color
-                  return (
-                    <linearGradient key={env.id} id={`grad-${env.id}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={color} stopOpacity={0.55} />
-                      <stop offset="100%" stopColor={color} stopOpacity={0.02} />
-                    </linearGradient>
-                  )
-                })}
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-              <XAxis
-                dataKey="x"
-                tick={{ fontSize: 12, fill: chartTheme.tick }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tickFormatter={v => fmtCompact(v as number)}
-                tick={{ fontSize: 10, fill: chartTheme.tick }}
-                axisLine={false}
-                tickLine={false}
-                width={72}
-              />
-              <Tooltip
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null
-                  return (
-                    <div style={{
-                      background: '#090909',
-                      border: `2px solid ${catCfg.color}`,
-                      borderRadius: 10,
-                      padding: '10px 14px',
-                      fontSize: 12,
-                      minWidth: 160,
-                    }}>
-                      <p style={{ color: catCfg.color, fontWeight: 700, marginBottom: 8 }}>{label}</p>
-                      {payload.map((entry, i) => {
-                        const env = envelopes.find(e => e.id === entry.dataKey)
-                        if (!env) return null
-                        const color = envColorMap.get(env.id) ?? catCfg.color
-                        return (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                            <span style={{ color: color }}>{env.name}</span>
-                            <span style={{ color: '#fff', fontWeight: 600, marginLeft: 'auto', paddingLeft: 12 }}>
-                              {fmtCompact(entry.value as number)}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )
-                }}
-              />
-              {envelopes.filter(e => visibleEnvs.has(e.id)).map(env => {
-                const color = envColorMap.get(env.id) ?? catCfg.color
-                return (
-                  <Area
-                    key={env.id}
-                    type="monotone"
-                    dataKey={env.id}
-                    stroke={color}
-                    strokeWidth={2.5}
-                    fill={`url(#grad-${env.id})`}
-                    fillOpacity={1}
-                    dot={{ r: 4, fill: color, strokeWidth: 0 }}
-                    activeDot={{ r: 6, fill: color, strokeWidth: 0 }}
-                    isAnimationActive
-                  />
-                )
-              })}
-            </ComposedChart>
           </ResponsiveContainer>
         </div>
       )}

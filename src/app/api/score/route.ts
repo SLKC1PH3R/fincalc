@@ -61,7 +61,7 @@ function scoreFiscal(hasTaxSim: boolean, hasPEA: boolean, hasPER: boolean, usedO
 }
 
 function scoreDebt(ratio: number | null): { score: number; label: string } {
-  if (ratio === null) return { score: 5, label: 'Données inconnues' }
+  if (ratio === null) return { score: 0, label: 'Données inconnues' }
   if (ratio > 0.40) return { score: Math.round((1 - ratio) * 10), label: 'Élevé' }
   if (ratio > 0.30) return { score: Math.round(4 + (0.40 - ratio) / 0.10 * 3), label: 'Moyen' }
   return { score: Math.round(7 + (0.30 - ratio) / 0.30 * 3), label: 'Sain' }
@@ -143,7 +143,7 @@ export async function GET() {
     : cashBalance > 0 ? null : null
   const emergencyResult = emergencyMonths !== null
     ? scoreEmergency(emergencyMonths)
-    : { score: 7, label: 'Données inconnues' }  // neutral
+    : { score: 0, label: 'Données inconnues' }
 
   // ── 3. Diversification (20 pts)
   const envelopeTypes = envelopes.map(e => e.type)

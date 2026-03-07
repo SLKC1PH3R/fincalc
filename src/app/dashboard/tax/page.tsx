@@ -69,7 +69,18 @@ function TaxPageInner() {
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as TaxInputs) } catch {}
+    try {
+      const raw = JSON.parse(restoreParam)
+      // Migrate old field names (salary → gross, missing csRate etc.)
+      setInputs({
+        gross: raw.gross ?? raw.salary ?? 60000,
+        parts: raw.parts ?? 1,
+        csRate: raw.csRate ?? 22,
+        regime: raw.regime ?? 'salarie',
+        fraisReels: raw.fraisReels ?? 0,
+        useFraisReels: raw.useFraisReels ?? false,
+      })
+    } catch {}
   }, [restoreParam])
   const r = useMemo(() => calcTax(inputs), [inputs])
   const score = SCORE[r.analysis.score]

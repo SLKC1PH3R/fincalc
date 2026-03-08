@@ -162,7 +162,10 @@ export default function PatrimoinePage() {
   useEffect(() => { loadEnvelopes() }, [])
 
   // Stats globales
-  const totalValue = useMemo(() => envelopes.reduce((sum, e) => sum + computeMarketValue(e), 0), [envelopes])
+  const totalValue = useMemo(() => envelopes.reduce((sum, e) => {
+    if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
+    return sum + computeMarketValue(e)
+  }, 0), [envelopes])
 
   // Allocation géographique agrégée
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
@@ -257,7 +260,10 @@ export default function PatrimoinePage() {
             const Icon = cat.icon
             const catValue = envelopes
               .filter(e => (cat.types as string[]).includes(e.type))
-              .reduce((s, e) => s + (e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)), 0)
+              .reduce((s, e) => {
+                if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+                return s + (e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0))
+              }, 0)
             const count = envelopes.filter(e => (cat.types as string[]).includes(e.type)).length
             return (
               <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
@@ -427,7 +433,9 @@ export default function PatrimoinePage() {
             {envelopes.map(env => {
               const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const Icon = cfg.icon
-              const value = computeMarketValue(env)
+              const value = env.type === 'IMMOBILIER'
+                ? Number(env.metadata.currentValue ?? 0)
+                : computeMarketValue(env)
               const cap = getCapProgress(env)
 
               return (

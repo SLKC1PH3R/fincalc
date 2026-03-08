@@ -202,7 +202,15 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   const { totalValue, totalInvested } = useMemo(() => {
     let tv = 0, ti = 0
-    for (const e of envelopes) { tv += computeMarketValue(e); ti += computeInvested(e) }
+    for (const e of envelopes) {
+      if (e.type === 'IMMOBILIER') {
+        tv += Number(e.metadata.currentValue ?? 0)
+        ti += Number(e.metadata.purchasePrice ?? 0)
+      } else {
+        tv += computeMarketValue(e)
+        ti += computeInvested(e)
+      }
+    }
     return { totalValue: tv, totalInvested: ti }
   }, [envelopes])
 
@@ -400,9 +408,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const Icon = cfg.icon
               const envColor = envColorMap.get(env.id) ?? cfg.color
-              const value = computeMarketValue(env)
-              const invested = computeInvested(env)
               const isImmo = env.type === 'IMMOBILIER'
+              const value = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env)
+              const invested = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
               const hasPL = invested > 0 && !NO_PL_TYPES.includes(env.type)
               const plEnv = value - invested
               const cap = getCapProgress(env)

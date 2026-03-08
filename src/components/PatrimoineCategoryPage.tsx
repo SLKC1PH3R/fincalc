@@ -408,9 +408,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               const cap = getCapProgress(env)
 
               return (
-                <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
+                <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none', display: 'flex' }}>
                   <div
-                    style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+                    style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s', width: '100%' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '60'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
                   >

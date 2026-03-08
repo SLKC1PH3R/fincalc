@@ -428,27 +428,30 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                     </div>
 
                     <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>
-                      {isImmo ? 'Prix du bien' : 'Valeur actuelle'}
+                      {isImmo ? 'Valeur du bien' : 'Valeur actuelle'}
                     </div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: hasPL || cap ? 8 : 0 }}>
-                      {isImmo
-                        ? (invested > 0 ? fmtCompact(invested) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>)
-                        : (value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>)
-                      }
+                    <div style={{ fontSize: isImmo ? 17 : 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: hasPL || cap ? 8 : 0 }}>
+                      {value > 0 ? (isImmo ? fmt(value) : fmtCompact(value)) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>}
                     </div>
 
                     {hasPL && invested > 0 && (
-                      <div style={{ fontSize: 12, fontWeight: 600 }}>
-                        {isImmo ? (
-                          <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
-                            Plus-value latente : {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)}
-                          </span>
-                        ) : (
-                          <span style={{ color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
-                            {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)} ({plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %)
-                          </span>
-                        )}
-                      </div>
+                      isImmo ? (
+                        <div style={{ marginTop: 4 }}>
+                          <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                            Plus-value latente
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                            {plEnv >= 0 ? '+' : ''}{fmt(plEnv)}
+                          </div>
+                          <div style={{ fontSize: 11, color: plEnv >= 0 ? '#34d399' : '#f87171', opacity: 0.8 }}>
+                            {plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 12, fontWeight: 600, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
+                          {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)} ({plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %)
+                        </div>
+                      )
                     )}
 
                     {cap && (

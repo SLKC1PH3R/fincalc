@@ -61,6 +61,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
+  const [outilsExpanded, setOutilsExpanded] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
@@ -550,8 +551,69 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             )}
           </div>
 
-          {/* ── Outils (Épargne + Immobilier + Fiscal + Budget) ── */}
-          {renderNavItems(OUTILS_ITEMS, 'Outils')}
+          {/* ── Outils ── */}
+          <div style={{ marginBottom: 4 }}>
+            {!collapsed && (
+              <button
+                onClick={() => toggleSection('Outils')}
+                className="flex items-center justify-between w-full px-3 mb-1.5"
+              >
+                <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--sb-text-section)' }}>
+                  Outils
+                </span>
+                <ChevronDown className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--sb-text-dim)', transform: collapsedSections.has('Outils') ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+              </button>
+            )}
+            {collapsed && <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />}
+
+            {(collapsed || !collapsedSections.has('Outils')) && (
+              <div>
+                {/* Outils header row — expanded */}
+                {!collapsed && (
+                  <div className="flex items-center gap-0.5 mb-0.5">
+                    <span className={cn('sb-link flex items-center gap-3 rounded-xl flex-1 px-3 py-2 cursor-default')}>
+                      <BarChart3 className="flex-shrink-0" style={{ width: 16, height: 16 }} />
+                      <span style={{ fontSize: 13, fontWeight: 500, flex: 1 }}>Calculateurs</span>
+                    </span>
+                    <button
+                      onClick={() => setOutilsExpanded(v => !v)}
+                      className="h-6 w-6 flex items-center justify-center rounded-lg flex-shrink-0"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      <ChevronDown className="h-3 w-3" style={{ transform: outilsExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Sub-items — expanded */}
+                {!collapsed && outilsExpanded && (
+                  <div className="mt-0.5 ml-3.5 pl-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
+                    {OUTILS_ITEMS.map(item => {
+                      const isActive = pathname === item.href
+                      return (
+                        <Link key={item.href} href={item.href} className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-all', isActive ? 'sb-link-active' : 'sb-link')} style={{ fontSize: 12 }}>
+                          <item.icon style={{ width: 13, height: 13, flexShrink: 0 }} />
+                          <span>{item.label}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Icons only — collapsed sidebar */}
+                {collapsed && OUTILS_ITEMS.map(item => {
+                  const isActive = pathname === item.href
+                  return (
+                    <Link key={item.href} href={item.href} title={item.label} className={cn('sb-link flex items-center justify-center rounded-xl mb-0.5 px-2 py-2.5', isActive && 'sb-link-active')}>
+                      <item.icon style={{ width: 16, height: 16 }} />
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
 
           {/* ── Compte ── */}
           {renderNavItems(COMPTE_ITEMS, 'Compte')}

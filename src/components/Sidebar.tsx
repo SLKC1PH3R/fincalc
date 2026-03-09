@@ -24,46 +24,24 @@ const PATRIMOINE_CATEGORIES = [
   { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
 ]
 
-const NAV_SECTIONS = [
-  {
-    title: 'Épargne',
-    items: [
-      { href: '/dashboard/compound',   label: 'Intérêts Composés', icon: TrendingUp },
-      { href: '/dashboard/dca',        label: 'DCA',               icon: RefreshCw  },
-      { href: '/dashboard/fire',       label: 'FI/RE',             icon: Flame      },
-    ],
-  },
-  {
-    title: 'Immobilier',
-    items: [
-      { href: '/dashboard/buyrent',  label: 'Acheter vs Louer',    icon: Home      },
-      { href: '/dashboard/mortgage', label: 'Prêt Immobilier',     icon: Building2 },
-      { href: '/dashboard/rental',   label: 'Rentabilité Locative', icon: Wallet   },
-    ],
-  },
-  {
-    title: 'Fiscal & Retraite',
-    items: [
-      { href: '/dashboard/tax',              label: 'Impôts IR',          icon: Receipt   },
-      { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème', icon: Receipt   },
-      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',  icon: Wallet    },
-      { href: '/dashboard/retirement',       label: 'Retraite',           icon: PiggyBank },
-    ],
-  },
-  {
-    title: 'Budget',
-    items: [
-      { href: '/dashboard/savings-rate', label: "Taux d'épargne",  icon: Percent    },
-      { href: '/dashboard/budget',       label: 'Budget 50/30/20', icon: Calculator },
-    ],
-  },
-  {
-    title: 'Compte',
-    items: [
-      { href: '/dashboard/settings', label: 'Mon compte', icon: Settings },
-      { href: '/dashboard/history',  label: 'Historique', icon: History  },
-    ],
-  },
+const OUTILS_ITEMS = [
+  { href: '/dashboard/compound',         label: 'Intérêts Composés',    icon: TrendingUp },
+  { href: '/dashboard/dca',             label: 'DCA',                   icon: RefreshCw  },
+  { href: '/dashboard/fire',            label: 'FI/RE',                 icon: Flame      },
+  { href: '/dashboard/buyrent',         label: 'Acheter vs Louer',      icon: Home       },
+  { href: '/dashboard/mortgage',        label: 'Prêt Immobilier',       icon: Building2  },
+  { href: '/dashboard/rental',          label: 'Rentabilité Locative',  icon: Wallet     },
+  { href: '/dashboard/tax',             label: 'Impôts IR',             icon: Receipt    },
+  { href: '/dashboard/flat-tax',        label: 'Flat Tax vs Barème',    icon: Receipt    },
+  { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',    icon: Wallet     },
+  { href: '/dashboard/retirement',      label: 'Retraite',              icon: PiggyBank  },
+  { href: '/dashboard/savings-rate',    label: "Taux d'épargne",        icon: Percent    },
+  { href: '/dashboard/budget',          label: 'Budget 50/30/20',       icon: Calculator },
+]
+
+const COMPTE_ITEMS = [
+  { href: '/dashboard/settings', label: 'Mon compte', icon: Settings },
+  { href: '/dashboard/history',  label: 'Historique', icon: History  },
 ]
 
 interface SimEntry { id: string; type: string; name: string; inputs: Record<string, unknown> }
@@ -114,6 +92,159 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   }
 
   const W = collapsed ? 64 : 264
+
+  // ── Render a collapsible nav section ──────────────────────────────────────
+  const renderNavItems = (items: typeof OUTILS_ITEMS, sectionKey: string) => {
+    const isSectionCollapsed = collapsedSections.has(sectionKey)
+    return (
+      <div style={{ marginBottom: 4 }}>
+        {!collapsed && (
+          <button
+            onClick={() => toggleSection(sectionKey)}
+            className="flex items-center justify-between w-full px-3 mb-1.5"
+          >
+            <span style={{
+              fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+              letterSpacing: '0.1em', color: 'var(--sb-text-section)',
+            }}>
+              {sectionKey}
+            </span>
+            <ChevronDown
+              className="h-3 w-3 flex-shrink-0"
+              style={{
+                color: 'var(--sb-text-dim)',
+                transform: isSectionCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            />
+          </button>
+        )}
+        {collapsed && <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />}
+
+        {(collapsed || !isSectionCollapsed) && (
+          <div className="space-y-0.5">
+            {items.map(item => {
+              const isActive = pathname === item.href
+              const type = item.href.split('/').pop()
+              const itemSims = type ? sims.filter(s => s.type === type) : []
+              const isExpanded = expandedHref === item.href
+
+              return (
+                <div key={item.href}>
+                  <div className="flex items-center gap-0.5">
+                    <Link
+                      href={item.href}
+                      title={collapsed ? item.label : undefined}
+                      className={cn(
+                        'sb-link flex items-center gap-3 rounded-xl flex-1 min-w-0',
+                        collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2',
+                        isActive && 'sb-link-active'
+                      )}
+                    >
+                      <item.icon className="flex-shrink-0" style={{ width: 16, height: 16 }} />
+                      {!collapsed && (
+                        <>
+                          <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {item.label}
+                          </span>
+                          {itemSims.length > 0 ? (
+                            <span style={{
+                              fontSize: 9, color: '#f97316',
+                              background: 'rgba(249,115,22,0.10)',
+                              padding: '1px 6px', borderRadius: 4,
+                              fontWeight: 700, flexShrink: 0,
+                            }}>
+                              {itemSims.length}
+                            </span>
+                          ) : isActive ? (
+                            <span
+                              className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                              style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+                            />
+                          ) : null}
+                        </>
+                      )}
+                    </Link>
+
+                    {!collapsed && itemSims.length > 0 && (
+                      <button
+                        onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
+                        className="h-6 w-6 flex items-center justify-center rounded-lg flex-shrink-0"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                      >
+                        <ChevronDown
+                          className="h-3 w-3"
+                          style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}
+                        />
+                      </button>
+                    )}
+                  </div>
+
+                  {!collapsed && isExpanded && itemSims.length > 0 && (
+                    <div
+                      className="mt-0.5 ml-4 pl-3 space-y-0.5"
+                      style={{ borderLeft: '1px solid var(--sb-divider)' }}
+                    >
+                      {itemSims.slice(0, 6).map(sim => {
+                        const isActiveSim = activeSimId === sim.id
+                        return (
+                          <div
+                            key={sim.id}
+                            className="group flex items-center rounded-lg"
+                            style={{ background: isActiveSim ? 'rgba(249,115,22,0.07)' : 'transparent' }}
+                            onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
+                            onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                          >
+                            <Link
+                              href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                              className="flex items-center gap-2 py-1.5 px-2 flex-1 min-w-0"
+                              style={{
+                                fontSize: 11, textDecoration: 'none',
+                                color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)',
+                                fontWeight: isActiveSim ? 600 : 400,
+                              }}
+                              onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
+                              onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
+                            >
+                              {isActiveSim && (
+                                <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />
+                              )}
+                              <span className="truncate">{sim.name}</span>
+                            </Link>
+                            <button
+                              onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                              className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
+                              style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        )
+                      })}
+                      {itemSims.length > 6 && (
+                        <Link
+                          href="/dashboard/history"
+                          className="block py-1.5 px-2 rounded-lg"
+                          style={{ fontSize: 11, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
+                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+                        >
+                          +{itemSims.length - 6} de plus…
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -419,162 +550,11 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             )}
           </div>
 
-          {/* Static sections */}
-          {NAV_SECTIONS.map((section) => {
-            const isSectionCollapsed = collapsedSections.has(section.title)
-            return (
-              <div key={section.title} style={{ marginBottom: 4 }}>
-                {!collapsed && (
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className="flex items-center justify-between w-full px-3 mb-1.5"
-                  >
-                    <span style={{
-                      fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
-                      letterSpacing: '0.1em', color: 'var(--sb-text-section)',
-                    }}>
-                      {section.title}
-                    </span>
-                    <ChevronDown
-                      className="h-3 w-3 flex-shrink-0"
-                      style={{
-                        color: 'var(--sb-text-dim)',
-                        transform: isSectionCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s',
-                      }}
-                    />
-                  </button>
-                )}
-                {collapsed && <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />}
+          {/* ── Outils (Épargne + Immobilier + Fiscal + Budget) ── */}
+          {renderNavItems(OUTILS_ITEMS, 'Outils')}
 
-                {(collapsed || !isSectionCollapsed) && (
-                  <div className="space-y-0.5">
-                    {section.items.map((item) => {
-                      const isActive = pathname === item.href
-                      const type = item.href.split('/').pop()
-                      const itemSims = type ? sims.filter(s => s.type === type) : []
-                      const isExpanded = expandedHref === item.href
-
-                      return (
-                        <div key={item.href}>
-                          <div className="flex items-center gap-0.5">
-                            <Link
-                              href={item.href}
-                              title={collapsed ? item.label : undefined}
-                              className={cn(
-                                'sb-link flex items-center gap-3 rounded-xl flex-1 min-w-0',
-                                collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2',
-                                isActive && 'sb-link-active'
-                              )}
-                            >
-                              <item.icon className="flex-shrink-0" style={{ width: 16, height: 16 }} />
-                              {!collapsed && (
-                                <>
-                                  <span style={{ fontSize: 13, fontWeight: 500, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {item.label}
-                                  </span>
-                                  {itemSims.length > 0 ? (
-                                    <span style={{
-                                      fontSize: 9, color: '#f97316',
-                                      background: 'rgba(249,115,22,0.10)',
-                                      padding: '1px 6px', borderRadius: 4,
-                                      fontWeight: 700, flexShrink: 0,
-                                    }}>
-                                      {itemSims.length}
-                                    </span>
-                                  ) : isActive ? (
-                                    <span
-                                      className="h-1.5 w-1.5 rounded-full flex-shrink-0"
-                                      style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
-                                    />
-                                  ) : null}
-                                </>
-                              )}
-                            </Link>
-
-                            {!collapsed && itemSims.length > 0 && (
-                              <button
-                                onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
-                                className="h-6 w-6 flex items-center justify-center rounded-lg flex-shrink-0"
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
-                                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                              >
-                                <ChevronDown
-                                  className="h-3 w-3"
-                                  style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}
-                                />
-                              </button>
-                            )}
-                          </div>
-
-                          {!collapsed && isExpanded && itemSims.length > 0 && (
-                            <div
-                              className="mt-0.5 ml-4 pl-3 space-y-0.5"
-                              style={{ borderLeft: '1px solid var(--sb-divider)' }}
-                            >
-                              {itemSims.slice(0, 6).map(sim => {
-                                const isActiveSim = activeSimId === sim.id
-                                return (
-                                  <div
-                                    key={sim.id}
-                                    className="group flex items-center rounded-lg"
-                                    style={{ background: isActiveSim ? 'rgba(249,115,22,0.07)' : 'transparent' }}
-                                    onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                                    onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                                  >
-                                    <Link
-                                      href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                      className="flex items-center gap-2 py-1.5 px-2 flex-1 min-w-0"
-                                      style={{
-                                        fontSize: 11,
-                                        textDecoration: 'none',
-                                        color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)',
-                                        fontWeight: isActiveSim ? 600 : 400,
-                                      }}
-                                      onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
-                                      onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
-                                    >
-                                      {isActiveSim && (
-                                        <span
-                                          className="h-1 w-1 rounded-full flex-shrink-0"
-                                          style={{ background: '#f97316' }}
-                                        />
-                                      )}
-                                      <span className="truncate">{sim.name}</span>
-                                    </Link>
-                                    <button
-                                      onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
-                                      className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
-                                      title="Supprimer"
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </button>
-                                  </div>
-                                )
-                              })}
-                              {itemSims.length > 6 && (
-                                <Link
-                                  href="/dashboard/history"
-                                  className="block py-1.5 px-2 rounded-lg"
-                                  style={{ fontSize: 11, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
-                                >
-                                  +{itemSims.length - 6} de plus…
-                                </Link>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          {/* ── Compte ── */}
+          {renderNavItems(COMPTE_ITEMS, 'Compte')}
 
           {/* Admin */}
           {isAdmin && (

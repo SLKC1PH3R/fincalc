@@ -92,7 +92,7 @@ function TaxPageInner() {
   ]
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
 
 
       {/* Page header */}

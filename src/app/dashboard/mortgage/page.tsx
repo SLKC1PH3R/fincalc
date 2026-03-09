@@ -58,7 +58,7 @@ function MortgagePageInner() {
   if (interestRatio < 30) tips.push(`Excellent crédit — vous payez seulement ${fmtPct(interestRatio)} d'intérêts sur le capital.`)
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
 
       <div className="flex items-center justify-between">
         <div>

@@ -67,7 +67,7 @@ function FirePageInner() {
   const progressColor = r.progressPct >= 75 ? 'hsl(160 84% 39%)' : r.progressPct >= 50 ? 'hsl(38 92% 50%)' : r.progressPct >= 25 ? 'hsl(38 60% 50%)' : 'hsl(0 72% 51%)'
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Calculateur FI/RE</h1>

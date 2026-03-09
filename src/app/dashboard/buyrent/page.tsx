@@ -58,7 +58,7 @@ function BuyRentPageInner() {
   if (r.buyWins && r.breakevenYears < 10) tips.push(`Excellent investissement : seuil de rentabilité atteint en ${r.breakevenYears} ans.`)
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
 
       <div className="flex items-center justify-between">
         <div>

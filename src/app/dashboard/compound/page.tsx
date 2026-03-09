@@ -63,7 +63,7 @@ function CompoundPageInner() {
   if (tips.length === 0) tips.push('Stratégie solide. Maintenez la régularité et évitez de retirer avant terme.')
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Intérêts Composés</h1>

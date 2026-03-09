@@ -85,7 +85,7 @@ export default function SettingsPage() {
   const initials = (session?.user?.name || session?.user?.email || 'U')[0].toUpperCase()
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6 max-w-xl">
+    <div className="space-y-6 animate-fade-in px-7 py-8 max-w-xl">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Mon compte</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Gérez votre profil et vos préférences</p>

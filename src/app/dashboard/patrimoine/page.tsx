@@ -228,7 +228,7 @@ export default function PatrimoinePage() {
 
   // ── Rendu ────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 0 48px' }}>
+    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4 }}>

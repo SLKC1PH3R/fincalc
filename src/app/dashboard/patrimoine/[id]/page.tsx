@@ -242,7 +242,7 @@ export default function EnvelopeDetailPage() {
   const hasMetadata = Object.keys(envelope.metadata).length > 0
 
   return (
-    <div className="space-y-6" style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 48 }}>
+    <div className="space-y-6" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 28px 48px' }}>
 
       {/* ── Breadcrumb + Header ── */}
       <div>

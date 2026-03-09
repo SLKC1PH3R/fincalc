@@ -98,7 +98,7 @@ function RetirementPageInner() {
   const salNetActuel = inputs.salary * 0.78 / 12
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
 
       {/* Header */}
       <div className="flex items-center justify-between">

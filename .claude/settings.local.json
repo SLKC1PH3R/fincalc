@@ -12,7 +12,14 @@
       "Bash(/c/Users/jerem/AppData/Local/Programs/Python/Python314/python.exe -c \":*)",
       "Bash(npx tsc --noEmit --skipLibCheck)",
       "Bash(node_modules/.bin/tsc --noEmit --skipLibCheck)",
-      "Bash(cmd /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")"
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")",
+      "Bash(grep -rn \"padding: ''0 0 48px''\" \"c:/Users/jerem/Downloads/fincalc/src\" --include=\"*.tsx\")",
+      "Bash(for f in \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/budget/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/buyrent/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/compound/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/dca/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/fire/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/history/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/mortgage/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/portfolio/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/rental/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/retirement/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/savings-rate/page.tsx\" \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/tax/page.tsx\")",
+      "Bash(do)",
+      "Bash(sed -i 's/space-y-6 animate-fade-in p-5 md:p-6/space-y-6 animate-fade-in px-7 py-8/g' \"$f\")",
+      "Bash(done)",
+      "Bash(sed -i 's/space-y-6 animate-fade-in p-5 md:p-6 max-w-xl/space-y-6 animate-fade-in px-7 py-8 max-w-xl/g' \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/settings/page.tsx\")",
+      "Bash(sed -i 's/space-y-6 p-5 md:p-6 max-w-5xl/space-y-6 px-7 py-8 max-w-5xl/g' \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/admin/page.tsx\")"
     ]
   }
 }

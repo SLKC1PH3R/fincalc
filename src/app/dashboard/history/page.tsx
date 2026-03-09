@@ -229,7 +229,7 @@ export default function HistoryPage() {
   const selectMode = selected.length > 0
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div className="space-y-6 animate-fade-in px-7 py-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Historique</h1>

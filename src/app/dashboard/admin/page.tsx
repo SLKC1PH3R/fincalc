@@ -241,7 +241,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-6 p-5 md:p-6 max-w-5xl">
+    <div className="space-y-6 px-7 py-8 max-w-5xl">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center">

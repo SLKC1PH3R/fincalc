@@ -92,7 +92,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     try { await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' }) } catch {}
   }
 
-  const W = collapsed ? 64 : 264
+  const W = collapsed ? 64 : 290
 
   // ── Render a collapsible nav section ──────────────────────────────────────
   const renderNavItems = (items: typeof OUTILS_ITEMS, sectionKey: string) => {
@@ -416,29 +416,20 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '8px 6px' : '8px 10px' }}>
 
-          {/* Synthèse + Score */}
+          {/* Score Patrimonial */}
           <div style={{ marginBottom: 2 }}>
-            {[
-              { href: '/dashboard', label: 'Synthèse', icon: BarChart3 },
-              { href: '/dashboard/score', label: 'Score Patrimonial', icon: Award },
-            ].map(item => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={collapsed ? item.label : undefined}
-                  className={cn(
-                    'sb-link flex items-center gap-3 rounded-xl mb-0.5',
-                    collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2',
-                    isActive && 'sb-link-active'
-                  )}
-                >
-                  <item.icon className="flex-shrink-0" style={{ width: 16, height: 16 }} />
-                  {!collapsed && <span style={{ fontSize: 13, fontWeight: 500 }}>{item.label}</span>}
-                </Link>
-              )
-            })}
+            <Link
+              href="/dashboard/score"
+              title={collapsed ? 'Score Patrimonial' : undefined}
+              className={cn(
+                'sb-link flex items-center gap-3 rounded-xl mb-0.5',
+                collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2',
+                pathname === '/dashboard/score' && 'sb-link-active'
+              )}
+            >
+              <Award className="flex-shrink-0" style={{ width: 16, height: 16 }} />
+              {!collapsed && <span style={{ fontSize: 13, fontWeight: 500 }}>Score Patrimonial</span>}
+            </Link>
           </div>
 
           {/* Thin divider */}
@@ -568,13 +559,21 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
             {(collapsed || !collapsedSections.has('Outils')) && (
               <div>
-                {/* Outils header row — expanded */}
-                {!collapsed && (
-                  <div className="flex items-center gap-0.5 mb-0.5">
-                    <span className={cn('sb-link flex items-center gap-3 rounded-xl flex-1 px-3 py-2 cursor-default')}>
-                      <BarChart3 className="flex-shrink-0" style={{ width: 16, height: 16 }} />
-                      <span style={{ fontSize: 13, fontWeight: 500, flex: 1 }}>Calculateurs</span>
-                    </span>
+                {/* Calculateurs header row */}
+                <div className="flex items-center gap-0.5 mb-0.5">
+                  <Link
+                    href="/dashboard"
+                    title={collapsed ? 'Calculateurs' : undefined}
+                    className={cn(
+                      'sb-link flex items-center gap-3 rounded-xl flex-1',
+                      collapsed ? 'px-2 py-2.5 justify-center' : 'px-3 py-2',
+                      pathname === '/dashboard' && 'sb-link-active'
+                    )}
+                  >
+                    <BarChart3 className="flex-shrink-0" style={{ width: 16, height: 16 }} />
+                    {!collapsed && <span style={{ fontSize: 13, fontWeight: 500, flex: 1 }}>Calculateurs</span>}
+                  </Link>
+                  {!collapsed && (
                     <button
                       onClick={() => setOutilsExpanded(v => !v)}
                       className="h-6 w-6 flex items-center justify-center rounded-lg flex-shrink-0"
@@ -584,33 +583,111 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     >
                       <ChevronDown className="h-3 w-3" style={{ transform: outilsExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {/* Sub-items — expanded */}
                 {!collapsed && outilsExpanded && (
                   <div className="mt-0.5 ml-3.5 pl-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
                     {OUTILS_ITEMS.map(item => {
                       const isActive = pathname === item.href
+                      const type = item.href.split('/').pop()
+                      const itemSims = type ? sims.filter(s => s.type === type) : []
+                      const isExpanded = expandedHref === item.href
                       return (
-                        <Link key={item.href} href={item.href} className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-all', isActive ? 'sb-link-active' : 'sb-link')} style={{ fontSize: 12 }}>
-                          <item.icon style={{ width: 13, height: 13, flexShrink: 0 }} />
-                          <span>{item.label}</span>
-                        </Link>
+                        <div key={item.href}>
+                          <div className="flex items-center gap-0.5">
+                            <Link
+                              href={item.href}
+                              className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-all flex-1 min-w-0', isActive ? 'sb-link-active' : 'sb-link')}
+                              style={{ fontSize: 12 }}
+                            >
+                              <item.icon style={{ width: 13, height: 13, flexShrink: 0 }} />
+                              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
+                              {itemSims.length > 0 ? (
+                                <span style={{ fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.10)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0 }}>
+                                  {itemSims.length}
+                                </span>
+                              ) : isActive ? (
+                                <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }} />
+                              ) : null}
+                            </Link>
+                            {itemSims.length > 0 && (
+                              <button
+                                onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
+                                className="h-5 w-5 flex items-center justify-center rounded flex-shrink-0"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)' }}
+                                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                              >
+                                <ChevronDown className="h-3 w-3" style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                              </button>
+                            )}
+                          </div>
+                          {isExpanded && itemSims.length > 0 && (
+                            <div className="mt-0.5 ml-3 pl-2.5 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)' }}>
+                              {itemSims.slice(0, 5).map(sim => {
+                                const isActiveSim = activeSimId === sim.id
+                                return (
+                                  <div key={sim.id} className="group flex items-center rounded-lg"
+                                    style={{ background: isActiveSim ? 'rgba(249,115,22,0.07)' : 'transparent' }}
+                                    onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
+                                    onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                                  >
+                                    <Link
+                                      href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                      className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
+                                      style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
+                                      onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
+                                      onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
+                                    >
+                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />}
+                                      <span className="truncate">{sim.name}</span>
+                                    </Link>
+                                    <button
+                                      onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                                      className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
+                                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                                      title="Supprimer"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                )
+                              })}
+                              {itemSims.length > 5 && (
+                                <Link href="/dashboard/history" className="block py-1 px-2 rounded-lg"
+                                  style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
+                                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+                                >
+                                  +{itemSims.length - 5} de plus…
+                                </Link>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       )
                     })}
                   </div>
                 )}
 
                 {/* Icons only — collapsed sidebar */}
-                {collapsed && OUTILS_ITEMS.map(item => {
-                  const isActive = pathname === item.href
-                  return (
-                    <Link key={item.href} href={item.href} title={item.label} className={cn('sb-link flex items-center justify-center rounded-xl mb-0.5 px-2 py-2.5', isActive && 'sb-link-active')}>
-                      <item.icon style={{ width: 16, height: 16 }} />
+                {collapsed && (
+                  <>
+                    <Link href="/dashboard" title="Calculateurs" className={cn('sb-link flex items-center justify-center rounded-xl mb-0.5 px-2 py-2.5', pathname === '/dashboard' && 'sb-link-active')}>
+                      <BarChart3 style={{ width: 16, height: 16 }} />
                     </Link>
-                  )
-                })}
+                    {OUTILS_ITEMS.map(item => {
+                      const isActive = pathname === item.href
+                      return (
+                        <Link key={item.href} href={item.href} title={item.label} className={cn('sb-link flex items-center justify-center rounded-xl mb-0.5 px-2 py-2.5', isActive && 'sb-link-active')}>
+                          <item.icon style={{ width: 16, height: 16 }} />
+                        </Link>
+                      )
+                    })}
+                  </>
+                )}
               </div>
             )}
           </div>

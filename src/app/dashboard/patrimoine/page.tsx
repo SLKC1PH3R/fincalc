@@ -212,7 +212,7 @@ export default function PatrimoinePage() {
 
     // Normaliser
     const geoNorm: GeoAllocation = geoTotal > 0
-      ? Object.fromEntries(REGIONS.map(k => [k, geoValues[k] / geoTotal])) as GeoAllocation
+      ? Object.fromEntries(REGIONS.map(k => [k, geoValues[k] / geoTotal])) as unknown as GeoAllocation
       : { northAmerica: 0, europe: 0, asiaPacific: 0, emergingMarkets: 0, other: 0 }
 
     const values: Partial<Record<keyof GeoAllocation, number>> = {}

@@ -546,6 +546,7 @@ function ImmobilierSection({ envelope, onSave, chartTheme }: {
   // ── Physique form ──
   const [form, setForm] = useState({
     propertyType: String(meta.propertyType ?? 'residence-principale'),
+    country: String(meta.country ?? 'france'),
     address: String(meta.address ?? ''),
     surface: String(meta.surface ?? ''),
     purchaseYear: String(meta.purchaseYear ?? ''),
@@ -604,6 +605,7 @@ function ImmobilierSection({ envelope, onSave, chartTheme }: {
       await onSave({
         subType: 'physique',
         propertyType: form.propertyType,
+        country: form.country,
         address: form.address, surface: parseFloat(form.surface) || 0,
         purchaseYear: parseInt(form.purchaseYear) || 0, purchasePrice,
         currentValue, hasCredit: form.hasCredit,
@@ -773,6 +775,33 @@ function ImmobilierSection({ envelope, onSave, chartTheme }: {
           {/* Champs */}
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Informations du bien</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <Label style={{ marginBottom: 6, display: 'block' }}>Localisation <span style={{ fontWeight: 400, color: 'var(--text-subtle)', fontSize: 11 }}>Pour la carte géographique</span></Label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {[
+                  { id: 'france',          label: '🇫🇷 France' },
+                  { id: 'europe',          label: '🇪🇺 Europe (autre)' },
+                  { id: 'northAmerica',    label: '🌎 Amérique du Nord' },
+                  { id: 'asiaPacific',     label: '🌏 Asie-Océanie' },
+                  { id: 'emergingMarkets', label: '🌍 Marchés émergents' },
+                  { id: 'other',           label: '🌐 Autre' },
+                ].map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setForm(p => ({ ...p, country: opt.id }))}
+                    style={{
+                      padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer',
+                      border: `1.5px solid ${form.country === opt.id ? '#f472b6' : 'var(--card-dark-border)'}`,
+                      background: form.country === opt.id ? '#f472b620' : 'transparent',
+                      color: form.country === opt.id ? '#f472b6' : 'var(--text-muted-c)',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <Label style={{ marginBottom: 6, display: 'block' }}>Adresse <span style={{ fontWeight: 400, color: 'var(--text-subtle)', fontSize: 11 }}>Optionnel</span></Label>
               <Input value={form.address} onChange={f('address')} placeholder="12 rue de la Paix, Paris 75001" />

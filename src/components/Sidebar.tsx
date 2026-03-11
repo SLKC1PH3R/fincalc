@@ -87,6 +87,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [outilsExpanded, setOutilsExpanded] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
+  const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
+  const [patrimoineEvol, setPatrimoineEvol] = useState<number | null>(null)
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
     const next = new Set(prev)
@@ -111,6 +113,38 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     fetch('/api/score/last')
       .then(r => r.json())
       .then(data => { if (typeof data.score === 'number') setScore(data.score) })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/patrimoine/envelopes')
+      .then(r => r.json())
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then((data: any[]) => {
+        if (!Array.isArray(data)) return
+        const total = data.reduce((sum, e) => {
+          const val = e.totalValue !== null
+            ? e.totalValue
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            : (e.positions || []).reduce((s: number, p: any) => s + p.pru * p.quantity, 0)
+          return sum + val
+        }, 0)
+        setPatrimoineTotal(total)
+
+        // Evolution quotidienne via snapshot localStorage
+        const key = 'sb_patrimoine_snapshot'
+        const todayKey = new Date().toISOString().split('T')[0]
+        try {
+          const stored = localStorage.getItem(key)
+          const snapshot: { date: string; value: number } | null = stored ? JSON.parse(stored) : null
+          if (snapshot && snapshot.date !== todayKey && snapshot.value > 0) {
+            setPatrimoineEvol(((total - snapshot.value) / snapshot.value) * 100)
+          }
+          if (!snapshot || snapshot.date !== todayKey) {
+            localStorage.setItem(key, JSON.stringify({ date: todayKey, value: total }))
+          }
+        } catch {}
+      })
       .catch(() => {})
   }, [])
 
@@ -309,6 +343,69 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <PanelLeftClose style={{ width: 16, height: 16 }} />
                 </button>
               </div>
+
+              {/* Patrimoine widget */}
+              {patrimoineTotal !== null && (
+                <Link
+                  href="/dashboard/patrimoine"
+                  style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}
+                >
+                  <div
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: 12,
+                      background: 'var(--sb-profile-bg)',
+                      border: '1px solid rgba(249,115,22,0.10)',
+                      cursor: 'pointer',
+                      transition: 'border-color 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.25)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.10)')}
+                  >
+                    <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sb-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        Patrimoine net
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {patrimoineEvol !== null && (
+                          <span style={{
+                            fontSize: 10, fontWeight: 600,
+                            color: patrimoineEvol >= 0 ? '#4ade80' : '#f87171',
+                          }}>
+                            {patrimoineEvol >= 0 ? '+' : ''}{patrimoineEvol.toFixed(1)}%
+                          </span>
+                        )}
+                        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--sb-text-strong)', fontVariantNumeric: 'tabular-nums' }}>
+                          {patrimoineTotal >= 1_000_000
+                            ? `${(patrimoineTotal / 1_000_000).toFixed(1).replace(/\.0$/, '')} M€`
+                            : patrimoineTotal >= 1_000
+                              ? `${Math.round(patrimoineTotal / 1_000)} k€`
+                              : `${Math.round(patrimoineTotal)} €`}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                      {patrimoineEvol !== null ? (
+                        <div style={{
+                          height: '100%',
+                          width: `${Math.min(Math.abs(patrimoineEvol) * 5, 100)}%`,
+                          borderRadius: 99,
+                          background: patrimoineEvol >= 0
+                            ? 'linear-gradient(90deg, #22c55e, #4ade80)'
+                            : 'linear-gradient(90deg, #ef4444, #f87171)',
+                          transition: 'width 0.6s ease',
+                        }} />
+                      ) : (
+                        <div style={{
+                          height: '100%', width: '40%', borderRadius: 99,
+                          background: 'linear-gradient(90deg, #f97316, #fbbf24)',
+                          opacity: 0.4,
+                        }} />
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )}
 
               {/* Score widget */}
               {score !== null && (

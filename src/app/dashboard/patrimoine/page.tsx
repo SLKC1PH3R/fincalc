@@ -167,8 +167,16 @@ export default function PatrimoinePage() {
     return sum + computeMarketValue(e)
   }, 0), [envelopes])
 
-  // Allocation géographique agrégée
+  // Allocation géographique agrégée (actifs financiers + immobilier géolocalisé)
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
+    const REGIONS = ['northAmerica', 'europe', 'asiaPacific', 'emergingMarkets', 'other'] as const
+    const COUNTRY_TO_REGION: Record<string, keyof GeoAllocation> = {
+      france: 'europe', europe: 'europe',
+      northAmerica: 'northAmerica', asiaPacific: 'asiaPacific',
+      emergingMarkets: 'emergingMarkets', other: 'other',
+    }
+
+    // 1. Actifs financiers (ETF / actions)
     const allPositions: { value: number; ticker?: string }[] = []
     for (const env of envelopes) {
       for (const pos of env.positions) {
@@ -178,12 +186,40 @@ export default function PatrimoinePage() {
       }
     }
     const geo = calcPortfolioGeo(allPositions)
-    const values: Partial<Record<keyof GeoAllocation, number>> = {}
-    for (const key of ['northAmerica', 'europe', 'asiaPacific', 'emergingMarkets', 'other'] as const) {
-      values[key] = geo[key] * totalValue
+
+    // Convertir en valeurs absolues
+    const geoValues: Record<keyof GeoAllocation, number> = {
+      northAmerica: geo.northAmerica * geo.totalValue,
+      europe: geo.europe * geo.totalValue,
+      asiaPacific: geo.asiaPacific * geo.totalValue,
+      emergingMarkets: geo.emergingMarkets * geo.totalValue,
+      other: geo.other * geo.totalValue,
     }
-    return { ...geo, values, totalGeo: geo.totalValue }
-  }, [envelopes, totalValue])
+    let geoTotal = geo.totalValue
+
+    // 2. Ajouter les biens immobiliers physiques selon leur pays
+    for (const env of envelopes) {
+      if (env.type === 'IMMOBILIER' && env.metadata.subType !== 'scpi') {
+        const val = env.totalValue ?? 0
+        if (val > 0) {
+          const country = String(env.metadata.country ?? 'france')
+          const region = COUNTRY_TO_REGION[country] ?? 'other'
+          geoValues[region] += val
+          geoTotal += val
+        }
+      }
+    }
+
+    // Normaliser
+    const geoNorm: GeoAllocation = geoTotal > 0
+      ? Object.fromEntries(REGIONS.map(k => [k, geoValues[k] / geoTotal])) as GeoAllocation
+      : { northAmerica: 0, europe: 0, asiaPacific: 0, emergingMarkets: 0, other: 0 }
+
+    const values: Partial<Record<keyof GeoAllocation, number>> = {}
+    for (const key of REGIONS) { values[key] = geoValues[key] }
+
+    return { ...geoNorm, values, totalGeo: geoTotal }
+  }, [envelopes])
 
   // Données évolution
   const evolutionData = useMemo(() => generateEvolutionData(totalValue, timeRange), [totalValue, timeRange])

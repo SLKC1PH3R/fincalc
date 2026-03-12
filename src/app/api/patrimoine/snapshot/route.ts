@@ -15,10 +15,13 @@ export async function POST(req: NextRequest) {
 
   const today = new Date(new Date().toISOString().split('T')[0])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const byEnvelopeJson = byEnvelope as any
+
   const snapshot = await prisma.patrimoineSnapshot.upsert({
     where: { userId_date: { userId: user.id, date: today } },
-    update: { totalValue, byEnvelope },
-    create: { userId: user.id, date: today, totalValue, byEnvelope },
+    update: { totalValue, byEnvelope: byEnvelopeJson },
+    create: { userId: user.id, date: today, totalValue, byEnvelope: byEnvelopeJson },
   })
 
   return NextResponse.json(snapshot)

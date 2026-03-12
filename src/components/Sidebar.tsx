@@ -585,25 +585,21 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   </div>
                 )}
 
-                {collapsed && (
-                  <>
-                    {GESTION_ITEMS.map(item => (
-                      <NavItem
-                        key={item.href}
-                        href={item.href}
-                        label={item.label}
-                        icon={item.icon}
-                        active={pathname === item.href}
-                      />
-                    ))}
-                  </>
-                )}
+                {collapsed && GESTION_ITEMS.map(item => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    active={pathname === item.href}
+                  />
+                ))}
               </div>
             )}
           </div>
 
           {/* ── Outils section ── */}
-          <div style={{ marginBottom: 2 }}>
+          <div style={{ marginBottom: 2, marginTop: 10, borderTop: '1px solid var(--sb-divider)', paddingTop: 6 }}>
             <SectionLabel label="Calculateurs" sectionKey="Outils" />
 
             {(collapsed || !collapsedSections.has('Outils')) && (

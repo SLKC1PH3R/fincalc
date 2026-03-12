@@ -92,7 +92,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
-  const [gestionExpanded, setGestionExpanded] = useState(() => GESTION_ITEMS.some(i => pathname === i.href))
+  const [gestionExpanded, setGestionExpanded] = useState(() => pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href))
   const [outilsExpanded, setOutilsExpanded] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
@@ -157,7 +157,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
   useEffect(() => {
     if (pathname.startsWith('/dashboard/')) setExpandedHref(pathname)
-    if (GESTION_ITEMS.some(i => pathname === i.href)) setGestionExpanded(true)
+    if (pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href)) setGestionExpanded(true)
   }, [pathname])
 
   const deleteSim = async (id: string) => {
@@ -559,10 +559,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
                 {/* Gestion personnelle sub-section */}
                 <NavItem
-                  href="/dashboard/goals"
+                  href="/dashboard/gestion"
                   label="Gestion personnelle"
                   icon={SlidersHorizontal}
-                  active={GESTION_ITEMS.some(i => pathname === i.href)}
+                  active={pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href)}
                   expandable={!collapsed}
                   expanded={gestionExpanded}
                   onToggleExpand={() => setGestionExpanded((v: boolean) => !v)}

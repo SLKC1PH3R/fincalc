@@ -66,6 +66,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
     creditEndYear: String(meta.creditEndYear ?? ''),
     isRental: Boolean(meta.isRental ?? false),
     monthlyRent: String(meta.monthlyRent ?? ''),
+    monthlyCharges: String(meta.monthlyCharges ?? ''),
   })
 
   const [scpiForm, setScpiForm] = useState({
@@ -116,7 +117,9 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
         creditRemaining, creditRate: parseFloat(form.creditRate) || 0,
         creditMonthly: parseFloat(form.creditMonthly) || 0,
         creditEndYear: parseInt(form.creditEndYear) || 0,
-        isRental: form.isRental, monthlyRent: parseFloat(form.monthlyRent) || 0,
+        isRental: form.isRental,
+        monthlyRent: parseFloat(form.monthlyRent) || 0,
+        monthlyCharges: parseFloat(form.monthlyCharges) || 0,
       })
       toast({ title: 'Bien immobilier mis à jour' })
     } catch { toast({ title: 'Erreur', variant: 'destructive' }) }
@@ -330,9 +333,23 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
                 <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>Bien locatif</span>
               </div>
               {form.isRental && (
-                <div style={{ marginBottom: 16 }}>
-                  <Label style={{ marginBottom: 6, display: 'block' }}>Loyer mensuel perçu (€)</Label>
-                  <Input type="number" value={form.monthlyRent} onChange={f('monthlyRent')} placeholder="800" style={{ maxWidth: 200 }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <Label style={{ marginBottom: 6, display: 'block' }}>Loyer mensuel brut (€)</Label>
+                    <Input type="number" value={form.monthlyRent} onChange={f('monthlyRent')} placeholder="800" />
+                  </div>
+                  <div>
+                    <Label style={{ marginBottom: 6, display: 'block' }}>
+                      Charges &amp; taxes annuelles / 12 (€)
+                      <span
+                        title="Somme de : taxe foncière, assurance PNO, charges de copropriété, frais de gestion — le tout divisé par 12"
+                        style={{ marginLeft: 6, cursor: 'help', fontSize: 11, color: 'var(--text-subtle)', borderBottom: '1px dotted var(--text-subtle)' }}
+                      >
+                        ℹ
+                      </span>
+                    </Label>
+                    <Input type="number" value={form.monthlyCharges} onChange={f('monthlyCharges')} placeholder="150" />
+                  </div>
                 </div>
               )}
             </>
@@ -377,11 +394,6 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             { label: 'Patrimoine net', value: fmtEur(netEquity), color: '#34d399', sub: form.hasCredit ? `Après crédit (${fmtEur(creditRemaining)})` : 'Valeur libre' },
             { label: 'Plus-value latente', value: `${latentGain >= 0 ? '+' : ''}${fmtEur(latentGain)}`, color: latentGain >= 0 ? '#34d399' : '#ef4444', sub: purchasePrice > 0 ? `${((latentGain / purchasePrice) * 100).toFixed(1)} %` : '' },
             ...(form.hasCredit && ltv > 0 ? [{ label: 'LTV (dette/valeur)', value: `${ltv.toFixed(1)} %`, color: ltv > 80 ? '#f59e0b' : '#818cf8', sub: ltv > 80 ? 'LTV élevé' : 'LTV sain' }] : []),
-            ...(form.isRental && parseFloat(form.monthlyRent) > 0 ? [{
-              label: 'Rendement brut',
-              value: `${((parseFloat(form.monthlyRent) * 12 / currentValue) * 100).toFixed(2)} %`,
-              color: '#38bdf8', sub: `${fmtEur(parseFloat(form.monthlyRent) * 12)} / an`,
-            }] : []),
           ].map(kpi => (
             <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
               <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
@@ -391,6 +403,55 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
           ))}
         </div>
       )}
+
+      {/* ── Rendement locatif net ── */}
+      {isSetup && currentValue > 0 && form.isRental && parseFloat(form.monthlyRent) > 0 && (() => {
+        const mRent     = parseFloat(form.monthlyRent) || 0
+        const mCharges  = parseFloat(form.monthlyCharges) || 0
+        const mCredit   = form.hasCredit ? (parseFloat(form.creditMonthly) || 0) : 0
+        const annualRent    = mRent * 12
+        const annualCharges = mCharges * 12
+        const grossYield = (annualRent / currentValue) * 100
+        const netYield   = ((annualRent - annualCharges) / currentValue) * 100
+        const cashflow   = mRent - mCharges - mCredit
+        return (
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+            <CardContent style={{ padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Rendement locatif</div>
+                <a
+                  href={`/dashboard/rental?restore=${encodeURIComponent(JSON.stringify({ propertyValue: currentValue, monthlyRent: mRent, monthlyCharges: mCharges, creditMonthly: mCredit }))}`}
+                  style={{ fontSize: 11, color: '#f472b6', textDecoration: 'none', border: '1px solid #f472b630', borderRadius: 8, padding: '4px 10px' }}
+                >
+                  Simuler en détail →
+                </a>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement brut</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', fontVariantNumeric: 'tabular-nums' }}>{grossYield.toFixed(2)} %</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{fmtEur(annualRent)} / an</div>
+                </div>
+                <div style={{ padding: '14px 16px', borderRadius: 10, background: netYield >= 0 ? 'rgba(52,211,153,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${netYield >= 0 ? 'rgba(52,211,153,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement net</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: netYield >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{netYield.toFixed(2)} %</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{fmtEur(annualRent - annualCharges)} / an net</div>
+                </div>
+                <div style={{ padding: '14px 16px', borderRadius: 10, background: cashflow >= 0 ? 'rgba(52,211,153,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${cashflow >= 0 ? 'rgba(52,211,153,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Cashflow mensuel</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: cashflow >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{cashflow >= 0 ? '+' : ''}{fmtEur(cashflow)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{cashflow >= 0 ? 'Effort positif' : 'Effort d\'épargne'}</div>
+                </div>
+              </div>
+              {mCharges === 0 && (
+                <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-subtle)', fontStyle: 'italic' }}>
+                  Saisissez les charges mensuelles (taxe foncière, assurance, copropriété / 12) pour obtenir le rendement net.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )
+      })()}
 
       {isSetup && equityData.length > 0 && (
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>

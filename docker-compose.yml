@@ -42,7 +42,7 @@ services:
   migrate:
     build: .
     container_name: fincalc-migrate
-    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    command: sh -c "npx prisma db push --accept-data-loss && npx prisma db seed"
     environment:
       DATABASE_URL: postgresql://fincalc:${POSTGRES_PASSWORD}@postgres:5432/fincalc
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}

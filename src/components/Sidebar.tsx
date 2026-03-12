@@ -7,7 +7,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Bitcoin, Award, CreditCard, Target,
+  Sun, Moon, Bitcoin, Award, CreditCard, Target, Flag, Coins, FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -28,6 +28,7 @@ const PATRIMOINE_CATEGORIES = [
 ]
 
 const OUTILS_ITEMS = [
+  { href: '/dashboard/goals',             label: 'Mes Objectifs',        icon: Flag       },
   { href: '/dashboard/rebalancing',       label: 'Rééquilibrage',        icon: Target     },
   { href: '/dashboard/compound',          label: 'Intérêts Composés',   icon: TrendingUp },
   { href: '/dashboard/dca',              label: 'DCA',                  icon: RefreshCw  },
@@ -41,6 +42,9 @@ const OUTILS_ITEMS = [
   { href: '/dashboard/retirement',       label: 'Retraite',             icon: PiggyBank  },
   { href: '/dashboard/savings-rate',     label: "Taux d'épargne",       icon: Percent    },
   { href: '/dashboard/budget',           label: 'Budget 50/30/20',      icon: Calculator },
+  { href: '/dashboard/dividends',        label: 'Revenus Passifs',       icon: Coins      },
+  { href: '/dashboard/benchmark',        label: 'Benchmarks',            icon: BarChart3  },
+  { href: '/dashboard/tax-report',       label: 'Rapport Fiscal',        icon: FileText   },
 ]
 
 const COMPTE_ITEMS = [

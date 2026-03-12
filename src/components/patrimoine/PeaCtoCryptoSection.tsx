@@ -13,6 +13,7 @@ import {
   type Envelope, type Position, type PriceData,
   PEA_MAX, fmtCompact,
 } from '@/components/patrimoine/types'
+import { TransactionJournal } from '@/components/TransactionJournal'
 
 export function PeaCtoCryptoSection({
   envelope, prices, pricesLoading,
@@ -141,6 +142,9 @@ export function PeaCtoCryptoSection({
       {!isCrypto && positions.filter(p => p.assetType === 'ETF').length > 0 && (
         <EtfOptimizerSection positions={positions} prices={prices} chartTheme={chartTheme} />
       )}
+
+      {/* Journal de transactions */}
+      <TransactionJournal envelopeId={envelope.id} title="Journal de transactions" />
     </div>
   )
 }

@@ -34,7 +34,9 @@
       "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
       "Bash(powershell.exe -Command \"node --version\")",
       "Bash(wc -l src/app/dashboard/patrimoine/[id]/page.tsx src/lib/price-cache.ts)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npx prisma db push --accept-data-loss 2>&1\")",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npx prisma db push --accept-data-loss\")"
     ]
   }
 }

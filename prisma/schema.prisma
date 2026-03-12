@@ -23,6 +23,8 @@ model User {
   portfolio      Portfolio?
   scores         PatrimoineScore[]
   snapshots      PatrimoineSnapshot[]
+  goals          PatrimoineGoal[]
+  transactions   AssetTransaction[]
 }
 
 model PatrimoineScore {
@@ -147,4 +149,41 @@ model PatrimoineSnapshot {
 
   @@unique([userId, date])
   @@index([userId])
+}
+
+model PatrimoineGoal {
+  id           String    @id @default(cuid())
+  userId       String
+  title        String
+  description  String?
+  targetAmount Float
+  targetDate   DateTime?
+  envelopeId   String?   // Optionnel : lier à une enveloppe spécifique
+  color        String    @default("#f97316")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AssetTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  positionId  String?  // Position concernée (nullable — peut exister sans position liée)
+  envelopeId  String?  // Enveloppe concernée
+  symbol      String
+  name        String   @default("")
+  type        String   // BUY | SELL | DIVIDEND | SPLIT | TRANSFER
+  quantity    Float
+  price       Float    // Prix unitaire en EUR au moment de la transaction
+  fees        Float    @default(0)
+  date        DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, symbol])
+  @@index([envelopeId])
 }

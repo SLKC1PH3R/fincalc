@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id             String            @id @default(cuid())
-  email          String            @unique
-  emailVerified  DateTime?         // Requis par NextAuth PrismaAdapter
+  id             String               @id @default(cuid())
+  email          String               @unique
+  emailVerified  DateTime?            // Requis par NextAuth PrismaAdapter
   name           String?
-  password       String?           // Nullable — null pour les comptes Google OAuth
-  image          String?           // Avatar URL ou base64
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  password       String?              // Nullable — null pour les comptes Google OAuth
+  image          String?              // Avatar URL ou base64
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   lastLoginAt    DateTime?
   simulations    Simulation[]
   sessions       Session[]
   accounts       Account[]
   portfolio      Portfolio?
   scores         PatrimoineScore[]
+  snapshots      PatrimoineSnapshot[]
 }
 
 model PatrimoineScore {
@@ -133,4 +134,17 @@ model PatrimoineEnvelope {
   updatedAt   DateTime            @updatedAt
 
   @@index([portfolioId])
+}
+
+model PatrimoineSnapshot {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @db.Date
+  totalValue  Float
+  byEnvelope  Json
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
 }

@@ -131,19 +131,17 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         }, 0)
         setPatrimoineTotal(total)
 
-        // Evolution quotidienne via snapshot localStorage
-        const key = 'sb_patrimoine_snapshot'
-        const todayKey = new Date().toISOString().split('T')[0]
-        try {
-          const stored = localStorage.getItem(key)
-          const snapshot: { date: string; value: number } | null = stored ? JSON.parse(stored) : null
-          if (snapshot && snapshot.date !== todayKey && snapshot.value > 0) {
-            setPatrimoineEvol(((total - snapshot.value) / snapshot.value) * 100)
-          }
-          if (!snapshot || snapshot.date !== todayKey) {
-            localStorage.setItem(key, JSON.stringify({ date: todayKey, value: total }))
-          }
-        } catch {}
+        // After setting patrimoineTotal, also fetch snapshots for evolution
+        fetch('/api/patrimoine/snapshots?days=2')
+          .then(r => r.json())
+          .then((snaps: { date: string; totalValue: number }[]) => {
+            if (snaps.length >= 2) {
+              const prev = snaps[0].totalValue
+              const curr = snaps[snaps.length - 1].totalValue
+              if (prev > 0) setPatrimoineEvol(((curr - prev) / prev) * 100)
+            }
+          })
+          .catch(() => {})
       })
       .catch(() => {})
   }, [])

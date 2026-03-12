@@ -142,6 +142,7 @@ export default function PatrimoinePage() {
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
+  const [snapshots, setSnapshots] = useState<{ date: string; value: number }[]>([])
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -161,11 +162,39 @@ export default function PatrimoinePage() {
 
   useEffect(() => { loadEnvelopes() }, [])
 
+  // Fetch snapshots on mount
+  useEffect(() => {
+    fetch('/api/patrimoine/snapshots?days=365')
+      .then(r => r.json())
+      .then((data: { date: string; totalValue: number }[]) => {
+        if (Array.isArray(data)) {
+          setSnapshots(data.map(s => ({ date: s.date, value: s.totalValue })))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   // Stats globales
   const totalValue = useMemo(() => envelopes.reduce((sum, e) => {
     if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
     return sum + computeMarketValue(e)
   }, 0), [envelopes])
+
+  // Fire-and-forget snapshot after envelopes load
+  useEffect(() => {
+    if (envelopes.length === 0) return
+    const tv = envelopes.reduce((sum, e) => {
+      if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
+      return sum + computeMarketValue(e)
+    }, 0)
+    if (tv <= 0) return
+    const byEnvelope = Object.fromEntries(envelopes.map(e => [e.id, { value: computeMarketValue(e), type: e.type, name: e.name }]))
+    fetch('/api/patrimoine/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalValue: tv, byEnvelope }),
+    }).catch(() => {})
+  }, [envelopes])
 
   // Allocation géographique agrégée (actifs financiers + immobilier géolocalisé)
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
@@ -222,7 +251,38 @@ export default function PatrimoinePage() {
   }, [envelopes])
 
   // Données évolution
-  const evolutionData = useMemo(() => generateEvolutionData(totalValue, timeRange), [totalValue, timeRange])
+  const evolutionData = useMemo(() => {
+    if (snapshots.length >= 2) {
+      const now = new Date()
+      let cutoff: Date
+      if (timeRange === '1j') {
+        cutoff = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000)
+      } else if (timeRange === '1s') {
+        cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      } else if (timeRange === '1m') {
+        cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+      } else if (timeRange === '1a') {
+        cutoff = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
+      } else {
+        cutoff = new Date(0) // max: all
+      }
+      const filtered = snapshots.filter(s => new Date(s.date) >= cutoff)
+      if (filtered.length >= 2) {
+        const isShort = timeRange === '1j' || timeRange === '1s' || timeRange === '1m'
+        return filtered.map(s => {
+          const d = new Date(s.date)
+          let date: string
+          if (isShort) {
+            date = `${d.getDate()}/${d.getMonth() + 1}`
+          } else {
+            date = d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+          }
+          return { date, value: s.value }
+        })
+      }
+    }
+    return generateEvolutionData(totalValue, timeRange)
+  }, [snapshots, totalValue, timeRange])
   const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => d.value)) * 0.98 : 0, [evolutionData])
   const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => d.value)) * 1.02 : 0, [evolutionData])
   const evolChange = useMemo(() => {

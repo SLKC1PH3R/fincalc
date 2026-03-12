@@ -19,7 +19,21 @@
       "Bash(sed -i 's/space-y-6 animate-fade-in p-5 md:p-6/space-y-6 animate-fade-in px-7 py-8/g' \"$f\")",
       "Bash(done)",
       "Bash(sed -i 's/space-y-6 animate-fade-in p-5 md:p-6 max-w-xl/space-y-6 animate-fade-in px-7 py-8 max-w-xl/g' \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/settings/page.tsx\")",
-      "Bash(sed -i 's/space-y-6 p-5 md:p-6 max-w-5xl/space-y-6 px-7 py-8 max-w-5xl/g' \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/admin/page.tsx\")"
+      "Bash(sed -i 's/space-y-6 p-5 md:p-6 max-w-5xl/space-y-6 px-7 py-8 max-w-5xl/g' \"c:/Users/jerem/Downloads/fincalc/src/app/dashboard/admin/page.tsx\")",
+      "Bash(ls /c/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/)",
+      "Bash(wc -l /c/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/page.tsx)",
+      "Bash(grep -n \"^function \" /c/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/page.tsx)",
+      "Bash(npx prisma:*)",
+      "Bash(echo \"PATH: $PATH\")",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Users/jerem/AppData/Roaming/**)",
+      "Read(//c/Users/jerem/**)",
+      "Bash(cmd.exe /c \"where node 2>&1\")",
+      "Bash(cmd.exe /c \"where node\")",
+      "Bash(cmd.exe /c \"where npx\")",
+      "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"node --version\")",
+      "Bash(wc -l src/app/dashboard/patrimoine/[id]/page.tsx src/lib/price-cache.ts)"
     ]
   }
 }

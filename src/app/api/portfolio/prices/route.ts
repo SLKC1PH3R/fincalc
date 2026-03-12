@@ -9,18 +9,72 @@ const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart'
 
 // Mapping ticker → CoinGecko ID (top cryptos + fallback vers ticker.toLowerCase())
 const COINGECKO_IDS: Record<string, string> = {
-  BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', BNB: 'binancecoin',
-  XRP: 'ripple', ADA: 'cardano', AVAX: 'avalanche-2', DOT: 'polkadot',
-  MATIC: 'matic-network', LINK: 'chainlink', UNI: 'uniswap', LTC: 'litecoin',
-  DOGE: 'dogecoin', SHIB: 'shiba-inu', ATOM: 'cosmos',
-  TRX: 'tron', TON: 'the-open-network', SUI: 'sui', APT: 'aptos',
-  OP: 'optimism', ARB: 'arbitrum', FIL: 'filecoin', ICP: 'internet-computer',
-  NEAR: 'near', VET: 'vechain', ALGO: 'algorand', HBAR: 'hedera-hashgraph',
+  // Top market cap
+  BTC: 'bitcoin', ETH: 'ethereum', BNB: 'binancecoin', SOL: 'solana',
+  XRP: 'ripple', USDT: 'tether', USDC: 'usd-coin', STETH: 'staked-ether',
+  ADA: 'cardano', AVAX: 'avalanche-2', DOGE: 'dogecoin', TRX: 'tron',
+  TON: 'the-open-network', SHIB: 'shiba-inu', DOT: 'polkadot',
+  LINK: 'chainlink', BCH: 'bitcoin-cash', NEAR: 'near',
+  UNI: 'uniswap', LTC: 'litecoin', APT: 'aptos', SUI: 'sui',
+  // Layer 2 & scaling
+  MATIC: 'matic-network', OP: 'optimism', ARB: 'arbitrum',
+  IMX: 'immutable-x', STRK: 'starknet', BLAST: 'blast',
+  ZK: 'zksync', MANTA: 'manta-network', METIS: 'metis-token',
+  // DeFi
+  AAVE: 'aave', MKR: 'maker', CRV: 'curve-dao-token', SNX: 'synthetix-network-token',
+  COMP: 'compound-governance-token', YFI: 'yearn-finance',
+  BAL: 'balancer', SUSHI: 'sushi', '1INCH': '1inch',
+  PENDLE: 'pendle', MORPHO: 'morpho', ENA: 'ethena',
+  LDO: 'lido-dao', RPL: 'rocket-pool', FXS: 'frax-share',
+  // Infrastructure & Oracle
+  ATOM: 'cosmos', ALGO: 'algorand', HBAR: 'hedera-hashgraph',
+  FIL: 'filecoin', ICP: 'internet-computer', VET: 'vechain',
+  PYTH: 'pyth-network', JTO: 'jito-governance-token', W: 'wormhole',
+  // Exchanges
+  OKB: 'okb', CRO: 'crypto-com-chain', FTT: 'ftx-token', KCS: 'kucoin-token',
+  // Gaming & NFT
   SAND: 'the-sandbox', MANA: 'decentraland', AXS: 'axie-infinity',
-  AAVE: 'aave', CRV: 'curve-dao-token', MKR: 'maker', SNX: 'synthetix-network-token',
-  FTM: 'fantom', CELO: 'celo', ZEC: 'zcash', XMR: 'monero', BCH: 'bitcoin-cash',
-  ETC: 'ethereum-classic', PEPE: 'pepe', WIF: 'dogwifcoin', BONK: 'bonk',
-  SEI: 'sei-network', INJ: 'injective-protocol', PYTH: 'pyth-network',
+  APE: 'apecoin', BLUR: 'blur', LOOKS: 'looksrare',
+  // Newer trends
+  PEPE: 'pepe', WIF: 'dogwifcoin', BONK: 'bonk', FLOKI: 'floki',
+  BOME: 'book-of-meme', WEN: 'wen-4', MEW: 'cat-in-a-dogs-world',
+  // Chains
+  SEI: 'sei-network', INJ: 'injective-protocol', TIA: 'celestia',
+  FTM: 'fantom', CELO: 'celo', KAVA: 'kava', OSMO: 'osmosis',
+  ZEC: 'zcash', XMR: 'monero', ETC: 'ethereum-classic',
+  XTZ: 'tezos', FLOW: 'flow', EGLD: 'elrond-erd-2', AXL: 'axelar',
+  ROSE: 'oasis-network', SCRT: 'secret', LUNA: 'terra-luna-2',
+  // Other popular
+  GRT: 'the-graph', FET: 'fetch-ai', OCEAN: 'ocean-protocol',
+  RNDR: 'render-token', IO: 'io-net', WLD: 'worldcoin-org',
+  MINA: 'mina-protocol', ENS: 'ethereum-name-service',
+}
+
+// Cache en mémoire pour les IDs résolus (persiste pendant la durée de vie du serveur)
+const resolvedIds: Record<string, string> = {}
+
+async function resolveCoingeckoId(ticker: string): Promise<string | null> {
+  const cached = resolvedIds[ticker]
+  if (cached) return cached
+  try {
+    const res = await fetch(
+      `${COINGECKO}/search?query=${encodeURIComponent(ticker)}`,
+      { next: { revalidate: 3600 } }  // cache 1h
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const coins: { symbol: string; id: string; market_cap_rank?: number }[] = data.coins ?? []
+    // Trouver le meilleur match : même symbole (exact), favoriser le rang de market cap
+    const exact = coins.filter(c => c.symbol.toUpperCase() === ticker.toUpperCase())
+    const best = exact.sort((a, b) => (a.market_cap_rank ?? 9999) - (b.market_cap_rank ?? 9999))[0]
+    if (best) {
+      resolvedIds[ticker] = best.id
+      return best.id
+    }
+    return null
+  } catch {
+    return null
+  }
 }
 
 // Indices boursiers (via Yahoo Finance — gratuit, pas de clé requise)
@@ -110,30 +164,62 @@ async function usdToEur(): Promise<number> {
 
 async function coinGeckoPrices(tickers: string[]): Promise<Record<string, { price: number; changePct: number }>> {
   if (!tickers.length) return {}
-  // Résolution : table connue en priorité, sinon ticker.toLowerCase() comme fallback
+
   const tickerToId: Record<string, string> = {}
   for (const t of tickers) {
     tickerToId[t] = COINGECKO_IDS[t] ?? t.toLowerCase()
   }
   const ids = [...new Set(Object.values(tickerToId))]
+
+  let d: Record<string, { eur: number; eur_24h_change: number }> = {}
   try {
     const res = await fetch(
       `${COINGECKO}/simple/price?ids=${ids.join(',')}&vs_currencies=eur&include_24hr_change=true`,
       { next: { revalidate: 60 } }
     )
-    if (!res.ok) return {}
-    const d = await res.json()
-    const result: Record<string, { price: number; changePct: number }> = {}
-    for (const ticker of tickers) {
-      const id = tickerToId[ticker]
-      if (id && d[id]) {
-        result[ticker] = { price: d[id].eur, changePct: d[id].eur_24h_change ?? 0 }
-      }
+    if (res.ok) d = await res.json()
+  } catch { return {} }
+
+  const result: Record<string, { price: number; changePct: number }> = {}
+  const unknownTickers: string[] = []
+
+  for (const ticker of tickers) {
+    const id = tickerToId[ticker]
+    if (d[id]) {
+      result[ticker] = { price: d[id].eur, changePct: d[id].eur_24h_change ?? 0 }
+    } else {
+      unknownTickers.push(ticker)
     }
-    return result
-  } catch {
-    return {}
   }
+
+  // Pour les tickers sans résultat, essayer de résoudre via /search
+  if (unknownTickers.length > 0) {
+    const resolved = await Promise.all(
+      unknownTickers.map(async t => {
+        const id = await resolveCoingeckoId(t)
+        return { ticker: t, id }
+      })
+    )
+    const newIds = resolved.filter(r => r.id && !ids.includes(r.id!)).map(r => r.id!)
+    if (newIds.length > 0) {
+      try {
+        const res2 = await fetch(
+          `${COINGECKO}/simple/price?ids=${newIds.join(',')}&vs_currencies=eur&include_24hr_change=true`,
+          { next: { revalidate: 60 } }
+        )
+        if (res2.ok) {
+          const d2 = await res2.json()
+          for (const { ticker, id } of resolved) {
+            if (id && d2[id]) {
+              result[ticker] = { price: d2[id].eur, changePct: d2[id].eur_24h_change ?? 0 }
+            }
+          }
+        }
+      } catch {}
+    }
+  }
+
+  return result
 }
 
 type CustomIndex = { symbol: string; label: string; type: 'stock' | 'crypto' }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { lookupByName } from '@/lib/etf-database'
 
 const FINNHUB_KEY = process.env.FINNHUB_API_KEY ?? ''
 const FINNHUB = 'https://finnhub.io/api/v1'
@@ -123,6 +124,23 @@ export async function GET(req: NextRequest) {
 
   try {
     if (type === 'crypto') return NextResponse.json(await searchCrypto(q))
+
+    if (type === 'stock') {
+      const localResults = lookupByName(q).map(e => ({
+        symbol: e.ticker, name: e.name, type: 'ETF' as const, isin: e.isin,
+      }))
+      if (isIsinLike(q)) {
+        const isinResults = await searchByIsin(q)
+        const merged = [...isinResults, ...localResults.filter(r => r.isin !== q.toUpperCase())]
+        return NextResponse.json(merged.slice(0, 10))
+      }
+      const [finnhubResults] = await Promise.all([searchStocks(q)])
+      const seen = new Set(localResults.map(r => r.symbol))
+      const merged = [...localResults, ...finnhubResults.filter(r => !seen.has(r.symbol))]
+      return NextResponse.json(merged.slice(0, 10))
+    }
+
+    // fallback: legacy path (ISIN detection + stock search)
     if (isIsinLike(q)) return NextResponse.json(await searchByIsin(q))
     return NextResponse.json(await searchStocks(q))
   } catch {

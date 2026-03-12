@@ -48,6 +48,20 @@ const US = { northAmerica: 0.98, europe: 0.00, asiaPacific: 0.00, emergingMarket
 const NQ = { northAmerica: 0.97, europe: 0.01, asiaPacific: 0.01, emergingMarkets: 0.00, other: 0.01 }  // Nasdaq 100
 const EU = { northAmerica: 0.00, europe: 0.98, asiaPacific: 0.00, emergingMarkets: 0.00, other: 0.02 }  // Europe
 const EM = { northAmerica: 0.00, europe: 0.01, asiaPacific: 0.55, emergingMarkets: 0.40, other: 0.04 }  // Emerging Markets
+const JP      = { northAmerica: 0.00, europe: 0.00, asiaPacific: 0.98, emergingMarkets: 0.00, other: 0.02 }
+const IN      = { northAmerica: 0.00, europe: 0.00, asiaPacific: 0.12, emergingMarkets: 0.85, other: 0.03 }
+const CN      = { northAmerica: 0.00, europe: 0.00, asiaPacific: 0.08, emergingMarkets: 0.89, other: 0.03 }
+const APAC    = { northAmerica: 0.00, europe: 0.00, asiaPacific: 0.92, emergingMarkets: 0.05, other: 0.03 }
+const EU_BOND = { northAmerica: 0.00, europe: 0.97, asiaPacific: 0.00, emergingMarkets: 0.00, other: 0.03 }
+const US_BOND = { northAmerica: 0.97, europe: 0.00, asiaPacific: 0.00, emergingMarkets: 0.00, other: 0.03 }
+const EM_BOND = { northAmerica: 0.04, europe: 0.06, asiaPacific: 0.36, emergingMarkets: 0.51, other: 0.03 }
+const GOLD    = { northAmerica: 0.00, europe: 0.00, asiaPacific: 0.00, emergingMarkets: 0.00, other: 1.00 }
+const REIT_W  = { northAmerica: 0.55, europe: 0.20, asiaPacific: 0.20, emergingMarkets: 0.03, other: 0.02 }
+const REIT_EU = { northAmerica: 0.12, europe: 0.74, asiaPacific: 0.12, emergingMarkets: 0.00, other: 0.02 }
+const HEALTH_W = { northAmerica: 0.63, europe: 0.24, asiaPacific: 0.10, emergingMarkets: 0.00, other: 0.03 }
+const ROBO_W  = { northAmerica: 0.53, europe: 0.24, asiaPacific: 0.22, emergingMarkets: 0.00, other: 0.01 }
+const MIN_VOL = { northAmerica: 0.56, europe: 0.25, asiaPacific: 0.15, emergingMarkets: 0.00, other: 0.04 }
+const INFRA_W = { northAmerica: 0.40, europe: 0.32, asiaPacific: 0.22, emergingMarkets: 0.04, other: 0.02 }
 
 export const ETF_DATABASE: ETFInfo[] = [
   // ── S&P 500 ──────────────────────────────────────────────────
@@ -330,6 +344,96 @@ export const ETF_DATABASE: ETFInfo[] = [
     ter: 0.0029, benchmark: 'FTSE All-World High Dividend Yield', replication: 'physical', aum: 4200,
     geo: { northAmerica: 0.47, europe: 0.22, asiaPacific: 0.18, emergingMarkets: 0.10, other: 0.03 },
   },
+
+  // ── S&P 500 — variantes supplémentaires ──────────────────────
+  { isin: 'IE00B5BMR087', ticker: 'CSPX', name: 'iShares Core S&P 500 UCITS ETF USD (Acc)', ter: 0.0007, benchmark: 'S&P 500', replication: 'physical', aum: 65000, geo: US, alternatives: ['LU1829221024'] },
+  { isin: 'IE00B3XXRP09', ticker: 'VUSA', name: 'Vanguard S&P 500 UCITS ETF (Dist)', ter: 0.0007, benchmark: 'S&P 500', replication: 'physical', aum: 35000, geo: US, alternatives: ['IE00B5BMR087', 'LU1829221024'] },
+  { isin: 'IE00B6YX5C33', ticker: 'SPXD', name: 'SPDR S&P 500 UCITS ETF (Dist)', ter: 0.0003, benchmark: 'S&P 500', replication: 'physical', aum: 14000, geo: US, alternatives: [] },
+  { isin: 'IE00BFY0GT14', ticker: 'VUAG', name: 'Vanguard S&P 500 UCITS ETF (Acc)', ter: 0.0007, benchmark: 'S&P 500', replication: 'physical', aum: 28000, geo: US, alternatives: ['LU1829221024'] },
+
+  // ── MSCI World — variantes supplémentaires ────────────────────
+  { isin: 'IE00B4TG9K96', ticker: 'IWDH', name: 'iShares MSCI World EUR Hedged UCITS ETF (Acc)', ter: 0.0055, benchmark: 'MSCI World (EUR Hedged)', replication: 'physical', aum: 3200, geo: W },
+  { isin: 'IE00B8FHGS14', ticker: 'MVOL', name: 'iShares Edge MSCI World Minimum Volatility UCITS ETF (Acc)', ter: 0.0030, benchmark: 'MSCI World Minimum Volatility', replication: 'physical', aum: 5800, geo: MIN_VOL, alternatives: ['IE00B4L5Y983'] },
+  { isin: 'LU1291106564', ticker: 'XDEW', name: 'Xtrackers MSCI World Swap UCITS ETF 2D', ter: 0.0017, benchmark: 'MSCI World', replication: 'synthetic', aum: 2100, geo: W, alternatives: ['LU0274208692'] },
+
+  // ── Japon ─────────────────────────────────────────────────────
+  { isin: 'IE00B4L5YX21', ticker: 'IJPA', name: 'iShares Core MSCI Japan IMI UCITS ETF (Acc)', ter: 0.0012, benchmark: 'MSCI Japan IMI', replication: 'physical', aum: 5000, geo: JP },
+  { isin: 'LU0659580079', ticker: 'XMJP', name: 'Xtrackers MSCI Japan UCITS ETF 1C', ter: 0.0009, benchmark: 'MSCI Japan', replication: 'physical', aum: 3500, geo: JP, alternatives: ['IE00B4L5YX21'] },
+  { isin: 'FR0011399973', ticker: 'JPNH', name: 'Amundi MSCI Japan UCITS ETF (PEA-éligible)', ter: 0.0028, benchmark: 'MSCI Japan', replication: 'synthetic', aum: 900, geo: JP, alternatives: ['IE00B4L5YX21'] },
+  { isin: 'IE00B06YNX21', ticker: 'XMJT', name: 'Xtrackers Nikkei 225 UCITS ETF 1C', ter: 0.0009, benchmark: 'Nikkei 225', replication: 'physical', aum: 800, geo: JP },
+
+  // ── Inde ──────────────────────────────────────────────────────
+  { isin: 'IE00BGCG0J87', ticker: 'NDIA', name: 'iShares MSCI India UCITS ETF (Acc)', ter: 0.0065, benchmark: 'MSCI India', replication: 'physical', aum: 1800, geo: IN },
+  { isin: 'LU0514695690', ticker: 'XMIN', name: 'Xtrackers MSCI India Swap UCITS ETF 1C', ter: 0.0075, benchmark: 'MSCI India', replication: 'synthetic', aum: 700, geo: IN, alternatives: ['IE00BGCG0J87'] },
+
+  // ── Zone euro / Europe ────────────────────────────────────────
+  { isin: 'IE00B53QG562', ticker: 'IEQU', name: 'iShares Core MSCI EMU UCITS ETF (Acc)', ter: 0.0012, benchmark: 'MSCI EMU', replication: 'physical', aum: 9000, geo: EU },
+  { isin: 'IE00B60SX394', ticker: 'CS5E', name: 'iShares Core Euro Stoxx 50 UCITS ETF EUR (Acc)', ter: 0.0010, benchmark: 'Euro Stoxx 50', replication: 'physical', aum: 8500, geo: EU },
+  { isin: 'FR0007054358', ticker: 'MSE', name: 'Lyxor Euro Stoxx 50 (DR) UCITS ETF (Dist)', ter: 0.0020, benchmark: 'Euro Stoxx 50', replication: 'physical', aum: 4500, geo: EU, alternatives: ['LU1681041484', 'IE00B60SX394'] },
+  { isin: 'DE0005933931', ticker: 'EXS1', name: 'iShares Core DAX UCITS ETF (DE)', ter: 0.0016, benchmark: 'DAX 40', replication: 'physical', aum: 18000, geo: EU },
+  { isin: 'LU0908500753', ticker: 'LDAX', name: 'Lyxor DAX UCITS ETF (Acc)', ter: 0.0015, benchmark: 'DAX 40', replication: 'physical', aum: 3000, geo: EU, alternatives: ['DE0005933931'] },
+  { isin: 'FR0010655696', ticker: 'STOXX', name: 'Amundi (ex-Lyxor) Euro Stoxx 600 UCITS ETF', ter: 0.0007, benchmark: 'Stoxx Europe 600', replication: 'synthetic', aum: 6500, geo: EU },
+  { isin: 'IE00B3ZW0K18', ticker: 'SXRD', name: 'iShares Core Euro Stoxx 600 UCITS ETF (Dist)', ter: 0.0007, benchmark: 'Stoxx Europe 600', replication: 'physical', aum: 7200, geo: EU },
+
+  // ── Secteurs (iShares MSCI World) ─────────────────────────────
+  { isin: 'IE00BYVJRP78', ticker: 'HEAL', name: 'iShares MSCI World Health Care UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Health Care', replication: 'physical', aum: 4500, geo: HEALTH_W },
+  { isin: 'IE00BYVJRR91', ticker: 'IFIN', name: 'iShares MSCI World Financials UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Financials', replication: 'physical', aum: 2800, geo: { northAmerica: 0.62, europe: 0.22, asiaPacific: 0.13, emergingMarkets: 0.00, other: 0.03 } },
+  { isin: 'IE00BYVJRQ85', ticker: 'INDS', name: 'iShares MSCI World Industrials UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Industrials', replication: 'physical', aum: 2100, geo: { northAmerica: 0.61, europe: 0.22, asiaPacific: 0.14, emergingMarkets: 0.00, other: 0.03 } },
+  { isin: 'IE00BYVJRS07', ticker: 'IWCS', name: 'iShares MSCI World Consumer Staples UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Consumer Staples', replication: 'physical', aum: 1900, geo: { northAmerica: 0.58, europe: 0.26, asiaPacific: 0.13, emergingMarkets: 0.00, other: 0.03 } },
+  { isin: 'IE00BYVJRV37', ticker: 'IUEM', name: 'iShares MSCI World Energy UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Energy', replication: 'physical', aum: 2400, geo: { northAmerica: 0.68, europe: 0.20, asiaPacific: 0.09, emergingMarkets: 0.00, other: 0.03 } },
+  { isin: 'IE00BYVJRW44', ticker: 'IURE', name: 'iShares MSCI World Real Estate UCITS ETF (Acc)', ter: 0.0035, benchmark: 'MSCI World Real Estate', replication: 'physical', aum: 1600, geo: REIT_W },
+
+  // ── Thématiques ───────────────────────────────────────────────
+  { isin: 'IE00BYZK4552', ticker: 'RBOT', name: 'iShares Automation & Robotics UCITS ETF (Acc)', ter: 0.0040, benchmark: 'iSTOXX FactSet Automation & Robotics', replication: 'physical', aum: 2800, geo: ROBO_W },
+  { isin: 'IE00BDVPNG13', ticker: 'WTAI', name: 'WisdomTree Artificial Intelligence UCITS ETF (Acc)', ter: 0.0040, benchmark: 'Nasdaq CTA AI & Robotics', replication: 'physical', aum: 900, geo: { northAmerica: 0.72, europe: 0.10, asiaPacific: 0.16, emergingMarkets: 0.01, other: 0.01 } },
+  { isin: 'IE00BYXG2H39', ticker: 'LOCK', name: 'iShares Digital Security UCITS ETF (Acc)', ter: 0.0040, benchmark: 'iSTOXX World Digital Security', replication: 'physical', aum: 1100, geo: { northAmerica: 0.75, europe: 0.14, asiaPacific: 0.10, emergingMarkets: 0.00, other: 0.01 } },
+  { isin: 'IE00B4WXJL22', ticker: 'WATER', name: 'iShares Global Water UCITS ETF (Dist)', ter: 0.0065, benchmark: 'S&P Global Water', replication: 'physical', aum: 2100, geo: { northAmerica: 0.50, europe: 0.34, asiaPacific: 0.13, emergingMarkets: 0.01, other: 0.02 } },
+  { isin: 'IE00BHZRQX61', ticker: 'INFR', name: 'iShares Global Infrastructure UCITS ETF (Acc)', ter: 0.0065, benchmark: 'FTSE Global Core Infrastructure', replication: 'physical', aum: 3400, geo: INFRA_W },
+
+  // ── Immobilier coté (REITs) ───────────────────────────────────
+  { isin: 'IE00B0M63284', ticker: 'IPRP', name: 'iShares European Property Yield UCITS ETF', ter: 0.0040, benchmark: 'FTSE EPRA/NAREIT Europe Dividend+', replication: 'physical', aum: 2100, geo: REIT_EU },
+  { isin: 'IE00BDR55506', ticker: 'REET', name: 'iShares Global REIT UCITS ETF (Acc)', ter: 0.0014, benchmark: 'FTSE EPRA/NAREIT Developed', replication: 'physical', aum: 1400, geo: REIT_W },
+
+  // ── Obligations — Zone euro ───────────────────────────────────
+  { isin: 'IE00BDZYXK31', ticker: 'SEGA', name: 'iShares Core € Govt Bond UCITS ETF (Acc)', ter: 0.0007, benchmark: 'Bloomberg Euro Aggregate Treasury Bond', replication: 'physical', aum: 6200, geo: EU_BOND },
+  { isin: 'LU0641434446', ticker: 'XGLE', name: 'Xtrackers II Eurozone Government Bond UCITS ETF 1C', ter: 0.0015, benchmark: 'Bloomberg Eurozone Govt Bond', replication: 'physical', aum: 3800, geo: EU_BOND, alternatives: ['IE00BDZYXK31'] },
+  { isin: 'IE00B3VJFG18', ticker: 'IBCX', name: 'iShares Core € Corp Bond UCITS ETF', ter: 0.0020, benchmark: 'Bloomberg Euro Corp Bond', replication: 'physical', aum: 7100, geo: EU_BOND },
+  { isin: 'IE00B66F4759', ticker: 'SHYG', name: 'iShares € Short Duration High Yield Corp Bond UCITS ETF', ter: 0.0050, benchmark: 'Markit iBoxx EUR Liquid HY 0-5', replication: 'physical', aum: 1400, geo: EU_BOND },
+
+  // ── Obligations — États-Unis ──────────────────────────────────
+  { isin: 'IE00B14X4S71', ticker: 'IDTL', name: 'iShares $ Treasury Bond 20+yr UCITS ETF (Acc)', ter: 0.0010, benchmark: 'ICE US Treasury 20+ Year Bond', replication: 'physical', aum: 4200, geo: US_BOND },
+  { isin: 'IE00B3F81409', ticker: 'IBTS', name: 'iShares $ Treasury Bond 1-3yr UCITS ETF (Acc)', ter: 0.0007, benchmark: 'ICE US Treasury 1-3 Year Bond', replication: 'physical', aum: 3100, geo: US_BOND },
+  { isin: 'IE00BDFK5H46', ticker: 'LQDE', name: 'iShares $ Corp Bond UCITS ETF (Acc)', ter: 0.0020, benchmark: 'Markit iBoxx USD Liquid Investment Grade', replication: 'physical', aum: 5800, geo: US_BOND },
+
+  // ── Obligations — Marchés émergents ──────────────────────────
+  { isin: 'IE00B2NPKV68', ticker: 'SEMB', name: 'iShares JP Morgan $ EM Bond UCITS ETF (Dist)', ter: 0.0045, benchmark: 'JPM EMBI Global Diversified', replication: 'physical', aum: 5200, geo: EM_BOND },
+  { isin: 'LU1808502762', ticker: 'EMBE', name: 'Amundi JP Morgan EM Bond UCITS ETF (Acc)', ter: 0.0045, benchmark: 'JPM EMBI Global Diversified', replication: 'physical', aum: 1800, geo: EM_BOND, alternatives: ['IE00B2NPKV68'] },
+
+  // ── Obligations inflation ─────────────────────────────────────
+  { isin: 'IE00B3B8PX14', ticker: 'IBCI', name: 'iShares € Inflation Linked Govt Bond UCITS ETF', ter: 0.0025, benchmark: 'Bloomberg Euro Govt Inflation-Linked Bond', replication: 'physical', aum: 2900, geo: EU_BOND },
+  { isin: 'IE00B3DKXQ41', ticker: 'ITPS', name: 'iShares $ TIPS UCITS ETF (Acc)', ter: 0.0010, benchmark: 'Bloomberg US TIPS', replication: 'physical', aum: 2200, geo: US_BOND },
+
+  // ── Or physique / ETCs ────────────────────────────────────────
+  { isin: 'JE00B1VS3770', ticker: 'PHAU', name: 'WisdomTree Physical Gold (EUR)', ter: 0.0039, benchmark: 'Or physique', replication: 'physical', aum: 7500, geo: GOLD },
+  { isin: 'FR0013416716', ticker: 'GOLD', name: 'Amundi Physical Gold ETC (EUR)', ter: 0.0012, benchmark: 'Or physique', replication: 'physical', aum: 3100, geo: GOLD, alternatives: ['JE00B1VS3770'] },
+  { isin: 'JE00B1VS3333', ticker: 'PHAG', name: 'WisdomTree Physical Silver (EUR)', ter: 0.0049, benchmark: 'Argent physique', replication: 'physical', aum: 1200, geo: GOLD },
+
+  // ── ESG supplémentaires ───────────────────────────────────────
+  { isin: 'IE00BMF76938', ticker: 'MWRD', name: 'iShares MSCI World ESG Enhanced UCITS ETF (Acc)', ter: 0.0020, benchmark: 'MSCI World ESG Enhanced Focus', replication: 'physical', aum: 4200, geo: W, alternatives: ['IE00B4L5Y983'] },
+  { isin: 'LU2056738539', ticker: 'PABW', name: 'Amundi MSCI World Climate Paris Aligned PAB UCITS ETF (Acc)', ter: 0.0018, benchmark: 'MSCI World Climate Paris Aligned', replication: 'synthetic', aum: 1600, geo: W },
+
+  // ── Dividendes supplémentaires ────────────────────────────────
+  { isin: 'IE00BTN1Y115', ticker: 'VDIV', name: 'Vanguard FTSE All-World High Div Yield UCITS ETF (Acc)', ter: 0.0029, benchmark: 'FTSE All-World High Dividend Yield', replication: 'physical', aum: 2800, geo: AW, alternatives: ['IE00B8GKDB10'] },
+  { isin: 'NL0009272749', ticker: 'TDIV', name: 'VanEck Morningstar Developed Markets Dividend Leaders (Dist)', ter: 0.0038, benchmark: 'Morningstar Developed Markets Large Cap Dividend Leaders', replication: 'physical', aum: 3600, geo: { northAmerica: 0.45, europe: 0.35, asiaPacific: 0.18, emergingMarkets: 0.00, other: 0.02 } },
+  { isin: 'IE00B5KKCX20', ticker: 'SEDY', name: 'iShares Emerging Markets Dividend UCITS ETF (Dist)', ter: 0.0065, benchmark: 'Dow Jones EM Select Dividend', replication: 'physical', aum: 800, geo: EM },
+
+  // ── Multi-asset / Allocation ──────────────────────────────────
+  { isin: 'IE00BWBXM385', ticker: 'VNGA80', name: 'Vanguard LifeStrategy 80% Equity UCITS ETF (Acc)', ter: 0.0025, benchmark: 'Vanguard LifeStrategy 80 Equity', replication: 'physical', aum: 2800, geo: AW },
+  { isin: 'IE00BMVB5P51', ticker: 'VNGA60', name: 'Vanguard LifeStrategy 60% Equity UCITS ETF (Acc)', ter: 0.0025, benchmark: 'Vanguard LifeStrategy 60 Equity', replication: 'physical', aum: 2200, geo: { northAmerica: 0.37, europe: 0.30, asiaPacific: 0.14, emergingMarkets: 0.06, other: 0.13 } },
+
+  // ── Small caps supplémentaires ────────────────────────────────
+  { isin: 'IE00BSPLC298', ticker: 'ZPRV', name: 'SPDR MSCI USA Small Cap Value Weighted UCITS ETF', ter: 0.0030, benchmark: 'MSCI USA Small Cap Value Weighted', replication: 'physical', aum: 1800, geo: US },
+  { isin: 'IE00BSPLC413', ticker: 'ZPRX', name: 'SPDR MSCI Europe Small Cap Value Weighted UCITS ETF', ter: 0.0030, benchmark: 'MSCI Europe Small Cap Value Weighted', replication: 'physical', aum: 700, geo: EU },
 ]
 
 // ─────────────────────────────────────────────────────────────────
@@ -346,6 +450,18 @@ export function lookupByTicker(ticker: string): ETFInfo | null {
     const db = e.ticker.toUpperCase().replace(/\.(PA|AS|DE|L|MI|SW)$/, '')
     return db === t
   }) ?? null
+}
+
+/** Recherche plein-texte : nom, ticker, benchmark ou ISIN. Retourne max 10 résultats. */
+export function lookupByName(query: string): ETFInfo[] {
+  const q = query.toLowerCase().trim()
+  if (q.length < 2) return []
+  return ETF_DATABASE.filter(e =>
+    e.name.toLowerCase().includes(q) ||
+    e.ticker.toLowerCase().includes(q) ||
+    e.benchmark.toLowerCase().includes(q) ||
+    e.isin.toLowerCase().includes(q)
+  ).slice(0, 10)
 }
 
 /** Trouve les alternatives moins chères (ou équivalentes) pour un ETF donné. */

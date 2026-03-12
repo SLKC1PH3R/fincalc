@@ -11,7 +11,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcBudget, type BudgetInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ArrowRight } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 
@@ -321,6 +321,58 @@ function BudgetPageInner() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ── CTAs interconnexion ── */}
+      {r.savingsTotal > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <a
+            href={`/dashboard/dca?restore=${encodeURIComponent(JSON.stringify({ monthly: Math.round(r.savingsTotal), years: 20, targetRate: 8, volatility: 15, initialPrice: 100 }))}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <div style={{
+              padding: '16px 20px', borderRadius: 14, cursor: 'pointer',
+              background: 'rgba(129,140,248,0.06)', border: '1px solid rgba(129,140,248,0.25)',
+              transition: 'border-color 0.15s',
+              display: 'flex', alignItems: 'center', gap: 12,
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(129,140,248,0.5)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(129,140,248,0.25)')}
+            >
+              <TrendingUp style={{ width: 20, height: 20, color: '#818cf8', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Simuler en DCA</div>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
+                  Investir {fmt(r.savingsTotal)}/mois pendant 20 ans
+                </div>
+              </div>
+              <ArrowRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', marginLeft: 'auto', flexShrink: 0 }} />
+            </div>
+          </a>
+          <a
+            href={`/dashboard/fire?restore=${encodeURIComponent(JSON.stringify({ income: inputs.netIncome * 12, expenses: (r.needs + r.wants) * 12, netWorth: 0, rate: 7, withdrawalRate: 4 }))}`}
+            style={{ textDecoration: 'none' }}
+          >
+            <div style={{
+              padding: '16px 20px', borderRadius: 14, cursor: 'pointer',
+              background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.2)',
+              transition: 'border-color 0.15s',
+              display: 'flex', alignItems: 'center', gap: 12,
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.45)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.2)')}
+            >
+              <CheckCircle2 style={{ width: 20, height: 20, color: '#f97316', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Calculer mon FIRE</div>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
+                  Avec {fmtPct(r.savingsPct)} d'épargne · dépenses {fmt(r.needs + r.wants)}/mois
+                </div>
+              </div>
+              <ArrowRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', marginLeft: 'auto', flexShrink: 0 }} />
+            </div>
+          </a>
+        </div>
+      )}
     </div>
   )
 }

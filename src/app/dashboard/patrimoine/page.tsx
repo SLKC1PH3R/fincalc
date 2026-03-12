@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo, type ComponentType } from 'react'
+import { useState, useEffect, useMemo, useRef, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,7 +10,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -143,6 +143,32 @@ export default function PatrimoinePage() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
   const [snapshots, setSnapshots] = useState<{ date: string; value: number }[]>([])
+  const [fireTarget, setFireTarget] = useState<number>(0)
+  const [fireTargetInput, setFireTargetInput] = useState('')
+  const [editingFireTarget, setEditingFireTarget] = useState(false)
+  const milestoneFiredRef = useRef<Set<string>>(new Set())
+  const [dragOver, setDragOver] = useState<string | null>(null)
+  const dragSrcIdx = useRef<number | null>(null)
+
+  const handleDragStart = (idx: number) => { dragSrcIdx.current = idx }
+  const handleDrop = async (targetIdx: number) => {
+    const srcIdx = dragSrcIdx.current
+    if (srcIdx === null || srcIdx === targetIdx) { setDragOver(null); return }
+    const reordered = [...envelopes]
+    const [moved] = reordered.splice(srcIdx, 1)
+    reordered.splice(targetIdx, 0, moved)
+    setEnvelopes(reordered)
+    setDragOver(null)
+    dragSrcIdx.current = null
+    // Persist sortOrder
+    await Promise.all(reordered.map((e, i) =>
+      fetch(`/api/patrimoine/envelopes/${e.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sortOrder: i }),
+      })
+    ))
+  }
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -161,6 +187,14 @@ export default function PatrimoinePage() {
   }
 
   useEffect(() => { loadEnvelopes() }, [])
+
+  // Load FIRE target from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('fincalc_fire_target')
+    if (saved) { const n = parseFloat(saved); if (n > 0) { setFireTarget(n); setFireTargetInput(String(n)) } }
+    const firedStr = localStorage.getItem('fincalc_milestones_fired')
+    if (firedStr) { try { milestoneFiredRef.current = new Set(JSON.parse(firedStr)) } catch {} }
+  }, [])
 
   // Fetch snapshots on mount
   useEffect(() => {
@@ -195,6 +229,31 @@ export default function PatrimoinePage() {
       body: JSON.stringify({ totalValue: tv, byEnvelope }),
     }).catch(() => {})
   }, [envelopes])
+
+  // Milestones
+  useEffect(() => {
+    if (loading || totalValue <= 0) return
+    const MILESTONES: { key: string; test: () => boolean; message: string }[] = [
+      { key: 'wealth_100k', test: () => totalValue >= 100_000, message: '🎉 100 000€ de patrimoine franchis !' },
+      { key: 'wealth_250k', test: () => totalValue >= 250_000, message: '🚀 250 000€ de patrimoine atteints !' },
+      { key: 'wealth_500k', test: () => totalValue >= 500_000, message: '💎 500 000€ — vous approchez la liberté financière !' },
+      { key: 'wealth_1M',   test: () => totalValue >= 1_000_000, message: '🏆 1 000 000€ — félicitations, millionnaire !' },
+    ]
+    // PEA plafond
+    for (const env of envelopes) {
+      if (env.type === 'PEA') {
+        const dep = Number(env.metadata.totalDeposited ?? 0)
+        MILESTONES.push({ key: `pea_max_${env.id}`, test: () => dep >= 150_000, message: `🎯 PEA "${env.name}" : plafond de versements 150 000€ atteint !` })
+      }
+    }
+    for (const m of MILESTONES) {
+      if (m.test() && !milestoneFiredRef.current.has(m.key)) {
+        milestoneFiredRef.current.add(m.key)
+        localStorage.setItem('fincalc_milestones_fired', JSON.stringify([...milestoneFiredRef.current]))
+        toast({ title: 'Milestone atteint !', description: m.message })
+      }
+    }
+  }, [totalValue, loading, envelopes, toast])
 
   // Allocation géographique agrégée (actifs financiers + immobilier géolocalisé)
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
@@ -495,6 +554,79 @@ export default function PatrimoinePage() {
         </div>
       )}
 
+      {/* ── FIRE Tracker ── */}
+      {!loading && totalValue > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: '18px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(249,115,22,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Flame style={{ width: 13, height: 13, color: '#f97316' }} />
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Progression FIRE</span>
+              </div>
+              {!editingFireTarget ? (
+                <button
+                  onClick={() => setEditingFireTarget(true)}
+                  style={{ fontSize: 11, color: 'var(--text-subtle)', cursor: 'pointer', background: 'none', border: 'none', textDecoration: 'underline' }}
+                >
+                  {fireTarget > 0 ? `Cible : ${fmtCompact(fireTarget)}` : 'Définir objectif FIRE'}
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <input
+                    value={fireTargetInput}
+                    onChange={e => setFireTargetInput(e.target.value)}
+                    placeholder="Ex: 750000"
+                    autoFocus
+                    style={{ width: 110, padding: '3px 8px', borderRadius: 6, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        const n = parseFloat(fireTargetInput.replace(/\s/g, '').replace(',', '.'))
+                        if (n > 0) { setFireTarget(n); localStorage.setItem('fincalc_fire_target', String(n)) }
+                        setEditingFireTarget(false)
+                      }
+                      if (e.key === 'Escape') setEditingFireTarget(false)
+                    }}
+                  />
+                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>€ — Entrée pour valider</span>
+                </div>
+              )}
+            </div>
+            {fireTarget > 0 ? (() => {
+              const pct = Math.min(100, (totalValue / fireTarget) * 100)
+              const remaining = Math.max(0, fireTarget - totalValue)
+              const color = pct >= 75 ? '#34d399' : pct >= 50 ? '#f97316' : pct >= 25 ? '#f59e0b' : '#818cf8'
+              return (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                      {fmtCompact(totalValue)} / {fmtCompact(fireTarget)}
+                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color }}>{pct.toFixed(1)} %</span>
+                  </div>
+                  <div style={{ height: 10, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden', marginBottom: 8 }}>
+                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 999, transition: 'width 0.5s ease' }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                    Il vous reste <b style={{ color: 'var(--text-muted-c)' }}>{fmtCompact(remaining)}</b> à accumuler.
+                    {pct >= 100 && <span style={{ marginLeft: 6, color: '#34d399', fontWeight: 700 }}>🎉 Objectif FIRE atteint !</span>}
+                    {' '}
+                    <a href="/dashboard/fire" style={{ color: '#f97316', textDecoration: 'none', marginLeft: 4 }}>Simuler →</a>
+                  </div>
+                </div>
+              )
+            })() : (
+              <div style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
+                Définissez votre objectif FIRE pour suivre votre progression.
+                Règle des 4% : accumulez 25× vos dépenses annuelles.
+                <a href="/dashboard/fire" style={{ color: '#f97316', textDecoration: 'none', marginLeft: 6 }}>Calculer mon FIRE number →</a>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* ── Liste enveloppes ── */}
       <div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
@@ -502,7 +634,20 @@ export default function PatrimoinePage() {
         </div>
 
         {loading && (
-          <div style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Chargement…</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', minHeight: 110 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div className="animate-pulse" style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--section-border)' }} />
+                  <div>
+                    <div className="animate-pulse" style={{ width: 100, height: 12, borderRadius: 6, background: 'var(--section-border)', marginBottom: 6 }} />
+                    <div className="animate-pulse" style={{ width: 60, height: 10, borderRadius: 6, background: 'var(--section-border)' }} />
+                  </div>
+                </div>
+                <div className="animate-pulse" style={{ width: 80, height: 20, borderRadius: 6, background: 'var(--section-border)' }} />
+              </div>
+            ))}
+          </div>
         )}
 
         {!loading && envelopes.length === 0 && (
@@ -526,7 +671,7 @@ export default function PatrimoinePage() {
 
         {!loading && envelopes.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {envelopes.map(env => {
+            {envelopes.map((env, idx) => {
               const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const Icon = cfg.icon
               const value = env.type === 'IMMOBILIER'
@@ -535,16 +680,24 @@ export default function PatrimoinePage() {
               const cap = getCapProgress(env)
 
               return (
-                <Link
+                <div
                   key={env.id}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={e => { e.preventDefault(); setDragOver(env.id) }}
+                  onDragLeave={() => setDragOver(null)}
+                  onDrop={() => handleDrop(idx)}
+                  style={{ display: 'flex', opacity: dragOver === env.id ? 0.5 : 1, transition: 'opacity 0.15s' }}
+                >
+                <Link
                   href={`/dashboard/patrimoine/${env.id}`}
-                  style={{ textDecoration: 'none', display: 'flex' }}
+                  style={{ textDecoration: 'none', display: 'flex', flex: 1 }}
                 >
                   <div style={{
                     padding: 18, borderRadius: 14,
-                    background: 'var(--card-dark)',
-                    border: '1px solid var(--card-dark-border)',
-                    cursor: 'pointer',
+                    background: dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)',
+                    border: `1px solid ${dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'}`,
+                    cursor: 'grab',
                     transition: 'border-color 0.15s, background 0.15s',
                     width: '100%',
                   }}
@@ -553,8 +706,8 @@ export default function PatrimoinePage() {
                       ;(e.currentTarget as HTMLElement).style.background = 'var(--row-hover)'
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'
-                      ;(e.currentTarget as HTMLElement).style.background = 'var(--card-dark)'
+                      (e.currentTarget as HTMLElement).style.borderColor = dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'
+                      ;(e.currentTarget as HTMLElement).style.background = dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -610,6 +763,7 @@ export default function PatrimoinePage() {
                     )}
                   </div>
                 </Link>
+                </div>
               )
             })}
           </div>

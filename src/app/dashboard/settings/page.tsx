@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import { User, Mail, Camera, Check, Loader2, Lock, ShieldCheck } from 'lucide-react'
+import { User, Mail, Camera, Check, Loader2, Lock, ShieldCheck, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const DEMO_EMAIL = 'demo@digitalstack.cloud'
 
@@ -82,6 +83,7 @@ export default function SettingsPage() {
     }
   }
 
+  const { theme, toggleTheme } = useTheme()
   const initials = (session?.user?.name || session?.user?.email || 'U')[0].toUpperCase()
 
   return (
@@ -165,6 +167,39 @@ export default function SettingsPage() {
             <Label className="flex items-center gap-2"><Mail className="h-3.5 w-3.5 text-muted-foreground" />Adresse email</Label>
             <Input value={session?.user?.email || ''} disabled className="opacity-60" />
             <p className="text-xs text-muted-foreground">L'email ne peut pas être modifié.</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Theme preference */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Apparence</CardTitle>
+          <CardDescription>Choisissez entre le mode sombre et le mode clair</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {theme === 'dark'
+                ? <Moon className="h-4 w-4 text-muted-foreground" />
+                : <Sun className="h-4 w-4 text-muted-foreground" />}
+              <span className="text-sm font-medium">{theme === 'dark' ? 'Mode sombre' : 'Mode clair'}</span>
+            </div>
+            <button
+              onClick={toggleTheme}
+              style={{
+                width: 48, height: 26, borderRadius: 999, cursor: 'pointer', position: 'relative',
+                background: theme === 'dark' ? 'rgba(249,115,22,0.8)' : 'rgba(148,163,184,0.4)',
+                border: 'none', transition: 'background 0.2s',
+              }}
+            >
+              <span style={{
+                position: 'absolute', top: 3, width: 20, height: 20, borderRadius: '50%',
+                background: '#fff', transition: 'left 0.2s',
+                left: theme === 'dark' ? 25 : 3,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }} />
+            </button>
           </div>
         </CardContent>
       </Card>

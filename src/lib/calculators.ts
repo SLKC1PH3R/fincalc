@@ -405,6 +405,7 @@ export interface DCAInputs {
   targetRate: number     // Rendement annuel moyen attendu
   volatility: number     // Volatilité annuelle simulée %
   initialPrice: number   // Prix unitaire initial (ex: ETF)
+  startingCapital?: number  // Capital déjà investi (optionnel)
 }
 
 export interface DCAResults {
@@ -423,8 +424,9 @@ export function calcDCA(i: DCAInputs): DCAResults {
   const monthlyRate = i.targetRate / 100 / 12
   const monthlyVol = i.volatility / 100 / Math.sqrt(12)
 
-  let totalInvested = 0
-  let units = 0
+  const initCapital = i.startingCapital ?? 0
+  let totalInvested = initCapital
+  let units = initCapital > 0 && i.initialPrice > 0 ? initCapital / i.initialPrice : 0
   let price = i.initialPrice
   const chartData = []
 

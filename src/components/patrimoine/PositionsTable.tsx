@@ -14,6 +14,7 @@ import {
   type Envelope, type Position, type PriceData, type AssetType,
   ASSET_LABELS, ASSET_COLORS, fmtEur,
 } from '@/components/patrimoine/types'
+import { FinTip } from '@/components/FinTip'
 
 type SearchResult = { symbol: string; name: string; type: 'ETF' | 'STOCK' | 'CRYPTO'; isin?: string }
 
@@ -280,7 +281,7 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                 <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
                   Nom
                   {etfMatch && (
-                    <span style={{ marginLeft: 6, fontSize: 10, color: '#34d399', fontWeight: 600 }}>{etfMatch.ter * 100}% TER</span>
+                    <span style={{ marginLeft: 6, fontSize: 10, color: '#34d399', fontWeight: 600 }}>{etfMatch.ter * 100}% TER <FinTip term="ter" /></span>
                   )}
                 </Label>
                 <Input value={newPos.name} onChange={pf('name')} placeholder="Amundi MSCI World" style={{ width: 180 }} />
@@ -290,7 +291,9 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                 <Input type="number" value={newPos.quantity} onChange={pf('quantity')} placeholder="10" style={{ width: 80 }} />
               </div>
               <div>
-                <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>PRU (€)</Label>
+                <Label style={{ fontSize: 11, marginBottom: 4, display: 'flex', alignItems: 'center' }}>
+                  PRU (€) <FinTip term="pru" />
+                </Label>
                 <Input type="number" value={newPos.pru} onChange={pf('pru')} placeholder="500" style={{ width: 90 }} />
               </div>
               <Button onClick={addPosition} disabled={addingPos} size="sm">

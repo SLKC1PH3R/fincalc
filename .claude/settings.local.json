@@ -33,7 +33,8 @@
       "Bash(cmd.exe /c \"where npx\")",
       "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
       "Bash(powershell.exe -Command \"node --version\")",
-      "Bash(wc -l src/app/dashboard/patrimoine/[id]/page.tsx src/lib/price-cache.ts)"
+      "Bash(wc -l src/app/dashboard/patrimoine/[id]/page.tsx src/lib/price-cache.ts)",
+      "Bash(npm install:*)"
     ]
   }
 }

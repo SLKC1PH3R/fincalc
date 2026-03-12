@@ -12,7 +12,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Info, Wallet } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 
@@ -29,8 +29,26 @@ function Tip({ text }: { text: string }) {
 
 function DCAPageInner() {
   const chart = useChartTheme()
-  const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100 })
+  const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [loadingPatrimoine, setLoadingPatrimoine] = useState(false)
+
+  const importPatrimoine = async () => {
+    setLoadingPatrimoine(true)
+    try {
+      const res = await fetch('/api/patrimoine/envelopes')
+      if (!res.ok) return
+      const data: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
+      const total = data.reduce((s, e) => {
+        if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+        const v = e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)
+        return s + v
+      }, 0)
+      setInputs(p => ({ ...p, startingCapital: Math.round(total) }))
+    } finally {
+      setLoadingPatrimoine(false)
+    }
+  }
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
@@ -138,6 +156,20 @@ function DCAPageInner() {
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1">Prix initial de l'actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
               <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-1">Capital de départ<Tip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
+                <button
+                  onClick={importPatrimoine}
+                  disabled={loadingPatrimoine}
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Wallet className="h-3 w-3" />
+                  {loadingPatrimoine ? 'Chargement…' : 'Importer patrimoine'}
+                </button>
+              </div>
+              <Input type="number" value={inputs.startingCapital ?? 0} onChange={e => set('startingCapital')(+e.target.value)} placeholder="0" />
             </div>
 
             <Separator />

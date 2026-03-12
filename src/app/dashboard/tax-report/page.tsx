@@ -31,6 +31,12 @@ function diffYears(from: string): number {
   return (Date.now() - new Date(from).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
 }
 
+function envelopeAgeYears(e: Envelope): number {
+  const openedYear = e.metadata?.openedYear ? Number(e.metadata.openedYear) : null
+  if (openedYear) return new Date().getFullYear() - openedYear
+  return diffYears(e.createdAt)
+}
+
 function getFiscalRegime(type: string): string {
   switch (type) {
     case 'PEA':    return 'Exonéré IR après 5 ans (PS 17.2% restants)'
@@ -100,7 +106,7 @@ export default function TaxReportPage() {
   const handleExportCsv = () => {
     const headers = ['Enveloppe', 'Type', 'Capital Investi', 'Valeur Déclarée', 'Régime Fiscal', 'Durée de Détention', 'Seuil Atteint']
     const rows = taxableEnvelopes.map(e => {
-      const yearsHeld    = diffYears(e.createdAt)
+      const yearsHeld    = envelopeAgeYears(e)
       const capitalInvested = e.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
       const valeur       = e.totalValue !== null ? e.totalValue : capitalInvested
       const avantage     = getAvantage(e.type, yearsHeld)
@@ -260,7 +266,7 @@ export default function TaxReportPage() {
                 </thead>
                 <tbody>
                   {taxableEnvelopes.map(e => {
-                    const yearsHeld       = diffYears(e.createdAt)
+                    const yearsHeld       = envelopeAgeYears(e)
                     const capitalInvested = e.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
                     const avantage        = getAvantage(e.type, yearsHeld)
                     const duree           = getDureeLabel(e.type, yearsHeld)

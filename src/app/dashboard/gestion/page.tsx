@@ -21,6 +21,7 @@ interface Envelope {
   id: string
   type: string
   name: string
+  metadata: Record<string, unknown>
   totalValue: number | null
   positions: { pru: number; quantity: number }[]
   createdAt: string
@@ -101,10 +102,17 @@ export default function GestionPage() {
     : 0
 
   // Fiscal milestones
+  const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth() // 0-indexed
   const fiscalEnvelopes = envelopes
     .filter(e => ['PEA', 'AV', 'PER'].includes(e.type))
     .map(e => {
-      const ageMonths = Math.floor((Date.now() - new Date(e.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
+      const meta = e.metadata as Record<string, unknown>
+      const openedYear = meta.openedYear ? Number(meta.openedYear) : null
+      // Use openedYear from metadata if available, else fall back to createdAt
+      const ageMonths = openedYear
+        ? (currentYear - openedYear) * 12 + currentMonth
+        : Math.floor((Date.now() - new Date(e.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
       const targetMonths = e.type === 'PEA' ? 60 : e.type === 'AV' ? 96 : 0
       const reached = e.type === 'PER' || ageMonths >= targetMonths
       const monthsLeft = e.type === 'PER' ? 0 : Math.max(0, targetMonths - ageMonths)
@@ -119,7 +127,7 @@ export default function GestionPage() {
 
   if (loading) {
     return (
-      <div className="px-7 py-8 max-w-4xl space-y-6 animate-fade-in">
+      <div className="space-y-6 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
         <div className="h-8 w-64 rounded-lg animate-pulse bg-muted mb-2" />
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3].map(i => <div key={i} className="h-24 rounded-2xl animate-pulse bg-muted" />)}
@@ -130,7 +138,7 @@ export default function GestionPage() {
   }
 
   return (
-    <div className="px-7 py-8 max-w-4xl space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
 
       {/* Header */}
       <div>

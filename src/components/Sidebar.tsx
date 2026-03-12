@@ -7,7 +7,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Bitcoin, Award, CreditCard, Target, Flag, Coins, FileText,
+  Sun, Moon, Bitcoin, Award, CreditCard, Target, Flag, Coins, FileText, SlidersHorizontal,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -27,9 +27,13 @@ const PATRIMOINE_CATEGORIES = [
   { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
 ]
 
+const GESTION_ITEMS = [
+  { href: '/dashboard/goals',      label: 'Mes Objectifs', icon: Flag     },
+  { href: '/dashboard/rebalancing', label: 'Rééquilibrage', icon: Target  },
+  { href: '/dashboard/tax-report', label: 'Rapport Fiscal', icon: FileText },
+]
+
 const OUTILS_ITEMS = [
-  { href: '/dashboard/goals',             label: 'Mes Objectifs',        icon: Flag       },
-  { href: '/dashboard/rebalancing',       label: 'Rééquilibrage',        icon: Target     },
   { href: '/dashboard/compound',          label: 'Intérêts Composés',   icon: TrendingUp },
   { href: '/dashboard/dca',              label: 'DCA',                  icon: RefreshCw  },
   { href: '/dashboard/fire',             label: 'FI/RE',                icon: Flame      },
@@ -44,7 +48,6 @@ const OUTILS_ITEMS = [
   { href: '/dashboard/budget',           label: 'Budget 50/30/20',      icon: Calculator },
   { href: '/dashboard/dividends',        label: 'Revenus Passifs',       icon: Coins      },
   { href: '/dashboard/benchmark',        label: 'Benchmarks',            icon: BarChart3  },
-  { href: '/dashboard/tax-report',       label: 'Rapport Fiscal',        icon: FileText   },
 ]
 
 const COMPTE_ITEMS = [
@@ -89,6 +92,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
+  const [gestionExpanded, setGestionExpanded] = useState(() => GESTION_ITEMS.some(i => pathname === i.href))
   const [outilsExpanded, setOutilsExpanded] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
@@ -153,6 +157,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
   useEffect(() => {
     if (pathname.startsWith('/dashboard/')) setExpandedHref(pathname)
+    if (GESTION_ITEMS.some(i => pathname === i.href)) setGestionExpanded(true)
   }, [pathname])
 
   const deleteSim = async (id: string) => {
@@ -551,6 +556,48 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     />
                   )
                 })}
+
+                {/* Gestion personnelle sub-section */}
+                <NavItem
+                  href="/dashboard/goals"
+                  label="Gestion personnelle"
+                  icon={SlidersHorizontal}
+                  active={GESTION_ITEMS.some(i => pathname === i.href)}
+                  expandable={!collapsed}
+                  expanded={gestionExpanded}
+                  onToggleExpand={() => setGestionExpanded((v: boolean) => !v)}
+                />
+
+                {!collapsed && gestionExpanded && (
+                  <div
+                    className="mt-0.5 ml-10 space-y-0.5"
+                    style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}
+                  >
+                    {GESTION_ITEMS.map(item => (
+                      <SubItem
+                        key={item.href}
+                        href={item.href}
+                        label={item.label}
+                        icon={item.icon}
+                        active={pathname === item.href}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {collapsed && (
+                  <>
+                    {GESTION_ITEMS.map(item => (
+                      <NavItem
+                        key={item.href}
+                        href={item.href}
+                        label={item.label}
+                        icon={item.icon}
+                        active={pathname === item.href}
+                      />
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
-import { RefreshCw, Plus, Pencil, Trash2, Check, X } from 'lucide-react'
+import { RefreshCw, Plus, Pencil, Trash2, Check, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
 import {
   lookupByIsin, lookupByTicker, type ETFInfo,
 } from '@/lib/etf-database'
@@ -118,6 +118,43 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
       await fetch(`/api/portfolio/${posId}`, { method: 'DELETE' })
       onReload()
     } catch { toast({ title: 'Erreur suppression', variant: 'destructive' }) }
+  }
+
+  type SortCol = 'type' | 'symbol' | 'quantity' | 'pru' | 'price' | 'value' | 'perf'
+  const [sortCol, setSortCol] = useState<SortCol | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+
+  const toggleSort = (col: SortCol) => {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('desc') }
+  }
+
+  const sortedPositions = [...positions].sort((a, b) => {
+    if (!sortCol) return 0
+    const pa = prices[a.symbol]
+    const pb = prices[b.symbol]
+    const qa = a.quantity, qb = b.quantity
+    const pruA = a.pru, pruB = b.pru
+    const va = pa ? pa.priceEur * qa : pruA * qa
+    const vb = pb ? pb.priceEur * qb : pruB * qb
+    const perfA = pa ? (pa.priceEur - pruA) / pruA * 100 : null
+    const perfB = pb ? (pb.priceEur - pruB) / pruB * 100 : null
+    let cmp = 0
+    if (sortCol === 'type') cmp = a.assetType.localeCompare(b.assetType)
+    else if (sortCol === 'symbol') cmp = a.symbol.localeCompare(b.symbol)
+    else if (sortCol === 'quantity') cmp = qa - qb
+    else if (sortCol === 'pru') cmp = pruA - pruB
+    else if (sortCol === 'price') cmp = (pa?.priceEur ?? 0) - (pb?.priceEur ?? 0)
+    else if (sortCol === 'value') cmp = va - vb
+    else if (sortCol === 'perf') cmp = (perfA ?? -Infinity) - (perfB ?? -Infinity)
+    return sortDir === 'asc' ? cmp : -cmp
+  })
+
+  const SortIcon = ({ col }: { col: SortCol }) => {
+    if (sortCol !== col) return <ChevronsUpDown style={{ width: 10, height: 10, opacity: 0.3 }} />
+    return sortDir === 'asc'
+      ? <ChevronUp style={{ width: 10, height: 10, color: '#f97316' }} />
+      : <ChevronDown style={{ width: 10, height: 10, color: '#f97316' }} />
   }
 
   const [editingPos, setEditingPos] = useState<{ id: string; quantity: string; pru: string } | null>(null)
@@ -275,13 +312,29 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--section-border)' }}>
-                  {['Type', 'Titre', 'Quantité', 'PRU', 'Cours', 'Valeur', 'Perf', ''].map(h => (
-                    <th key={h} style={{ padding: '8px 16px', textAlign: 'left', fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+                  {([
+                    { label: 'Type',     col: 'type'     as SortCol },
+                    { label: 'Titre',    col: 'symbol'   as SortCol },
+                    { label: 'Quantité', col: 'quantity' as SortCol },
+                    { label: 'PRU',      col: 'pru'      as SortCol },
+                    { label: 'Cours',    col: 'price'    as SortCol },
+                    { label: 'Valeur',   col: 'value'    as SortCol },
+                    { label: 'Perf',     col: 'perf'     as SortCol },
+                  ] as { label: string; col: SortCol }[]).map(({ label, col }) => (
+                    <th key={col}
+                      onClick={() => toggleSort(col)}
+                      style={{ padding: '8px 16px', textAlign: 'left', fontSize: 11, color: sortCol === col ? '#f97316' : 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
+                    >
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                        {label} <SortIcon col={col} />
+                      </span>
+                    </th>
                   ))}
+                  <th style={{ padding: '8px 16px' }} />
                 </tr>
               </thead>
               <tbody>
-                {positions.map(pos => {
+                {sortedPositions.map(pos => {
                   const isEditing = editingPos?.id === pos.id
                   const pd = prices[pos.symbol]
                   const qty = isEditing ? parseFloat(editingPos.quantity) || pos.quantity : pos.quantity

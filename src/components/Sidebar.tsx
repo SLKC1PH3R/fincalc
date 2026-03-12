@@ -7,7 +7,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Bitcoin, Award, CreditCard,
+  Sun, Moon, Bitcoin, Award, CreditCard, Target,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -28,6 +28,7 @@ const PATRIMOINE_CATEGORIES = [
 ]
 
 const OUTILS_ITEMS = [
+  { href: '/dashboard/rebalancing',       label: 'Rééquilibrage',        icon: Target     },
   { href: '/dashboard/compound',          label: 'Intérêts Composés',   icon: TrendingUp },
   { href: '/dashboard/dca',              label: 'DCA',                  icon: RefreshCw  },
   { href: '/dashboard/fire',             label: 'FI/RE',                icon: Flame      },

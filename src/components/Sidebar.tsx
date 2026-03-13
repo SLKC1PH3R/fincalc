@@ -8,6 +8,7 @@ import {
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Target, Flag, Coins, FileText, SlidersHorizontal,
+  ShieldCheck, Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -48,6 +49,9 @@ const OUTILS_ITEMS = [
   { href: '/dashboard/budget',           label: 'Budget 50/30/20',      icon: Calculator },
   { href: '/dashboard/dividends',        label: 'Revenus Passifs',       icon: Coins      },
   { href: '/dashboard/benchmark',        label: 'Benchmarks',            icon: BarChart3  },
+  { href: '/dashboard/emergency-fund',   label: 'Épargne urgence',       icon: ShieldCheck },
+  { href: '/dashboard/consumer-credit',  label: 'Crédit conso',          icon: CreditCard },
+  { href: '/dashboard/succession',       label: 'Succession & Don.',     icon: Users      },
 ]
 
 const COMPTE_ITEMS = [
@@ -503,11 +507,11 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.08)')}
                   >
                     <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sb-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#f1c086', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                         Score patrimonial
                       </span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: score >= 70 ? '#4ade80' : score >= 40 ? '#f1c086' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
-                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: 'var(--sb-text-dim)' }}>/100</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)' }}>/100</span>
                       </span>
                     </div>
                     <div style={{ height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>

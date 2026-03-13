@@ -886,3 +886,219 @@ export function calcEnvelopeCompare(i: EnvelopeCompareInputs): EnvelopeCompareRe
 
   return { pea, cto, av, best, chartData }
 }
+
+// ─── Épargne d'urgence ───────────────────────────────────────────────────────
+
+export interface EmergencyFundInputs {
+  monthlyExpenses: number
+  employmentType: 'cdi' | 'cdd' | 'freelance' | 'none'
+  familySituation: 'single' | 'couple' | 'family'
+  currentSavings: number
+  monthlySavings: number
+}
+
+export interface EmergencyFundResults {
+  targetMonths: number
+  targetAmount: number
+  gap: number
+  isReached: boolean
+  monthsToReach: number | null
+  coverageRatio: number
+  recommendation: string
+  chartData: { label: string; value: number; target: number }[]
+}
+
+export function calcEmergencyFund(i: EmergencyFundInputs): EmergencyFundResults {
+  let baseMonths = i.employmentType === 'cdi' ? 3 : 6
+  if (i.familySituation === 'couple') baseMonths += 1
+  if (i.familySituation === 'family') baseMonths += 2
+
+  const targetMonths = Math.min(baseMonths, 9)
+  const targetAmount = i.monthlyExpenses * targetMonths
+  const gap = Math.max(0, targetAmount - i.currentSavings)
+  const isReached = i.currentSavings >= targetAmount
+  const coverageRatio = targetAmount > 0 ? Math.min(i.currentSavings / targetAmount, 1) : 0
+  const monthsToReach = (!isReached && i.monthlySavings > 0)
+    ? Math.ceil(gap / i.monthlySavings)
+    : isReached ? 0 : null
+
+  const recMap: Record<string, string> = {
+    cdi: `En CDI, 3 mois de charges est la règle minimale. Votre situation familiale porte l'objectif à ${targetMonths} mois.`,
+    cdd: `En CDD, préférez 6 mois minimum. Votre objectif est de ${targetMonths} mois de charges.`,
+    freelance: `En freelance, l'irrégularité des revenus rend 6 à 9 mois indispensables. Objectif : ${targetMonths} mois.`,
+    none: `Sans activité professionnelle régulière, visez ${targetMonths} mois de charges pour tenir face à l'imprévu.`,
+  }
+
+  const chartData = Array.from({ length: targetMonths }, (_, m) => ({
+    label: `${m + 1} mois`,
+    value: i.monthlyExpenses * (m + 1),
+    target: targetAmount,
+  }))
+
+  return {
+    targetMonths,
+    targetAmount,
+    gap,
+    isReached,
+    monthsToReach,
+    coverageRatio,
+    recommendation: recMap[i.employmentType],
+    chartData,
+  }
+}
+
+// ─── Coût réel d'un crédit conso ────────────────────────────────────────────
+
+export interface ConsumerCreditInputs {
+  amount: number
+  taeg: number          // taux annuel en %
+  durationMonths: number
+  alternativeRate: number  // rendement placement annuel en %
+}
+
+export interface ConsumerCreditResults {
+  monthlyPayment: number
+  totalPaid: number
+  totalInterest: number
+  alternativeGain: number
+  opportunityCost: number
+  amortizationData: { month: number; remaining: number; totalPaid: number }[]
+}
+
+export function calcConsumerCredit(i: ConsumerCreditInputs): ConsumerCreditResults {
+  const r = i.taeg / 100 / 12
+  const n = i.durationMonths
+  const monthlyPayment = r > 0
+    ? i.amount * r / (1 - Math.pow(1 + r, -n))
+    : i.amount / n
+  const totalPaid = monthlyPayment * n
+  const totalInterest = totalPaid - i.amount
+
+  // Ce que le capital aurait rapporté si placé au lieu d'être remboursé
+  const altR = i.alternativeRate / 100 / 12
+  let altValue = i.amount
+  for (let m = 0; m < n; m++) {
+    altValue = altValue * (1 + altR) - monthlyPayment
+  }
+  const alternativeGain = Math.max(0, i.amount * Math.pow(1 + i.alternativeRate / 100, n / 12) - i.amount)
+  const opportunityCost = totalInterest + alternativeGain
+
+  const amortizationData: { month: number; remaining: number; totalPaid: number }[] = [
+    { month: 0, remaining: i.amount, totalPaid: 0 }
+  ]
+  let remaining = i.amount
+  for (let m = 1; m <= n; m++) {
+    const interest = remaining * r
+    const principal = monthlyPayment - interest
+    remaining = Math.max(0, remaining - principal)
+    if (m % Math.max(1, Math.floor(n / 24)) === 0 || m === n) {
+      amortizationData.push({ month: m, remaining: Math.round(remaining), totalPaid: Math.round(monthlyPayment * m) })
+    }
+  }
+
+  return { monthlyPayment, totalPaid, totalInterest, alternativeGain, opportunityCost, amortizationData }
+}
+
+// ─── Succession & Donation ───────────────────────────────────────────────────
+
+export type SuccessionRelationship = 'enfant' | 'petit_enfant' | 'frere_soeur' | 'neveu_niece' | 'autre'
+
+export interface SuccessionInputs {
+  amount: number
+  relationship: SuccessionRelationship
+  donationsLast15Years: number
+  isDonation: boolean  // true = donation, false = succession
+}
+
+export interface SuccessionResults {
+  abattementMax: number
+  abattementUsed: number
+  abattementRemaining: number
+  taxableBase: number
+  dmtg: number
+  netTransmitted: number
+  effectiveRate: number
+  slabs: { tranche: string; taux: number; impot: number }[]
+}
+
+function calcDMTG(base: number, rel: SuccessionRelationship): { total: number; slabs: { tranche: string; taux: number; impot: number }[] } {
+  type Slab = { limit: number; rate: number }
+  const SLABS_ENFANT: Slab[] = [
+    { limit: 8072,    rate: 0.05 },
+    { limit: 12109,   rate: 0.10 },
+    { limit: 15932,   rate: 0.15 },
+    { limit: 552324,  rate: 0.20 },
+    { limit: 902838,  rate: 0.30 },
+    { limit: 1805677, rate: 0.40 },
+    { limit: Infinity, rate: 0.45 },
+  ]
+  const SLABS_FRERE: Slab[] = [
+    { limit: 24430,    rate: 0.35 },
+    { limit: Infinity, rate: 0.45 },
+  ]
+  const FLAT_NEVEU   = 0.55
+  const FLAT_AUTRE   = 0.60
+
+  const slabs = rel === 'enfant' || rel === 'petit_enfant' ? SLABS_ENFANT
+    : rel === 'frere_soeur' ? SLABS_FRERE
+    : null
+
+  const result: { tranche: string; taux: number; impot: number }[] = []
+  let total = 0
+  let remaining = base
+
+  if (slabs) {
+    let prev = 0
+    for (const s of slabs) {
+      if (remaining <= 0) break
+      const width = s.limit === Infinity ? remaining : Math.min(s.limit - prev, remaining)
+      const impot = width * s.rate
+      if (width > 0) {
+        result.push({
+          tranche: s.limit === Infinity ? `> ${prev.toLocaleString('fr-FR')} €` : `${prev.toLocaleString('fr-FR')} – ${s.limit.toLocaleString('fr-FR')} €`,
+          taux: s.rate * 100,
+          impot: Math.round(impot),
+        })
+      }
+      total += impot
+      remaining -= width
+      prev = s.limit
+    }
+  } else {
+    const rate = rel === 'neveu_niece' ? FLAT_NEVEU : FLAT_AUTRE
+    const impot = base * rate
+    result.push({ tranche: 'Taux unique', taux: rate * 100, impot: Math.round(impot) })
+    total = impot
+  }
+
+  return { total, slabs: result }
+}
+
+export function calcSuccession(i: SuccessionInputs): SuccessionResults {
+  const ABATTEMENTS: Record<SuccessionRelationship, number> = {
+    enfant:       100_000,
+    petit_enfant:  31_865,
+    frere_soeur:   15_932,
+    neveu_niece:    7_967,
+    autre:          1_594,
+  }
+  const abattementMax = ABATTEMENTS[i.relationship]
+  const abattementUsed = Math.min(i.donationsLast15Years, abattementMax)
+  const abattementRemaining = abattementMax - abattementUsed
+  const abattementApplied = Math.min(i.amount, abattementRemaining)
+  const taxableBase = Math.max(0, i.amount - abattementApplied)
+  const { total: dmtg, slabs } = calcDMTG(taxableBase, i.relationship)
+  const netTransmitted = i.amount - dmtg
+  const effectiveRate = i.amount > 0 ? (dmtg / i.amount) * 100 : 0
+
+  return {
+    abattementMax,
+    abattementUsed,
+    abattementRemaining,
+    taxableBase,
+    dmtg: Math.round(dmtg),
+    netTransmitted: Math.round(netTransmitted),
+    effectiveRate,
+    slabs,
+  }
+}

@@ -74,11 +74,11 @@ function IconBox({ icon: Icon, active, size = 32 }: { icon: Icon; active: boolea
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
-      background: active ? 'rgba(249,115,22,0.13)' : 'transparent',
-      border: active ? '1px solid rgba(249,115,22,0.38)' : '1px solid transparent',
+      background: active ? 'rgba(241,192,134,0.10)' : 'transparent',
+      border: active ? '1px solid rgba(241,192,134,0.28)' : '1px solid transparent',
       transition: 'all 0.15s',
     }}>
-      <Icon style={{ width: 15, height: 15, color: active ? '#f97316' : 'var(--sb-text-dim)' }} />
+      <Icon style={{ width: 15, height: 15, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
     </div>
   )
 }
@@ -99,6 +99,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
   const [sparklineHistory, setSparklineHistory] = useState<number[]>([])
   const [fireTarget, setFireTarget] = useState<number>(0)
+  const [dettesTotal, setDettesTotal] = useState<number>(0)
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
     const next = new Set(prev)
@@ -137,15 +138,19 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((data: any[]) => {
         if (!Array.isArray(data)) return
-        const total = data.reduce((sum, e) => {
-          if (e.type === 'IMMOBILIER') return sum + Number(e.metadata?.currentValue ?? 0)
-          const val = e.totalValue !== null
-            ? e.totalValue
+        let brut = 0, dettes = 0
+        for (const e of data) {
+          if (e.type === 'IMMOBILIER') {
+            brut += Number(e.metadata?.currentValue ?? 0)
+            dettes += Number(e.metadata?.creditRemaining ?? 0)
+          } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            : (e.positions || []).reduce((s: number, p: any) => s + p.pru * p.quantity, 0)
-          return sum + val
-        }, 0)
-        setPatrimoineTotal(total)
+            const val = e.totalValue !== null ? e.totalValue : (e.positions || []).reduce((s: number, p: any) => s + p.pru * p.quantity, 0)
+            brut += val
+          }
+        }
+        setPatrimoineTotal(brut)
+        setDettesTotal(dettes)
       })
       .catch(() => {})
   }, [])
@@ -237,8 +242,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             </span>
             {badge != null && badge > 0 && (
               <span style={{
-                fontSize: 9, color: '#f97316',
-                background: 'rgba(249,115,22,0.12)',
+                fontSize: 9, color: '#f1c086',
+                background: 'rgba(241,192,134,0.10)',
                 padding: '1px 6px', borderRadius: 4,
                 fontWeight: 700, flexShrink: 0,
               }}>
@@ -273,14 +278,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors"
       style={{
         textDecoration: 'none', fontSize: 12,
-        color: active ? '#f97316' : 'var(--sb-text)',
+        color: active ? '#f1c086' : 'var(--sb-text)',
         fontWeight: active ? 600 : 400,
-        background: active ? 'rgba(249,115,22,0.07)' : 'none',
+        background: active ? 'rgba(241,192,134,0.06)' : 'none',
       }}
       onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'none' }}
     >
-      <Icon style={{ width: 12, height: 12, flexShrink: 0, color: active ? '#f97316' : 'var(--sb-text-dim)' }} />
+      <Icon style={{ width: 12, height: 12, flexShrink: 0, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </Link>
   )
@@ -296,7 +301,6 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const sparkDeltaPct = sparkDelta !== null && sparklineHistory[0] > 0
     ? (sparkDelta / sparklineHistory[0]) * 100
     : null
-  const accentColor = sparkDelta !== null && sparkDelta < 0 ? '#f87171' : '#f97316'
   const SW = 84, SH = 28
   const sparkMax = sparklineHistory.length >= 2 ? Math.max(...sparklineHistory) : 0
   const sparkMin = sparklineHistory.length >= 2 ? Math.min(...sparklineHistory) : 0
@@ -309,8 +313,9 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const sparkLastCy = sparklineHistory.length >= 2
     ? SH - 2 - ((sparklineHistory[sparklineHistory.length - 1] - sparkMin) / sparkRange) * (SH - 4)
     : 0
-  const fireProgress = patrimoineTotal !== null && fireTarget > 0
-    ? Math.min(100, (patrimoineTotal / fireTarget) * 100)
+  const patrimoineNet = patrimoineTotal !== null ? Math.max(0, patrimoineTotal - dettesTotal) : 0
+  const fireProgress = patrimoineNet > 0 && fireTarget > 0
+    ? Math.min(100, (patrimoineNet / fireTarget) * 100)
     : 0
 
   return (
@@ -344,7 +349,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         <div aria-hidden style={{
           position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)',
           width: 280, height: 220,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(249,115,22,0.16) 0%, transparent 68%)',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(241,192,134,0.13) 0%, transparent 68%)',
           pointerEvents: 'none', zIndex: -1,
         }} />
 
@@ -352,7 +357,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         <div aria-hidden style={{
           position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)',
           width: 260, height: 180,
-          background: 'radial-gradient(ellipse at 50% 100%, rgba(249,115,22,0.11) 0%, transparent 68%)',
+          background: 'radial-gradient(ellipse at 50% 100%, rgba(241,192,134,0.09) 0%, transparent 68%)',
           pointerEvents: 'none', zIndex: -1,
         }} />
 
@@ -368,7 +373,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 <Link href="/dashboard" className="flex items-center gap-2.5 group" style={{ textDecoration: 'none' }}>
                   <div
                     className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
-                    style={{ background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)' }}
                   >
                     <TrendingUp style={{ color: '#0a0a0a', width: 15, height: 15 }} />
                   </div>
@@ -389,29 +394,34 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 </button>
               </div>
 
-              {/* Patrimoine widget — V6 Sparkline */}
+              {/* Patrimoine widget — V6 Gold */}
               {patrimoineTotal !== null && (
                 <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}>
                   <div
-                    style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--sb-profile-bg)', border: '1px solid rgba(249,115,22,0.10)', cursor: 'pointer', transition: 'border-color 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.28)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.10)')}
+                    style={{
+                      padding: '12px 14px', borderRadius: 12,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      cursor: 'pointer', transition: 'border-color 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.22)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
                   >
                     {/* Top row: info left + sparkline right */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: fireTarget > 0 ? 10 : 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                          <TrendingUp style={{ width: 9, height: 9, color: accentColor }} />
-                          <span style={{ color: accentColor, fontSize: 9, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
+                          <TrendingUp style={{ width: 9, height: 9, color: '#f1c086' }} />
+                          <span style={{ color: '#f1c086', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
                         </div>
-                        <div style={{ color: 'var(--sb-text-strong)', fontSize: 16, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>
-                          {fmtSb(patrimoineTotal)}
+                        <div style={{ color: '#ffffff', fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                          {fmtSb(Math.max(0, patrimoineTotal - dettesTotal))}
                         </div>
                         {sparkDelta !== null && (
-                          <div style={{ color: sparkDelta >= 0 ? '#4ade80' : '#f87171', fontSize: 10, fontWeight: 600, marginTop: 2 }}>
+                          <div style={{ color: sparkDelta >= 0 ? '#4ade80' : '#f87171', fontSize: 10, fontWeight: 600, marginTop: 3 }}>
                             {sparkDelta >= 0 ? '↑ +' : '↓ '}{fmtSb(Math.abs(sparkDelta))}
                             {sparkDeltaPct !== null && (
-                              <span style={{ opacity: 0.7, marginLeft: 3 }}>({sparkDeltaPct >= 0 ? '+' : ''}{sparkDeltaPct.toFixed(1)}%)</span>
+                              <span style={{ opacity: 0.6, marginLeft: 3 }}>({sparkDeltaPct >= 0 ? '+' : ''}{sparkDeltaPct.toFixed(1)}%)</span>
                             )}
                           </div>
                         )}
@@ -423,29 +433,51 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                           <svg width={SW} height={SH} style={{ overflow: 'visible' }}>
                             <defs>
                               <linearGradient id="sbSparkGrad" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor={accentColor} stopOpacity={0.25} />
-                                <stop offset="100%" stopColor={accentColor} />
+                                <stop offset="0%" stopColor="#f1c086" stopOpacity={0.30} />
+                                <stop offset="100%" stopColor="#f1c086" stopOpacity={1} />
                               </linearGradient>
                             </defs>
                             <polyline points={sparkPts} fill="none" stroke="url(#sbSparkGrad)" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx={SW} cy={sparkLastCy} r={2.5} fill={accentColor} />
+                            <circle cx={SW} cy={sparkLastCy} r={3} fill="#f1c086" />
                           </svg>
-                          <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)' }}>6 mois</span>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.20)', fontWeight: 400 }}>6 derniers mois</span>
                         </div>
                       )}
                     </div>
 
+                    {/* Brut / Dettes mini-cards */}
+                    {(patrimoineTotal > 0 || dettesTotal > 0) && (
+                      <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                        <div style={{
+                          flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 8,
+                          padding: '6px 10px',
+                        }}>
+                          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginBottom: 2 }}>Brut</div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.50)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
+                        </div>
+                        {dettesTotal > 0 && (
+                          <div style={{
+                            flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 8,
+                            padding: '6px 10px',
+                          }}>
+                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginBottom: 2 }}>Dettes</div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: '#f87171', fontVariantNumeric: 'tabular-nums' }}>-{fmtSb(dettesTotal)}</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* FIRE progress */}
                     {fireTarget > 0 && (
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)' }}>
-                            Objectif <span style={{ color: 'rgba(255,255,255,0.45)' }}>{fmtSb(fireTarget)}</span>
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10, marginTop: 10 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.30)', fontWeight: 400 }}>
+                            Vers objectif <span style={{ color: 'rgba(255,255,255,0.45)' }}>{fmtSb(fireTarget)}</span>
                           </span>
-                          <span style={{ fontSize: 9, color: accentColor, fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
+                          <span style={{ fontSize: 9, color: '#f1c086', fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
                         </div>
-                        <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 99 }}>
-                          <div style={{ width: `${fireProgress}%`, height: '100%', background: `linear-gradient(90deg, ${accentColor}88, ${accentColor})`, borderRadius: 99, transition: 'width 0.6s ease' }} />
+                        <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 99 }}>
+                          <div style={{ width: `${fireProgress}%`, height: '100%', background: 'linear-gradient(90deg, #f1c08699, #f1c086)', borderRadius: 99, transition: 'width 0.6s ease' }} />
                         </div>
                       </div>
                     )}
@@ -463,18 +495,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     padding: '10px 14px',
                     borderRadius: 12,
                     background: 'var(--sb-profile-bg)',
-                    border: '1px solid rgba(249,115,22,0.10)',
+                    border: '1px solid rgba(241,192,134,0.08)',
                     cursor: 'pointer',
                     transition: 'border-color 0.15s',
                   }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.25)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.10)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.08)')}
                   >
                     <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
                       <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sb-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Score patrimonial
                       </span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: score >= 70 ? '#4ade80' : score >= 40 ? '#fbbf24' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: score >= 70 ? '#4ade80' : score >= 40 ? '#f1c086' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
                         {score}<span style={{ fontSize: 10, fontWeight: 500, color: 'var(--sb-text-dim)' }}>/100</span>
                       </span>
                     </div>
@@ -486,7 +518,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                         background: score >= 70
                           ? 'linear-gradient(90deg, #22c55e, #4ade80)'
                           : score >= 40
-                            ? 'linear-gradient(90deg, #f97316, #fbbf24)'
+                            ? 'linear-gradient(90deg, #c8922a, #f1c086)'
                             : 'linear-gradient(90deg, #ef4444, #f87171)',
                         transition: 'width 0.6s ease',
                       }} />
@@ -500,7 +532,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               onClick={toggle}
               title="Ouvrir"
               className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)', border: 'none', cursor: 'pointer' }}
+              style={{ background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)', border: 'none', cursor: 'pointer' }}
             >
               <TrendingUp style={{ color: '#0a0a0a', width: 15, height: 15 }} />
             </button>
@@ -512,12 +544,12 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           <div style={{ padding: collapsed ? '4px 8px' : '0 10px 8px', display: 'flex', justifyContent: 'center' }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
-              background: 'rgba(251,146,60,0.06)', border: '1px solid rgba(251,146,60,0.15)',
+              background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.12)',
               borderRadius: 8, padding: '4px 10px', width: '100%',
             }}>
               <span style={{ fontSize: 11, flexShrink: 0 }}>🔒</span>
               {!collapsed && (
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#fb923c', letterSpacing: '0.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#f1c086', letterSpacing: '0.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
                   Mode démo · Lecture seule
                 </span>
               )}
@@ -676,7 +708,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                             {/* badge */}
                             {itemSims.length > 0 && !isActive && (
                               <span style={{
-                                fontSize: 9, color: '#f97316', background: 'rgba(249,115,22,0.10)',
+                                fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.08)',
                                 padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2,
                               }}>
                                 {itemSims.length}
@@ -706,18 +738,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                   <div
                                     key={sim.id}
                                     className="group flex items-center rounded-lg"
-                                    style={{ background: isActiveSim ? 'rgba(249,115,22,0.07)' : 'transparent' }}
+                                    style={{ background: isActiveSim ? 'rgba(241,192,134,0.06)' : 'transparent' }}
                                     onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
                                     onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                                   >
                                     <Link
                                       href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
                                       className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
-                                      style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f97316' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
+                                      style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f1c086' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
                                       onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
                                       onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
                                     >
-                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f97316' }} />}
+                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
                                       <span className="truncate">{sim.name}</span>
                                     </Link>
                                     <button
@@ -799,14 +831,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               {/* User card */}
               <div
                 className="flex items-center gap-2.5 px-2 py-2 rounded-xl mb-1"
-                style={{ background: 'var(--sb-profile-bg)', border: '1px solid rgba(249,115,22,0.07)' }}
+                style={{ background: 'var(--sb-profile-bg)', border: '1px solid rgba(241,192,134,0.06)' }}
               >
                 {user.image ? (
-                  <img src={user.image} alt="" style={{ height: 28, width: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid rgba(249,115,22,0.2)' }} />
+                  <img src={user.image} alt="" style={{ height: 28, width: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid rgba(241,192,134,0.20)' }} />
                 ) : (
                   <div style={{
                     height: 28, width: 28, borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
+                    background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a' }}>

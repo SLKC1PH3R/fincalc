@@ -92,7 +92,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
-  const [gestionExpanded, setGestionExpanded] = useState(() => pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href))
+  const [gestionExpanded, setGestionExpanded] = useState<boolean>(() => pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href))
   const [outilsExpanded, setOutilsExpanded] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
@@ -565,7 +565,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   active={pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href)}
                   expandable={!collapsed}
                   expanded={gestionExpanded}
-                  onToggleExpand={() => setGestionExpanded((v: boolean) => !v)}
+                  onToggleExpand={() => setGestionExpanded(v => !v)}
                 />
 
                 {!collapsed && gestionExpanded && (
@@ -726,7 +726,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           </div>
 
           {/* ── Compte ── */}
-          <div style={{ marginBottom: 2 }}>
+          <div style={{ marginBottom: 2, marginTop: 10, borderTop: '1px solid var(--sb-divider)', paddingTop: 6 }}>
             <SectionLabel label="Compte" sectionKey="Compte" />
             {(collapsed || !collapsedSections.has('Compte')) && (
               <div className="space-y-0.5">

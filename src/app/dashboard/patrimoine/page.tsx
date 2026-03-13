@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo, useRef, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Legend } from 'recharts'
+import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -133,6 +133,15 @@ function generateEvolutionData(totalValue: number, range: TimeRange) {
   })
 }
 
+const CHART_CATEGORIES: Record<string, { label: string; types: string[]; color: string }> = {
+  all:        { label: 'Toutes les catégories', types: [],                         color: '#f97316' },
+  immobilier: { label: 'Immobilier',            types: ['IMMOBILIER'],             color: '#f472b6' },
+  actions:    { label: 'Actions & Fonds',        types: ['PEA','CTO','AV','PER'],  color: '#818cf8' },
+  livrets:    { label: 'Livrets',               types: ['LIVRET'],                 color: '#34d399' },
+  autres:     { label: 'Autres actifs',          types: ['CRYPTO'],                color: '#f59e0b' },
+  comptes:    { label: 'Comptes bancaires',      types: ['CASH'],                  color: '#94a3b8' },
+}
+
 const ENV_COLORS: Record<string, string> = {
   IMMOBILIER: '#3b82f6',
   PEA:        '#818cf8',
@@ -142,16 +151,6 @@ const ENV_COLORS: Record<string, string> = {
   LIVRET:     '#22c55e',
   CRYPTO:     '#a855f7',
   CASH:       '#94a3b8',
-}
-const ENV_LABELS: Record<string, string> = {
-  IMMOBILIER: 'Immobilier',
-  PEA:        'PEA',
-  AV:         'Assurance-Vie',
-  CTO:        'CTO',
-  PER:        'PER',
-  LIVRET:     'Livrets',
-  CRYPTO:     'Crypto',
-  CASH:       'Cash',
 }
 
 // ── Composant ─────────────────────────────────────────────────────────────────
@@ -164,6 +163,9 @@ export default function PatrimoinePage() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
   const [snapshots, setSnapshots] = useState<{ date: string; totalValue: number; byEnvelope: Record<string, { value: number; type: string; name: string }> }[]>([])
+  const [chartCategory, setChartCategory] = useState<'all' | 'immobilier' | 'actions' | 'livrets' | 'autres' | 'comptes'>('all')
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false)
+  const catDropdownRef = useRef<HTMLDivElement>(null)
   const [fireTarget, setFireTarget] = useState<number>(0)
   const [fireTargetInput, setFireTargetInput] = useState('')
   const [editingFireTarget, setEditingFireTarget] = useState(false)
@@ -215,6 +217,17 @@ export default function PatrimoinePage() {
     if (saved) { const n = parseFloat(saved); if (n > 0) { setFireTarget(n); setFireTargetInput(String(n)) } }
     const firedStr = localStorage.getItem('fincalc_milestones_fired')
     if (firedStr) { try { milestoneFiredRef.current = new Set(JSON.parse(firedStr)) } catch {} }
+  }, [])
+
+  // Close category dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (catDropdownRef.current && !catDropdownRef.current.contains(e.target as Node)) {
+        setCatDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
   }, [])
 
   // Fetch snapshots on mount
@@ -328,13 +341,22 @@ export default function PatrimoinePage() {
     return { ...geoNorm, values, totalGeo: geoTotal }
   }, [envelopes])
 
-  // Types actifs dans le patrimoine
-  const activeTypes = useMemo(() =>
-    [...new Set(envelopes.map(e => e.type))].filter(t => t in ENV_COLORS),
-    [envelopes]
-  )
+  // Enveloppes filtrées par catégorie sélectionnée (pour le graphique)
+  const chartEnvelopes = useMemo(() => {
+    const types = CHART_CATEGORIES[chartCategory]?.types ?? []
+    if (types.length === 0) return envelopes
+    return envelopes.filter(e => types.includes(e.type))
+  }, [envelopes, chartCategory])
 
-  // Valeur par type depuis les enveloppes courantes
+  const chartTotal = useMemo(() => {
+    return chartEnvelopes.reduce((s, e) => {
+      if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+      const v = e.totalValue !== null ? e.totalValue : e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)
+      return s + v
+    }, 0)
+  }, [chartEnvelopes])
+
+  // Valeur par type depuis les enveloppes courantes (pour la légende)
   const typeValues = useMemo(() => {
     const tv: Record<string, number> = {}
     for (const e of envelopes) {
@@ -344,8 +366,9 @@ export default function PatrimoinePage() {
     return tv
   }, [envelopes])
 
-  // Données évolution empilées par type
+  // Données évolution — courbe unique filtrée par catégorie
   const { evolutionData, isSimulated } = useMemo(() => {
+    const catTypes = CHART_CATEGORIES[chartCategory]?.types ?? []
     const cutoffMs: Record<TimeRange, number> = {
       '1j': 86_400_000,
       '1s': 7 * 86_400_000,
@@ -364,28 +387,24 @@ export default function PatrimoinePage() {
           const date = isShort
             ? `${d.getDate()}/${d.getMonth() + 1}`
             : d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
-          const byType: Record<string, number> = {}
-          for (const env of Object.values(snap.byEnvelope ?? {})) {
-            byType[env.type] = (byType[env.type] ?? 0) + env.value
+          let value = snap.totalValue
+          if (catTypes.length > 0) {
+            value = Object.values(snap.byEnvelope ?? {})
+              .filter(env => catTypes.includes(env.type))
+              .reduce((s, env) => s + env.value, 0)
           }
-          return { date, total: snap.totalValue, ...byType }
+          return { date, total: value }
         })
         return { evolutionData: data, isSimulated: false }
       }
     }
 
-    // Fallback : simulation empilée par proportion actuelle
-    const simPts = generateEvolutionData(totalValue, timeRange)
-    const data = simPts.map(pt => {
-      const entry: Record<string, number | string> = { date: pt.date, total: pt.value }
-      for (const type of activeTypes) {
-        const ratio = totalValue > 0 ? (typeValues[type] ?? 0) / totalValue : 0
-        entry[type] = Math.round(pt.value * ratio)
-      }
-      return entry
-    })
+    // Fallback simulation — courbe unique
+    const simBase = chartTotal > 0 ? chartTotal : totalValue
+    const simPts = generateEvolutionData(simBase, timeRange)
+    const data = simPts.map(pt => ({ date: pt.date, total: pt.value }))
     return { evolutionData: data, isSimulated: true }
-  }, [snapshots, totalValue, timeRange, activeTypes, typeValues])
+  }, [snapshots, totalValue, chartTotal, timeRange, chartCategory])
 
   const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => Number(d.total))) * 0.97 : 0, [evolutionData])
   const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => Number(d.total))) * 1.02 : 0, [evolutionData])
@@ -492,77 +511,124 @@ export default function PatrimoinePage() {
       {!loading && totalValue > 0 && (
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
           <CardContent style={{ padding: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
-                  Évolution du patrimoine
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
-                  {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(totalValue)}
+            {/* Chart header: category dropdown + time range buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+              {/* Category dropdown */}
+              <div ref={catDropdownRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setCatDropdownOpen(o => !o)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+                    background: catDropdownOpen ? 'var(--row-hover)' : 'var(--card-dark)',
+                    border: `1.5px solid ${CHART_CATEGORIES[chartCategory].color}60`,
+                    color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: CHART_CATEGORIES[chartCategory].color, display: 'inline-block', flexShrink: 0 }} />
+                  {CHART_CATEGORIES[chartCategory].label}
+                  <svg width="12" height="12" viewBox="0 0 12 12" style={{ opacity: 0.5, transform: catDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                {catDropdownOpen && (
+                  <div style={{
+                    position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 50,
+                    background: '#111', border: '1px solid var(--card-dark-border)', borderRadius: 12,
+                    padding: '6px 0', minWidth: 220,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                  }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-subtle)', padding: '4px 16px 8px', borderBottom: '1px solid var(--card-dark-border)', marginBottom: 4 }}>
+                      Tout sélectionner
+                    </div>
+                    {Object.entries(CHART_CATEGORIES).map(([key, cat]) => (
+                      <button
+                        key={key}
+                        onClick={() => { setChartCategory(key as typeof chartCategory); setCatDropdownOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '9px 16px', background: 'none', border: 'none',
+                          cursor: 'pointer', textAlign: 'left', transition: 'background 0.1s',
+                          color: chartCategory === key ? 'var(--text-primary)' : 'var(--text-muted-c)',
+                          fontWeight: chartCategory === key ? 700 : 500, fontSize: 13,
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}
+                      >
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
+                        {cat.label}
+                        {chartCategory === key && (
+                          <svg width="14" height="14" viewBox="0 0 14 14" style={{ marginLeft: 'auto', color: cat.color }}>
+                            <path d="M2.5 7l3.5 3.5 5.5-6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right side: subtitle + time range */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                  {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(chartTotal || totalValue)}
                   {evolChange !== 0 && (
                     <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
-                      {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)} sur la période
+                      {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)}
                     </span>
                   )}
                 </div>
-              </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
-                  <button key={r} onClick={() => setTimeRange(r)} style={{
-                    padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                    background: timeRange === r ? '#f97316' : 'transparent',
-                    color: timeRange === r ? '#fff' : 'var(--text-subtle)',
-                    border: `1px solid ${timeRange === r ? '#f97316' : 'var(--card-dark-border)'}`,
-                    transition: 'all 0.15s',
-                  }}>
-                    {r === 'max' ? 'Max' : r}
-                  </button>
-                ))}
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
+                    <button key={r} onClick={() => setTimeRange(r)} style={{
+                      padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                      background: timeRange === r ? CHART_CATEGORIES[chartCategory].color : 'transparent',
+                      color: timeRange === r ? '#fff' : 'var(--text-subtle)',
+                      border: `1px solid ${timeRange === r ? CHART_CATEGORIES[chartCategory].color : 'var(--card-dark-border)'}`,
+                      transition: 'all 0.15s',
+                    }}>
+                      {r.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-            <div style={{ height: 200, marginTop: 12 }}>
+
+            <div style={{ height: 200 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
-                    {activeTypes.map(type => {
-                      const color = ENV_COLORS[type] ?? '#888'
-                      return (
-                        <linearGradient key={type} id={`grad_${type}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={color} stopOpacity={0.5} />
-                          <stop offset="95%" stopColor={color} stopOpacity={0.08} />
-                        </linearGradient>
-                      )
-                    })}
+                    <linearGradient id="gradTotal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={CHART_CATEGORIES[chartCategory].color} stopOpacity={0.45} />
+                      <stop offset="95%" stopColor={CHART_CATEGORIES[chartCategory].color} stopOpacity={0.04} />
+                    </linearGradient>
                   </defs>
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
                     interval="preserveStartEnd" />
                   <YAxis domain={[evolMin, evolMax]} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
                     tickFormatter={v => fmtCompact(v)} width={64} />
                   <Tooltip
-                    formatter={(v: number, name: string) => [fmtCompact(v), ENV_LABELS[name] ?? name]}
-                    contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
-                    itemStyle={chartTheme.itemStyle}
-                    labelStyle={chartTheme.labelStyle}
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+                      const color = CHART_CATEGORIES[chartCategory].color
+                      return (
+                        <div style={{ background: '#090909', border: `2px solid ${color}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
+                          <div style={{ color, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
+                          <div style={{ color: '#fff', fontWeight: 600, marginTop: 2 }}>{fmtCompact(payload[0]?.value as number)}</div>
+                        </div>
+                      )
+                    }}
                   />
-                  <Legend
-                    iconType="circle"
-                    iconSize={7}
-                    formatter={(value: string) => <span style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>{ENV_LABELS[value] ?? value}</span>}
-                    wrapperStyle={{ paddingTop: 6 }}
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    stroke={CHART_CATEGORIES[chartCategory].color}
+                    strokeWidth={2.5}
+                    fill="url(#gradTotal)"
+                    fillOpacity={1}
+                    dot={false}
+                    activeDot={{ r: 5, fill: CHART_CATEGORIES[chartCategory].color, strokeWidth: 0 }}
                   />
-                  {activeTypes.map(type => (
-                    <Area
-                      key={type}
-                      type="monotone"
-                      dataKey={type}
-                      stackId="1"
-                      stroke={ENV_COLORS[type] ?? '#888'}
-                      strokeWidth={1.5}
-                      fill={`url(#grad_${type})`}
-                      dot={false}
-                      activeDot={{ r: 3 }}
-                    />
-                  ))}
                 </AreaChart>
               </ResponsiveContainer>
             </div>

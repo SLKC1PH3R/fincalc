@@ -108,7 +108,7 @@ export default function SuccessionPage() {
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
                 {isTaxFree
-                  ? 'Aucun droit de mutation — transfert exonéré d'impôt'
+                  ? "Aucun droit de mutation — transfert exonéré d'impôt"
                   : `${fmt(res.dmtg)} de droits à payer — taux effectif ${res.effectiveRate.toFixed(1)}%`}
               </p>
               <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo, useRef, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
+import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Legend } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -133,6 +133,27 @@ function generateEvolutionData(totalValue: number, range: TimeRange) {
   })
 }
 
+const ENV_COLORS: Record<string, string> = {
+  IMMOBILIER: '#3b82f6',
+  PEA:        '#818cf8',
+  AV:         '#a78bfa',
+  CTO:        '#38bdf8',
+  PER:        '#fb923c',
+  LIVRET:     '#22c55e',
+  CRYPTO:     '#a855f7',
+  CASH:       '#94a3b8',
+}
+const ENV_LABELS: Record<string, string> = {
+  IMMOBILIER: 'Immobilier',
+  PEA:        'PEA',
+  AV:         'Assurance-Vie',
+  CTO:        'CTO',
+  PER:        'PER',
+  LIVRET:     'Livrets',
+  CRYPTO:     'Crypto',
+  CASH:       'Cash',
+}
+
 // ── Composant ─────────────────────────────────────────────────────────────────
 export default function PatrimoinePage() {
   const router = useRouter()
@@ -142,7 +163,7 @@ export default function PatrimoinePage() {
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
-  const [snapshots, setSnapshots] = useState<{ date: string; value: number }[]>([])
+  const [snapshots, setSnapshots] = useState<{ date: string; totalValue: number; byEnvelope: Record<string, { value: number; type: string; name: string }> }[]>([])
   const [fireTarget, setFireTarget] = useState<number>(0)
   const [fireTargetInput, setFireTargetInput] = useState('')
   const [editingFireTarget, setEditingFireTarget] = useState(false)
@@ -198,12 +219,10 @@ export default function PatrimoinePage() {
 
   // Fetch snapshots on mount
   useEffect(() => {
-    fetch('/api/patrimoine/snapshots?days=365')
+    fetch('/api/patrimoine/snapshots?days=1825')
       .then(r => r.json())
-      .then((data: { date: string; totalValue: number }[]) => {
-        if (Array.isArray(data)) {
-          setSnapshots(data.map(s => ({ date: s.date, value: s.totalValue })))
-        }
+      .then((data: { date: string; totalValue: number; byEnvelope: Record<string, { value: number; type: string; name: string }> }[]) => {
+        if (Array.isArray(data)) setSnapshots(data)
       })
       .catch(() => {})
   }, [])
@@ -309,44 +328,70 @@ export default function PatrimoinePage() {
     return { ...geoNorm, values, totalGeo: geoTotal }
   }, [envelopes])
 
-  // Données évolution
-  const evolutionData = useMemo(() => {
+  // Types actifs dans le patrimoine
+  const activeTypes = useMemo(() =>
+    [...new Set(envelopes.map(e => e.type))].filter(t => t in ENV_COLORS),
+    [envelopes]
+  )
+
+  // Valeur par type depuis les enveloppes courantes
+  const typeValues = useMemo(() => {
+    const tv: Record<string, number> = {}
+    for (const e of envelopes) {
+      const val = e.totalValue !== null ? e.totalValue : e.positions.reduce((s: number, p: { pru: number; quantity: number }) => s + p.pru * p.quantity, 0)
+      tv[e.type] = (tv[e.type] ?? 0) + val
+    }
+    return tv
+  }, [envelopes])
+
+  // Données évolution empilées par type
+  const { evolutionData, isSimulated } = useMemo(() => {
+    const cutoffMs: Record<TimeRange, number> = {
+      '1j': 86_400_000,
+      '1s': 7 * 86_400_000,
+      '1m': 30 * 86_400_000,
+      '1a': 365 * 86_400_000,
+      'max': Infinity,
+    }
+    const isShort = timeRange === '1j' || timeRange === '1s' || timeRange === '1m'
+    const now = Date.now()
+
     if (snapshots.length >= 2) {
-      const now = new Date()
-      let cutoff: Date
-      if (timeRange === '1j') {
-        cutoff = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000)
-      } else if (timeRange === '1s') {
-        cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      } else if (timeRange === '1m') {
-        cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      } else if (timeRange === '1a') {
-        cutoff = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000)
-      } else {
-        cutoff = new Date(0) // max: all
-      }
-      const filtered = snapshots.filter(s => new Date(s.date) >= cutoff)
+      const filtered = snapshots.filter(s => (now - new Date(s.date).getTime()) <= cutoffMs[timeRange])
       if (filtered.length >= 2) {
-        const isShort = timeRange === '1j' || timeRange === '1s' || timeRange === '1m'
-        return filtered.map(s => {
-          const d = new Date(s.date)
-          let date: string
-          if (isShort) {
-            date = `${d.getDate()}/${d.getMonth() + 1}`
-          } else {
-            date = d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+        const data = filtered.map(snap => {
+          const d = new Date(snap.date)
+          const date = isShort
+            ? `${d.getDate()}/${d.getMonth() + 1}`
+            : d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+          const byType: Record<string, number> = {}
+          for (const env of Object.values(snap.byEnvelope ?? {})) {
+            byType[env.type] = (byType[env.type] ?? 0) + env.value
           }
-          return { date, value: s.value }
+          return { date, total: snap.totalValue, ...byType }
         })
+        return { evolutionData: data, isSimulated: false }
       }
     }
-    return generateEvolutionData(totalValue, timeRange)
-  }, [snapshots, totalValue, timeRange])
-  const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => d.value)) * 0.98 : 0, [evolutionData])
-  const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => d.value)) * 1.02 : 0, [evolutionData])
+
+    // Fallback : simulation empilée par proportion actuelle
+    const simPts = generateEvolutionData(totalValue, timeRange)
+    const data = simPts.map(pt => {
+      const entry: Record<string, number | string> = { date: pt.date, total: pt.value }
+      for (const type of activeTypes) {
+        const ratio = totalValue > 0 ? (typeValues[type] ?? 0) / totalValue : 0
+        entry[type] = Math.round(pt.value * ratio)
+      }
+      return entry
+    })
+    return { evolutionData: data, isSimulated: true }
+  }, [snapshots, totalValue, timeRange, activeTypes, typeValues])
+
+  const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => Number(d.total))) * 0.97 : 0, [evolutionData])
+  const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => Number(d.total))) * 1.02 : 0, [evolutionData])
   const evolChange = useMemo(() => {
     if (evolutionData.length < 2) return 0
-    return evolutionData[evolutionData.length - 1].value - evolutionData[0].value
+    return Number(evolutionData[evolutionData.length - 1].total) - Number(evolutionData[0].total)
   }, [evolutionData])
 
   // Créer une enveloppe
@@ -453,7 +498,7 @@ export default function PatrimoinePage() {
                   Évolution du patrimoine
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
-                  Simulation estimée — {fmtCompact(totalValue)}
+                  {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(totalValue)}
                   {evolChange !== 0 && (
                     <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
                       {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)} sur la période
@@ -475,27 +520,49 @@ export default function PatrimoinePage() {
                 ))}
               </div>
             </div>
-            <div style={{ height: 180, marginTop: 12 }}>
+            <div style={{ height: 200, marginTop: 12 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="evolGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
-                    </linearGradient>
+                    {activeTypes.map(type => {
+                      const color = ENV_COLORS[type] ?? '#888'
+                      return (
+                        <linearGradient key={type} id={`grad_${type}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={color} stopOpacity={0.5} />
+                          <stop offset="95%" stopColor={color} stopOpacity={0.08} />
+                        </linearGradient>
+                      )
+                    })}
                   </defs>
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
                     interval="preserveStartEnd" />
                   <YAxis domain={[evolMin, evolMax]} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
                     tickFormatter={v => fmtCompact(v)} width={64} />
                   <Tooltip
-                    formatter={(v: number) => [fmtCompact(v), 'Patrimoine']}
+                    formatter={(v: number, name: string) => [fmtCompact(v), ENV_LABELS[name] ?? name]}
                     contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
                     itemStyle={chartTheme.itemStyle}
                     labelStyle={chartTheme.labelStyle}
                   />
-                  <Area type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2}
-                    fill="url(#evolGrad)" dot={false} activeDot={{ r: 4, fill: '#f97316' }} />
+                  <Legend
+                    iconType="circle"
+                    iconSize={7}
+                    formatter={(value: string) => <span style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>{ENV_LABELS[value] ?? value}</span>}
+                    wrapperStyle={{ paddingTop: 6 }}
+                  />
+                  {activeTypes.map(type => (
+                    <Area
+                      key={type}
+                      type="monotone"
+                      dataKey={type}
+                      stackId="1"
+                      stroke={ENV_COLORS[type] ?? '#888'}
+                      strokeWidth={1.5}
+                      fill={`url(#grad_${type})`}
+                      dot={false}
+                      activeDot={{ r: 3 }}
+                    />
+                  ))}
                 </AreaChart>
               </ResponsiveContainer>
             </div>

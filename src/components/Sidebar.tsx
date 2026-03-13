@@ -97,7 +97,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
   const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
-  const [patrimoineEvol, setPatrimoineEvol] = useState<number | null>(null)
+  const [sparklineHistory, setSparklineHistory] = useState<number[]>([])
+  const [fireTarget, setFireTarget] = useState<number>(0)
 
   const toggleSection = (title: string) => setCollapsedSections(prev => {
     const next = new Set(prev)
@@ -126,12 +127,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   }, [])
 
   useEffect(() => {
+    const saved = localStorage.getItem('fincalc_fire_target')
+    if (saved) { const n = parseFloat(saved); if (n > 0) setFireTarget(n) }
+  }, [])
+
+  useEffect(() => {
     fetch('/api/patrimoine/envelopes')
       .then(r => r.json())
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((data: any[]) => {
         if (!Array.isArray(data)) return
         const total = data.reduce((sum, e) => {
+          if (e.type === 'IMMOBILIER') return sum + Number(e.metadata?.currentValue ?? 0)
           const val = e.totalValue !== null
             ? e.totalValue
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,18 +146,20 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           return sum + val
         }, 0)
         setPatrimoineTotal(total)
+      })
+      .catch(() => {})
+  }, [])
 
-        // After setting patrimoineTotal, also fetch snapshots for evolution
-        fetch('/api/patrimoine/snapshots?days=2')
-          .then(r => r.json())
-          .then((snaps: { date: string; totalValue: number }[]) => {
-            if (snaps.length >= 2) {
-              const prev = snaps[0].totalValue
-              const curr = snaps[snaps.length - 1].totalValue
-              if (prev > 0) setPatrimoineEvol(((curr - prev) / prev) * 100)
-            }
-          })
-          .catch(() => {})
+  useEffect(() => {
+    fetch('/api/patrimoine/snapshots?days=180')
+      .then(r => r.json())
+      .then((snaps: { date: string; totalValue: number }[]) => {
+        if (Array.isArray(snaps) && snaps.length >= 2) {
+          // Sample up to 7 evenly-spaced points
+          const step = Math.max(1, Math.floor(snaps.length / 7))
+          const sampled = snaps.filter((_, i) => i % step === 0 || i === snaps.length - 1)
+          setSparklineHistory(sampled.map(s => s.totalValue))
+        }
       })
       .catch(() => {})
   }, [])
@@ -276,6 +285,34 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     </Link>
   )
 
+  // ── Patrimoine widget derived values ────────────────────────────────────────
+  const fmtSb = (n: number) =>
+    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)} M€`
+    : n >= 1_000 ? `${Math.round(n / 1_000)} k€`
+    : `${Math.round(n)} €`
+  const sparkDelta = sparklineHistory.length >= 2
+    ? sparklineHistory[sparklineHistory.length - 1] - sparklineHistory[0]
+    : null
+  const sparkDeltaPct = sparkDelta !== null && sparklineHistory[0] > 0
+    ? (sparkDelta / sparklineHistory[0]) * 100
+    : null
+  const accentColor = sparkDelta !== null && sparkDelta < 0 ? '#f87171' : '#f97316'
+  const SW = 84, SH = 28
+  const sparkMax = sparklineHistory.length >= 2 ? Math.max(...sparklineHistory) : 0
+  const sparkMin = sparklineHistory.length >= 2 ? Math.min(...sparklineHistory) : 0
+  const sparkRange = sparkMax - sparkMin || 1
+  const sparkPts = sparklineHistory.length >= 2
+    ? sparklineHistory.map((v: number, i: number) =>
+        `${(i / (sparklineHistory.length - 1)) * SW},${SH - 2 - ((v - sparkMin) / sparkRange) * (SH - 4)}`
+      ).join(' ')
+    : null
+  const sparkLastCy = sparklineHistory.length >= 2
+    ? SH - 2 - ((sparklineHistory[sparklineHistory.length - 1] - sparkMin) / sparkRange) * (SH - 4)
+    : 0
+  const fireProgress = patrimoineTotal !== null && fireTarget > 0
+    ? Math.min(100, (patrimoineTotal / fireTarget) * 100)
+    : 0
+
   return (
     <>
       {/* Mobile overlay */}
@@ -352,65 +389,66 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 </button>
               </div>
 
-              {/* Patrimoine widget */}
+              {/* Patrimoine widget — V6 Sparkline */}
               {patrimoineTotal !== null && (
-                <Link
-                  href="/dashboard/patrimoine"
-                  style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}
-                >
+                <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}>
                   <div
-                    style={{
-                      padding: '10px 14px',
-                      borderRadius: 12,
-                      background: 'var(--sb-profile-bg)',
-                      border: '1px solid rgba(249,115,22,0.10)',
-                      cursor: 'pointer',
-                      transition: 'border-color 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.25)')}
+                    style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--sb-profile-bg)', border: '1px solid rgba(249,115,22,0.10)', cursor: 'pointer', transition: 'border-color 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.28)')}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.10)')}
                   >
-                    <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--sb-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                        Patrimoine net
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        {patrimoineEvol !== null && (
-                          <span style={{
-                            fontSize: 10, fontWeight: 600,
-                            color: patrimoineEvol >= 0 ? '#4ade80' : '#f87171',
-                          }}>
-                            {patrimoineEvol >= 0 ? '+' : ''}{patrimoineEvol.toFixed(1)}%
-                          </span>
+                    {/* Top row: info left + sparkline right */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: fireTarget > 0 ? 10 : 0 }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                          <TrendingUp style={{ width: 9, height: 9, color: accentColor }} />
+                          <span style={{ color: accentColor, fontSize: 9, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
+                        </div>
+                        <div style={{ color: 'var(--sb-text-strong)', fontSize: 16, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>
+                          {fmtSb(patrimoineTotal)}
+                        </div>
+                        {sparkDelta !== null && (
+                          <div style={{ color: sparkDelta >= 0 ? '#4ade80' : '#f87171', fontSize: 10, fontWeight: 600, marginTop: 2 }}>
+                            {sparkDelta >= 0 ? '↑ +' : '↓ '}{fmtSb(Math.abs(sparkDelta))}
+                            {sparkDeltaPct !== null && (
+                              <span style={{ opacity: 0.7, marginLeft: 3 }}>({sparkDeltaPct >= 0 ? '+' : ''}{sparkDeltaPct.toFixed(1)}%)</span>
+                            )}
+                          </div>
                         )}
-                        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--sb-text-strong)', fontVariantNumeric: 'tabular-nums' }}>
-                          {patrimoineTotal >= 1_000_000
-                            ? `${(patrimoineTotal / 1_000_000).toFixed(1).replace(/\.0$/, '')} M€`
-                            : patrimoineTotal >= 1_000
-                              ? `${Math.round(patrimoineTotal / 1_000)} k€`
-                              : `${Math.round(patrimoineTotal)} €`}
-                        </span>
                       </div>
-                    </div>
-                    <div style={{ height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                      {patrimoineEvol !== null ? (
-                        <div style={{
-                          height: '100%',
-                          width: `${Math.min(Math.abs(patrimoineEvol) * 5, 100)}%`,
-                          borderRadius: 99,
-                          background: patrimoineEvol >= 0
-                            ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                            : 'linear-gradient(90deg, #ef4444, #f87171)',
-                          transition: 'width 0.6s ease',
-                        }} />
-                      ) : (
-                        <div style={{
-                          height: '100%', width: '40%', borderRadius: 99,
-                          background: 'linear-gradient(90deg, #f97316, #fbbf24)',
-                          opacity: 0.4,
-                        }} />
+
+                      {/* Sparkline SVG */}
+                      {sparkPts && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                          <svg width={SW} height={SH} style={{ overflow: 'visible' }}>
+                            <defs>
+                              <linearGradient id="sbSparkGrad" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stopColor={accentColor} stopOpacity={0.25} />
+                                <stop offset="100%" stopColor={accentColor} />
+                              </linearGradient>
+                            </defs>
+                            <polyline points={sparkPts} fill="none" stroke="url(#sbSparkGrad)" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                            <circle cx={SW} cy={sparkLastCy} r={2.5} fill={accentColor} />
+                          </svg>
+                          <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)' }}>6 mois</span>
+                        </div>
                       )}
                     </div>
+
+                    {/* FIRE progress */}
+                    {fireTarget > 0 && (
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 8 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)' }}>
+                            Objectif <span style={{ color: 'rgba(255,255,255,0.45)' }}>{fmtSb(fireTarget)}</span>
+                          </span>
+                          <span style={{ fontSize: 9, color: accentColor, fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
+                        </div>
+                        <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 99 }}>
+                          <div style={{ width: `${fireProgress}%`, height: '100%', background: `linear-gradient(90deg, ${accentColor}88, ${accentColor})`, borderRadius: 99, transition: 'width 0.6s ease' }} />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Link>
               )}

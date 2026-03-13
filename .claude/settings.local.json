@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(powershell.exe -Command \"npx tsc --noEmit 2>&1 | Select-Object -First 30\")",
+      "Bash(powershell.exe -Command \"& { $env:Path += '';C:\\\\Program Files\\\\nodejs''; npx tsc --noEmit 2>&1 | Select-Object -First 30 }\")"
     ]
   }
 }

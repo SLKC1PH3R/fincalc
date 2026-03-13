@@ -30,6 +30,8 @@ interface Envelope {
   positionCount: number; totalValue: number | null
 }
 
+type LivePrices = Record<string, { priceEur: number; changePct: number }>
+
 const ENVELOPE_TYPE_CONFIG: Record<EnvelopeType, {
   label: string; description: string; color: string
   icon: ComponentType<{ style?: object; className?: string }>
@@ -45,7 +47,10 @@ const ENVELOPE_TYPE_CONFIG: Record<EnvelopeType, {
   CASH:       { label: 'Liquidités',        description: 'Compte courant, épargne bancaire',     color: '#94a3b8', icon: Wallet,     assetClass: 'Liquidités' },
 }
 
+// Types sans notion de P&L (valeur = capital)
 const NO_PL_TYPES: EnvelopeType[] = ['LIVRET', 'CASH', 'PER']
+// Types dont la valeur de marché nécessite des prix temps réel
+const MARKET_BASED_TYPES: EnvelopeType[] = ['PEA', 'CTO', 'CRYPTO']
 
 // Palette for multi-envelope categories (distinct color per envelope index)
 const ENV_PALETTE = [
@@ -54,26 +59,59 @@ const ENV_PALETTE = [
 ]
 const PEA_MAX = 150_000
 
-function computeMarketValue(env: Envelope): number {
+/**
+ * Valeur de marché d'une enveloppe.
+ * - Types manuels (AV, LIVRET, PER, CASH) : totalValue depuis l'API (surrenderValue / balance)
+ * - Types marché (PEA, CTO, CRYPTO) : qty × prix temps réel si dispo, sinon qty × PRU (coût de revient)
+ * - IMMOBILIER : traité séparément dans les composants (currentValue brut)
+ */
+function computeMarketValue(env: Envelope, prices: LivePrices = {}): number {
   if (env.totalValue !== null) return env.totalValue
-  return env.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
+  // Types marché : utiliser les prix live si disponibles, sinon PRU (estimation)
+  return env.positions.reduce((s, p) => {
+    const live = prices[p.symbol]
+    return s + (live ? live.priceEur : p.pru) * p.quantity
+  }, 0)
 }
 
+/**
+ * Capital investi dans une enveloppe (coût de revient).
+ * Retourne 0 si la donnée n'est pas disponible (pas de fallback trompeur).
+ */
 function computeInvested(env: Envelope): number {
-  if (['PEA', 'CTO'].includes(env.type)) {
+  if (env.type === 'PEA' || env.type === 'CTO') {
     const dep = Number(env.metadata.totalDeposited ?? 0)
     if (dep > 0) return dep
+    // Pas de totalDeposited : utiliser PRU×qty comme proxy du coût de revient
     return env.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
   }
-  if (env.type === 'CRYPTO') return env.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
+  if (env.type === 'CRYPTO') {
+    return env.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
+  }
   if (env.type === 'AV') {
-    const dep = Number(env.metadata.totalDeposited ?? 0)
-    return dep > 0 ? dep : Number(env.metadata.surrenderValue ?? 0)
+    // Seulement si l'utilisateur a renseigné le montant versé — sinon on ne peut pas calculer le P&L
+    return Number(env.metadata.totalDeposited ?? 0)
   }
   if (env.type === 'IMMOBILIER') {
-    return Number(env.metadata.purchasePrice ?? env.metadata.currentValue ?? computeMarketValue(env))
+    return Number(env.metadata.purchasePrice ?? 0)
   }
-  return computeMarketValue(env)
+  // LIVRET / CASH / PER : valeur = capital (pas de P&L)
+  return env.totalValue ?? 0
+}
+
+/**
+ * Détermine si le P&L est calculable et significatif pour une enveloppe.
+ */
+function canShowPL(env: Envelope, value: number, invested: number, hasPrices: boolean): boolean {
+  if (NO_PL_TYPES.includes(env.type)) return false
+  if (value <= 0 && env.positions.length === 0) return false
+  if (env.type === 'AV') return Number(env.metadata.totalDeposited ?? 0) > 0
+  // PEA/CTO : P&L pertinent si on a des prix live OU un totalDeposited distinct du PRU×qty
+  if (env.type === 'PEA' || env.type === 'CTO') {
+    if (env.positions.length === 0) return false
+    return hasPrices || Number(env.metadata.totalDeposited ?? 0) > 0
+  }
+  return invested > 0
 }
 
 function getCapProgress(env: Envelope): { current: number; max: number } | null {
@@ -175,6 +213,8 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   const [allEnvelopes, setAllEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
+  const [livePrices, setLivePrices] = useState<LivePrices>({})
+  const [pricesLoading, setPricesLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [step, setStep] = useState<'type' | 'name'>('type')
   const [selectedType, setSelectedType] = useState<EnvelopeType | null>(null)
@@ -200,22 +240,55 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     [allEnvelopes, catCfg.types]
   )
 
-  const { totalValue, totalInvested } = useMemo(() => {
+  // Fetch real-time prices for market-based envelopes (PEA, CTO, CRYPTO)
+  useEffect(() => {
+    if (envelopes.length === 0) return
+    const positions = envelopes
+      .filter(e => MARKET_BASED_TYPES.includes(e.type))
+      .flatMap(e => e.positions)
+    if (positions.length === 0) return
+
+    // Deduplicate by symbol
+    const seen = new Set<string>()
+    const unique = positions.filter(p => { if (seen.has(p.symbol)) return false; seen.add(p.symbol); return true })
+
+    setPricesLoading(true)
+    fetch('/api/portfolio/prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ positions: unique }),
+    })
+      .then(r => r.json())
+      .then(data => { if (data.prices) setLivePrices(data.prices) })
+      .catch(() => {})
+      .finally(() => setPricesLoading(false))
+  }, [envelopes]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { totalValue, totalInvested, totalPLComputedValue, totalPLComputedInvested } = useMemo(() => {
     let tv = 0, ti = 0
+    // Separate accumulators for P&L (only envelopes where P&L is meaningful)
+    let plValue = 0, plInvested = 0
     for (const e of envelopes) {
-      if (e.type === 'IMMOBILIER') {
-        tv += Number(e.metadata.currentValue ?? 0)
-        ti += Number(e.metadata.purchasePrice ?? 0)
-      } else {
-        tv += computeMarketValue(e)
-        ti += computeInvested(e)
+      const isImmo = e.type === 'IMMOBILIER'
+      const value = isImmo ? Number(e.metadata.currentValue ?? 0) : computeMarketValue(e, livePrices)
+      const invested = isImmo ? Number(e.metadata.purchasePrice ?? 0) : computeInvested(e)
+      const hasPrices = e.positions.some(p => livePrices[p.symbol])
+      tv += value
+      // For KPI "Capital investi": use invested if available, fallback to value (P&L contribution = 0)
+      ti += invested > 0 ? invested : value
+      // For KPI "Plus-value": only include envelopes with computable P&L
+      if (canShowPL(e, value, invested, hasPrices) && invested > 0) {
+        plValue += value
+        plInvested += invested
       }
     }
-    return { totalValue: tv, totalInvested: ti }
-  }, [envelopes])
+    return { totalValue: tv, totalInvested: ti, totalPLComputedValue: plValue, totalPLComputedInvested: plInvested }
+  }, [envelopes, livePrices])
 
-  const pl = totalValue - totalInvested
-  const plPct = totalInvested > 0 ? (pl / totalInvested) * 100 : 0
+  // P&L global : uniquement sur les enveloppes où P&L est calculable
+  const pl = totalPLComputedValue - totalPLComputedInvested
+  const plPct = totalPLComputedInvested > 0 ? (pl / totalPLComputedInvested) * 100 : 0
+  const hasPLData = totalPLComputedInvested > 0
 
   const evolutionData = useMemo(
     () => (totalValue > 0 ? generateEvolutionData(totalValue, timeRange) : []),
@@ -240,12 +313,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     if (envelopes.length === 0) return null
     return [...envelopes].sort((a, b) => {
       const score = (e: Envelope) => {
-        const inv = computeInvested(e), val = computeMarketValue(e)
-        return inv > 0 && !NO_PL_TYPES.includes(e.type) ? (val - inv) / inv * 100 : val / 1e9
+        const val = e.type === 'IMMOBILIER' ? Number(e.metadata.currentValue ?? 0) : computeMarketValue(e, livePrices)
+        const inv = computeInvested(e)
+        const hasPrices = e.positions.some(p => livePrices[p.symbol])
+        return canShowPL(e, val, inv, hasPrices) && inv > 0 ? (val - inv) / inv * 100 : val / 1e9
       }
       return score(b) - score(a)
     })[0]
-  }, [envelopes])
+  }, [envelopes, livePrices])
 
   const handleCreate = async () => {
     if (!selectedType || !envelopeName.trim()) return
@@ -303,18 +378,44 @@ export default function PatrimoineCategoryPage({ category }: Props) {
       {/* KPI bar */}
       {!loading && envelopes.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {[
-            { label: 'Valeur totale', value: fmtCompact(totalValue) },
-            { label: 'Capital investi', value: fmtCompact(totalInvested) },
-            { label: pl >= 0 ? 'Plus-value' : 'Moins-value',
-              value: `${pl >= 0 ? '+' : ''}${fmtCompact(pl)} (${pl >= 0 ? '+' : ''}${plPct.toFixed(1)} %)`,
-              color: pl >= 0 ? '#34d399' : '#f87171' },
-          ].map((kpi) => (
-            <div key={kpi.label} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4 }}>{kpi.label}</div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: kpi.color ?? 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
+          {/* Valeur totale */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Valeur totale</span>
+              {pricesLoading && (
+                <span style={{ fontSize: 9, color: catCfg.color, background: catCfg.color + '18', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>…</span>
+              )}
+              {!pricesLoading && Object.keys(livePrices).length > 0 && (
+                <span style={{ fontSize: 9, color: '#34d399', background: '#34d39918', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>LIVE</span>
+              )}
             </div>
-          ))}
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</div>
+          </div>
+
+          {/* Capital investi */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4 }}>Capital investi</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</div>
+          </div>
+
+          {/* Plus/Moins-value */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4 }}>
+              {hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance'}
+            </div>
+            {hasPLData ? (
+              <>
+                <div style={{ fontSize: 17, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                  {pl >= 0 ? '+' : ''}{fmtCompact(pl)}
+                </div>
+                <div style={{ fontSize: 12, color: pl >= 0 ? '#34d399' : '#f87171', opacity: 0.8, marginTop: 2 }}>
+                  {pl >= 0 ? '+' : ''}{plPct.toFixed(1)} %
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 13, color: 'var(--text-subtle)' }}>—</div>
+            )}
+          </div>
         </div>
       )}
 
@@ -409,9 +510,10 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               const Icon = cfg.icon
               const envColor = envColorMap.get(env.id) ?? cfg.color
               const isImmo = env.type === 'IMMOBILIER'
-              const value = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env)
+              const value = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
               const invested = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
-              const hasPL = invested > 0 && !NO_PL_TYPES.includes(env.type)
+              const hasPrices = env.positions.some(p => livePrices[p.symbol])
+              const hasPL = canShowPL(env, value, invested, hasPrices) && invested > 0
               const plEnv = value - invested
               const cap = getCapProgress(env)
 
@@ -435,8 +537,15 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', flexShrink: 0, marginTop: 4 }} />
                     </div>
 
-                    <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>
-                      {isImmo ? 'Valeur du bien' : 'Valeur actuelle'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                        {isImmo ? 'Valeur du bien' : 'Valeur actuelle'}
+                      </span>
+                      {!isImmo && MARKET_BASED_TYPES.includes(env.type) && env.positions.length > 0 && (
+                        hasPrices
+                          ? <span style={{ fontSize: 9, color: '#34d399', background: '#34d39915', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>LIVE</span>
+                          : <span style={{ fontSize: 9, color: 'var(--text-subtle)', background: 'var(--section-border)', padding: '1px 5px', borderRadius: 3 }}>PRU×qty</span>
+                      )}
                     </div>
                     <div style={{ fontSize: isImmo ? 17 : 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: hasPL || cap ? 8 : 0 }}>
                       {value > 0 ? (isImmo ? fmt(value) : fmtCompact(value)) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>}
@@ -514,12 +623,15 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   {' '}
                   {(() => {
                     const inv = computeInvested(bestEnv)
-                    const val = computeMarketValue(bestEnv)
-                    if (!NO_PL_TYPES.includes(bestEnv.type) && inv > 0 && val > inv) {
+                    const val = bestEnv.type === 'IMMOBILIER'
+                      ? Number(bestEnv.metadata.currentValue ?? 0)
+                      : computeMarketValue(bestEnv, livePrices)
+                    const hp = bestEnv.positions.some(p => livePrices[p.symbol])
+                    if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) {
                       const pct = (val - inv) / inv * 100
                       return `avec +${pct.toFixed(1)}% de performance`
                     }
-                    return `avec ${fmtCompact(computeMarketValue(bestEnv))} de valeur actuelle`
+                    return `avec ${fmtCompact(val)} de valeur actuelle`
                   })()}
                 </p>
               </div>

@@ -78,9 +78,20 @@ const ROADMAP = [
   { status: 'done', label: '13 calculateurs financiers', desc: 'Épargne, Immobilier, Fiscal, Budget' },
   { status: 'done', label: 'Historique des simulations', desc: 'Sauvegarde et restauration des scénarios' },
   { status: 'done', label: 'Mode sombre / clair', desc: 'Personnalisation de l\'interface' },
+  // Mars 2026
+  { status: 'done', label: 'Tableau patrimonial complet', desc: 'Suivi de tous vos actifs (PEA, CTO, AV, PER, Livrets, Immobilier, Crypto, Cash) avec répartition globale et carte monde' },
+  { status: 'done', label: 'Portefeuille temps réel', desc: 'Prix en direct via Finnhub (actions/ETF) + CoinGecko (crypto) — plus-values latentes calculées à la seconde' },
+  { status: 'done', label: 'Score Patrimonial', desc: 'Jauge FIRE personnalisée : taux de couverture passif, diversification, score global sur 100' },
+  { status: 'done', label: 'Flat Tax vs Barème IR', desc: 'Dividendes, plus-values, intérêts — selon votre TMI, simulation comparée PFU 30 % vs imposition au barème' },
+  { status: 'done', label: 'Comparatif PEA / CTO / AV', desc: 'Simulation des 3 enveloppes sur la durée — fiscalité, retraits, performance nette après impôts' },
+  { status: 'done', label: 'Partage de simulation', desc: 'Générez un lien public pour partager votre scénario — accès lecture sans compte requis' },
+  { status: 'done', label: 'Glossaire financier contextuel', desc: 'Plus de 25 définitions (TMI, TAEG, PEA, FIRE…) accessibles en tooltip directement dans les calculateurs' },
+  { status: 'done', label: 'Taux d\'intérêt actuels', desc: 'Widget landing avec les taux temps réel : Livret A, OAT 10 ans, BCE, immobilier — mis à jour quotidiennement' },
+  // Avril 2026
+  { status: 'done', label: 'Catégories patrimoniales', desc: 'Navigation par catégorie : Immobilier, Actions & Fonds, Livrets, Crypto, Comptes bancaires, Emprunts — chacune avec son dashboard dédié' },
+  { status: 'done', label: 'Design système V6 Gold', desc: 'Refonte visuelle complète — palette or #f1c086, widget patrimoine avec sparkline, Brut / Dettes, barre FIRE, cohérence sur toutes les pages' },
   // ── En cours ────────────────────────────────────────────────────────────
   { status: 'wip', label: 'Export PDF avec branding', desc: 'Téléchargez vos simulations en PDF premium' },
-  { status: 'wip', label: 'PEA', desc: 'Enveloppe fiscale, plafond 150 000 €, exonération IR après 5 ans, comparaison CTO vs PEA sur la durée' },
   { status: 'wip', label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP — taux actuels, plafonds, comparaison et manque à gagner vs investissement' },
   { status: 'wip', label: 'Impact des frais', desc: 'ETF à 0,2 % vs fonds actif à 2 % sur 20 ans — la différence spectaculaire en chiffres' },
   { status: 'wip', label: 'Inflation & pouvoir d\'achat', desc: 'Valeur réelle de votre capital dans le temps, rendement minimum pour ne pas perdre en réel' },
@@ -89,7 +100,6 @@ const ROADMAP = [
   { status: 'wip', label: 'SCPI', desc: 'Rendement brut/net, fiscalité foncière, comparaison achat direct, liquidité' },
   { status: 'wip', label: 'Déficit foncier', desc: 'Calcul de l\'économie d\'impôt pour les propriétaires réalisant des travaux' },
   { status: 'wip', label: 'Viager', desc: 'Bouquet et rente selon l\'espérance de vie — intérêt pour acheteur et vendeur' },
-  { status: 'wip', label: 'Flat Tax vs Barème IR', desc: 'Dividendes, plus-values, intérêts — selon votre TMI, l\'un ou l\'autre est plus avantageux' },
   { status: 'wip', label: 'Auto-entrepreneur / Freelance', desc: 'CA → revenu net après charges sociales, CFE et IR' },
   { status: 'wip', label: 'IFI', desc: 'Impôt sur la Fortune Immobilière — seuil 1,3 M€, calcul de la base taxable' },
   { status: 'wip', label: 'Succession & Donation', desc: 'Abattements par lien de parenté (100 k€ parent/enfant), DMTG, optimisation tous les 15 ans' },
@@ -100,19 +110,17 @@ const ROADMAP = [
   { status: 'planned', label: 'Comparateur de scénarios', desc: '2 ou 3 simulations côte à côte sur un même graphique — la killer feature qui manque à tous les outils gratuits' },
   { status: 'planned', label: 'Calculatrice rapide (sidebar)', desc: 'Mini-calc toujours accessible sans quitter la page en cours' },
   { status: 'planned', label: 'Mode "reverse"', desc: '"J\'ai besoin de Y€ à la retraite, combien dois-je épargner par mois ?" — logique inversée très intuitive' },
-  { status: 'planned', label: 'Tableau patrimonial', desc: 'Synthèse de tous vos actifs (immobilier, PEA, AV, livrets, crypto…) avec répartition globale' },
   { status: 'planned', label: 'Alertes paramétrables', desc: '"Notifie-moi si le Livret A change", rappels d\'objectifs, emails automatiques' },
   { status: 'planned', label: 'Rapport mensuel par email', desc: 'Résumé de vos simulations et évolution de vos objectifs chaque mois' },
   { status: 'planned', label: 'Mode présentation', desc: 'Vue épurée pour montrer une simulation à son conseiller CGP ou banquier' },
-  { status: 'planned', label: 'Glossaire financier contextuel', desc: 'Tooltip sur TMI, TAEG, rendement brut… directement dans les calculateurs' },
   { status: 'planned', label: 'Articles & guides', desc: '"Comprendre le FI/RE", "PEA vs CTO : lequel choisir ?" — contenu pédagogique et SEO' },
   { status: 'planned', label: 'Application mobile native', desc: 'iOS & Android — accès où que vous soyez' },
   { status: 'planned', label: 'Intégrations bancaires', desc: 'Import automatique de vos données via Open Banking' },
 ]
 
 const ROADMAP_PHASES = [
-  { id: 'done' as const, label: 'Disponible', period: 'Q1 2026', color: '#34d399', items: ROADMAP.filter(r => r.status === 'done') },
-  { id: 'wip' as const, label: 'En cours', period: 'Q2 2026', color: GOLD, items: ROADMAP.filter(r => r.status === 'wip') },
+  { id: 'done' as const, label: 'Disponible', period: 'Q1 – Q2 2026', color: '#34d399', items: ROADMAP.filter(r => r.status === 'done') },
+  { id: 'wip' as const, label: 'En cours', period: 'Q3 2026', color: GOLD, items: ROADMAP.filter(r => r.status === 'wip') },
   { id: 'planned' as const, label: 'À venir', period: 'Q4 2026 – 2027', color: 'rgba(255,255,255,0.28)', items: ROADMAP.filter(r => r.status === 'planned') },
 ]
 

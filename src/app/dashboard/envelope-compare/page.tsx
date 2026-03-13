@@ -188,7 +188,7 @@ function EnvelopeCompareInner() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input type="checkbox" id="couple2" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f97316' }} />
+            <input type="checkbox" id="couple2" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
             <label htmlFor="couple2" style={{ fontSize: 12, color: 'var(--text-em)', cursor: 'pointer' }}>
               Déclaration en couple
               <Tip text="Abattement AV de 9 200€/an au lieu de 4 600€." />

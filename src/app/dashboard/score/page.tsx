@@ -47,7 +47,7 @@ function ScoreGauge({ score }: { score: number }) {
   const trackLargeArc = totalArc > 180 ? 1 : 0
   const fillLargeArc = filledArc > 180 ? 1 : 0
 
-  const color = score >= 90 ? '#f97316' : score >= 80 ? '#34d399' : score >= 60 ? '#fbbf24' : score >= 40 ? '#fb923c' : '#f87171'
+  const color = score >= 90 ? '#f1c086' : score >= 80 ? '#34d399' : score >= 60 ? '#f1c086' : score >= 40 ? '#fb923c' : '#f87171'
 
   return (
     <svg width={180} height={180} viewBox="0 0 180 180">
@@ -78,7 +78,7 @@ const PILLAR_META = {
   emergency:       { label: 'Épargne d\'urgence',  max: 15, icon: PiggyBank,   color: '#38bdf8', href: '/dashboard/patrimoine' },
   diversification: { label: 'Diversification',     max: 20, icon: Wallet,      color: '#a78bfa', href: '/dashboard/patrimoine' },
   retirement:      { label: 'Préparation retraite',max: 20, icon: Flame,       color: '#fb923c', href: '/dashboard/retirement' },
-  fiscal:          { label: 'Optimisation fiscale', max: 15, icon: Receipt,     color: '#fbbf24', href: '/dashboard/tax' },
+  fiscal:          { label: 'Optimisation fiscale', max: 15, icon: Receipt,     color: '#f1c086', href: '/dashboard/tax' },
   debt:            { label: 'Endettement sain',    max: 10, icon: Building2,   color: '#f472b6', href: '/dashboard/mortgage' },
 }
 
@@ -87,7 +87,7 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
   if (!meta) return null
   const pct = detail.score / detail.max
   const Icon = meta.icon
-  const barColor = pct >= 0.75 ? '#34d399' : pct >= 0.50 ? '#fbbf24' : '#f87171'
+  const barColor = pct >= 0.75 ? '#34d399' : pct >= 0.50 ? '#f1c086' : '#f87171'
   const StatusIcon = pct >= 0.75 ? CheckCircle2 : pct >= 0.50 ? Minus : AlertCircle
 
   return (
@@ -120,9 +120,9 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
 // ── Score label ───────────────────────────────────────────────────────────────
 
 function scoreLabel(s: number) {
-  if (s >= 90) return { label: 'Excellent', color: '#f97316' }
+  if (s >= 90) return { label: 'Excellent', color: '#f1c086' }
   if (s >= 80) return { label: 'Très bien', color: '#34d399' }
-  if (s >= 60) return { label: 'Bien', color: '#fbbf24' }
+  if (s >= 60) return { label: 'Bien', color: '#f1c086' }
   if (s >= 40) return { label: 'En progression', color: '#fb923c' }
   return { label: 'À améliorer', color: '#f87171' }
 }
@@ -209,7 +209,7 @@ export default function ScorePage() {
                 contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }}
                 formatter={(v: number) => [`${v}/100`, 'Score']}
               />
-              <Line type="monotone" dataKey="score" stroke="#f97316" strokeWidth={2} dot={{ fill: '#f97316', r: 3 }} />
+              <Line type="monotone" dataKey="score" stroke="#f1c086" strokeWidth={2} dot={{ fill: '#f1c086', r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

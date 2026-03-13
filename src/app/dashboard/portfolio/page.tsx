@@ -311,7 +311,7 @@ function GererIndicesModal({
 
         {hasRemovedDefaults && (
           <button onClick={handleRestore}
-            style={{ fontSize: 12, color: '#f97316', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', marginBottom: 16, display: 'block' }}>
+            style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', marginBottom: 16, display: 'block' }}>
             Restaurer les indices par défaut
           </button>
         )}
@@ -358,7 +358,7 @@ function GererIndicesModal({
           <Button
             onClick={handleAdd}
             disabled={!addSymbol.trim() || !addLabel.trim()}
-            style={{ background: '#f97316', color: '#000', border: 'none', fontSize: 13 }}>
+            style={{ background: '#f1c086', color: '#000', border: 'none', fontSize: 13 }}>
             <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
             Ajouter
           </Button>
@@ -690,7 +690,7 @@ function PositionDialog({
           {/* Submit */}
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <Button variant="outline" onClick={onClose} style={{ flex: 1 }}>Annuler</Button>
-            <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f97316', color: '#000', border: 'none' }}>
+            <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
               {saving
                 ? <RefreshCw style={{ width: 14, height: 14, marginRight: 5, animation: 'spin 1s linear infinite' }} />
                 : <Check style={{ width: 14, height: 14, marginRight: 5 }} />}
@@ -807,7 +807,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <Button variant="outline" onClick={() => setStep(1)} style={{ flex: 1 }}>Retour</Button>
-              <Button onClick={() => setStep(3)} disabled={!name.trim()} style={{ flex: 1, background: '#f97316', color: '#000', border: 'none' }}>Suivant</Button>
+              <Button onClick={() => setStep(3)} disabled={!name.trim()} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>Suivant</Button>
             </div>
           </div>
         )}
@@ -992,7 +992,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
             <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
               <Button variant="outline" onClick={() => setStep(2)} style={{ flex: 1 }}>Retour</Button>
-              <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f97316', color: '#000', border: 'none' }}>
+              <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
                 {saving ? <RefreshCw style={{ width: 13, height: 13, marginRight: 5, animation: 'spin 1s linear infinite' }} /> : <Check style={{ width: 13, height: 13, marginRight: 5 }} />}
                 Créer l&apos;enveloppe
               </Button>
@@ -1223,7 +1223,7 @@ function PortfolioPageInner() {
             Actualiser
           </Button>
           <Button size="sm" onClick={() => { setEditPosition(null); setDialogOpen(true) }}
-            style={{ background: '#f97316', color: '#000', border: 'none' }}>
+            style={{ background: '#f1c086', color: '#000', border: 'none' }}>
             <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
             Ajouter
           </Button>
@@ -1313,7 +1313,7 @@ function PortfolioPageInner() {
             ) : indices.length === 0 ? (
               <div style={{ height: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 <p style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Tous les indices sont masqués</p>
-                <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#f97316', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                   Gérer les indices
                 </button>
               </div>
@@ -1343,7 +1343,7 @@ function PortfolioPageInner() {
                 Ajoutez vos actions, ETFs, cryptos, SCPI et livrets pour commencer le suivi.
               </p>
               <Button size="sm" onClick={() => { setEditPosition(null); setDialogOpen(true) }}
-                style={{ background: '#f97316', color: '#000', border: 'none' }}>
+                style={{ background: '#f1c086', color: '#000', border: 'none' }}>
                 <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
                 Ajouter une position
               </Button>

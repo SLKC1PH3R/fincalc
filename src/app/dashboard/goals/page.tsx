@@ -28,7 +28,7 @@ interface Envelope {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const PRESET_COLORS = [
-  { value: '#f97316', label: 'Orange' },
+  { value: '#f1c086', label: 'Orange' },
   { value: '#818cf8', label: 'Violet' },
   { value: '#34d399', label: 'Vert' },
   { value: '#38bdf8', label: 'Bleu' },
@@ -68,11 +68,11 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
     }}>
       <div style={{
         width: 64, height: 64, borderRadius: 20,
-        background: 'rgba(249,115,22,0.10)',
-        border: '1px solid rgba(249,115,22,0.2)',
+        background: 'rgba(241,192,134,0.09)',
+        border: '1px solid rgba(241,192,134,0.17)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Flag style={{ width: 28, height: 28, color: '#f97316' }} />
+        <Flag style={{ width: 28, height: 28, color: '#f1c086' }} />
       </div>
       <div>
         <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>
@@ -87,7 +87,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 20px', borderRadius: 10, border: 'none',
-          background: '#f97316', color: '#fff', cursor: 'pointer',
+          background: '#f1c086', color: '#fff', cursor: 'pointer',
           fontSize: 13, fontWeight: 600,
         }}
       >
@@ -128,7 +128,7 @@ interface FormState {
 }
 
 const DEFAULT_FORM: FormState = {
-  title: '', description: '', targetAmount: '', targetDate: '', envelopeId: '', color: '#f97316',
+  title: '', description: '', targetAmount: '', targetDate: '', envelopeId: '', color: '#f1c086',
 }
 
 function GoalForm({
@@ -267,7 +267,7 @@ function GoalForm({
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '8px 16px', borderRadius: 8, border: 'none',
-            background: '#f97316', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
+            background: '#f1c086', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
             fontSize: 13, fontWeight: 600, opacity: loading ? 0.7 : 1,
           }}
         >
@@ -335,7 +335,7 @@ function GoalCard({
       )
     } else {
       dateLabel = (
-        <span style={{ fontSize: 11, color: '#fbbf24' }}>Ce mois-ci</span>
+        <span style={{ fontSize: 11, color: '#f1c086' }}>Ce mois-ci</span>
       )
     }
   }
@@ -457,10 +457,10 @@ function GoalCard({
           marginTop: 8,
           display: 'inline-flex', alignItems: 'center', gap: 5,
           padding: '3px 9px', borderRadius: 6,
-          background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.15)',
+          background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.13)',
         }}>
-          <TrendingUp style={{ width: 10, height: 10, color: '#f97316' }} />
-          <span style={{ fontSize: 11, color: '#f97316', fontWeight: 600 }}>{linkedEnvelope.name}</span>
+          <TrendingUp style={{ width: 10, height: 10, color: '#f1c086' }} />
+          <span style={{ fontSize: 11, color: '#f1c086', fontWeight: 600 }}>{linkedEnvelope.name}</span>
         </div>
       )}
     </div>
@@ -579,7 +579,7 @@ export default function GoalsPage() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Target style={{ width: 22, height: 22, color: '#f97316' }} />
+            <Target style={{ width: 22, height: 22, color: '#f1c086' }} />
             Mes Objectifs
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: '4px 0 0' }}>
@@ -592,7 +592,7 @@ export default function GoalsPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 7,
               padding: '9px 18px', borderRadius: 10, border: 'none',
-              background: '#f97316', color: '#fff', cursor: 'pointer',
+              background: '#f1c086', color: '#fff', cursor: 'pointer',
               fontSize: 13, fontWeight: 600,
             }}
           >
@@ -607,7 +607,7 @@ export default function GoalsPage() {
         <Card style={{ marginBottom: 20, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14 }}>
           <CardContent style={{ padding: 20 }}>
             <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Flag style={{ width: 15, height: 15, color: '#f97316' }} />
+              <Flag style={{ width: 15, height: 15, color: '#f1c086' }} />
               Nouvel objectif
             </p>
             <GoalForm
@@ -647,7 +647,7 @@ export default function GoalsPage() {
                 <Card key={goal.id} style={{ background: 'var(--card-dark)', border: `1px solid ${goal.color}44`, borderRadius: 14 }}>
                   <CardContent style={{ padding: 20 }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Pencil style={{ width: 14, height: 14, color: '#f97316' }} />
+                      <Pencil style={{ width: 14, height: 14, color: '#f1c086' }} />
                       Modifier l'objectif
                     </p>
                     <GoalForm

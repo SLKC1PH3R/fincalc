@@ -134,7 +134,7 @@ function generateEvolutionData(totalValue: number, range: TimeRange) {
 }
 
 const CHART_CATEGORIES: Record<string, { label: string; types: string[]; color: string }> = {
-  all:        { label: 'Toutes les catégories', types: [],                         color: '#f97316' },
+  all:        { label: 'Toutes les catégories', types: [],                         color: '#f1c086' },
   immobilier: { label: 'Immobilier',            types: ['IMMOBILIER'],             color: '#f472b6' },
   actions:    { label: 'Actions & Fonds',        types: ['PEA','CTO','AV','PER'],  color: '#818cf8' },
   livrets:    { label: 'Livrets',               types: ['LIVRET'],                 color: '#34d399' },
@@ -649,7 +649,7 @@ export default function PatrimoinePage() {
           {/* KPIs */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[
-              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f97316' },
+              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f1c086' },
               { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
               { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
             ].map(kpi => (
@@ -700,8 +700,8 @@ export default function PatrimoinePage() {
           <CardContent style={{ padding: '18px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(249,115,22,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Flame style={{ width: 13, height: 13, color: '#f97316' }} />
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(241,192,134,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Flame style={{ width: 13, height: 13, color: '#f1c086' }} />
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Progression FIRE</span>
               </div>
@@ -736,7 +736,7 @@ export default function PatrimoinePage() {
             {fireTarget > 0 ? (() => {
               const pct = Math.min(100, (totalValue / fireTarget) * 100)
               const remaining = Math.max(0, fireTarget - totalValue)
-              const color = pct >= 75 ? '#34d399' : pct >= 50 ? '#f97316' : pct >= 25 ? '#f59e0b' : '#818cf8'
+              const color = pct >= 75 ? '#34d399' : pct >= 50 ? '#f1c086' : pct >= 25 ? '#f59e0b' : '#818cf8'
               return (
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -752,7 +752,7 @@ export default function PatrimoinePage() {
                     Il vous reste <b style={{ color: 'var(--text-muted-c)' }}>{fmtCompact(remaining)}</b> à accumuler.
                     {pct >= 100 && <span style={{ marginLeft: 6, color: '#34d399', fontWeight: 700 }}>🎉 Objectif FIRE atteint !</span>}
                     {' '}
-                    <a href="/dashboard/fire" style={{ color: '#f97316', textDecoration: 'none', marginLeft: 4 }}>Simuler →</a>
+                    <a href="/dashboard/fire" style={{ color: '#f1c086', textDecoration: 'none', marginLeft: 4 }}>Simuler →</a>
                   </div>
                 </div>
               )
@@ -760,7 +760,7 @@ export default function PatrimoinePage() {
               <div style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
                 Définissez votre objectif FIRE pour suivre votre progression.
                 Règle des 4% : accumulez 25× vos dépenses annuelles.
-                <a href="/dashboard/fire" style={{ color: '#f97316', textDecoration: 'none', marginLeft: 6 }}>Calculer mon FIRE number →</a>
+                <a href="/dashboard/fire" style={{ color: '#f1c086', textDecoration: 'none', marginLeft: 6 }}>Calculer mon FIRE number →</a>
               </div>
             )}
           </CardContent>

@@ -300,7 +300,7 @@ function BudgetPageInner() {
       </div>
 
       {/* Synthèse */}
-      <Card style={{ borderColor: r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.35)' : r.analysis.score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)' }}>
+      <Card style={{ borderColor: r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.35)' : r.analysis.score === 'moyen' ? 'rgba(241,192,134,0.28)' : 'rgba(239,68,68,0.35)' }}>
         <CardHeader>
           <div className="flex items-center gap-2">
             <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />
@@ -354,14 +354,14 @@ function BudgetPageInner() {
           >
             <div style={{
               padding: '16px 20px', borderRadius: 14, cursor: 'pointer',
-              background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.2)',
+              background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.17)',
               transition: 'border-color 0.15s',
               display: 'flex', alignItems: 'center', gap: 12,
             }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.45)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(249,115,22,0.2)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.36)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.17)')}
             >
-              <CheckCircle2 style={{ width: 20, height: 20, color: '#f97316', flexShrink: 0 }} />
+              <CheckCircle2 style={{ width: 20, height: 20, color: '#f1c086', flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Calculer mon FIRE</div>
                 <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>

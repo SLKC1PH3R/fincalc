@@ -132,7 +132,7 @@ function FlatTaxInner() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f97316' }} />
+            <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
             <label htmlFor="couple" style={{ fontSize: 12, color: 'var(--text-em)', cursor: 'pointer' }}>
               Déclaration en couple
               <Tip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />
@@ -190,8 +190,8 @@ function FlatTaxInner() {
 
           {/* Info box for dividends */}
           {incomeType === 'dividends' && (
-            <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 12, padding: '12px 16px', fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-              <span style={{ color: '#fbbf24', fontWeight: 600 }}>Dividendes :</span> l'abattement de 40% ne s'applique qu'au barème. La Flat Tax taxe le montant brut sans abattement — mais à seulement 30% fixe.
+            <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '12px 16px', fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+              <span style={{ color: '#f1c086', fontWeight: 600 }}>Dividendes :</span> l'abattement de 40% ne s'applique qu'au barème. La Flat Tax taxe le montant brut sans abattement — mais à seulement 30% fixe.
             </div>
           )}
 
@@ -222,7 +222,7 @@ function FlatTaxInner() {
                 { color: '#38bdf8', text: 'La Flat Tax (PFU) est avantageuse pour les TMI ≥ 30%.' },
                 { color: '#fb923c', text: 'Le barème est souvent meilleur pour les TMI 0% et 11%, surtout sur les dividendes (abattement 40%).' },
                 { color: '#34d399', text: 'Vous pouvez choisir le régime chaque année lors de votre déclaration.' },
-                { color: '#fbbf24', text: 'La CSG déductible (6,8%) ne s\'applique qu\'au barème et réduit le revenu imposable N+1.' },
+                { color: '#f1c086', text: 'La CSG déductible (6,8%) ne s\'applique qu\'au barème et réduit le revenu imposable N+1.' },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <ArrowRight style={{ width: 12, height: 12, color: item.color, flexShrink: 0, marginTop: 2 }} />

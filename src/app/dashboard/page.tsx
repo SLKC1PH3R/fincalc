@@ -31,8 +31,8 @@ interface Simulation {
   inputs: Record<string, any>; results: Record<string, any>; createdAt: string
 }
 
-const GOLD = '#f97316'
-const GOLD_BORDER = 'rgba(249,115,22,0.2)'
+const GOLD = '#f1c086'
+const GOLD_BORDER = 'rgba(241,192,134,0.17)'
 
 const MODULES = [
   { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp, desc: 'Effet boule de neige', tag: 'Épargne', color: '#34d399' },
@@ -44,7 +44,7 @@ const MODULES = [
   { href: '/dashboard/tax', label: 'Impôts IR', icon: Receipt, desc: 'Calcul IR & TMI', tag: 'Fiscal', color: '#fb7185' },
   { href: '/dashboard/flat-tax', label: 'Flat Tax vs Barème', icon: Receipt, desc: 'PFU 30% ou barème IR', tag: 'Fiscal', color: '#38bdf8' },
   { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV', icon: Wallet, desc: 'Comparez les enveloppes', tag: 'Fiscal', color: '#818cf8' },
-  { href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank, desc: 'Pension & PER', tag: 'Fiscal', color: '#fbbf24' },
+  { href: '/dashboard/retirement', label: 'Retraite', icon: PiggyBank, desc: 'Pension & PER', tag: 'Fiscal', color: '#f1c086' },
   { href: '/dashboard/savings-rate', label: "Taux d'épargne", icon: Percent, desc: 'Analyse de votre épargne', tag: 'Budget', color: '#818cf8' },
   { href: '/dashboard/budget', label: 'Budget 50/30/20', icon: Calculator, desc: "Règle d'or", tag: 'Budget', color: '#a3e635' },
 ]
@@ -59,15 +59,15 @@ const TYPE_META: Record<string, { label: string; color: string; icon: any }> = {
   tax:          { label: 'Impôts',    color: '#fb7185', icon: Receipt },
   'flat-tax':        { label: 'Flat Tax',  color: '#38bdf8', icon: Receipt },
   'envelope-compare': { label: 'PEA/CTO/AV', color: '#818cf8', icon: Wallet },
-  retirement:        { label: 'Retraite',  color: '#fbbf24', icon: PiggyBank },
+  retirement:        { label: 'Retraite',  color: '#f1c086', icon: PiggyBank },
   'savings-rate': { label: "Taux épargne", color: '#818cf8', icon: Percent },
   budget:       { label: 'Budget',    color: '#a3e635', icon: Calculator },
 }
 
 function scoreInfo(s: number): { label: string; color: string } {
-  if (s >= 90) return { label: 'Excellent', color: '#f97316' }
+  if (s >= 90) return { label: 'Excellent', color: '#f1c086' }
   if (s >= 80) return { label: 'Très bien', color: '#34d399' }
-  if (s >= 60) return { label: 'Bien', color: '#fbbf24' }
+  if (s >= 60) return { label: 'Bien', color: '#f1c086' }
   if (s >= 40) return { label: 'En progression', color: '#fb923c' }
   return { label: 'À améliorer', color: '#f87171' }
 }

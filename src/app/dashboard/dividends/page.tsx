@@ -39,7 +39,7 @@ function SkeletonCard() {
 
 function yieldColor(yieldPct: number): string {
   if (yieldPct >= 5) return '#34d399'
-  if (yieldPct >= 2) return '#fbbf24'
+  if (yieldPct >= 2) return '#f1c086'
   return 'var(--text-subtle)'
 }
 

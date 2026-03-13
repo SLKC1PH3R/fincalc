@@ -42,11 +42,11 @@ function ComparePanel({ sims, onClose }: { sims: [Simulation, Simulation]; onClo
   const config = TYPE_CONFIG[sims[0].type] ?? TYPE_CONFIG.compound
 
   return (
-    <div className="rounded-xl overflow-hidden mb-2" style={{ border: '1px solid rgba(249,115,22,0.25)', background: 'rgba(249,115,22,0.04)' }}>
-      <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid rgba(249,115,22,0.15)' }}>
+    <div className="rounded-xl overflow-hidden mb-2" style={{ border: '1px solid rgba(241,192,134,0.20)', background: 'rgba(241,192,134,0.05)' }}>
+      <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid rgba(241,192,134,0.13)' }}>
         <div className="flex items-center gap-2">
-          <GitCompare className="h-4 w-4" style={{ color: '#f97316' }} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#f97316' }}>Comparaison — {config.label}</span>
+          <GitCompare className="h-4 w-4" style={{ color: '#f1c086' }} />
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#f1c086' }}>Comparaison — {config.label}</span>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)' }}>
           <X className="h-4 w-4" />
@@ -112,12 +112,12 @@ function SimCard({ sim, onDelete, selected, onSelect, selectMode }: { sim: Simul
   }
 
   return (
-    <Card className="group" style={selected ? { borderColor: 'rgba(249,115,22,0.5)', background: 'rgba(249,115,22,0.03)' } : {}}>
+    <Card className="group" style={selected ? { borderColor: 'rgba(241,192,134,0.40)', background: 'rgba(241,192,134,0.05)' } : {}}>
       <CardContent className="pt-5 pb-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             {selectMode && (
-              <button onClick={onSelect} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, marginTop: 2, color: selected ? '#f97316' : 'rgba(255,255,255,0.25)' }}>
+              <button onClick={onSelect} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, marginTop: 2, color: selected ? '#f1c086' : 'rgba(255,255,255,0.25)' }}>
                 {selected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
               </button>
             )}

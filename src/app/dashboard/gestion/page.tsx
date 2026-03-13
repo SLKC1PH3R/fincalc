@@ -28,7 +28,7 @@ interface Envelope {
 }
 
 const ASSET_CLASSES = [
-  { key: 'actions',  label: 'Actions & Fonds', types: ['PEA', 'CTO', 'AV', 'PER'], color: '#f97316', icon: TrendingUp },
+  { key: 'actions',  label: 'Actions & Fonds', types: ['PEA', 'CTO', 'AV', 'PER'], color: '#f1c086', icon: TrendingUp },
   { key: 'immo',    label: 'Immobilier',       types: ['IMMOBILIER'],              color: '#3b82f6', icon: Building2  },
   { key: 'livrets', label: 'Livrets',           types: ['LIVRET'],                  color: '#22c55e', icon: PiggyBank  },
   { key: 'crypto',  label: 'Crypto',            types: ['CRYPTO'],                  color: '#a855f7', icon: Bitcoin    },
@@ -155,7 +155,7 @@ export default function GestionPage() {
             label: 'Objectifs',
             value: goals.length > 0 ? `${avgGoalPct}%` : '—',
             sub: goals.length > 0 ? `${goals.length} objectif${goals.length > 1 ? 's' : ''} · avancement moyen` : 'Aucun objectif défini',
-            color: '#f97316',
+            color: '#f1c086',
             href: '/dashboard/goals',
           },
           {
@@ -202,11 +202,11 @@ export default function GestionPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Flag style={{ width: 14, height: 14, color: '#f97316' }} />
+              <Flag style={{ width: 14, height: 14, color: '#f1c086' }} />
               Mes Objectifs
             </CardTitle>
             <Link href="/dashboard/goals"
-              style={{ fontSize: 12, color: '#f97316', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Gérer <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -218,7 +218,7 @@ export default function GestionPage() {
                 Aucun objectif défini. Fixez-vous des cibles pour suivre votre progression.
               </p>
               <Link href="/dashboard/goals"
-                style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
                 Créer mon premier objectif →
               </Link>
             </div>
@@ -244,7 +244,7 @@ export default function GestionPage() {
                           </span>
                         )}
                         {urgent && !overdue && (
-                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(251,191,36,0.12)', color: '#fbbf24', fontWeight: 600, flexShrink: 0 }}>
+                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(241,192,134,0.10)', color: '#f1c086', fontWeight: 600, flexShrink: 0 }}>
                             Urgent
                           </span>
                         )}
@@ -289,7 +289,7 @@ export default function GestionPage() {
               Allocation actuelle
             </CardTitle>
             <Link href="/dashboard/rebalancing"
-              style={{ fontSize: 12, color: '#f97316', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Rééquilibrer <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -301,7 +301,7 @@ export default function GestionPage() {
                 Aucun actif enregistré dans le patrimoine.
               </p>
               <Link href="/dashboard/patrimoine"
-                style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
             </div>
@@ -351,7 +351,7 @@ export default function GestionPage() {
               Situation fiscale
             </CardTitle>
             <Link href="/dashboard/tax-report"
-              style={{ fontSize: 12, color: '#f97316', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Rapport complet <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -363,7 +363,7 @@ export default function GestionPage() {
                 Aucune enveloppe fiscale (PEA, Assurance-Vie, PER) enregistrée.
               </p>
               <Link href="/dashboard/patrimoine"
-                style={{ fontSize: 12, color: '#f97316', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
             </div>
@@ -378,7 +378,7 @@ export default function GestionPage() {
                       {e.reached
                         ? <CheckCircle2 style={{ width: 14, height: 14, color: '#22c55e' }} />
                         : e.monthsLeft <= 12
-                          ? <Clock style={{ width: 14, height: 14, color: '#fbbf24' }} />
+                          ? <Clock style={{ width: 14, height: 14, color: '#f1c086' }} />
                           : <AlertTriangle style={{ width: 14, height: 14, color: 'var(--text-subtle)' }} />
                       }
                     </div>
@@ -398,7 +398,7 @@ export default function GestionPage() {
                         </div>
                         <span style={{
                           fontSize: 11, fontWeight: 600,
-                          color: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#fbbf24' : 'var(--text-muted-c)',
+                          color: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#f1c086' : 'var(--text-muted-c)',
                         }}>
                           {e.reached ? 'Atteint ✓'
                             : e.type === 'PER' ? 'Active'
@@ -420,7 +420,7 @@ export default function GestionPage() {
                             height: '100%',
                             width: `${progressPct}%`,
                             borderRadius: 99,
-                            background: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#fbbf24' : '#3b82f6',
+                            background: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#f1c086' : '#3b82f6',
                             transition: 'width 0.6s ease',
                           }} />
                         </div>

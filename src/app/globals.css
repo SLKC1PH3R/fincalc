@@ -59,7 +59,7 @@
     /* Sidebar — dark gold theme */
     --sb-bg: #080809;
     --sb-border: rgba(255,255,255,0.04);
-    --sb-profile-bg: rgba(249,115,22,0.05);
+    --sb-profile-bg: rgba(241,192,134,0.05);
     --sb-text: rgba(255,255,255,0.52);
     --sb-text-strong: #ffffff;
     --sb-text-dim: rgba(255,255,255,0.18);
@@ -68,11 +68,13 @@
     --sb-sim-text: rgba(255,255,255,0.28);
     --sb-sim-text-hover: rgba(255,255,255,0.72);
     --sb-divider: rgba(255,255,255,0.045);
-    --sb-active-bg: rgba(249,115,22,0.09);
+    --sb-active-bg: rgba(241,192,134,0.08);
     --sb-active-border: transparent;
     --sb-active-text: #ffffff;
-    --sb-gold-start: #f97316;
-    --sb-gold-end: #fbbf24;
+    --sb-gold-start: #c8922a;
+    --sb-gold-end: #f1c086;
+    --gold: #f1c086;
+    --gold-dim: #c8922a;
   }
 
   @keyframes float-slow {
@@ -193,10 +195,10 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .glow-orange {
-    box-shadow: 0 0 60px -15px rgba(249, 115, 22, 0.4);
+    box-shadow: 0 0 60px -15px rgba(241, 192, 134, 0.35);
   }
   .text-gradient-orange {
-    background: linear-gradient(135deg, #f97316 0%, #fbbf24 50%, #f97316 100%);
+    background: linear-gradient(135deg, #c8922a 0%, #f1c086 50%, #c8922a 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -342,8 +344,8 @@ html { scroll-behavior: smooth; }
   --sb-sim-text: rgba(0,0,0,0.38);
   --sb-sim-text-hover: rgba(0,0,0,0.78);
   --sb-divider: rgba(0,0,0,0.07);
-  --sb-active-bg: rgba(249,115,22,0.15);
-  --sb-active-border: rgba(249,115,22,0.35);
+  --sb-active-bg: rgba(241,192,134,0.15);
+  --sb-active-border: rgba(241,192,134,0.30);
   --sb-active-text: #111111;
 }
 
@@ -362,14 +364,14 @@ html { scroll-behavior: smooth; }
   color: var(--sb-active-text) !important;
   background: var(--sb-active-bg) !important;
   border-color: var(--sb-active-border) !important;
-  box-shadow: inset 2px 0 0 #f97316;
+  box-shadow: inset 2px 0 0 #f1c086;
 }
 .sb-link-active svg {
-  color: #f97316 !important;
+  color: #f1c086 !important;
 }
 /* Gold gradient text helper */
 .sb-gold-text {
-  background: linear-gradient(135deg, #f97316 0%, #fbbf24 60%, #f97316 100%);
+  background: linear-gradient(135deg, #c8922a 0%, #f1c086 60%, #c8922a 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

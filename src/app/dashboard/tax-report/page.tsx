@@ -181,7 +181,7 @@ export default function TaxReportPage() {
             title: 'PFU (Flat Tax)',
             value: '30 %',
             detail: '12.8% IR + 17.2% prélèvements sociaux',
-            color: '#f97316',
+            color: '#f1c086',
             icon: <FileText style={{ width: 14, height: 14 }} />,
           },
           {
@@ -325,11 +325,11 @@ export default function TaxReportPage() {
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
         padding: '14px 18px', borderRadius: 12,
-        background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)',
+        background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)',
       }}>
-        <Info style={{ width: 16, height: 16, color: '#fbbf24', flexShrink: 0, marginTop: 1 }} />
+        <Info style={{ width: 16, height: 16, color: '#f1c086', flexShrink: 0, marginTop: 1 }} />
         <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: 0, lineHeight: 1.6 }}>
-          <strong style={{ color: '#fbbf24' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans FinCalc.
+          <strong style={{ color: '#f1c086' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans FinCalc.
           Il ne constitue pas un conseil fiscal. Consultez un conseiller fiscal ou votre notaire pour votre situation personnelle.
           Les montants de plus-values réalisées nécessitent un relevé auprès de votre courtier.
         </p>

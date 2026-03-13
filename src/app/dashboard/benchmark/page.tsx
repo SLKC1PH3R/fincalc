@@ -24,7 +24,7 @@ interface Snapshot {
 }
 
 const COLORS = {
-  portfolio: '#f97316',
+  portfolio: '#f1c086',
   'MSCI World': '#818cf8',
   'CAC 40': '#38bdf8',
   'S&P 500': '#34d399',
@@ -172,14 +172,14 @@ export default function BenchmarkPage() {
       {!hasPortfolio && !loading && (
         <div style={{
           display: 'flex', alignItems: 'flex-start', gap: 10,
-          background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.20)',
+          background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.17)',
           borderRadius: 12, padding: '12px 16px', marginBottom: 20, fontSize: 13,
           color: 'var(--text-muted-c)', lineHeight: 1.5,
         }}>
-          <Info style={{ width: 16, height: 16, color: '#f97316', flexShrink: 0, marginTop: 1 }} />
+          <Info style={{ width: 16, height: 16, color: '#f1c086', flexShrink: 0, marginTop: 1 }} />
           <span>
             Aucun snapshot de patrimoine disponible sur cette période.
-            La courbe <span style={{ color: '#f97316', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.
+            La courbe <span style={{ color: '#f1c086', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.
           </span>
         </div>
       )}

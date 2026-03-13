@@ -189,7 +189,7 @@ export default function SettingsPage() {
               onClick={toggleTheme}
               style={{
                 width: 48, height: 26, borderRadius: 999, cursor: 'pointer', position: 'relative',
-                background: theme === 'dark' ? 'rgba(249,115,22,0.8)' : 'rgba(148,163,184,0.4)',
+                background: theme === 'dark' ? 'rgba(241,192,134,0.8)' : 'rgba(148,163,184,0.4)',
                 border: 'none', transition: 'background 0.2s',
               }}
             >
@@ -211,10 +211,10 @@ export default function SettingsPage() {
 
       {/* Admin override — modify demo account */}
       {isAdmin && (
-        <Card style={{ borderColor: 'rgba(249,115,22,0.25)', background: 'rgba(249,115,22,0.04)' }}>
+        <Card style={{ borderColor: 'rgba(241,192,134,0.20)', background: 'rgba(241,192,134,0.05)' }}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <ShieldCheck className="h-4 w-4" style={{ color: '#f97316' }} />
+              <ShieldCheck className="h-4 w-4" style={{ color: '#f1c086' }} />
               <span>Admin — Compte démo</span>
             </CardTitle>
             <CardDescription>Modifier le profil du compte de démonstration ({DEMO_EMAIL})</CardDescription>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
               disabled={savingDemo || (!adminDemoName.trim() && !adminDemoImage.trim())}
               variant="outline"
               className="w-full"
-              style={{ borderColor: 'rgba(249,115,22,0.4)', color: '#f97316' }}
+              style={{ borderColor: 'rgba(241,192,134,0.32)', color: '#f1c086' }}
             >
               {savingDemo ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
               Mettre à jour le compte démo

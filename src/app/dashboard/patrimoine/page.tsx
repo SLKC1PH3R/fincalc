@@ -254,7 +254,12 @@ export default function PatrimoinePage() {
       return sum + computeMarketValue(e)
     }, 0)
     if (tv <= 0) return
-    const byEnvelope = Object.fromEntries(envelopes.map(e => [e.id, { value: computeMarketValue(e), type: e.type, name: e.name }]))
+    const byEnvelope = Object.fromEntries(envelopes.map(e => {
+      const value = e.type === 'IMMOBILIER'
+        ? Number(e.metadata.currentValue ?? 0)
+        : computeMarketValue(e)
+      return [e.id, { value, type: e.type, name: e.name }]
+    }))
     fetch('/api/patrimoine/snapshot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -356,11 +361,13 @@ export default function PatrimoinePage() {
     }, 0)
   }, [chartEnvelopes])
 
-  // Valeur par type depuis les enveloppes courantes (pour la légende)
+  // Valeur par type depuis les enveloppes courantes
   const typeValues = useMemo(() => {
     const tv: Record<string, number> = {}
     for (const e of envelopes) {
-      const val = e.totalValue !== null ? e.totalValue : e.positions.reduce((s: number, p: { pru: number; quantity: number }) => s + p.pru * p.quantity, 0)
+      const val = e.type === 'IMMOBILIER'
+        ? Number(e.metadata.currentValue ?? 0)
+        : computeMarketValue(e)
       tv[e.type] = (tv[e.type] ?? 0) + val
     }
     return tv

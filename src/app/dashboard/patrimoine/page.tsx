@@ -10,11 +10,11 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame, Camera,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { calcPortfolioGeo, type GeoAllocation } from '@/lib/etf-database'
+import { calcPortfolioGeo, estimatePositionIncome, type GeoAllocation } from '@/lib/etf-database'
 
 // Carte monde chargée côté client uniquement (SSR incompatible avec react-simple-maps)
 const WorldMapChart = dynamic(
@@ -169,6 +169,27 @@ export default function PatrimoinePage() {
   const [fireTarget, setFireTarget] = useState<number>(0)
   const [fireTargetInput, setFireTargetInput] = useState('')
   const [editingFireTarget, setEditingFireTarget] = useState(false)
+  const [snapshotting, setSnapshotting] = useState(false)
+
+  const saveSnapshot = async () => {
+    if (totalValue <= 0 || snapshotting) return
+    setSnapshotting(true)
+    const byEnvelope = Object.fromEntries(envelopes.map(e => {
+      const value = e.type === 'IMMOBILIER' ? Number(e.metadata.currentValue ?? 0) : computeMarketValue(e)
+      return [e.id, { value, type: e.type, name: e.name }]
+    }))
+    try {
+      await fetch('/api/patrimoine/snapshot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ totalValue, byEnvelope }),
+      })
+      const res = await fetch('/api/patrimoine/snapshots?days=1825')
+      if (res.ok) setSnapshots(await res.json())
+      toast({ title: 'Snapshot enregistré', description: `Patrimoine de ${fmt(totalValue)} sauvegardé.` })
+    } catch { toast({ title: 'Erreur', description: 'Impossible de sauvegarder le snapshot.', variant: 'destructive' }) }
+    finally { setSnapshotting(false) }
+  }
   const milestoneFiredRef = useRef<Set<string>>(new Set())
   const [dragOver, setDragOver] = useState<string | null>(null)
   const dragSrcIdx = useRef<number | null>(null)
@@ -344,6 +365,34 @@ export default function PatrimoinePage() {
     for (const key of REGIONS) { values[key] = geoValues[key] }
 
     return { ...geoNorm, values, totalGeo: geoTotal }
+  }, [envelopes])
+
+  // Revenus passifs estimés
+  const estimatedIncome = useMemo(() => {
+    let etfIncome = 0, livretIncome = 0, immoIncome = 0, avIncome = 0
+    for (const env of envelopes) {
+      if (['PEA', 'CTO', 'CRYPTO'].includes(env.type)) {
+        for (const pos of env.positions) {
+          const value = pos.pru * pos.quantity
+          etfIncome += estimatePositionIncome(pos.symbol, (pos as { isin?: string }).isin ?? null, value)
+        }
+      } else if (env.type === 'LIVRET') {
+        const balance = Number(env.metadata.balance ?? 0)
+        const rate = Number(env.metadata.interestRate ?? 0.03)
+        livretIncome += balance * rate
+      } else if (env.type === 'IMMOBILIER') {
+        immoIncome += Number(env.metadata.annualRent ?? 0)
+      } else if (env.type === 'AV') {
+        const sv = Number(env.metadata.surrenderValue ?? 0)
+        const rate = Number(env.metadata.averageRate ?? 0)
+        if (rate > 0) avIncome += sv * rate
+        for (const pos of env.positions) {
+          etfIncome += estimatePositionIncome(pos.symbol, (pos as { isin?: string }).isin ?? null, pos.pru * pos.quantity)
+        }
+      }
+    }
+    const total = etfIncome + livretIncome + immoIncome + avIncome
+    return { total, etfIncome, livretIncome, immoIncome, avIncome }
   }, [envelopes])
 
   // Enveloppes filtrées par catégorie sélectionnée (pour le graphique)
@@ -577,13 +626,30 @@ export default function PatrimoinePage() {
 
               {/* Right side: subtitle + time range */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                  {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(chartTotal || totalValue)}
-                  {evolChange !== 0 && (
-                    <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
-                      {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)}
-                    </span>
-                  )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                    {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(chartTotal || totalValue)}
+                    {evolChange !== 0 && (
+                      <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
+                        {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={saveSnapshot}
+                    disabled={snapshotting || totalValue <= 0}
+                    title="Enregistrer un snapshot maintenant"
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px',
+                      borderRadius: 6, border: '1px solid rgba(241,192,134,0.25)',
+                      background: 'transparent', color: '#f1c086', fontSize: 10,
+                      fontWeight: 600, cursor: totalValue > 0 ? 'pointer' : 'default',
+                      opacity: snapshotting ? 0.5 : 1, transition: 'all 0.15s',
+                    }}
+                  >
+                    <Camera style={{ width: 11, height: 11 }} />
+                    {snapshotting ? '…' : 'Photo'}
+                  </button>
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
@@ -692,6 +758,46 @@ export default function PatrimoinePage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* ── Revenus passifs estimés ── */}
+      {!loading && estimatedIncome.total > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: '18px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(52,211,153,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TrendingUp style={{ width: 13, height: 13, color: '#34d399' }} />
+                </div>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Revenus passifs estimés</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', marginLeft: 8 }}>sur 12 mois</span>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(estimatedIncome.total)}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted-c)' }}>/an</span></div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmt(estimatedIncome.total / 12)}/mois</div>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+              {[
+                { label: 'ETF / Actions', value: estimatedIncome.etfIncome, color: '#818cf8' },
+                { label: 'Livrets', value: estimatedIncome.livretIncome, color: '#34d399' },
+                { label: 'Immobilier', value: estimatedIncome.immoIncome, color: '#f472b6' },
+                { label: 'Assurance-vie', value: estimatedIncome.avIncome, color: '#fb923c' },
+              ].filter(s => s.value > 0).map((src, i) => (
+                <div key={i} style={{ background: 'var(--mini-card-bg)', borderRadius: 10, padding: '10px 14px' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 4 }}>{src.label}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: src.color }}>{fmt(src.value)}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 2 }}>{fmt(src.value / 12)}/mois</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 12 }}>
+              Estimation basée sur les taux de distribution des ETF reconnus, les taux de livrets renseignés et les loyers saisis. Usage indicatif.
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* ── FIRE Tracker ── */}

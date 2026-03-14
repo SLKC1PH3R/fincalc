@@ -12,7 +12,7 @@ import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw } from 'lucide-react'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -29,6 +29,27 @@ function Tip({ text }: { text: string }) {
 function FirePageInner() {
   const [inputs, setInputs] = useState<FireInputs>({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [importingPatrimoine, setImportingPatrimoine] = useState(false)
+  const [patrimoineImported, setPatrimoineImported] = useState<number | null>(null)
+
+  const importFromPatrimoine = async () => {
+    setImportingPatrimoine(true)
+    try {
+      const res = await fetch('/api/patrimoine/envelopes')
+      if (!res.ok) return
+      const envelopes: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
+      const total = envelopes.reduce((sum, e) => {
+        if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
+        if (e.totalValue !== null) return sum + e.totalValue
+        return sum + e.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
+      }, 0)
+      if (total > 0) {
+        setInputs(p => ({ ...p, netWorth: Math.round(total) }))
+        setPatrimoineImported(Math.round(total))
+      }
+    } catch { /* ignore */ }
+    finally { setImportingPatrimoine(false) }
+  }
 
   // Restore simulation from history
   const searchParams = useSearchParams()
@@ -129,8 +150,25 @@ function FirePageInner() {
               <Input type="number" value={inputs.expenses} onChange={e => set('expenses')(+e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Patrimoine actuel<Tip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
-              <Input type="number" value={inputs.netWorth} onChange={e => set('netWorth')(+e.target.value)} />
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-1">Patrimoine actuel<Tip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
+                <button
+                  onClick={importFromPatrimoine}
+                  disabled={importingPatrimoine}
+                  title="Importer depuis mon patrimoine"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4, padding: '3px 9px',
+                    borderRadius: 6, border: '1px solid rgba(241,192,134,0.30)',
+                    background: patrimoineImported ? 'rgba(241,192,134,0.10)' : 'transparent',
+                    color: '#f1c086', fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    opacity: importingPatrimoine ? 0.6 : 1, transition: 'all 0.15s',
+                  }}
+                >
+                  <RefreshCw style={{ width: 11, height: 11, animation: importingPatrimoine ? 'spin 1s linear infinite' : 'none' }} />
+                  {patrimoineImported ? `${(patrimoineImported / 1000).toFixed(0)} k€ importés` : 'Importer'}
+                </button>
+              </div>
+              <Input type="number" value={inputs.netWorth} onChange={e => { set('netWorth')(+e.target.value); setPatrimoineImported(null) }} />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">

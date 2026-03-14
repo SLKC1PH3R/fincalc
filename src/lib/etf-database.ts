@@ -11,6 +11,8 @@ export interface ETFInfo {
   aum: number             // millions EUR approx
   geo: GeoAllocation
   alternatives?: string[] // ISINs d'alternatives moins chères ou équivalentes
+  dividendYield?: number  // rendement dividende annuel ex: 0.018 = 1.8% (undefined = capitalisant/acc)
+  distributing?: boolean  // true = distribuant (dist), false/undefined = capitalisant (acc)
 }
 
 export interface GeoAllocation {
@@ -525,4 +527,50 @@ export function calcPortfolioGeo(
     acc[key] = acc[key] / total
   }
   return { ...acc, totalValue: total }
+}
+
+/**
+ * Table de rendements dividendes par ticker/ISIN — ETFs distribuants courants.
+ * Source : données approximatives fin 2025, usage éducatif uniquement.
+ */
+const DIVIDEND_YIELD_MAP: Record<string, number> = {
+  // S&P 500 Dist
+  'IE00B5BMR087': 0.013, 'CSPX': 0.013,
+  'IE00B3XXRP09': 0.013, 'VUSA': 0.013,
+  'IE00B6YX5C33': 0.013, 'SPXD': 0.013,
+  // All-World Dist
+  'IE00B3RBWM25': 0.020, 'VWRL': 0.020,
+  // High Dividend Yield
+  'IE00B8GKDB10': 0.032, 'VHYL': 0.032,
+  'NL0009272749': 0.045, 'TDIV': 0.045,
+  'IE00B5KKCX20': 0.045, 'SEDY': 0.045,
+  // Europe Dist
+  'IE00B3ZW0K18': 0.032, 'SXRD': 0.032,
+  'FR0007054358': 0.030, 'MSE': 0.030,
+  'IE00B0M63284': 0.040, 'IPRP': 0.040,
+  // iShares Div Europe
+  'IE00B4K6B022': 0.035, 'QDVX': 0.035,
+  // Bond ETFs distribuants
+  'IE00B4WXJL22': 0.018, 'WATER': 0.018,
+  'IE00B2NPKV68': 0.045, 'SEMB': 0.045,
+  'IE00B00FV128': 0.030, 'IEAC': 0.030,
+  // REIT
+  'IE00B1FZSF77': 0.035, 'IWDP': 0.035,
+  // Stoxx 50 Dist
+  'LU0136234068': 0.030, 'C50': 0.030,
+}
+
+/**
+ * Estime le revenu annuel brut d'une position ETF/action.
+ * Retourne 0 si non distribuant ou inconnu.
+ */
+export function estimatePositionIncome(
+  ticker: string,
+  isin: string | null | undefined,
+  value: number,
+): number {
+  const key = (isin ?? '').toUpperCase()
+  const tkr = ticker.toUpperCase().replace(/\.(PA|AS|DE|L|MI|SW)$/, '')
+  const yld = DIVIDEND_YIELD_MAP[key] ?? DIVIDEND_YIELD_MAP[tkr] ?? 0
+  return value * yld
 }

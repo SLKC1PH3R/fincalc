@@ -90,6 +90,14 @@ const ROADMAP = [
   // Avril 2026
   { status: 'done', label: 'Catégories patrimoniales', desc: 'Navigation par catégorie : Immobilier, Actions & Fonds, Livrets, Crypto, Comptes bancaires, Emprunts — chacune avec son dashboard dédié' },
   { status: 'done', label: 'Design système V6 Gold', desc: 'Refonte visuelle complète — palette or #f1c086, widget patrimoine avec sparkline, Brut / Dettes, barre FIRE, cohérence sur toutes les pages' },
+  // Nouveaux calculateurs Avril 2026
+  { status: 'done', label: 'Épargne d\'urgence', desc: 'Cible personnalisée selon charges, emploi et situation familiale — progression, mois couverts, conseil Livret A' },
+  { status: 'done', label: 'Coût réel crédit conso', desc: 'TAEG → mensualité PMT, coût total des intérêts, coût d\'opportunité vs placement — tableau d\'amortissement' },
+  { status: 'done', label: 'Succession & Donation', desc: 'DMTG par lien de parenté, abattements (100 k€ enfant), barème progressif, optimisation renouvellement 15 ans' },
+  { status: 'done', label: 'Carnet d\'ordres & transactions', desc: 'Historique BUY/SELL/DIVIDEND par enveloppe, filtres, KPIs (investis, cédés, dividendes reçus)' },
+  { status: 'done', label: 'Timeline patrimoine', desc: 'Snapshots manuels de la valeur globale — graphique d\'évolution historique interactive avec Recharts' },
+  { status: 'done', label: 'Revenus passifs estimés', desc: 'Dividendes ETF, loyers, intérêts Livret — widget avec breakdown par source et projection annuelle' },
+  { status: 'done', label: 'Connexion FIRE ↔ Patrimoine', desc: 'Import direct depuis vos enveloppes réelles vers le simulateur FIRE — synchronisation en un clic' },
   // ── En cours ────────────────────────────────────────────────────────────
   { status: 'wip', label: 'Export PDF avec branding', desc: 'Téléchargez vos simulations en PDF premium' },
   { status: 'wip', label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP — taux actuels, plafonds, comparaison et manque à gagner vs investissement' },
@@ -102,10 +110,7 @@ const ROADMAP = [
   { status: 'wip', label: 'Viager', desc: 'Bouquet et rente selon l\'espérance de vie — intérêt pour acheteur et vendeur' },
   { status: 'wip', label: 'Auto-entrepreneur / Freelance', desc: 'CA → revenu net après charges sociales, CFE et IR' },
   { status: 'wip', label: 'IFI', desc: 'Impôt sur la Fortune Immobilière — seuil 1,3 M€, calcul de la base taxable' },
-  { status: 'wip', label: 'Succession & Donation', desc: 'Abattements par lien de parenté (100 k€ parent/enfant), DMTG, optimisation tous les 15 ans' },
   { status: 'wip', label: 'Stock-options / BSPCE / AGA', desc: 'Fiscalité des plans d\'actionnariat salarié, de plus en plus répandu en startup' },
-  { status: 'wip', label: 'Épargne d\'urgence', desc: 'Combien garder en liquidités selon ses charges fixes, stabilité de l\'emploi et situation familiale' },
-  { status: 'wip', label: 'Coût réel d\'un crédit conso', desc: 'TAEG, coût total, et ce que le même argent placé aurait rapporté' },
   // ── À venir ─────────────────────────────────────────────────────────────
   { status: 'planned', label: 'Comparateur de scénarios', desc: '2 ou 3 simulations côte à côte sur un même graphique — la killer feature qui manque à tous les outils gratuits' },
   { status: 'planned', label: 'Calculatrice rapide (sidebar)', desc: 'Mini-calc toujours accessible sans quitter la page en cours' },

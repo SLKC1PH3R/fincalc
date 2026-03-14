@@ -52,6 +52,7 @@ const OUTILS_ITEMS = [
   { href: '/dashboard/emergency-fund',   label: 'Épargne urgence',       icon: ShieldCheck },
   { href: '/dashboard/consumer-credit',  label: 'Crédit conso',          icon: CreditCard },
   { href: '/dashboard/succession',       label: 'Succession & Don.',     icon: Users      },
+  { href: '/dashboard/transactions',     label: "Carnet d'ordres",       icon: History    },
 ]
 
 const COMPTE_ITEMS = [

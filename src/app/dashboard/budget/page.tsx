@@ -86,7 +86,8 @@ function BudgetPageInner() {
     bon:          { label: 'Bon',          Icon: TrendingUp,   color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' },
     moyen:        { label: 'À améliorer',  Icon: Minus,        color: '#fbbf24', borderColor: 'rgba(251,191,36,0.25)' },
     desequilibre: { label: 'Déséquilibré', Icon: AlertCircle,  color: '#ef4444', borderColor: 'rgba(239,68,68,0.25)' },
-  }[r.analysis.score]
+  }[r.analysis.score] ?? { label: 'Équilibré', Icon: CheckCircle2, color: '#34d399', borderColor: 'rgba(52,211,153,0.25)' }
+  const { Icon: ScoreIcon, label: scoreLabel, color: scoreColor, borderColor: scoreBorderColor } = scoreConf
 
   const pieData = [
     { name: 'Besoins',    value: Math.round(r.needs),        fill: chart.fill1 },
@@ -272,10 +273,10 @@ function BudgetPageInner() {
           </div>
 
           {/* Analysis */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf!.borderColor}`, borderRadius: 20, padding: 24 }}>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreBorderColor}`, borderRadius: 20, padding: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <scoreConf!.Icon style={{ width: 16, height: 16, color: scoreConf!.color, flexShrink: 0 }} />
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Analyse — Budget {scoreConf!.label}</p>
+              <ScoreIcon style={{ width: 16, height: 16, color: scoreColor, flexShrink: 0 }} />
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Analyse — Budget {scoreLabel}</p>
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.7, marginBottom: 16 }}>{r.analysis.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

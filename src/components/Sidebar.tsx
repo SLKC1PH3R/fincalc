@@ -186,6 +186,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
   const dark = theme !== 'light'
   const W = collapsed ? 64 : 290
+  const [sbTooltip, setSbTooltip] = useState<{ label: string; y: number } | null>(null)
 
   // ── Section label ─────────────────────────────────────────────────────────
   const SectionLabel = ({ label, sectionKey }: { label: string; sectionKey: string }) => {
@@ -224,7 +225,6 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     <div className="flex items-center gap-1">
       <Link
         href={href}
-        title={collapsed ? label : undefined}
         className={cn(
           'flex items-center gap-2.5 rounded-xl flex-1 min-w-0 transition-colors',
           collapsed ? 'justify-center py-1.5 px-1.5' : 'px-1.5 py-1',
@@ -233,8 +233,17 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           textDecoration: 'none',
           background: 'none',
         }}
-        onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}
+        onMouseEnter={e => {
+          if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)'
+          if (collapsed) {
+            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+            setSbTooltip({ label, y: rect.top + rect.height / 2 })
+          }
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.background = 'none'
+          setSbTooltip(null)
+        }}
       >
         <IconBox icon={Icon} active={active} />
         {!collapsed && (
@@ -343,6 +352,29 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           overflow: 'visible',
         }}
       >
+        {/* ── Collapsed tooltip ── */}
+        {collapsed && sbTooltip && (
+          <div style={{
+            position: 'fixed',
+            left: W + 10,
+            top: sbTooltip.y,
+            transform: 'translateY(-50%)',
+            background: dark ? '#1c1f2e' : '#ffffff',
+            color: dark ? '#e2e8f0' : '#111111',
+            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)'}`,
+            boxShadow: dark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)',
+            padding: '5px 10px',
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 500,
+            whiteSpace: 'nowrap',
+            zIndex: 9999,
+            pointerEvents: 'none',
+          }}>
+            {sbTooltip.label}
+          </div>
+        )}
+
         {/* ── Right edge fondu ── */}
         <div aria-hidden style={{
           position: 'absolute', top: 0, bottom: 0, right: -44, width: 44,

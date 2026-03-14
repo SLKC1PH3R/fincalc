@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+import { CsvExport } from '@/components/CsvExport'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -91,13 +92,22 @@ function MortgagePageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="mortgage" name={`Prêt ${fmt(inputs.amount)} @ ${inputs.rate}%`} inputs={inputs as any} results={r as any} />
+          <Button variant="ghost" size="sm" onClick={() => setInputs({ amount: 240000, rate: 3.5, years: 20, insurance: 80, fees: 5000 })}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2"><CardDescription>Mensualité totale</CardDescription></CardHeader>
+          <CardContent>
+            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: "'Geist Mono', monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalMonthly)}</div>
+            <p className="text-xs text-muted-foreground mt-1">dont {fmt(r.monthlyPayment)} crédit</p>
+          </CardContent>
+        </Card>
         {[
-          { label: 'Mensualité totale', value: fmt(r.totalMonthly), sub: `dont ${fmt(r.monthlyPayment)} crédit` },
           { label: 'Intérêts totaux', value: fmt(r.totalInterest) },
           { label: 'Coût total crédit', value: fmt(r.totalCost) },
           { label: 'TAEG', value: `${r.taeg.toFixed(2)}%` },
@@ -106,7 +116,6 @@ function MortgagePageInner() {
             <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
             <CardContent>
               <div className="text-2xl font-semibold tracking-tight">{k.value}</div>
-              {k.sub && <p className="text-xs text-muted-foreground mt-1">{k.sub}</p>}
             </CardContent>
           </Card>
         ))}
@@ -168,6 +177,14 @@ function MortgagePageInner() {
                 <Area type="monotone" dataKey="remaining" name="Restant dû" stroke={chart.lineDim} fill={chart.lineDim} fillOpacity={0.05} strokeWidth={1.5} />
               </AreaChart>
             </ResponsiveContainer>
+
+            {/* CSV export */}
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+              <CsvExport
+                data={r.chartData.map((d: { year: number; capitalRepaid: number; remaining: number }) => ({ 'Année': d.year, 'Capital remboursé': d.capitalRepaid.toFixed(0), 'Capital restant': d.remaining.toFixed(0), 'Intérêts payés': (r.totalInterest / inputs.years * d.year).toFixed(0) }))}
+                filename="tableau-amortissement.csv"
+              />
+            </div>
 
             {/* Cost breakdown table */}
             <div className="mt-4 rounded-md border border-border overflow-hidden">

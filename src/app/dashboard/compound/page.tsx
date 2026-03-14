@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+import { CsvExport } from '@/components/CsvExport'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -89,13 +90,21 @@ function CompoundPageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="compound" name={`Composés ${fmt(inputs.capital)}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
+          <Button variant="ghost" size="sm" onClick={() => setInputs({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2"><CardDescription>Capital final</CardDescription></CardHeader>
+          <CardContent>
+            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: "'Geist Mono', monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.final)}</div>
+          </CardContent>
+        </Card>
         {[
-          { label: 'Capital final', value: fmt(r.final) },
           { label: 'Capital investi', value: fmt(r.invested) },
           { label: 'Intérêts générés', value: fmt(r.interest) },
           { label: 'Multiplication', value: `×${r.multiplier.toFixed(1)}` },
@@ -174,6 +183,13 @@ function CompoundPageInner() {
             ) : (
               <div style={{ height: 280 }} />
             )}
+            {/* Data table */}
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+              <CsvExport
+                data={r.chartData.map((d: { year: number; total: number; invested: number }) => ({ 'Année': d.year, 'Capital investi': d.invested.toFixed(0), 'Valeur totale': d.total.toFixed(0), 'Intérêts': (d.total - d.invested).toFixed(0) }))}
+                filename="interets-composes.csv"
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

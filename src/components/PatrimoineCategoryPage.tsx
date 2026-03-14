@@ -379,9 +379,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
       {!loading && envelopes.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {/* Valeur totale */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Valeur totale</span>
+          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px', borderLeft: `3px solid ${catCfg.color}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <span className="section-label">Valeur totale</span>
               {pricesLoading && (
                 <span style={{ fontSize: 9, color: catCfg.color, background: catCfg.color + '18', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>…</span>
               )}
@@ -389,23 +389,23 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                 <span style={{ fontSize: 9, color: '#34d399', background: '#34d39918', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>LIVE</span>
               )}
             </div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</div>
+            <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalValue)}</div>
           </div>
 
           {/* Capital investi */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4 }}>Capital investi</div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</div>
+          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px', borderLeft: '3px solid rgba(255,255,255,0.12)' }}>
+            <div className="section-label" style={{ marginBottom: 6 }}>Capital investi</div>
+            <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalInvested)}</div>
           </div>
 
           {/* Plus/Moins-value */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4 }}>
+          <div className={`card-hover ${hasPLData ? (pl >= 0 ? 'border-gain' : 'border-loss') : ''}`} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
+            <div className="section-label" style={{ marginBottom: 6 }}>
               {hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance'}
             </div>
             {hasPLData ? (
               <>
-                <div style={{ fontSize: 17, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171' }}>
                   {pl >= 0 ? '+' : ''}{fmtCompact(pl)}
                 </div>
                 <div style={{ fontSize: 12, color: pl >= 0 ? '#34d399' : '#f87171', opacity: 0.8, marginTop: 2 }}>

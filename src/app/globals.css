@@ -380,3 +380,63 @@ html { scroll-behavior: smooth; }
   background-clip: text;
   color: transparent;
 }
+
+/* ── Card micro-animations ──────────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+.card-hover:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+}
+.light .card-hover:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10) !important;
+}
+
+/* ── Left-border semantic indicators ────────────────────────────────────── */
+.border-gain  { border-left: 3px solid #34d399 !important; }
+.border-loss  { border-left: 3px solid #fb7185 !important; }
+.border-warn  { border-left: 3px solid #f1c086 !important; }
+.border-info  { border-left: 3px solid #38bdf8 !important; }
+
+/* ── Monospace amounts ───────────────────────────────────────────────────── */
+.mono-amount {
+  font-family: 'Geist Mono', 'DM Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+/* Large hero KPI value (capital final, mensualité, etc.) */
+.kpi-hero {
+  font-family: 'Geist Mono', 'DM Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.9rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+/* ── Section label uppercase ─────────────────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-muted-c);
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-subtle);
+  margin-bottom: 20px;
+}
+.breadcrumb a {
+  color: var(--text-muted-c);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.breadcrumb a:hover { color: var(--text-em); }
+.breadcrumb-sep { opacity: 0.4; }

@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { HelpCircle, Download, TrendingUp, Info, Wallet } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+import { CsvExport } from '@/components/CsvExport'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -101,13 +102,21 @@ function DCAPageInner() {
             ],
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant="ghost" size="sm" onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2"><CardDescription>Valeur estimée</CardDescription></CardHeader>
+          <CardContent>
+            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: "'Geist Mono', monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.estimatedValue)}</div>
+          </CardContent>
+        </Card>
         {[
-          { label: 'Valeur estimée', value: fmt(r.estimatedValue) },
           { label: 'Total investi', value: fmt(r.totalInvested) },
           { label: 'Gain', value: fmt(r.gain), color: 'text-emerald-finance' },
           { label: 'vs Achat unique', value: (r.vsLumpSum >= 0 ? '+' : '') + fmt(r.vsLumpSum), color: r.vsLumpSum >= 0 ? 'text-emerald-finance' : 'text-crimson-finance' },
@@ -206,6 +215,13 @@ function DCAPageInner() {
                 <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
               </LineChart>
             </ResponsiveContainer>
+            {/* Data table */}
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+              <CsvExport
+                data={r.chartData.filter((_: any, i: number) => i % 12 === 0).map((d: any) => ({ 'Année': Math.round(d.month / 12), 'Capital investi': d.invested.toFixed(0), 'Valeur portefeuille': d.value.toFixed(0), 'Gain': (d.value - d.invested).toFixed(0) }))}
+                filename="dca.csv"
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

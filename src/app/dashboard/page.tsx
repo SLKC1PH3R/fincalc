@@ -34,6 +34,26 @@ interface Simulation {
 const GOLD = '#f1c086'
 const GOLD_BORDER = 'rgba(241,192,134,0.17)'
 
+// Extract key result value from a simulation by type
+function getSimPreview(type: string, results: Record<string, any>): string | null {
+  if (!results) return null
+  switch (type) {
+    case 'compound':     return results.final != null ? fmt(results.final) : null
+    case 'dca':          return results.finalValue != null ? fmt(results.finalValue) : results.total != null ? fmt(results.total) : null
+    case 'fire':         return results.yearsToFire != null ? `${results.yearsToFire} ans` : results.fireAge != null ? `à ${results.fireAge} ans` : null
+    case 'mortgage':     return results.monthlyPayment != null ? `${fmt(results.monthlyPayment)}/mois` : null
+    case 'buyrent':      return results.buyBetter != null ? (results.buyBetter ? 'Achat ✓' : 'Location ✓') : null
+    case 'rental':       return results.grossYield != null ? `${Number(results.grossYield).toFixed(2)}% brut` : null
+    case 'tax':          return results.netTax != null ? fmt(results.netTax) : null
+    case 'flat-tax':     return results.flatTax != null ? fmt(results.flatTax) : null
+    case 'envelope-compare': return results.bestEnvelope ?? null
+    case 'retirement':   return results.monthlyPension != null ? `${fmt(results.monthlyPension)}/mois` : null
+    case 'savings-rate': return results.savingsRate != null ? `${Number(results.savingsRate).toFixed(1)}%` : null
+    case 'budget':       return results.needsMax != null ? `${fmt(results.needsMax)} besoins` : null
+    default:             return null
+  }
+}
+
 const MODULES = [
   { href: '/dashboard/compound', label: 'Intérêts Composés', icon: TrendingUp, desc: 'Effet boule de neige', tag: 'Épargne', color: '#34d399' },
   { href: '/dashboard/dca', label: 'DCA', icon: RefreshCw, desc: 'Investissement régulier', tag: 'Épargne', color: '#38bdf8' },
@@ -98,12 +118,15 @@ function timeAgo(dateStr: string) {
   return `Il y a ${Math.floor(diff / 86400)}j`
 }
 
+interface PatrimoineKPI { net: number; brut: number; dettes: number }
+
 export default function HomePage() {
   const { data: session } = useSession()
   const [sims, setSims] = useState<Simulation[]>([])
   const [loaded, setLoaded] = useState(false)
   const [recentOpen, setRecentOpen] = useState(true)
   const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[] } | null>(null)
+  const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
 
   useEffect(() => {
     fetch('/api/simulations').then(r => r.json()).then(data => {
@@ -118,6 +141,26 @@ export default function HomePage() {
         if (!d) return
         const si = scoreInfo(d.score)
         setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [] })
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/patrimoine/envelopes')
+      .then(r => r.ok ? r.json() : null)
+      .then((data: any[] | null) => {
+        if (!Array.isArray(data)) return
+        let brut = 0, dettes = 0
+        for (const e of data) {
+          if (e.type === 'IMMOBILIER') {
+            brut += Number(e.metadata?.currentValue ?? 0)
+            dettes += Number(e.metadata?.creditRemaining ?? 0)
+          } else {
+            const val = e.totalValue !== null ? e.totalValue : (e.positions || []).reduce((s: number, p: any) => s + p.pru * p.quantity, 0)
+            brut += val
+          }
+        }
+        if (brut > 0) setPatrimoineKPI({ brut, dettes, net: Math.max(0, brut - dettes) })
       })
       .catch(() => {})
   }, [])
@@ -139,6 +182,7 @@ export default function HomePage() {
     n: weeks[i] || 0,
   }))
 
+  const lastSimByType = sims.reduce((acc, s) => { if (!acc[s.type]) acc[s.type] = s; return acc }, {} as Record<string, Simulation>)
   const byType = sims.reduce((acc, s) => { acc[s.type] = (acc[s.type] || 0) + 1; return acc }, {} as Record<string, number>)
   const distData = Object.entries(byType).map(([type, count]) => ({ name: TYPE_META[type]?.label || type, value: count, color: TYPE_META[type]?.color || '#6b7280' }))
   const mostUsed = distData.sort((a, b) => b.value - a.value)[0]
@@ -174,10 +218,10 @@ export default function HomePage() {
               { label: 'Calculateurs', value: String(MODULES.length), sub: 'disponibles', href: null },
             ].map((s, i) => {
               const card = (
-                <div className="rounded-xl p-4" style={{ background: i === 3 ? `linear-gradient(135deg, ${GOLD}12, transparent)` : 'var(--card-dark)', border: `1px solid ${i === 3 ? GOLD_BORDER : 'var(--card-dark-border)'}`, transition: 'border-color 0.15s', cursor: s.href ? 'pointer' : 'default' }}>
-                  <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>{s.label}</p>
+                <div className={s.href ? 'card-hover' : ''} style={{ borderRadius: 12, padding: '14px 16px', background: i === 3 ? `linear-gradient(135deg, ${GOLD}12, transparent)` : 'var(--card-dark)', border: `1px solid ${i === 3 ? GOLD_BORDER : 'var(--card-dark-border)'}`, cursor: s.href ? 'pointer' : 'default' }}>
+                  <p className="section-label" style={{ marginBottom: 6 }}>{s.label}</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <p style={{ fontSize: '1.5rem', fontWeight: 600, color: i === 3 ? GOLD : 'var(--text-primary)', letterSpacing: '-0.025em' }}>{s.value}</p>
+                    <p className="mono-amount" style={{ fontSize: '1.5rem', fontWeight: 700, color: i === 3 ? GOLD : 'var(--text-primary)' }}>{s.value}</p>
                     {s.sub && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{s.sub}</p>}
                   </div>
                 </div>
@@ -187,6 +231,41 @@ export default function HomePage() {
                 : <div key={i}>{card}</div>
             })}
           </div>
+
+          {/* Patrimoine KPI strip */}
+          {patrimoineKPI && (
+            <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 12 }}>
+              <div className="card-hover" style={{ background: 'var(--card-dark)', border: `1px solid ${GOLD_BORDER}`, borderRadius: 14, padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 0 }}>
+                <div style={{ flex: 1, borderRight: '1px solid var(--section-border)', paddingRight: 18, marginRight: 18 }}>
+                  <p className="section-label" style={{ marginBottom: 4 }}>Patrimoine net</p>
+                  <p className="mono-amount" style={{ fontSize: 22, fontWeight: 800, color: GOLD, letterSpacing: '-0.04em' }}>
+                    {patrimoineKPI.net >= 1e6
+                      ? `${(patrimoineKPI.net / 1e6).toFixed(2)} M€`
+                      : patrimoineKPI.net >= 1e3
+                      ? `${Math.round(patrimoineKPI.net / 1e3)} k€`
+                      : `${Math.round(patrimoineKPI.net)} €`}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: 20 }}>
+                  <div>
+                    <p className="section-label" style={{ marginBottom: 2 }}>Brut</p>
+                    <p className="mono-amount" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+                      {patrimoineKPI.brut >= 1e6 ? `${(patrimoineKPI.brut / 1e6).toFixed(1)} M€` : `${Math.round(patrimoineKPI.brut / 1e3)} k€`}
+                    </p>
+                  </div>
+                  {patrimoineKPI.dettes > 0 && (
+                    <div>
+                      <p className="section-label" style={{ marginBottom: 2 }}>Dettes</p>
+                      <p className="mono-amount" style={{ fontSize: 13, fontWeight: 600, color: '#f87171' }}>
+                        -{patrimoineKPI.dettes >= 1e6 ? `${(patrimoineKPI.dettes / 1e6).toFixed(1)} M€` : `${Math.round(patrimoineKPI.dettes / 1e3)} k€`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', marginLeft: 'auto', flexShrink: 0 }} />
+              </div>
+            </Link>
+          )}
 
           {/* Score widget */}
           {scoreWidget && (
@@ -335,32 +414,43 @@ export default function HomePage() {
             <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{MODULES.length} modules</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-            {MODULES.map(mod => (
-              <Link key={mod.href} href={mod.href} className="group block" style={{ textDecoration: 'none' }}>
-                <div className="relative overflow-hidden rounded-xl p-4 transition-all duration-200"
-                  style={{ background: `radial-gradient(ellipse at top left, ${mod.color}18, transparent 70%)`, border: `1px solid ${mod.color}25` }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color + '60'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = mod.color + '25'; e.currentTarget.style.transform = '' }}>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                    style={{ background: `radial-gradient(circle at 0% 0%, ${mod.color}10, transparent 55%)` }} />
-                  <div className="relative">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="h-8 w-8 rounded-lg flex items-center justify-center"
-                        style={{ background: mod.color + '15', border: `1px solid ${mod.color}25` }}>
-                        <mod.icon className="h-4 w-4" style={{ color: mod.color }} />
+            {MODULES.map(mod => {
+              const modKey = mod.href.replace('/dashboard/', '')
+              const lastSim = lastSimByType[modKey]
+              const preview = lastSim ? getSimPreview(modKey, lastSim.results) : null
+              return (
+                <Link key={mod.href} href={mod.href} className="group block" style={{ textDecoration: 'none' }}>
+                  <div className="card-hover relative overflow-hidden rounded-xl p-4"
+                    style={{ background: `radial-gradient(ellipse at top left, ${mod.color}18, transparent 70%)`, border: `1px solid ${mod.color}25` }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color + '60' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = mod.color + '25' }}>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      style={{ background: `radial-gradient(circle at 0% 0%, ${mod.color}10, transparent 55%)` }} />
+                    <div className="relative">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="h-8 w-8 rounded-lg flex items-center justify-center"
+                          style={{ background: mod.color + '15', border: `1px solid ${mod.color}25` }}>
+                          <mod.icon className="h-4 w-4" style={{ color: mod.color }} />
+                        </div>
+                        <span style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>{mod.tag}</span>
                       </div>
-                      <span style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>{mod.tag}</span>
-                    </div>
-                    <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', marginBottom: 3 }}>{mod.label}</h3>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, marginBottom: 10 }}>{mod.desc}</p>
-                    <div className="flex items-center justify-end gap-1" style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
-                      <span>Ouvrir</span>
-                      <ArrowUpRight className="h-3 w-3" />
+                      <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', marginBottom: 3 }}>{mod.label}</h3>
+                      <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, marginBottom: preview ? 6 : 10 }}>{mod.desc}</p>
+                      {preview && (
+                        <div style={{ marginBottom: 8 }}>
+                          <span className="mono-amount" style={{ fontSize: 14, fontWeight: 700, color: mod.color }}>{preview}</span>
+                          <span style={{ fontSize: 10, color: 'var(--text-subtle)', marginLeft: 5 }}>dernière sim.</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-end gap-1" style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
+                        <span>{preview ? 'Recalculer' : 'Ouvrir'}</span>
+                        <ArrowUpRight className="h-3 w-3" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>

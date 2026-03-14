@@ -14,6 +14,7 @@ import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { CsvExport } from '@/components/CsvExport'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -118,13 +119,21 @@ function FirePageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant="ghost" size="sm" onClick={() => setInputs({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-2"><CardDescription>Patrimoine FIRE cible</CardDescription></CardHeader>
+          <CardContent>
+            <div style={{ fontSize: '2rem', fontWeight: 800, fontFamily: "'Geist Mono', monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.target)}</div>
+          </CardContent>
+        </Card>
         {[
-          { label: 'Patrimoine FIRE cible', value: fmt(r.target) },
           { label: 'Années avant FIRE', value: r.yearsToFire > 99 ? '+100' : `${r.yearsToFire} ans` },
           { label: 'Taux d\'épargne', value: fmtPct(r.savingsRate) },
           { label: 'Progression', value: fmtPct(r.progressPct) },
@@ -227,6 +236,19 @@ function FirePageInner() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* CSV export projection */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <CsvExport
+          data={Array.from({ length: Math.min(r.yearsToFire + 1, 100) }, (_, y) => {
+            let nw = inputs.netWorth
+            for (let i = 0; i < y; i++) nw = nw * (1 + inputs.rate / 100) + r.annualSavings
+            return { 'Année': y, 'Patrimoine': Math.round(nw).toFixed(0), 'Cible FIRE': Math.round(r.target).toFixed(0), 'Progression (%)': Math.min(nw / r.target * 100, 100).toFixed(1) }
+          })}
+          filename="fire-projection.csv"
+          label="Exporter projection CSV"
+        />
       </div>
 
       {/* Synthèse */}

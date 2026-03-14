@@ -453,18 +453,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     {(patrimoineTotal > 0 || dettesTotal > 0) && (
                       <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
                         <div style={{
-                          flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 8,
+                          flex: 1, background: 'var(--sb-mini-card)', borderRadius: 8,
                           padding: '6px 10px',
                         }}>
-                          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginBottom: 2 }}>Brut</div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.50)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
+                          <div style={{ fontSize: 9, color: 'var(--sb-text-dim)', marginBottom: 2 }}>Brut</div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--sb-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
                         </div>
                         {dettesTotal > 0 && (
                           <div style={{
-                            flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 8,
+                            flex: 1, background: 'var(--sb-mini-card)', borderRadius: 8,
                             padding: '6px 10px',
                           }}>
-                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', marginBottom: 2 }}>Dettes</div>
+                            <div style={{ fontSize: 9, color: 'var(--sb-text-dim)', marginBottom: 2 }}>Dettes</div>
                             <div style={{ fontSize: 11, fontWeight: 600, color: '#f87171', fontVariantNumeric: 'tabular-nums' }}>-{fmtSb(dettesTotal)}</div>
                           </div>
                         )}

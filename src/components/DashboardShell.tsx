@@ -12,7 +12,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     <div className={cn(
       'flex-1 min-h-screen flex flex-col transition-all duration-200',
       collapsed ? 'md:ml-16 ml-0' : 'md:ml-[290px] ml-0'
-    )}>
+    )} style={{ background: 'var(--content-bg)' }}>
       {/* Mobile top bar */}
       <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0"
         style={{ background: 'var(--sb-bg)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>

@@ -55,6 +55,26 @@ services:
       - fincalc-net
     restart: "no"
 
+  # ─── Snapshot journalier à minuit ────────────────────────────────────────────
+  cron:
+    image: alpine:3.19
+    container_name: fincalc-cron
+    restart: unless-stopped
+    depends_on:
+      - app
+    networks:
+      - fincalc-net
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    command: >-
+      sh -c "
+        apk add --no-cache curl &&
+        printf '#!/bin/sh\ncurl -fsS -X POST -H \"Authorization: Bearer %s\" http://app:3000/api/cron/snapshot\n' \"$$CRON_SECRET\" > /snap.sh &&
+        chmod +x /snap.sh &&
+        echo '0 0 * * * /snap.sh' | crontab - &&
+        crond -f -l 8
+      "
+
 volumes:
   postgres_data:
 

@@ -10,7 +10,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame, Camera,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -169,27 +169,6 @@ export default function PatrimoinePage() {
   const [fireTarget, setFireTarget] = useState<number>(0)
   const [fireTargetInput, setFireTargetInput] = useState('')
   const [editingFireTarget, setEditingFireTarget] = useState(false)
-  const [snapshotting, setSnapshotting] = useState(false)
-
-  const saveSnapshot = async () => {
-    if (totalValue <= 0 || snapshotting) return
-    setSnapshotting(true)
-    const byEnvelope = Object.fromEntries(envelopes.map(e => {
-      const value = e.type === 'IMMOBILIER' ? Number(e.metadata.currentValue ?? 0) : computeMarketValue(e)
-      return [e.id, { value, type: e.type, name: e.name }]
-    }))
-    try {
-      await fetch('/api/patrimoine/snapshot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ totalValue, byEnvelope }),
-      })
-      const res = await fetch('/api/patrimoine/snapshots?days=1825')
-      if (res.ok) setSnapshots(await res.json())
-      toast({ title: 'Snapshot enregistré', description: `Patrimoine de ${fmt(totalValue)} sauvegardé.` })
-    } catch { toast({ title: 'Erreur', description: 'Impossible de sauvegarder le snapshot.', variant: 'destructive' }) }
-    finally { setSnapshotting(false) }
-  }
   const milestoneFiredRef = useRef<Set<string>>(new Set())
   const [dragOver, setDragOver] = useState<string | null>(null)
   const dragSrcIdx = useRef<number | null>(null)
@@ -635,21 +614,6 @@ export default function PatrimoinePage() {
                       </span>
                     )}
                   </div>
-                  <button
-                    onClick={saveSnapshot}
-                    disabled={snapshotting || totalValue <= 0}
-                    title="Enregistrer un snapshot maintenant"
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px',
-                      borderRadius: 6, border: '1px solid rgba(241,192,134,0.25)',
-                      background: 'transparent', color: '#f1c086', fontSize: 10,
-                      fontWeight: 600, cursor: totalValue > 0 ? 'pointer' : 'default',
-                      opacity: snapshotting ? 0.5 : 1, transition: 'all 0.15s',
-                    }}
-                  >
-                    <Camera style={{ width: 11, height: 11 }} />
-                    {snapshotting ? '…' : 'Photo'}
-                  </button>
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (

@@ -532,8 +532,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <div style={{
                     padding: '10px 14px',
                     borderRadius: 12,
-                    background: 'var(--sb-profile-bg)',
-                    border: '1px solid rgba(241,192,134,0.08)',
+                    background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                    border: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
                     cursor: 'pointer',
                     transition: 'border-color 0.15s',
                   }}

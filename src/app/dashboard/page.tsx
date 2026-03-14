@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { fmt } from '@/lib/utils'
 import {
   AreaChart, Area, PieChart, Pie, Cell,
   ResponsiveContainer, Tooltip, XAxis, YAxis,

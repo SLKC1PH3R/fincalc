@@ -4,12 +4,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } f
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcEnvelopeCompare, type EnvelopeCompareInputs, type EnvelopeResult } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { HelpCircle, Trophy, ArrowRight, Info } from 'lucide-react'
+import { HelpCircle, Trophy, ArrowRight, Info, Download, RotateCcw } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -85,30 +87,34 @@ function EnvelopeCard({ type, result, best }: { type: 'pea' | 'cto' | 'av'; resu
   )
 }
 
+const DEFAULT_INPUTS: EnvelopeCompareInputs = {
+  capital: 10000, monthly: 300, rateGross: 7, years: 20, tmi: 30, isCouple: false, peaOpenYears: 0,
+}
+
 function EnvelopeCompareInner() {
   const params = useSearchParams()
   const chartTheme = useChartTheme()
 
-  const [capital, setCapital] = useState(10000)
-  const [monthly, setMonthly] = useState(300)
-  const [rateGross, setRateGross] = useState(7)
-  const [years, setYears] = useState(20)
-  const [tmi, setTmi] = useState(30)
-  const [isCouple, setIsCouple] = useState(false)
-  const [peaOpenYears, setPeaOpenYears] = useState(0)
+  const [capital, setCapital] = useState(DEFAULT_INPUTS.capital)
+  const [monthly, setMonthly] = useState(DEFAULT_INPUTS.monthly)
+  const [rateGross, setRateGross] = useState(DEFAULT_INPUTS.rateGross)
+  const [years, setYears] = useState(DEFAULT_INPUTS.years)
+  const [tmi, setTmi] = useState(DEFAULT_INPUTS.tmi)
+  const [isCouple, setIsCouple] = useState(DEFAULT_INPUTS.isCouple)
+  const [peaOpenYears, setPeaOpenYears] = useState(DEFAULT_INPUTS.peaOpenYears)
 
   useEffect(() => {
     const r = params.get('restore')
     if (!r) return
     try {
       const inp = JSON.parse(r) as EnvelopeCompareInputs
-      setCapital(inp.capital ?? 10000)
-      setMonthly(inp.monthly ?? 300)
-      setRateGross(inp.rateGross ?? 7)
-      setYears(inp.years ?? 20)
-      setTmi(inp.tmi ?? 30)
-      setIsCouple(inp.isCouple ?? false)
-      setPeaOpenYears(inp.peaOpenYears ?? 0)
+      setCapital(inp.capital ?? DEFAULT_INPUTS.capital)
+      setMonthly(inp.monthly ?? DEFAULT_INPUTS.monthly)
+      setRateGross(inp.rateGross ?? DEFAULT_INPUTS.rateGross)
+      setYears(inp.years ?? DEFAULT_INPUTS.years)
+      setTmi(inp.tmi ?? DEFAULT_INPUTS.tmi)
+      setIsCouple(inp.isCouple ?? DEFAULT_INPUTS.isCouple)
+      setPeaOpenYears(inp.peaOpenYears ?? DEFAULT_INPUTS.peaOpenYears)
     } catch {}
   }, [params])
 
@@ -118,24 +124,61 @@ function EnvelopeCompareInner() {
 
   const res = useMemo(() => calcEnvelopeCompare(inputs), [inputs])
 
+  const handleReset = () => {
+    setCapital(DEFAULT_INPUTS.capital)
+    setMonthly(DEFAULT_INPUTS.monthly)
+    setRateGross(DEFAULT_INPUTS.rateGross)
+    setYears(DEFAULT_INPUTS.years)
+    setTmi(DEFAULT_INPUTS.tmi)
+    setIsCouple(DEFAULT_INPUTS.isCouple)
+    setPeaOpenYears(DEFAULT_INPUTS.peaOpenYears)
+  }
+
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité des enveloppes</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          PEA vs CTO vs Assurance-vie
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-          Simulez l'impact fiscal de chaque enveloppe sur la même durée et le même investissement.
-        </p>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            PEA vs CTO vs Assurance Vie
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Comparez l&apos;impact fiscal de chaque enveloppe sur la même durée et le même capital — dividendes, plus-values, retraits.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'PEA vs CTO vs Assurance Vie',
+            subtitle: `Capital ${fmt(capital)} · ${years} ans · rendement ${rateGross}%`,
+            kpis: [
+              { label: 'PEA net', value: fmt(res.pea.netValue), highlight: res.best === 'pea' },
+              { label: 'CTO net', value: fmt(res.cto.netValue), highlight: res.best === 'cto' },
+              { label: 'AV nette', value: fmt(res.av.netValue), highlight: res.best === 'av' },
+            ],
+            inputs: [
+              { label: 'Capital initial', value: fmt(capital) },
+              { label: 'Versement mensuel', value: fmt(monthly) },
+              { label: 'Rendement brut', value: `${rateGross}%` },
+              { label: 'Durée', value: `${years} ans` },
+              { label: 'TMI', value: `${tmi}%` },
+            ],
+            sections: [],
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+          </Button>
+          <SaveSimulation type="envelope-compare" name="PEA vs CTO vs AV" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
+          </Button>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px,300px) 1fr', gap: 24, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* ── Inputs ── */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -194,12 +237,10 @@ function EnvelopeCompareInner() {
               <Tip text="Abattement AV de 9 200€/an au lieu de 4 600€." />
             </label>
           </div>
-
-          <SaveSimulation type="envelope-compare" name="PEA vs CTO vs AV" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
         </div>
 
         {/* ── Results ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* 3 Envelope cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
@@ -209,7 +250,7 @@ function EnvelopeCompareInner() {
           </div>
 
           {/* Chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '20px 16px' }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Évolution de la valeur nette</p>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={res.chartData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>

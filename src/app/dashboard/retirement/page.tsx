@@ -1,15 +1,15 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
+import { CsvExport } from '@/components/CsvExport'
 import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw } from 'lucide-react'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -33,36 +33,32 @@ function ScenarioRow({ s, selected, onClick }: { s: RetirementScenario; selected
   return (
     <tr
       onClick={onClick}
-      className={cn(
-        'cursor-pointer border-b border-border transition-colors hover:bg-muted/30',
-        selected && 'bg-muted/50'
-      )}
+      style={{ cursor: 'pointer', background: selected ? 'rgba(255,255,255,0.04)' : 'transparent', borderBottom: '1px solid var(--card-dark-border)' }}
     >
-      <td className="px-3 py-2.5 text-sm font-medium tabular-nums">{s.age} ans</td>
-      <td className="px-3 py-2.5 text-sm tabular-nums text-muted-foreground">{s.trimestres}</td>
-      <td className="px-3 py-2.5 text-sm">
-        <span
-          className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium"
-          style={{ background: borderColor + '20', color: borderColor }}
-        >
+      <td style={{ padding: '10px 12px', fontSize: 13, fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{s.age} ans</td>
+      <td style={{ padding: '10px 12px', fontSize: 13, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{s.trimestres}</td>
+      <td style={{ padding: '10px 12px' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 4, padding: '2px 6px', fontSize: 11, fontWeight: 600, background: borderColor + '20', color: borderColor }}>
           {s.tauxPlein
             ? (s.trimSurcote > 0 ? `+${(s.surcotePct * 100).toFixed(2)}% surcote` : 'Taux plein')
             : `-${(s.decotePct * 100).toFixed(2)}% décote`}
         </span>
       </td>
-      <td className="px-3 py-2.5 text-sm tabular-nums text-right">{fmtEur(s.pensionBase)}</td>
-      <td className="px-3 py-2.5 text-sm tabular-nums text-right">{fmtEur(s.pensionArrco)}</td>
-      <td className="px-3 py-2.5 text-sm tabular-nums text-right font-semibold">{fmtEur(s.pensionBrute)}</td>
-      <td className="px-3 py-2.5 text-sm tabular-nums text-right text-muted-foreground">{s.replacementRate.toFixed(0)}%</td>
+      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionBase)}</td>
+      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionArrco)}</td>
+      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontWeight: 600, color: 'var(--text-primary)' }}>{fmtEur(s.pensionBrute)}</td>
+      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-muted-c)' }}>{s.replacementRate.toFixed(0)}%</td>
     </tr>
   )
 }
 
+const DEFAULT_INPUTS: RetirementInputs = {
+  age: 35, quarters: 52, pointsArrco: 800,
+  salary: 48000, salaryGrowth: 1.5, departureAge: 64,
+}
+
 function RetirementPageInner() {
-  const [inputs, setInputs] = useState<RetirementInputs>({
-    age: 35, quarters: 52, pointsArrco: 800,
-    salary: 48000, salaryGrowth: 1.5, departureAge: 64,
-  })
+  const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS)
   const set = (k: keyof RetirementInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
 
   const searchParams = useSearchParams()
@@ -71,7 +67,6 @@ function RetirementPageInner() {
     if (!restoreParam) return
     try {
       const p = JSON.parse(restoreParam)
-      // Migrate old format
       if (p.retirementAge !== undefined && p.departureAge === undefined) p.departureAge = p.retirementAge
       if (p.pointsArrco === undefined) p.pointsArrco = 800
       if (p.salaryGrowth === undefined) p.salaryGrowth = 1.5
@@ -83,30 +78,45 @@ function RetirementPageInner() {
   const main = r.main
 
   const scoreConf = {
-    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-finance', border: 'rgba(52,211,153,0.35)' },
-    bon:       { label: 'Bon',       Icon: TrendingUp,  color: 'text-blue-400',          border: 'rgba(96,165,250,0.35)' },
-    moyen:     { label: 'Moyen',     Icon: Minus,       color: 'text-amber-400',          border: 'rgba(251,191,36,0.35)' },
-    faible:    { label: 'Faible',    Icon: AlertCircle, color: 'text-crimson-finance',    border: 'rgba(239,68,68,0.35)' },
+    excellent: { label: 'Excellent', Icon: CheckCircle2, color: '#34d399', borderColor: 'rgba(52,211,153,0.25)' },
+    bon:       { label: 'Bon',       Icon: TrendingUp,  color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' },
+    moyen:     { label: 'Moyen',     Icon: Minus,       color: '#fbbf24', borderColor: 'rgba(251,191,36,0.25)' },
+    faible:    { label: 'Faible',    Icon: AlertCircle, color: '#ef4444', borderColor: 'rgba(239,68,68,0.25)' },
   }[r.analysis.score]
 
   const gaugeColor =
-    main.replacementRate >= 75 ? 'hsl(160 84% 39%)'
-    : main.replacementRate >= 60 ? 'hsl(217 91% 60%)'
-    : main.replacementRate >= 45 ? 'hsl(38 92% 50%)'
-    : 'hsl(0 72% 51%)'
+    main.replacementRate >= 75 ? '#34d399'
+    : main.replacementRate >= 60 ? '#60a5fa'
+    : main.replacementRate >= 45 ? '#fbbf24'
+    : '#ef4444'
 
   const salNetActuel = inputs.salary * 0.78 / 12
 
+  const csvRows = r.scenarios.map(s => ({
+    'Âge départ': s.age,
+    'Trimestres': s.trimestres,
+    'Taux plein': s.tauxPlein ? 'Oui' : 'Non',
+    'Base CNAV (€/mois)': s.pensionBase.toFixed(0),
+    'Agirc-Arrco (€/mois)': s.pensionArrco.toFixed(0),
+    'Total brut (€/mois)': s.pensionBrute.toFixed(0),
+    'Taux remplacement (%)': s.replacementRate.toFixed(0),
+  }))
+
   return (
-    <div className="space-y-6 animate-fade-in px-7 py-8">
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Simulateur Retraite 2026</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Régime général (CNAV) · Agirc-Arrco · Formules officielles</p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Retraite</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            Simulateur de retraite
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Estimez votre pension de retraite selon votre carrière, vos trimestres validés et vos revenus.
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Retraite 2026',
             subtitle: `Régime général · Agirc-Arrco`,
@@ -129,133 +139,141 @@ function RetirementPageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="retirement" name={`Retraite ${inputs.departureAge} ans`} inputs={inputs as any} results={r as any} />
+          <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
+          </Button>
         </div>
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Pension brute estimée', value: fmtEur(main.pensionBrute) + '/mois', sub: `à ${inputs.departureAge} ans`, color: gaugeColor },
-          { label: 'dont CNAV (base)', value: fmtEur(main.pensionBase) + '/mois', sub: `SAM ${fmtEur(main.sam)} · taux ${fmtPct(main.tauxFinal)}` },
-          { label: 'dont Agirc-Arrco', value: fmtEur(main.pensionArrco) + '/mois', sub: `${main.totalPoints.toFixed(0)} pts × ${(main.totalPoints > 0 ? main.pensionArrco * 12 / main.totalPoints : 1.44).toFixed(4)} €` },
-          { label: 'Taux de remplacement', value: main.replacementRate.toFixed(0) + '%', sub: `vs ${fmtEur(salNetActuel)}/mois net actuel` },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent>
-              <div className="text-xl font-semibold tracking-tight" style={i === 0 ? { color: k.color } : {}}>{k.value}</div>
-              <p className="text-xs text-muted-foreground mt-1 leading-snug">{k.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Left: Inputs ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-        {/* Paramètres */}
-        <div className="space-y-4">
-          <Card>
-            <CardHeader><CardTitle>Votre situation actuelle</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 items-end">
-                <div className="space-y-1.5">
-                  <Label>Âge actuel</Label>
-                  <Input type="number" min={18} max={66} value={inputs.age} onChange={e => set('age')(+e.target.value)} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1">Trimestres
-                    <Tip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
-                  </Label>
-                  <Input type="number" min={0} max={200} value={inputs.quarters} onChange={e => set('quarters')(+e.target.value)} />
-                </div>
+          {/* Situation actuelle */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Votre situation actuelle</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 12 }}>Âge actuel</Label>
+                <Input type="number" min={18} max={66} value={inputs.age} onChange={e => set('age')(+e.target.value)} />
               </div>
-
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Points Agirc-Arrco
-                  <Tip text="Total de vos points Agirc-Arrco accumulés. Visible sur votre relevé info-retraite.fr ou agirc-arrco.fr." />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                  Trimestres
+                  <Tip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
                 </Label>
-                <Input type="number" min={0} value={inputs.pointsArrco} onChange={e => set('pointsArrco')(+e.target.value)} />
-                <p className="text-[11px] text-muted-foreground">
-                  ≈ {(inputs.pointsArrco * 1.4386 / 12).toFixed(0)} €/mois actuels · +{r.annualPtsArrco.toFixed(1)} pts/an au salaire actuel
-                </p>
+                <Input type="number" min={0} max={200} value={inputs.quarters} onChange={e => set('quarters')(+e.target.value)} />
               </div>
+            </div>
 
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Salaire brut annuel
-                  <Tip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                Points Agirc-Arrco
+                <Tip text="Total de vos points Agirc-Arrco accumulés. Visible sur votre relevé info-retraite.fr ou agirc-arrco.fr." />
+              </Label>
+              <Input type="number" min={0} value={inputs.pointsArrco} onChange={e => set('pointsArrco')(+e.target.value)} />
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                ≈ {(inputs.pointsArrco * 1.4386 / 12).toFixed(0)} €/mois actuels · +{r.annualPtsArrco.toFixed(1)} pts/an au salaire actuel
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                Salaire brut annuel
+                <Tip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
+              </Label>
+              <Input type="number" min={0} value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                  Progression salariale
+                  <Tip text="Augmentation annuelle estimée de votre salaire. Impact fort sur le SAM à la retraite. Inflation historique ~2%." />
                 </Label>
-                <Input type="number" min={0} value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.salaryGrowth.toFixed(1)}%/an</span>
               </div>
+              <Slider min={0} max={5} step={0.5} value={[inputs.salaryGrowth]} onValueChange={([v]) => set('salaryGrowth')(v)} />
+            </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Progression salariale
-                    <Tip text="Augmentation annuelle estimée de votre salaire. Impact fort sur le SAM à la retraite. Inflation historique ~2%." />
-                  </Label>
-                  <span className="text-sm font-medium">{inputs.salaryGrowth.toFixed(1)}%/an</span>
-                </div>
-                <Slider min={0} max={5} step={0.5} value={[inputs.salaryGrowth]} onValueChange={([v]) => set('salaryGrowth')(v)} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Label style={{ fontSize: 12 }}>Âge de départ simulé</Label>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.departureAge} ans</span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Âge de départ simulé</Label>
-                  <span className="text-sm font-medium">{inputs.departureAge} ans</span>
-                </div>
-                <Slider min={62} max={70} step={1} value={[inputs.departureAge]}
-                  onValueChange={([v]) => setInputs(p => ({ ...p, departureAge: v }))} />
-              </div>
-            </CardContent>
-          </Card>
+              <Slider min={62} max={70} step={1} value={[inputs.departureAge]}
+                onValueChange={([v]) => setInputs(p => ({ ...p, departureAge: v }))} />
+            </div>
+          </div>
 
           {/* Trimestres progress */}
-          <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Progression vers le taux plein</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              {[
-                { label: 'Acquis à ce jour', value: inputs.quarters, max: 172, color: 'hsl(160 84% 39%)' },
-                { label: `À ${inputs.departureAge} ans`, value: Math.min(main.trimestres, 172), max: 172, color: gaugeColor },
-              ].map((row, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">{row.label}</span>
-                    <span className="font-medium tabular-nums">{row.value} / 172 trim.</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(row.value / 172 * 100, 100)}%`, background: row.color }} />
-                  </div>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Progression vers le taux plein</p>
+            {[
+              { label: 'Acquis à ce jour', value: inputs.quarters, color: '#34d399' },
+              { label: `À ${inputs.departureAge} ans`, value: Math.min(main.trimestres, 172), color: gaugeColor },
+            ].map((row, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value} / 172 trim.</span>
                 </div>
-              ))}
-              <p className="text-[11px] text-muted-foreground">
-                Taux plein (quota) atteint à {Math.ceil(r.ageQuotaPlein)} ans
-                {r.ageQuotaPlein <= inputs.departureAge ? ' ✓' : ` — ${Math.ceil(r.ageQuotaPlein - inputs.departureAge)} ans avant départ`}
-              </p>
-              <a href="https://www.info-retraite.fr" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                <ExternalLink className="h-3 w-3" />Vérifier sur info-retraite.fr
-              </a>
-            </CardContent>
-          </Card>
+                <div style={{ height: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 9999, background: row.color, width: `${Math.min(row.value / 172 * 100, 100)}%`, transition: 'width 0.4s' }} />
+                </div>
+              </div>
+            ))}
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+              Taux plein (quota) atteint à {Math.ceil(r.ageQuotaPlein)} ans
+              {r.ageQuotaPlein <= inputs.departureAge ? ' ✓' : ` — ${Math.ceil(r.ageQuotaPlein - inputs.departureAge)} ans avant départ`}
+            </p>
+            <a href="https://www.info-retraite.fr" target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-muted-c)', textDecoration: 'none' }}>
+              <ExternalLink style={{ width: 11, height: 11 }} />Vérifier sur info-retraite.fr
+            </a>
+          </div>
         </div>
 
-        {/* Tableau des scénarios */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Scénarios de départ — 62 à 70 ans</CardTitle>
-            <CardDescription>Cliquez sur un âge pour le sélectionner comme scénario principal</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border border-border overflow-auto">
-              <table className="w-full text-sm">
+        {/* ── Right: Results ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* KPI grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Pension mensuelle estimée</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtEur(main.pensionBrute)}/mois</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>à {inputs.departureAge} ans · nette {fmtEur(main.pensionNette)}/mois</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Taux de remplacement</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: gaugeColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{main.replacementRate.toFixed(0)}%</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>vs {fmtEur(salNetActuel)}/mois net actuel</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Base CNAV</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtEur(main.pensionBase)}/mois</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>SAM {fmtEur(main.sam)} · taux {fmtPct(main.tauxFinal)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Agirc-Arrco</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtEur(main.pensionArrco)}/mois</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>{main.totalPoints.toFixed(0)} pts × 1,4386€</p>
+            </div>
+          </div>
+
+          {/* Scenarios table */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Scénarios de départ — 62 à 70 ans</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 16 }}>Cliquez sur un âge pour le sélectionner comme scénario principal</p>
+            <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid var(--card-dark-border)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Départ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Trim.</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Taux</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Base CNAV</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Agirc-Arrco</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Total brut</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Remplac.</th>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    {['Départ', 'Trim.', 'Taux', 'Base CNAV', 'Agirc-Arrco', 'Total brut', 'Remplac.'].map((h, i) => (
+                      <th key={i} style={{ padding: '8px 12px', textAlign: i >= 3 ? 'right' : 'left', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -268,12 +286,12 @@ function RetirementPageInner() {
             </div>
 
             {/* Détail scénario sélectionné */}
-            <div className="mt-4 rounded-md border border-border p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Détail — départ à {main.age} ans</span>
-                <span className="text-xs text-muted-foreground">{main.trimestres} trimestres validés</span>
+            <div style={{ marginTop: 16, borderRadius: 10, border: '1px solid var(--card-dark-border)', padding: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Détail — départ à {main.age} ans</span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{main.trimestres} trimestres validés</span>
               </div>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px' }}>
                 {[
                   { label: 'SAM estimé (base calcul)', value: fmtEur(main.sam) + '/an' },
                   { label: 'Taux appliqué', value: fmtPct(main.tauxFinal) + (main.tauxPlein ? ' (taux plein)' : ' (avec décote)') },
@@ -282,44 +300,45 @@ function RetirementPageInner() {
                   { label: 'Pension brute/mois', value: fmtEur(main.pensionBrute) },
                   { label: 'Pension nette/mois', value: fmtEur(main.pensionNette) + ' (−16%)' },
                 ].map((row, i) => (
-                  <div key={i} className="flex justify-between gap-2">
-                    <span className="text-muted-foreground">{row.label}</span>
-                    <span className="font-medium tabular-nums">{row.value}</span>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Analyse */}
-      <Card style={{ borderColor: scoreConf.border }}>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />
-            <CardTitle>Analyse — {scoreConf.label} ({main.replacementRate.toFixed(0)}% de remplacement)</CardTitle>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">{r.analysis.message}</p>
-          <div className="space-y-2">
-            {r.analysis.tips.map((tip, i) => (
-              <div key={i} className="flex gap-3 rounded-md border border-border p-3">
-                <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[10px] font-semibold">{i + 1}</span>
+
+          {/* CsvExport */}
+          <CsvExport data={csvRows} filename={`retraite-${inputs.departureAge}ans`} />
+
+          {/* Analyse */}
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+                Analyse — {scoreConf.label} ({main.replacementRate.toFixed(0)}% de remplacement)
+              </p>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>{r.analysis.message}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {r.analysis.tips.map((tip, i) => (
+                <div key={i} style={{ display: 'flex', gap: 12, borderRadius: 8, border: '1px solid var(--card-dark-border)', padding: '10px 14px' }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{tip}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', borderTop: '1px solid var(--card-dark-border)', paddingTop: 12, marginTop: 16, lineHeight: 1.6 }}>
+              Calcul basé sur les formules CNAV 2026 (SAM × taux × prorata ± décote/surcote) et Agirc-Arrco (points × valeur 1,4386€).
+              Montants en euros nominaux estimés à la date de départ. Les résultats exacts dépendent de votre relevé de carrière complet.
+            </p>
           </div>
-          <p className="text-[11px] text-muted-foreground border-t border-border pt-3">
-            Calcul basé sur les formules CNAV 2026 (SAM × taux × prorata ± décote/surcote) et Agirc-Arrco (points × valeur 1,4386€).
-            Montants en euros nominaux estimés à la date de départ. Les résultats exacts dépendent de votre relevé de carrière complet.
-          </p>
-        </CardContent>
-      </Card>
 
+        </div>
+      </div>
     </div>
   )
 }

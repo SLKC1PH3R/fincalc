@@ -4,12 +4,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } f
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFlatTax, type FlatTaxInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { HelpCircle, CheckCircle2, ArrowRight } from 'lucide-react'
+import { HelpCircle, CheckCircle2, ArrowRight, Download } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
+import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -24,6 +26,15 @@ function Tip({ text }: { text: string }) {
       )}
     </span>
   )
+}
+
+const DEFAULT_INPUTS: FlatTaxInputs = {
+  amount: 10000,
+  incomeType: 'capital_gains',
+  tmi: 30,
+  revenuTravail: 40000,
+  parts: 1,
+  isCouple: false,
 }
 
 function FlatTaxInner() {
@@ -57,18 +68,48 @@ function FlatTaxInner() {
   const recColor = res.recommended === 'flat_tax' ? '#38bdf8' : '#fb923c'
   const recLabel = res.recommended === 'flat_tax' ? 'Flat Tax (PFU 30%)' : 'Barème progressif'
 
+  const handleReset = () => {
+    setAmount(DEFAULT_INPUTS.amount)
+    setIncomeType(DEFAULT_INPUTS.incomeType)
+    setTmi(DEFAULT_INPUTS.tmi)
+    setRevenuTravail(DEFAULT_INPUTS.revenuTravail)
+    setParts(DEFAULT_INPUTS.parts)
+    setIsCouple(DEFAULT_INPUTS.isCouple)
+  }
+
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité du capital</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          Flat Tax vs Barème IR
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-          Comparez le Prélèvement Forfaitaire Unique (30%) et le barème progressif pour vos revenus du capital.
-        </p>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            Flat Tax vs Barème IR
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Comparez le Prélèvement Forfaitaire Unique (30%) au barème progressif selon votre TMI et vos revenus du capital.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Button variant="outline" size="sm" onClick={() => printReport({
+            title: 'Flat Tax vs Barème IR',
+            subtitle: `Revenus du capital : ${fmt(amount)} — ${incomeType === 'capital_gains' ? 'Plus-values' : incomeType === 'dividends' ? 'Dividendes' : 'Intérêts'}`,
+            kpis: [
+              { label: 'Régime recommandé', value: recLabel, highlight: true },
+              { label: 'Économie réalisée', value: fmt(res.saving) },
+              { label: 'Flat Tax (total)', value: fmt(res.flatTax.total), sub: `Taux effectif ${res.flatTax.effectiveRate.toFixed(1)}%` },
+              { label: 'Barème (total)', value: fmt(res.bareme.total), sub: `Taux effectif ${res.bareme.effectiveRate.toFixed(1)}%` },
+            ],
+          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+          </Button>
+          <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
+          <Button variant="outline" size="sm" onClick={handleReset}
+            style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+            Réinitialiser
+          </Button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
@@ -102,7 +143,7 @@ function FlatTaxInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
-              Revenus d'activité annuels (€)
+              Revenus d&apos;activité annuels (€)
               <Tip text="Vos salaires, BIC, BNC… Permet de calculer le bon taux marginal et l'IR au barème." />
             </Label>
             <Input type="number" value={revenuTravail} onChange={e => setRevenuTravail(Number(e.target.value))} min={0} step={5000} />
@@ -138,65 +179,129 @@ function FlatTaxInner() {
               <Tip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />
             </label>
           </div>
-
-          <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
         </div>
 
         {/* ── Results ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          {/* Recommendation banner */}
-          <div style={{ background: recColor + '12', border: `1px solid ${recColor}30`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <CheckCircle2 style={{ width: 20, height: 20, color: recColor, flexShrink: 0 }} />
+          {/* Verdict banner */}
+          <div style={{
+            background: 'rgba(52,211,153,0.06)',
+            border: '1px solid rgba(52,211,153,0.15)',
+            borderRadius: 12, padding: '14px 18px',
+            display: 'flex', alignItems: 'center', gap: 12
+          }}>
+            <CheckCircle2 style={{ width: 20, height: 20, color: '#34d399', flexShrink: 0 }} />
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
                 Régime recommandé : <span style={{ color: recColor }}>{recLabel}</span>
               </p>
               <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
-                Économie de {fmt(res.saving)} par rapport à l'autre régime · Taux effectif {(res.recommended === 'flat_tax' ? res.flatTax : res.bareme).effectiveRate.toFixed(1)}%
+                Économie de <span style={{ color: '#34d399', fontWeight: 600 }}>{fmt(res.saving)}</span> par rapport à l&apos;autre régime
+                · Taux effectif {(res.recommended === 'flat_tax' ? res.flatTax : res.bareme).effectiveRate.toFixed(1)}%
               </p>
             </div>
           </div>
 
-          {/* Comparison table */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid var(--card-dark-border)' }}>
-              <div style={{ padding: '12px 16px', fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Poste</div>
-              <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#38bdf8', borderLeft: '1px solid var(--card-dark-border)' }}>Flat Tax (PFU 30%)</div>
-              <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 600, color: '#fb923c', borderLeft: '1px solid var(--card-dark-border)' }}>Barème IR</div>
-            </div>
-            {[
-              { label: 'Abattement', ft: fmt(res.flatTax.abattement), bm: fmt(res.bareme.abattement) },
-              { label: 'CSG déductible', ft: '—', bm: fmt(res.bareme.csgDed) },
-              { label: 'Base imposable IR', ft: fmt(res.flatTax.baseIR), bm: fmt(res.bareme.baseIR) },
-              { label: 'Impôt sur le revenu', ft: fmt(res.flatTax.ir), bm: fmt(res.bareme.ir) },
-              { label: 'Prélèvements sociaux', ft: fmt(res.flatTax.ps), bm: fmt(res.bareme.ps) },
-              { label: 'Total prélevé', ft: fmt(res.flatTax.total), bm: fmt(res.bareme.total), highlight: true },
-              { label: 'Taux effectif', ft: res.flatTax.effectiveRate.toFixed(1) + '%', bm: res.bareme.effectiveRate.toFixed(1) + '%', highlight: true },
-            ].map((row, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid var(--card-dark-border)' }}>
-                <div style={{ padding: '10px 16px', fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</div>
-                <div style={{ padding: '10px 16px', fontSize: 12, fontWeight: row.highlight ? 700 : 400, color: row.highlight ? (res.recommended === 'flat_tax' ? '#38bdf8' : 'var(--text-em)') : 'var(--text-em)', borderLeft: '1px solid var(--card-dark-border)' }}>
-                  {row.ft}
-                  {row.highlight && res.recommended === 'flat_tax' && <CheckCircle2 style={{ width: 11, height: 11, color: '#34d399', marginLeft: 5, display: 'inline' }} />}
+          {/* Side-by-side comparison cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {/* Flat Tax card */}
+            <div style={{
+              background: 'var(--card-dark)',
+              border: '1px solid var(--card-dark-border)',
+              borderTop: '3px solid #38bdf8',
+              borderRadius: 14, overflow: 'hidden'
+            }}>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#38bdf8' }}>Flat Tax</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>PFU 30% fixe</p>
                 </div>
-                <div style={{ padding: '10px 16px', fontSize: 12, fontWeight: row.highlight ? 700 : 400, color: row.highlight ? (res.recommended === 'bareme' ? '#fb923c' : 'var(--text-em)') : 'var(--text-em)', borderLeft: '1px solid var(--card-dark-border)' }}>
-                  {row.bm}
-                  {row.highlight && res.recommended === 'bareme' && <CheckCircle2 style={{ width: 11, height: 11, color: '#34d399', marginLeft: 5, display: 'inline' }} />}
+                {res.recommended === 'flat_tax' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, background: 'rgba(56,189,248,0.12)', border: '1px solid rgba(56,189,248,0.25)' }}>
+                    <CheckCircle2 style={{ width: 10, height: 10, color: '#38bdf8' }} />
+                    <span style={{ fontSize: 10, color: '#38bdf8', fontWeight: 600 }}>Optimal</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ padding: '14px 16px' }}>
+                <p style={{ fontSize: 28, fontWeight: 800, color: '#38bdf8', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>
+                  {fmt(res.flatTax.total)}
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 14 }}>
+                  Taux effectif : {res.flatTax.effectiveRate.toFixed(1)}%
+                </p>
+                {[
+                  { label: 'Abattement', value: fmt(res.flatTax.abattement) },
+                  { label: 'Base imposable IR', value: fmt(res.flatTax.baseIR) },
+                  { label: 'Impôt sur le revenu', value: fmt(res.flatTax.ir) },
+                  { label: 'Prélèvements sociaux', value: fmt(res.flatTax.ps) },
+                ].map((row, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: i < 3 ? '1px solid var(--section-border)' : 'none' }}>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Barème card */}
+            <div style={{
+              background: 'var(--card-dark)',
+              border: '1px solid var(--card-dark-border)',
+              borderTop: '3px solid #fb923c',
+              borderRadius: 14, overflow: 'hidden'
+            }}>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fb923c' }}>Barème progressif</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>TMI {tmi}%</p>
+                </div>
+                {res.recommended === 'bareme' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.25)' }}>
+                    <CheckCircle2 style={{ width: 10, height: 10, color: '#fb923c' }} />
+                    <span style={{ fontSize: 10, color: '#fb923c', fontWeight: 600 }}>Optimal</span>
+                  </div>
+                )}
+              </div>
+              <div style={{ padding: '14px 16px' }}>
+                <p style={{ fontSize: 28, fontWeight: 800, color: '#fb923c', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>
+                  {fmt(res.bareme.total)}
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 14 }}>
+                  Taux effectif : {res.bareme.effectiveRate.toFixed(1)}%
+                </p>
+                {[
+                  { label: 'Abattement', value: fmt(res.bareme.abattement) },
+                  { label: 'Base imposable IR', value: fmt(res.bareme.baseIR) },
+                  { label: 'Impôt sur le revenu', value: fmt(res.bareme.ir) },
+                  { label: 'Prélèvements sociaux', value: fmt(res.bareme.ps) },
+                ].map((row, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: i < 3 ? '1px solid var(--section-border)' : 'none' }}>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>CSG déductible</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(res.bareme.csgDed)}</span>
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Info box for dividends */}
           {incomeType === 'dividends' && (
-            <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '12px 16px', fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-              <span style={{ color: '#f1c086', fontWeight: 600 }}>Dividendes :</span> l'abattement de 40% ne s'applique qu'au barème. La Flat Tax taxe le montant brut sans abattement — mais à seulement 30% fixe.
+            <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+              <span style={{ color: '#f1c086', fontWeight: 600 }}>Dividendes : </span>
+              l&apos;abattement de 40% ne s&apos;applique qu&apos;au barème. La Flat Tax taxe le montant brut sans abattement — mais à seulement 30% fixe.
             </div>
           )}
 
           {/* Chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '20px 16px' }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Charge fiscale selon le montant</p>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={res.chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
@@ -215,14 +320,14 @@ function FlatTaxInner() {
           </div>
 
           {/* Key rules */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '16px 20px' }}>
+          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px' }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>À retenir</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { color: '#38bdf8', text: 'La Flat Tax (PFU) est avantageuse pour les TMI ≥ 30%.' },
                 { color: '#fb923c', text: 'Le barème est souvent meilleur pour les TMI 0% et 11%, surtout sur les dividendes (abattement 40%).' },
                 { color: '#34d399', text: 'Vous pouvez choisir le régime chaque année lors de votre déclaration.' },
-                { color: '#f1c086', text: 'La CSG déductible (6,8%) ne s\'applique qu\'au barème et réduit le revenu imposable N+1.' },
+                { color: '#f1c086', text: "La CSG déductible (6,8%) ne s'applique qu'au barème et réduit le revenu imposable N+1." },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <ArrowRight style={{ width: 12, height: 12, color: item.color, flexShrink: 0, marginTop: 2 }} />

@@ -2,13 +2,13 @@
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Sankey, Tooltip, ResponsiveContainer } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SaveSimulation } from '@/components/SaveSimulation'
+import { CsvExport } from '@/components/CsvExport'
 import { calcRental, type RentalInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -302,10 +302,10 @@ function RentalPageInner() {
   // Global score
   const globalScore = globalCashflowMonthly > 200 ? 'excellent' : globalCashflowMonthly >= 0 ? 'bon' : globalCashflowMonthly >= -100 ? 'moyen' : 'negatif'
   const scoreConf = {
-    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-finance' },
-    bon: { label: 'Positif', Icon: TrendingUp, color: 'text-blue-400' },
-    moyen: { label: 'Effort', Icon: Minus, color: 'text-amber-400' },
-    negatif: { label: 'Négatif', Icon: AlertCircle, color: 'text-crimson-finance' },
+    excellent: { label: 'Excellent', Icon: CheckCircle2, color: '#34d399' },
+    bon: { label: 'Positif', Icon: TrendingUp, color: '#60a5fa' },
+    moyen: { label: 'Effort', Icon: Minus, color: '#fbbf24' },
+    negatif: { label: 'Négatif', Icon: AlertCircle, color: '#f87171' },
   }[globalScore]
 
   const activeTabResult = resultTab === 'global'
@@ -316,17 +316,36 @@ function RentalPageInner() {
     : apartments.find(a => a.id === resultTab)!
   const activeTabSankeyData = activeTabResult && activeTabApt ? makeSankeyData(activeTabResult, activeTabApt) : globalSankeyData
 
-  return (
-    <div className="space-y-6 animate-fade-in px-7 py-8">
+  // CsvExport data
+  const csvRows = apartments.map((apt, idx) => {
+    const r = results[idx]
+    return {
+      Nom: apt.name,
+      'Prix achat': apt.inputs.price,
+      'Loyer mensuel': apt.inputs.rent,
+      'Rendement brut %': r.grossYield.toFixed(2),
+      'Rendement net %': r.netYield.toFixed(2),
+      'Cashflow mensuel': r.cashflowMonthly.toFixed(0),
+      'Cashflow annuel': r.cashflowAnnual.toFixed(0),
+      'NOI': r.netOperatingIncome.toFixed(0),
+      'Mensualité crédit': r.monthlyLoan.toFixed(0),
+      'Impôts annuels': r.tax.toFixed(0),
+    }
+  })
 
-      <div className="flex items-center justify-between">
+  return (
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Rentabilité Locative</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Cashflow · Rendement · Fiscalité — {apartments.length} appartement{apartments.length > 1 ? 's' : ''}
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Immobilier</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Rentabilité Locative</h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Calculez le rendement brut et net de votre investissement locatif, le cashflow mensuel et la durée de rentabilisation.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Rentabilité Locative',
             subtitle: `${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — Investissement total : ${fmt(globalTotalInvestment)}`,
@@ -355,43 +374,36 @@ function RentalPageInner() {
             inputs={{ apartments } as unknown as Record<string, unknown>}
             results={{ globalCashflowMonthly, globalGrossYield, globalNetYield, globalROI } as unknown as Record<string, unknown>}
           />
+          <Button variant="outline" size="sm" onClick={() => {
+            setApartments([{ id: '1', name: 'Appartement 1', inputs: { ...DEFAULT_INPUTS } }])
+            setActiveAptId('1')
+            setResultTab('global')
+          }} style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
-      {/* Global KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Cashflow mensuel global', value: fmt(globalCashflowMonthly), sub: `${fmt(globalCashflowAnnual)}/an`, isCashflow: true },
-          { label: 'Rendement brut moyen', value: fmtPct(globalGrossYield) },
-          { label: 'Rendement net moyen', value: fmtPct(globalNetYield) },
-          { label: 'ROI sur fonds propres', value: fmtPct(globalROI) },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent>
-              <div className={cn('text-2xl font-semibold tracking-tight',
-                k.isCashflow && (globalCashflowMonthly >= 0 ? 'text-emerald-finance' : 'text-crimson-finance')
-              )}>{k.value}</div>
-              {k.sub && <p className="text-xs text-muted-foreground mt-1">{k.sub}</p>}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Two-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: apartment selector + form */}
-        <div className="space-y-4">
+        {/* Left: inputs */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Apartment tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             {apartments.map((apt) => (
-              <div key={apt.id} className="relative group">
+              <div key={apt.id} style={{ position: 'relative' }} className="group">
                 <button
                   onClick={() => setActiveAptId(apt.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                  style={activeAptId === apt.id
-                    ? { background: 'rgba(241,192,134,0.09)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
-                    : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500,
+                    transition: 'all 0.15s',
+                    ...(activeAptId === apt.id
+                      ? { background: 'rgba(241,192,134,0.09)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                      : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                  }}
                 >
                   {apt.name}
                 </button>
@@ -409,8 +421,7 @@ function RentalPageInner() {
             {apartments.length < 6 && (
               <button
                 onClick={addApartment}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-all"
-                style={{ border: '1px dashed hsl(var(--border))', color: 'var(--text-subtle)' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 8, fontSize: 12, border: '1px dashed var(--card-dark-border)', color: 'var(--text-subtle)', background: 'transparent' }}
               >
                 <Plus className="h-3 w-3" />Ajouter
               </button>
@@ -418,143 +429,167 @@ function RentalPageInner() {
           </div>
 
           {/* Apartment name */}
-          <div className="space-y-1.5">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label>Nom</Label>
-            <Input
-              value={activeApt.name}
-              onChange={e => setAptName(e.target.value)}
-              className="h-8 text-xs"
-            />
+            <Input value={activeApt.name} onChange={e => setAptName(e.target.value)} className="h-8 text-xs" />
           </div>
 
-          <Card>
-            <CardHeader><CardTitle>Acquisition</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Prix d&apos;achat<Tip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></Label>
-                <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Frais de notaire<Tip text="~8% dans l'ancien, ~3% dans le neuf." /></Label>
-                  <span className="text-sm font-medium">{inputs.notaryFees}%</span>
-                </div>
-                <Slider min={2} max={10} step={0.5} value={[inputs.notaryFees]} onValueChange={([v]) => setApt('notaryFees')(v)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Travaux<Tip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></Label>
-                <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté. Laissez 0 pour un achat cash." /></Label>
-                <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Taux crédit</Label>
-                  <span className="text-sm font-medium">{inputs.loanRate}%</span>
-                </div>
-                <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => setApt('loanRate')(v)} />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Durée crédit</Label>
-                  <span className="text-sm font-medium">{inputs.loanYears} ans</span>
-                </div>
-                <Slider min={5} max={30} step={1} value={[inputs.loanYears]} onValueChange={([v]) => setApt('loanYears')(v)} />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Acquisition panel */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
 
-          <Card>
-            <CardHeader><CardTitle>Exploitation &amp; Fiscalité</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Loyer mensuel HC<Tip text="Loyer hors charges. Base de calcul du rendement." /></Label>
-                <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Prix d&apos;achat<Tip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></Label>
+              <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex justify-between">
+                <Label className="flex items-center gap-1">Frais de notaire<Tip text="~8% dans l'ancien, ~3% dans le neuf." /></Label>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.notaryFees}%</span>
               </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Charges mensuelles<Tip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></Label>
-                <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} />
+              <Slider min={2} max={10} step={0.5} value={[inputs.notaryFees]} onValueChange={([v]) => setApt('notaryFees')(v)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Travaux<Tip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></Label>
+              <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté. Laissez 0 pour un achat cash." /></Label>
+              <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex justify-between">
+                <Label>Taux crédit</Label>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
               </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Taxe foncière (€/an)<Tip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></Label>
-                <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} />
+              <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => setApt('loanRate')(v)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex justify-between">
+                <Label>Durée crédit</Label>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanYears} ans</span>
               </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Assurance PNO (€/an)<Tip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></Label>
-                <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} />
+              <Slider min={5} max={30} step={1} value={[inputs.loanYears]} onValueChange={([v]) => setApt('loanYears')(v)} />
+            </div>
+          </div>
+
+          {/* Exploitation & Fiscalité panel */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Loyer mensuel HC<Tip text="Loyer hors charges. Base de calcul du rendement." /></Label>
+              <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Charges mensuelles<Tip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></Label>
+              <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Taxe foncière (€/an)<Tip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></Label>
+              <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Assurance PNO (€/an)<Tip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></Label>
+              <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex justify-between">
+                <Label className="flex items-center gap-1">Taux de vacance<Tip text="Pourcentage du temps sans locataire. 4-8% est réaliste selon la localisation." /></Label>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.vacancy}%</span>
               </div>
-              <div className="space-y-2">
+              <Slider min={0} max={20} step={0.5} value={[inputs.vacancy]} onValueChange={([v]) => setApt('vacancy')(v)} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Régime fiscal<Tip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement, fiscalité quasi nulle." /></Label>
+              <Select value={inputs.regime} onValueChange={v => setApt('regime')(v as RentalInputs['regime'])}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nu">Location nue (revenus fonciers)</SelectItem>
+                  <SelectItem value="meuble">Meublé micro-BIC (50% abatt.)</SelectItem>
+                  <SelectItem value="lmnp">LMNP réel (amortissement)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {inputs.regime !== 'lmnp' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <div className="flex justify-between">
-                  <Label className="flex items-center gap-1">Taux de vacance<Tip text="Pourcentage du temps sans locataire. 4-8% est réaliste selon la localisation." /></Label>
-                  <span className="text-sm font-medium">{inputs.vacancy}%</span>
+                  <Label>Votre TMI</Label>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.marginalRate}%</span>
                 </div>
-                <Slider min={0} max={20} step={0.5} value={[inputs.vacancy]} onValueChange={([v]) => setApt('vacancy')(v)} />
+                <Slider min={0} max={45} step={1} value={[inputs.marginalRate]} onValueChange={([v]) => setApt('marginalRate')(v)} />
               </div>
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1">Régime fiscal<Tip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement, fiscalité quasi nulle." /></Label>
-                <Select value={inputs.regime} onValueChange={v => setApt('regime')(v as RentalInputs['regime'])}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="nu">Location nue (revenus fonciers)</SelectItem>
-                    <SelectItem value="meuble">Meublé micro-BIC (50% abatt.)</SelectItem>
-                    <SelectItem value="lmnp">LMNP réel (amortissement)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {inputs.regime !== 'lmnp' && (
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>Votre TMI</Label>
-                    <span className="text-sm font-medium">{inputs.marginalRate}%</span>
-                  </div>
-                  <Slider min={0} max={45} step={1} value={[inputs.marginalRate]} onValueChange={([v]) => setApt('marginalRate')(v)} />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </div>
 
-        {/* Right: results with tabs */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex items-start justify-between gap-4">
+        {/* Right: results */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* KPI grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+            {/* Rendement brut */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Rendement brut</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalGrossYield)}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>loyers / investissement</p>
+            </div>
+            {/* Rendement net */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Rendement net</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalNetYield)}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>après charges &amp; fiscalité</p>
+            </div>
+            {/* Cashflow mensuel */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Cashflow mensuel</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: globalCashflowMonthly >= 0 ? '#34d399' : '#f87171', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(globalCashflowMonthly)}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>{fmt(globalCashflowAnnual)}/an</p>
+            </div>
+            {/* ROI fonds propres */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>ROI fonds propres</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalROI)}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>cashflow / apport</p>
+            </div>
+          </div>
+
+          {/* Result tabs + chart container */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8, flexWrap: 'wrap' }}>
               <div>
-                <CardTitle>Décomposition du cashflow annuel</CardTitle>
-                <CardDescription className="mt-0.5">
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Décomposition du cashflow annuel</p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
                   {resultTab === 'global'
-                    ? `Global — ${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — Investissement total : ${fmt(globalTotalInvestment)}`
-                    : `${activeTabApt?.name} — Investissement : ${fmt(activeTabResult?.totalInvestment ?? 0)}`}
-                </CardDescription>
+                    ? `Global — ${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — ${fmt(globalTotalInvestment)}`
+                    : `${activeTabApt?.name} — ${fmt(activeTabResult?.totalInvestment ?? 0)}`}
+                </p>
               </div>
-              {/* Result tabs */}
-              <div className="flex items-center gap-1 flex-wrap justify-end flex-shrink-0">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                 <button
                   onClick={() => setResultTab('global')}
-                  className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
-                  style={resultTab === 'global'
-                    ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
-                    : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
-                >
-                  Global
-                </button>
+                  style={{
+                    padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
+                    ...(resultTab === 'global'
+                      ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                      : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                  }}
+                >Global</button>
                 {apartments.map((apt) => (
                   <button
                     key={apt.id}
                     onClick={() => setResultTab(apt.id)}
-                    className="px-2.5 py-1 rounded-md text-xs font-medium transition-all"
-                    style={resultTab === apt.id
-                      ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
-                      : { border: '1px solid transparent', color: 'var(--text-muted-c)' }}
-                  >
-                    {apt.name}
-                  </button>
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
+                      ...(resultTab === apt.id
+                        ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                        : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                    }}
+                  >{apt.name}</button>
                 ))}
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
+
             {mounted ? (
               <ResponsiveContainer width="100%" height={400}>
                 <Sankey
@@ -576,72 +611,81 @@ function RentalPageInner() {
               </ResponsiveContainer>
             ) : (
               <div style={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="text-sm text-muted-foreground">Chargement du graphique…</span>
+                <span style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Chargement du graphique…</span>
               </div>
             )}
-
-            {resultTab === 'global' ? (
-              <GlobalCashflowTable apartments={apartments} results={results} />
-            ) : activeTabResult && activeTabApt ? (
-              <CashflowTable r={activeTabResult} inputs={activeTabApt.inputs} label={activeTabApt.name} />
-            ) : null}
-
-            {/* Per-apartment mini KPIs when in global view */}
-            {resultTab === 'global' && apartments.length > 1 && (
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-subtle)' }}>Par appartement</p>
-                <div className="grid grid-cols-1 gap-2">
-                  {apartments.map((apt, idx) => {
-                    const r = results[idx]
-                    return (
-                      <div key={apt.id} className="flex items-center justify-between px-3 py-2 rounded-lg"
-                        style={{ background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)' }}>
-                        <span className="text-xs font-medium truncate flex-1" style={{ color: 'var(--sb-text)' }}>{apt.name}</span>
-                        <div className="flex items-center gap-4 flex-shrink-0">
-                          <span className="text-[11px]" style={{ color: 'var(--text-muted-c)' }}>{fmtPct(r.grossYield)} brut</span>
-                          <span className="text-[11px]" style={{ color: 'var(--text-muted-c)' }}>{fmtPct(r.netYield)} net</span>
-                          <span className={cn('text-xs font-semibold tabular-nums', r.cashflowMonthly >= 0 ? 'text-emerald-finance' : 'text-crimson-finance')}>
-                            {fmt(r.cashflowMonthly)}/mois
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Synthèse globale */}
-      <Card style={{ borderColor: globalScore === 'excellent' || globalScore === 'bon' ? 'rgba(52,211,153,0.35)' : globalScore === 'moyen' ? 'rgba(241,192,134,0.28)' : 'rgba(239,68,68,0.35)' }}>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <scoreConf.Icon className={cn('h-4 w-4', scoreConf.color)} />
-            <CardTitle>Analyse globale — Cashflow {scoreConf.label}</CardTitle>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {apartments.length === 1
-              ? activeResult.analysis.message
-              : `Votre portefeuille de ${apartments.length} biens génère un cashflow global de ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour un investissement total de ${fmt(globalTotalInvestment)}. Rendement brut moyen : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
-          </p>
-          {apartments.length === 1 && (
-            <div className="space-y-2">
-              {activeResult.analysis.tips.map((tip, i) => (
-                <div key={i} className="flex gap-3 rounded-md border border-border p-3">
-                  <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-[10px] font-semibold">{i + 1}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{tip}</p>
-                </div>
-              ))}
+
+          {/* Cashflow table */}
+          {resultTab === 'global' ? (
+            <GlobalCashflowTable apartments={apartments} results={results} />
+          ) : activeTabResult && activeTabApt ? (
+            <CashflowTable r={activeTabResult} inputs={activeTabApt.inputs} label={activeTabApt.name} />
+          ) : null}
+
+          {/* Per-apartment mini KPIs when in global view */}
+          {resultTab === 'global' && apartments.length > 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-subtle)' }}>Par appartement</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {apartments.map((apt, idx) => {
+                  const r = results[idx]
+                  return (
+                    <div key={apt.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 10, background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)' }}>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--sb-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(r.grossYield)} brut</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(r.netYield)} net</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: r.cashflowMonthly >= 0 ? '#34d399' : '#f87171' }}>
+                          {fmt(r.cashflowMonthly)}/mois
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+
+          {/* CSV Export */}
+          <CsvExport data={csvRows} filename="rentabilite-locative" />
+
+          {/* Synthèse / tips */}
+          <div style={{
+            background: globalScore === 'excellent' || globalScore === 'bon'
+              ? 'rgba(52,211,153,0.06)' : globalScore === 'moyen'
+              ? 'rgba(241,192,134,0.06)' : 'rgba(248,113,113,0.08)',
+            border: `1px solid ${globalScore === 'excellent' || globalScore === 'bon'
+              ? 'rgba(52,211,153,0.15)' : globalScore === 'moyen'
+              ? 'rgba(241,192,134,0.15)' : 'rgba(248,113,113,0.20)'}`,
+            borderRadius: 12, padding: '14px 18px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+                Analyse globale — Cashflow {scoreConf.label}
+              </p>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+              {apartments.length === 1
+                ? activeResult.analysis.message
+                : `Votre portefeuille de ${apartments.length} biens génère un cashflow global de ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour un investissement total de ${fmt(globalTotalInvestment)}. Rendement brut moyen : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
+            </p>
+            {apartments.length === 1 && activeResult.analysis.tips.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+                {activeResult.analysis.tips.map((tip, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--row-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
+                    </div>
+                    <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

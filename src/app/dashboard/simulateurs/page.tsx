@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, Wallet,
   PiggyBank, RefreshCw, Calculator, Percent, ArrowUpRight,
-  Search, Clock, BarChart3,
+  Search, Clock, BarChart3, Coins, Users, ShieldCheck, CreditCard, History,
 } from 'lucide-react'
 
 interface Simulation {
@@ -18,34 +18,42 @@ const CATEGORIES = [
     id: 'placements',
     label: 'Placements',
     modules: [
-      { href: '/dashboard/compound', type: 'compound',     label: 'Intérêts Composés', desc: 'Visualisez l\'effet boule de neige sur votre capital',      icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
-      { href: '/dashboard/dca',      type: 'dca',          label: 'DCA',               desc: 'Simulez un investissement progressif et régulier',           icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
-      { href: '/dashboard/fire',     type: 'fire',         label: 'FI/RE',             desc: 'Calculez votre date d\'indépendance financière',             icon: Flame,      color: '#fb923c', tag: 'Épargne' },
+      { href: '/dashboard/compound',  type: 'compound',  label: 'Intérêts composés', desc: "Visualisez l'effet boule de neige sur votre capital",               icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
+      { href: '/dashboard/dca',       type: 'dca',       label: 'DCA',               desc: 'Simulez un investissement progressif et régulier',                  icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
+      { href: '/dashboard/fire',      type: 'fire',      label: 'FI/RE',             desc: "Calculez votre date d'indépendance financière",                    icon: Flame,      color: '#fb923c', tag: 'Épargne' },
+      { href: '/dashboard/dividends', type: 'dividends', label: 'Revenus passifs',   desc: 'Modélisez vos revenus de dividendes et rentes sur le long terme',   icon: Coins,      color: '#facc15', tag: 'Épargne' },
+      { href: '/dashboard/benchmark', type: 'benchmark', label: 'Benchmarks',        desc: 'Comparez vos performances aux indices ETF et stratégies passives',  icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
     ],
   },
   {
     id: 'immobilier',
     label: 'Immobilier',
     modules: [
-      { href: '/dashboard/buyrent',  type: 'buyrent',      label: 'Acheter vs Louer',  desc: 'Comparez les deux stratégies résidentielles sur le long terme', icon: Home,      color: '#a78bfa', tag: 'Immobilier' },
-      { href: '/dashboard/mortgage', type: 'mortgage',     label: 'Prêt Immobilier',   desc: 'Mensualités, TAEG, coût total et tableau d\'amortissement',  icon: Building2,  color: '#f472b6', tag: 'Immobilier' },
-      { href: '/dashboard/rental',   type: 'rental',       label: 'Rentabilité Locative', desc: 'Cashflow net, rendement brut/net et retour sur investissement', icon: Wallet,  color: '#2dd4bf', tag: 'Immobilier' },
+      { href: '/dashboard/buyrent',  type: 'buyrent',  label: 'Acheter vs Louer',     desc: 'Comparez les deux stratégies résidentielles sur le long terme',     icon: Home,      color: '#a78bfa', tag: 'Immobilier' },
+      { href: '/dashboard/mortgage', type: 'mortgage', label: 'Prêt immobilier',      desc: "Mensualités, TAEG, coût total et tableau d'amortissement",          icon: Building2, color: '#f472b6', tag: 'Immobilier' },
+      { href: '/dashboard/rental',   type: 'rental',   label: 'Rentabilité locative', desc: 'Cashflow net, rendement brut/net et retour sur investissement',     icon: Wallet,    color: '#2dd4bf', tag: 'Immobilier' },
     ],
   },
   {
     id: 'fiscalite',
     label: 'Fiscalité & Retraite',
     modules: [
-      { href: '/dashboard/tax',        type: 'tax',        label: 'Impôts IR',         desc: 'Calcul du barème IR 2025, TMI et optimisation fiscale',      icon: Receipt,    color: '#fb7185', tag: 'Fiscal' },
-      { href: '/dashboard/retirement', type: 'retirement', label: 'Retraite',           desc: 'Projetez votre pension et optimisez votre PER',              icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal' },
+      { href: '/dashboard/tax',              type: 'tax',              label: 'Impôts IR',          desc: 'Calcul du barème IR 2025, TMI et optimisation fiscale',                  icon: Receipt,    color: '#fb7185', tag: 'Fiscal' },
+      { href: '/dashboard/flat-tax',         type: 'flat-tax',         label: 'Flat Tax vs Barème', desc: 'Comparez PFU 30% et barème progressif sur vos revenus mobiliers',        icon: Receipt,    color: '#f97316', tag: 'Fiscal' },
+      { href: '/dashboard/envelope-compare', type: 'envelope-compare', label: 'PEA vs CTO vs AV',  desc: 'Simulez et comparez la fiscalité de chaque enveloppe sur 20 ans',        icon: Wallet,     color: '#c084fc', tag: 'Fiscal' },
+      { href: '/dashboard/retirement',       type: 'retirement',       label: 'Retraite',           desc: 'Projetez votre pension CNAV + Agirc-Arrco et optimisez votre PER',      icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal' },
+      { href: '/dashboard/succession',       type: 'succession',       label: 'Succession & Don.',  desc: 'Calculez droits de succession, abattements et donations optimales',      icon: Users,      color: '#60a5fa', tag: 'Fiscal' },
     ],
   },
   {
     id: 'budget',
-    label: 'Budget',
+    label: 'Budget & Épargne',
     modules: [
-      { href: '/dashboard/savings-rate', type: 'savings-rate', label: "Taux d'épargne", desc: 'Analysez votre capacité d\'épargne et votre trajectoire', icon: Percent,    color: '#818cf8', tag: 'Budget' },
-      { href: '/dashboard/budget',       type: 'budget',       label: 'Budget 50/30/20', desc: 'Appliquez la règle d\'or pour équilibrer vos dépenses',  icon: Calculator, color: '#a3e635', tag: 'Budget' },
+      { href: '/dashboard/savings-rate',    type: 'savings-rate',    label: "Taux d'épargne",  desc: "Analysez votre capacité d'épargne et votre trajectoire vers l'IF",   icon: Percent,    color: '#818cf8', tag: 'Budget' },
+      { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Appliquez la règle d'or pour équilibrer vos dépenses",               icon: Calculator, color: '#a3e635', tag: 'Budget' },
+      { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Calculez votre coussin de sécurité optimal selon votre situation',   icon: ShieldCheck, color: '#34d399', tag: 'Budget' },
+      { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Comparez offres de crédit, coût total et capacité de remboursement', icon: CreditCard, color: '#fb7185', tag: 'Budget' },
+      { href: '/dashboard/transactions',    type: 'transactions',    label: "Carnet d'ordres", desc: 'Gérez vos ordres boursiers, PRU et historique de transactions',       icon: History,    color: '#38bdf8', tag: 'Budget' },
     ],
   },
 ]
@@ -53,11 +61,11 @@ const CATEGORIES = [
 const ALL_MODULES = CATEGORIES.flatMap(c => c.modules)
 
 const FILTER_TABS = [
-  { id: 'all',        label: 'Tous',               count: ALL_MODULES.length },
-  { id: 'placements', label: 'Placements',          count: 3 },
-  { id: 'immobilier', label: 'Immobilier',          count: 3 },
-  { id: 'fiscalite',  label: 'Fiscalité & Retraite', count: 2 },
-  { id: 'budget',     label: 'Budget',              count: 2 },
+  { id: 'all',        label: 'Tous',                count: ALL_MODULES.length },
+  { id: 'placements', label: 'Placements',           count: 5 },
+  { id: 'immobilier', label: 'Immobilier',           count: 3 },
+  { id: 'fiscalite',  label: 'Fiscalité & Retraite', count: 5 },
+  { id: 'budget',     label: 'Budget & Épargne',     count: 5 },
 ]
 
 const GOLD = '#f1c086'
@@ -122,7 +130,7 @@ export default function SimulateursPage() {
               Simulateurs
             </h1>
             <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginTop: 4 }}>
-              {loaded ? `${sims.length} simulation${sims.length > 1 ? 's' : ''} sauvegardée${sims.length > 1 ? 's' : ''}` : '…'} · 10 modules disponibles
+              {loaded ? `${sims.length} simulation${sims.length > 1 ? 's' : ''} sauvegardée${sims.length > 1 ? 's' : ''}` : '…'} · {ALL_MODULES.length} modules disponibles
             </p>
           </div>
 

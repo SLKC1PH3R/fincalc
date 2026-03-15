@@ -334,7 +334,7 @@ function RentalPageInner() {
   })
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
@@ -591,12 +591,12 @@ function RentalPageInner() {
             </div>
 
             {mounted ? (
-              <ResponsiveContainer width="100%" height={400}>
+              <ResponsiveContainer width="100%" height={480}>
                 <Sankey
                   data={activeTabSankeyData}
-                  nodePadding={20}
+                  nodePadding={24}
                   nodeWidth={26}
-                  margin={{ top: 16, right: 160, bottom: 16, left: 120 }}
+                  margin={{ top: 20, right: 180, bottom: 20, left: 140 }}
                   iterations={64}
                   node={(props: Parameters<typeof CustomSankeyNode>[0]) => <CustomSankeyNode {...props} theme={theme} />}
                   link={(props: Parameters<typeof CustomSankeyLink>[0]) => <CustomSankeyLink {...props} />}
@@ -610,7 +610,7 @@ function RentalPageInner() {
                 </Sankey>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ height: 480, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Chargement du graphique…</span>
               </div>
             )}

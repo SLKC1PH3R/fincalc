@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { calcSuccession, type SuccessionInputs, type SuccessionRelationship } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { Users, Info, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { SaveSimulation } from '@/components/SaveSimulation'
 
 const GOLD = '#f1c086'
 
@@ -37,14 +38,22 @@ export default function SuccessionPage() {
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Transmission de patrimoine</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          Succession & Donation
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-          Calculez les Droits de Mutation à Titre Gratuit (DMTG) selon le lien de parenté, les abattements applicables et les donations précédentes sur 15 ans.
-        </p>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Transmission de patrimoine</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            Succession &amp; Donation
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Calculez les Droits de Mutation à Titre Gratuit (DMTG) selon le lien de parenté, les abattements applicables et les donations précédentes sur 15 ans.
+          </p>
+        </div>
+        <SaveSimulation
+          type="succession"
+          name={`${isDonation ? 'Donation' : 'Succession'} ${fmt(amount)} — ${relInfo.label}`}
+          inputs={{ amount, relationship, donationsLast15Years, isDonation } as unknown as Record<string, unknown>}
+          results={{ dmtg: res.dmtg, netTransmitted: res.netTransmitted, taxableBase: res.taxableBase, effectiveRate: res.effectiveRate } as unknown as Record<string, unknown>}
+        />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

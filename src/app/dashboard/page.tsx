@@ -41,9 +41,12 @@ function getSimPreview(type: string, results: Record<string, unknown>): string |
     case 'flat-tax':     return r.flatTax != null ? fmt(Number(r.flatTax)) : null
     case 'envelope-compare': return typeof r.bestEnvelope === 'string' ? r.bestEnvelope : null
     case 'retirement':   return r.monthlyPension != null ? `${fmt(Number(r.monthlyPension))}/mois` : null
-    case 'savings-rate': return r.savingsRate != null ? `${Number(r.savingsRate).toFixed(1)}%` : null
-    case 'budget':       return r.needsMax != null ? `${fmt(Number(r.needsMax))} besoins` : null
-    default:             return null
+    case 'savings-rate':     return r.savingsRate != null ? `${Number(r.savingsRate).toFixed(1)}%` : null
+    case 'budget':           return r.needsMax != null ? `${fmt(Number(r.needsMax))} besoins` : null
+    case 'emergency-fund':   return r.targetAmount != null ? `Objectif ${fmt(Number(r.targetAmount))}` : null
+    case 'consumer-credit':  return r.monthlyPayment != null ? `${fmt(Number(r.monthlyPayment))}/mois` : null
+    case 'succession':       return r.dmtg != null ? `${fmt(Number(r.dmtg))} DMTG` : null
+    default:                 return null
   }
 }
 
@@ -79,8 +82,11 @@ const TYPE_META: Record<string, { label: string; color: string; icon: React.Comp
   'flat-tax':        { label: 'Flat Tax',    color: '#38bdf8', icon: Receipt },
   'envelope-compare':{ label: 'PEA/CTO/AV', color: '#818cf8', icon: Wallet },
   retirement:        { label: 'Retraite',    color: '#f1c086', icon: PiggyBank },
-  'savings-rate':    { label: 'Taux épargne',color: '#818cf8', icon: Percent },
-  budget:            { label: 'Budget',      color: '#a3e635', icon: Calculator },
+  'savings-rate':    { label: 'Taux épargne',   color: '#818cf8', icon: Percent },
+  budget:            { label: 'Budget',          color: '#a3e635', icon: Calculator },
+  'emergency-fund':  { label: 'Précaution',      color: '#34d399', icon: Shield },
+  'consumer-credit': { label: 'Crédit conso',    color: '#fb7185', icon: Calculator },
+  succession:        { label: 'Succession',       color: '#60a5fa', icon: PiggyBank },
 }
 
 // ── Score info helper ──────────────────────────────────────────────────────────
@@ -122,6 +128,8 @@ function timeAgo(dateStr: string) {
 
 interface PatrimoineKPI { net: number; brut: number; dettes: number }
 
+interface MarketIndex { label: string; symbol: string; price: number; changePct: number; isRate?: boolean }
+
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function HomePage() {
   const { data: session } = useSession()
@@ -131,6 +139,8 @@ export default function HomePage() {
   const [recentOpen, setRecentOpen] = useState(true)
   const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[] } | null>(null)
   const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
+  const [indices, setIndices] = useState<MarketIndex[]>([])
+  const [onboardingDismissed, setOnboardingDismissed] = useState(true) // default true to avoid flash
 
   // Load simulations + envelopes
   useEffect(() => {
@@ -152,6 +162,23 @@ export default function HomePage() {
         const si = scoreInfo(d.score)
         setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [] })
       })
+      .catch(() => {})
+  }, [])
+
+  // Onboarding dismissed state
+  useEffect(() => {
+    setOnboardingDismissed(localStorage.getItem('onboarding_dismissed') === '1')
+  }, [])
+
+  // Load market indices
+  useEffect(() => {
+    fetch('/api/portfolio/prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ positions: [] }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.indices) setIndices(d.indices) })
       .catch(() => {})
   }, [])
 
@@ -291,6 +318,33 @@ export default function HomePage() {
               </div>
             </Link>
           </div>
+
+          {/* Market indices strip */}
+          {indices.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+              {indices.map(idx => {
+                const pos = idx.changePct >= 0
+                const color = idx.isRate ? '#60a5fa' : pos ? '#34d399' : '#f87171'
+                return (
+                  <div key={idx.symbol} style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
+                    borderRadius: 10, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                    flexShrink: 0,
+                  }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontWeight: 500 }}>{idx.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', fontVariantNumeric: 'tabular-nums' }}>
+                      {idx.isRate ? `${idx.price}%` : idx.price >= 10000 ? `${(idx.price / 1000).toFixed(1)}k` : idx.price >= 1000 ? idx.price.toFixed(0) : idx.price.toFixed(2)}
+                    </span>
+                    {!idx.isRate && (
+                      <span style={{ fontSize: 10, fontWeight: 600, color, background: color + '18', borderRadius: 5, padding: '1px 5px' }}>
+                        {pos ? '+' : ''}{idx.changePct.toFixed(2)}%
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           {/* Score Patrimonial widget */}
           {scoreWidget && (
@@ -441,6 +495,39 @@ export default function HomePage() {
 
         {/* RIGHT: Enveloppes + Accès rapides */}
         <div className="p-5 xl:p-6 space-y-6">
+
+          {/* Onboarding guide */}
+          {loaded && totalSims === 0 && nbEnvelopes === 0 && !onboardingDismissed && (
+            <div style={{ background: `linear-gradient(135deg, ${GOLD}0a, rgba(129,140,248,0.06))`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 16, padding: '20px 22px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, marginBottom: 4 }}>Bienvenue sur FinCalc</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+                    Commencez par 3 étapes simples pour tirer le meilleur de l&apos;app.
+                  </p>
+                </div>
+                <button
+                  onClick={() => { localStorage.setItem('onboarding_dismissed', '1'); setOnboardingDismissed(true) }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 4, flexShrink: 0 }}
+                >×</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { step: 1, label: 'Ajouter votre premier livret ou PEA', href: '/dashboard/patrimoine', cta: 'Gérer le patrimoine', color: '#34d399' },
+                  { step: 2, label: 'Lancer une simulation FI/RE ou intérêts composés', href: '/dashboard/simulateurs', cta: 'Voir les simulateurs', color: '#818cf8' },
+                  { step: 3, label: 'Calculer votre score patrimonial', href: '/dashboard/score', cta: 'Voir le score', color: GOLD },
+                ].map(({ step, label, href, cta, color }) => (
+                  <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: color + '22', border: `1px solid ${color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color }}>{step}</span>
+                    </div>
+                    <span style={{ flex: 1, fontSize: 12, color: 'var(--text-muted-c)' }}>{label}</span>
+                    <a href={href} style={{ fontSize: 11, fontWeight: 600, color, textDecoration: 'none', whiteSpace: 'nowrap', background: color + '15', border: `1px solid ${color}30`, borderRadius: 6, padding: '3px 8px' }}>{cta}</a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Enveloppes patrimoine */}
           {loaded && nbEnvelopes > 0 && (

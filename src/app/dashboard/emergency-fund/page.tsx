@@ -8,6 +8,7 @@ import { calcEmergencyFund, type EmergencyFundInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { ShieldCheck, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
+import { SaveSimulation } from '@/components/SaveSimulation'
 
 const GOLD = '#f1c086'
 
@@ -34,14 +35,22 @@ export default function EmergencyFundPage() {
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Gestion budgétaire</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          Épargne de précaution
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-          Calculez le montant idéal à garder en liquidités selon vos charges, votre stabilité professionnelle et votre situation familiale.
-        </p>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Gestion budgétaire</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            Épargne de précaution
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Calculez le montant idéal à garder en liquidités selon vos charges, votre stabilité professionnelle et votre situation familiale.
+          </p>
+        </div>
+        <SaveSimulation
+          type="emergency-fund"
+          name={`Précaution — ${fmt(res.targetAmount)} (${res.targetMonths} mois)`}
+          inputs={{ monthlyExpenses, employmentType, familySituation, currentSavings, monthlySavings } as unknown as Record<string, unknown>}
+          results={{ targetAmount: res.targetAmount, gap: res.gap, isReached: res.isReached, coverageRatio: res.coverageRatio, monthsToReach: res.monthsToReach, targetMonths: res.targetMonths } as unknown as Record<string, unknown>}
+        />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

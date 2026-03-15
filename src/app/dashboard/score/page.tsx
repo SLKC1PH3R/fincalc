@@ -150,7 +150,7 @@ export default function ScorePage() {
   const sl = scoreLabel(score)
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 32 }}>

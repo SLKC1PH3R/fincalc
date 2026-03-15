@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 import { PanelLeftOpen, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
+import { NotificationCenter } from './NotificationCenter'
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const { collapsed, toggle } = useSidebar()
@@ -28,6 +29,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>FinCalc</span>
           </Link>
         </div>
+        <NotificationCenter />
+      </div>
+
+      {/* Desktop notification bell — fixed top-right */}
+      <div className="hidden md:block" style={{ position: 'fixed', top: 14, right: 18, zIndex: 50 }}>
+        <NotificationCenter />
       </div>
 
       {/* Main content */}

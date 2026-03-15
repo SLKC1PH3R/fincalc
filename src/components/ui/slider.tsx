@@ -38,8 +38,8 @@ const Slider = React.forwardRef<
             left: `clamp(20px, ${pct}%, calc(100% - 20px))`,
             transform: 'translateX(-50%)',
             background: '#1a1a1a',
-            border: '1px solid rgba(241,192,134,0.35)',
-            color: '#f1c086',
+            border: '1px solid rgba(249,115,22,0.35)',
+            color: '#f97316',
             boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
           }}
         >

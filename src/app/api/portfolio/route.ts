@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { isDemoUser } from '@/lib/demo'
+
+const DEMO_RO = () => NextResponse.json({ error: 'Compte démo — modifications non autorisées.' }, { status: 403 })
 
 // GET — liste toutes les positions de l'utilisateur
 export async function GET() {
@@ -20,9 +23,10 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+  if (isDemoUser(session.user.email)) return DEMO_RO()
 
   const body = await req.json()
-  const { assetType, symbol, name, quantity, pru, currency, envelopeId } = body
+  const { assetType, symbol, name, isin, quantity, pru, currency, envelopeId } = body
 
   if (!assetType || !symbol || !name || quantity == null || pru == null) {
     return NextResponse.json({ error: 'Données manquantes' }, { status: 400 })
@@ -50,6 +54,7 @@ export async function POST(req: NextRequest) {
       assetType,
       symbol: symbol.trim().toUpperCase(),
       name: name.trim(),
+      isin: isin ? isin.trim().toUpperCase() : null,
       quantity: Number(quantity),
       pru: Number(pru),
       currency: currency ?? 'EUR',

@@ -318,6 +318,7 @@ export interface RentalResults {
   annualCharges: number
   annualVacancyLoss: number
   netOperatingIncome: number
+  annualWorksDeduction: number  // Amortissement travaux annuel (works/10)
   taxableIncome: number
   tax: number
   roi: number
@@ -344,21 +345,24 @@ export function calcRental(i: RentalInputs): RentalResults {
   const annualLoan = monthlyLoan * 12
   const annualInterests = i.loanAmount > 0 ? i.loanAmount * (i.loanRate / 100) : 0
 
+  // Amortissement travaux : 10 ans (déductible en régime réel nu et LMNP)
+  const annualWorksDeduction = i.works > 0 ? i.works / 10 : 0
+
   // Tax by regime
   let taxableIncome = 0
   let tax = 0
   if (i.regime === 'nu') {
-    // Régime réel : déduction intérêts + charges
-    taxableIncome = Math.max(0, netOperatingIncome - annualInterests)
+    // Régime réel : déduction intérêts + charges + amortissement travaux
+    taxableIncome = Math.max(0, netOperatingIncome - annualInterests - annualWorksDeduction)
     tax = taxableIncome * (i.marginalRate / 100) * 1.172 // IR + PS 17.2%
   } else if (i.regime === 'meuble') {
-    // LMNP réel : abattement 50% micro-BIC ou réel
+    // Micro-BIC : abattement 50% forfaitaire (travaux non déductibles directement)
     taxableIncome = Math.max(0, effectiveRent * 0.5)
     tax = taxableIncome * (i.marginalRate / 100)
   } else {
-    // LMNP : amortissement ~ 0 fiscal pendant 10-15 ans
-    taxableIncome = 0
-    tax = 0
+    // LMNP réel : amortissement du bien + travaux → revenu fiscal souvent nul
+    taxableIncome = Math.max(0, netOperatingIncome - annualInterests - annualWorksDeduction)
+    tax = Math.max(0, taxableIncome * (i.marginalRate / 100))
   }
 
   const cashflowAnnual = netOperatingIncome - annualLoan - tax
@@ -390,7 +394,7 @@ export function calcRental(i: RentalInputs): RentalResults {
     : score === 'moyen' ? `Cashflow légèrement négatif (${fmt(cashflowMonthly)}/mois). Effort d'épargne limité.`
     : `Cashflow très négatif (${fmt(cashflowMonthly)}/mois). Revoir le montage.`
 
-  return { totalInvestment, grossYield, netYield, cashflowMonthly, cashflowAnnual, monthlyLoan, annualRent, annualCharges, annualVacancyLoss: vacancyLoss, netOperatingIncome, taxableIncome, tax, roi, breakevenYears, analysis: { score, message, tips } }
+  return { totalInvestment, grossYield, netYield, cashflowMonthly, cashflowAnnual, monthlyLoan, annualRent, annualCharges, annualVacancyLoss: vacancyLoss, netOperatingIncome, annualWorksDeduction, taxableIncome, tax, roi, breakevenYears, analysis: { score, message, tips } }
 }
 
 // ─── DCA ─────────────────────────────────────────────────────────────────────
@@ -401,6 +405,7 @@ export interface DCAInputs {
   targetRate: number     // Rendement annuel moyen attendu
   volatility: number     // Volatilité annuelle simulée %
   initialPrice: number   // Prix unitaire initial (ex: ETF)
+  startingCapital?: number  // Capital déjà investi (optionnel)
 }
 
 export interface DCAResults {
@@ -419,8 +424,9 @@ export function calcDCA(i: DCAInputs): DCAResults {
   const monthlyRate = i.targetRate / 100 / 12
   const monthlyVol = i.volatility / 100 / Math.sqrt(12)
 
-  let totalInvested = 0
-  let units = 0
+  const initCapital = i.startingCapital ?? 0
+  let totalInvested = initCapital
+  let units = initCapital > 0 && i.initialPrice > 0 ? initCapital / i.initialPrice : 0
   let price = i.initialPrice
   const chartData = []
 
@@ -457,91 +463,159 @@ export function calcDCA(i: DCAInputs): DCAResults {
   return { totalInvested, estimatedValue, avgCostBasis, units, gain, gainPct, chartData, vsLumpSum }
 }
 
-// ─── Retraite ────────────────────────────────────────────────────────────────
+// ─── Retraite (formules officielles 2026) ────────────────────────────────────
+
+// Constantes officielles 2026
+const PASS_2025          = 47_100   // Plafond Annuel Sécurité Sociale 2025
+const PASS_GROWTH        = 0.02     // Revalorisation annuelle estimée du PASS
+const QUARTERS_REQUIS    = 172      // 43 ans — nés après 1973
+const AGE_LEGAL          = 64       // Âge légal de départ depuis réforme 2023
+const AGE_AUTO_PLEIN     = 67       // Taux plein automatique
+const POINT_VALEUR_2025  = 1.4386   // Valeur de service point Agirc-Arrco (nov 2024)
+const POINT_VALEUR_GROWTH = 0.015   // Revalorisation annuelle estimée
+const POINT_ACHAT_2025   = 19.3768  // Valeur d'acquisition du point Agirc-Arrco 2025
+const TAUX_ARCO_T1       = 0.062    // Part répartition T1 (≤ PASS) pour acquisition de points
+const TAUX_ARCO_T2       = 0.170    // Part répartition T2 (> PASS)
 
 export interface RetirementInputs {
-  age: number            // Âge actuel
-  retirementAge: number  // Âge de départ
-  salary: number         // Salaire brut annuel actuel
-  quarters: number       // Trimestres validés
-  regime: 'prive' | 'fonctionnaire'
-  perAnnual: number      // Versements PER annuels
-  perRate: number        // Rendement PER %
-  savingsRate: number    // Taux épargne complémentaire %
-  investRate: number     // Rendement épargne %
+  age: number           // Âge actuel
+  quarters: number      // Trimestres validés à ce jour
+  pointsArrco: number   // Points Agirc-Arrco accumulés à ce jour
+  salary: number        // Salaire brut annuel actuel (€)
+  salaryGrowth: number  // Progression salariale estimée (%/an)
+  departureAge: number  // Âge de départ pour le scénario principal
+}
+
+export interface RetirementScenario {
+  age: number
+  trimestres: number
+  tauxPlein: boolean
+  autoTauxPlein: boolean
+  trimDecote: number    // Nb trimestres de décote appliqués
+  trimSurcote: number   // Nb trimestres de surcote accumulés
+  decotePct: number     // Décote en % (ex: 0.0125 = 1,25%)
+  surcotePct: number    // Surcote en % cumulée
+  tauxFinal: number     // Taux appliqué au SAM (entre ~0.25 et 0.75+)
+  sam: number           // Salaire Annuel Moyen nominal à cet âge
+  prorata: number       // min(trimestres, 172) / 172
+  pensionBase: number   // Retraite de base brute mensuelle
+  totalPoints: number   // Points Agirc-Arrco à cet âge
+  pensionArrco: number  // Retraite Agirc-Arrco brute mensuelle
+  pensionBrute: number  // Total brut mensuel
+  pensionNette: number  // Net après prélèvements (~84%)
+  replacementRate: number // Taux de remplacement vs salaire net actuel
 }
 
 export interface RetirementResults {
-  yearsToRetirement: number
-  quartersNeeded: number
-  quartersMissing: number
-  baseMonthly: number       // Retraite de base estimée
-  complementMonthly: number // Retraite complémentaire (Agirc/Arrco)
-  totalMonthly: number      // Total brut
-  netMonthly: number        // Net après prélèvements
-  replacementRate: number   // Taux de remplacement
-  perCapital: number        // Capital PER à la retraite
-  perMonthly: number        // Rente PER mensuelle
-  additionalSavings: number // Épargne complémentaire accumulée
-  totalIncome: number       // Revenu mensuel total
-  gap: number               // Écart vs salaire actuel net
+  scenarios: RetirementScenario[]
+  main: RetirementScenario
+  annualPtsArrco: number   // Points Agirc-Arrco gagnés par an (au salaire actuel)
+  ageQuotaPlein: number    // Âge où les 172 trimestres sont atteints
   analysis: { score: 'excellent' | 'bon' | 'moyen' | 'faible'; message: string; tips: string[] }
 }
 
 export function calcRetirement(i: RetirementInputs): RetirementResults {
-  const yearsToRetirement = i.retirementAge - i.age
-  const quartersNeeded = i.regime === 'prive' ? 172 : 167 // 43 ans / 41.75 ans
-  const quartersMissing = Math.max(0, quartersNeeded - i.quarters - yearsToRetirement * 4)
+  const pass0 = PASS_2025
+  const pointVal0 = POINT_VALEUR_2025
 
-  // Retraite de base (régime général) : SAM × taux × (trimestres / quartersNeeded)
-  const sam = i.salary * 0.75 // Salaire annuel moyen approx
-  const rate = quartersMissing === 0 ? 0.5 : 0.5 * (1 - quartersMissing * 0.00625)
-  const baseAnnual = sam * Math.max(0.25, rate)
-  const baseMonthly = baseAnnual / 12
+  // Âge d'obtention du taux plein (quota trimestres)
+  const trimManquants = Math.max(0, QUARTERS_REQUIS - i.quarters)
+  const ageQuotaPlein = i.age + trimManquants / 4
 
-  // Retraite complémentaire (Agirc-Arrco) : approximation 60% de la base
-  const complementMonthly = i.regime === 'prive' ? baseMonthly * 0.6 : baseMonthly * 0.4
+  // Points Agirc-Arrco accumulés par an au salaire actuel
+  const annualPtsArrco =
+    Math.min(i.salary, pass0) * TAUX_ARCO_T1 / POINT_ACHAT_2025 +
+    Math.max(0, i.salary - pass0) * TAUX_ARCO_T2 / POINT_ACHAT_2025
 
-  const totalMonthly = baseMonthly + complementMonthly
-  const netMonthly = totalMonthly * 0.84 // -16% prélèvements retraités
-  const netSalary = i.salary * 0.78 / 12  // Salaire net mensuel approx
-  const replacementRate = (netMonthly / netSalary) * 100
+  const scenarios: RetirementScenario[] = []
 
-  // PER
-  const perCapital = i.perAnnual > 0
-    ? i.perAnnual * ((Math.pow(1 + i.perRate / 100, yearsToRetirement) - 1) / (i.perRate / 100))
-    : 0
-  const perMonthly = perCapital > 0 ? perCapital / (20 * 12) : 0 // Rente sur 20 ans
+  for (let depAge = 62; depAge <= 70; depAge++) {
+    const years = depAge - i.age
+    if (years < 0) continue
 
-  // Épargne complémentaire
-  const annualSavings = (i.salary * 0.78) * (i.savingsRate / 100)
-  const additionalSavings = annualSavings > 0
-    ? annualSavings * ((Math.pow(1 + i.investRate / 100, yearsToRetirement) - 1) / (i.investRate / 100))
-    : 0
-  const addMonthly = additionalSavings / (20 * 12)
+    // Projections nominales à la date de départ
+    const salary_dep = i.salary * Math.pow(1 + i.salaryGrowth / 100, years)
+    const pass_dep   = pass0 * Math.pow(1 + PASS_GROWTH, years)
+    const pointVal_dep = pointVal0 * Math.pow(1 + POINT_VALEUR_GROWTH, years)
 
-  const totalIncome = netMonthly + perMonthly + addMonthly
-  const gap = netSalary - totalIncome
+    const trimestres   = i.quarters + years * 4
+    const tauxPleinQuota = trimestres >= QUARTERS_REQUIS
+    const autoTauxPlein  = depAge >= AGE_AUTO_PLEIN
+    const tauxPlein      = tauxPleinQuota || autoTauxPlein
+
+    // Décote (si ni quota ni auto-plein)
+    let trimDecote = 0
+    if (!tauxPlein) {
+      const trimManqQuota = Math.max(0, QUARTERS_REQUIS - trimestres)
+      const trimAvant67   = Math.max(0, (AGE_AUTO_PLEIN - depAge) * 4)
+      trimDecote = Math.min(20, Math.min(trimManqQuota, trimAvant67))
+    }
+    const decotePct = trimDecote * 0.0125
+
+    // Surcote (trimestres travaillés après que les 2 conditions sont simultanément remplies)
+    let trimSurcote = 0
+    if (depAge > AGE_LEGAL) {
+      const ageSurcoteStart = Math.max(AGE_LEGAL, ageQuotaPlein)
+      trimSurcote = Math.max(0, Math.floor((depAge - ageSurcoteStart) * 4))
+    }
+    const surcotePct = trimSurcote * 0.0125
+
+    // Taux appliqué (décote ou surcote, jamais les deux)
+    const tauxFinal = tauxPlein ? 0.50 + surcotePct : Math.max(0.25, 0.50 - decotePct)
+
+    // SAM : min(salaire projeté, PASS projeté) — approx 25 meilleures années
+    const sam = Math.min(salary_dep, pass_dep)
+
+    // Prorata trimestres de base
+    const prorata = Math.min(trimestres, QUARTERS_REQUIS) / QUARTERS_REQUIS
+
+    // Pension de base mensuelle brute (€ nominaux futurs)
+    const pensionBase = (sam / 12) * tauxFinal * prorata
+
+    // Points Agirc-Arrco à la date de départ
+    const totalPoints = i.pointsArrco + annualPtsArrco * years
+    const pensionArrco = (totalPoints * pointVal_dep) / 12
+
+    const pensionBrute = pensionBase + pensionArrco
+    const pensionNette = pensionBrute * 0.84  // ~16% prélèvements sociaux retraités
+
+    // Taux de remplacement vs salaire net actuel
+    const salNetActuel = i.salary * 0.78 / 12
+    const replacementRate = salNetActuel > 0 ? (pensionNette / salNetActuel) * 100 : 0
+
+    scenarios.push({
+      age: depAge, trimestres, tauxPlein, autoTauxPlein,
+      trimDecote, trimSurcote, decotePct, surcotePct,
+      tauxFinal, sam, prorata,
+      pensionBase, totalPoints, pensionArrco,
+      pensionBrute, pensionNette, replacementRate,
+    })
+  }
+
+  const main = scenarios.find(s => s.age === i.departureAge) ?? scenarios.find(s => s.age === AGE_LEGAL) ?? scenarios[0]!
 
   const score: RetirementResults['analysis']['score'] =
-    replacementRate >= 75 ? 'excellent'
-    : replacementRate >= 60 ? 'bon'
-    : replacementRate >= 45 ? 'moyen'
+    main.replacementRate >= 75 ? 'excellent'
+    : main.replacementRate >= 60 ? 'bon'
+    : main.replacementRate >= 45 ? 'moyen'
     : 'faible'
 
   const tips: string[] = []
-  if (quartersMissing > 0) tips.push(`Il vous manque ~${quartersMissing} trimestres pour le taux plein. La décote est de ${(quartersMissing * 0.625).toFixed(1)}%.`)
-  if (i.perAnnual === 0) tips.push('Aucun versement PER : déductible du revenu imposable, le PER est l\'outil retraite le plus efficace fiscalement.')
-  if (replacementRate < 60) tips.push('Taux de remplacement < 60% : constituez une épargne complémentaire via PEA ou assurance-vie pour combler l\'écart.')
-  if (yearsToRetirement > 20 && i.savingsRate === 0) tips.push('Avec ' + yearsToRetirement + ' ans devant vous, même 5% d\'épargne mensuelle produit un effet composé considérable.')
-  if (tips.length === 0) tips.push('Bonne préparation retraite. Vérifiez votre relevé de carrière sur Info-Retraite.fr chaque année.')
+  if (!main.tauxPlein && main.trimDecote > 0)
+    tips.push(`Décote de ${(main.decotePct * 100).toFixed(2)}% (${main.trimDecote} trimestres manquants). Cotiser jusqu'à ${Math.ceil(ageQuotaPlein)} ans suffit pour l'éviter.`)
+  if (main.trimSurcote > 0)
+    tips.push(`Surcote de ${(main.surcotePct * 100).toFixed(2)}% grâce à ${main.trimSurcote} trimestres supplémentaires. Chaque trimestre de plus vaut +1,25% de pension à vie.`)
+  if (!main.tauxPlein && main.age < AGE_AUTO_PLEIN)
+    tips.push(`Partir à ${AGE_AUTO_PLEIN} ans vous garantit le taux plein automatique sans condition de trimestres.`)
+  if (tips.length === 0)
+    tips.push('Vérifiez votre relevé de carrière sur info-retraite.fr chaque année pour détecter les trimestres manquants tôt.')
 
-  const message = score === 'excellent' ? `Excellent taux de remplacement (${replacementRate.toFixed(0)}%) — votre retraite sera confortable.`
-    : score === 'bon' ? `Taux de remplacement correct (${replacementRate.toFixed(0)}%). Quelques ajustements pour optimiser.`
-    : score === 'moyen' ? `Taux de remplacement de ${replacementRate.toFixed(0)}% — baisse de niveau de vie significative sans épargne complémentaire.`
-    : `Taux de remplacement faible (${replacementRate.toFixed(0)}%) — action urgente recommandée.`
+  const message = score === 'excellent' ? `Excellent taux de remplacement (${main.replacementRate.toFixed(0)}%) — votre retraite sera confortable.`
+    : score === 'bon' ? `Taux de remplacement correct (${main.replacementRate.toFixed(0)}%). Quelques ajustements pour optimiser.`
+    : score === 'moyen' ? `Taux de remplacement de ${main.replacementRate.toFixed(0)}% — baisse de niveau de vie notable sans épargne complémentaire.`
+    : `Taux de remplacement faible (${main.replacementRate.toFixed(0)}%) — constituez une épargne complémentaire dès maintenant.`
 
-  return { yearsToRetirement, quartersNeeded, quartersMissing, baseMonthly, complementMonthly, totalMonthly, netMonthly, replacementRate, perCapital, perMonthly, additionalSavings, totalIncome, gap, analysis: { score, message, tips } }
+  return { scenarios, main, annualPtsArrco, ageQuotaPlein, analysis: { score, message, tips } }
 }
 
 // ─── Budget 50/30/20 ─────────────────────────────────────────────────────────
@@ -618,4 +692,413 @@ export function calcBudget(i: BudgetInputs): BudgetResults {
     : 'Budget très déséquilibré — action immédiate recommandée sur les postes de dépenses.'
 
   return { needs, needsPct, needsTarget: i.netIncome * 0.5, wants, wantsPct, wantsTarget: i.netIncome * 0.3, savingsTotal, savingsPct, savingsTarget: i.netIncome * 0.2, balance, categories, analysis: { score, message, tips } }
+}
+
+// ─── Flat Tax vs Barème IR ────────────────────────────────────────────────
+
+export interface FlatTaxInputs {
+  amount: number                              // Revenus du capital bruts
+  incomeType: 'dividends' | 'capital_gains' | 'interest'
+  tmi: number                                 // 0 | 11 | 30 | 41 | 45
+  revenuTravail: number                       // Revenus d'activité annuels (pour tranches)
+  parts: number
+  isCouple: boolean
+}
+
+export interface FlatTaxRegime {
+  abattement: number
+  csgDed: number
+  baseIR: number
+  ir: number
+  ps: number
+  total: number
+  effectiveRate: number
+}
+
+export interface FlatTaxResults {
+  flatTax: FlatTaxRegime
+  bareme: FlatTaxRegime
+  recommended: 'flat_tax' | 'bareme'
+  saving: number
+  chartData: { amount: number; flatTax: number; bareme: number }[]
+  optimalRegime: 'flat_tax' | 'bareme'
+}
+
+const IR_BRACKETS = [
+  { min: 0,       max: 11294,   rate: 0 },
+  { min: 11294,   max: 28797,   rate: 0.11 },
+  { min: 28797,   max: 82341,   rate: 0.30 },
+  { min: 82341,   max: 177106,  rate: 0.41 },
+  { min: 177106,  max: Infinity, rate: 0.45 },
+]
+
+function calcIRMarginal(base: number, parts: number): number {
+  const perPart = base / parts
+  let ir = 0
+  for (const b of IR_BRACKETS) {
+    const taxable = Math.max(0, Math.min(perPart, b.max) - b.min)
+    ir += taxable * b.rate
+  }
+  return ir * parts
+}
+
+export function calcFlatTax(i: FlatTaxInputs): FlatTaxResults {
+  const PS = 0.172
+
+  // ── Flat Tax (PFU 30%)
+  const ftPS = i.amount * PS
+  const ftIR = i.amount * 0.128
+  const ftTotal = ftIR + ftPS
+  const flatTax: FlatTaxRegime = {
+    abattement: 0, csgDed: 0, baseIR: i.amount,
+    ir: ftIR, ps: ftPS, total: ftTotal,
+    effectiveRate: i.amount > 0 ? ftTotal / i.amount * 100 : 0,
+  }
+
+  // ── Barème réel
+  const abattement = i.incomeType === 'dividends' ? i.amount * 0.40 : 0
+  const baseAfterAbt = i.amount - abattement
+  const csgDed = baseAfterAbt * 0.068  // CSG déductible uniquement au barème
+  const baseIR = Math.max(0, baseAfterAbt - csgDed)
+  const totalBase = i.revenuTravail + baseIR
+  const irTotal = calcIRMarginal(totalBase, i.parts)
+  const irWork  = calcIRMarginal(i.revenuTravail, i.parts)
+  const irCapital = Math.max(0, irTotal - irWork)
+  const bmPS = i.amount * PS
+  const bmTotal = irCapital + bmPS
+  const bareme: FlatTaxRegime = {
+    abattement, csgDed, baseIR,
+    ir: irCapital, ps: bmPS, total: bmTotal,
+    effectiveRate: i.amount > 0 ? bmTotal / i.amount * 100 : 0,
+  }
+
+  const recommended = flatTax.total <= bareme.total ? 'flat_tax' : 'bareme'
+  const saving = Math.abs(flatTax.total - bareme.total)
+
+  // Chart: flat tax vs barème for 10 amount steps 0→max or 0→100k
+  const maxChart = Math.max(i.amount, 10000)
+  const chartData = Array.from({ length: 11 }, (_, k) => {
+    const a = (k / 10) * maxChart
+    const ft = a * 0.30
+    // simplified barème curve at current params
+    const abt = i.incomeType === 'dividends' ? a * 0.40 : 0
+    const base = (a - abt) * (1 - 0.068)
+    const tot = i.revenuTravail + base
+    const irT = calcIRMarginal(tot, i.parts)
+    const irW = calcIRMarginal(i.revenuTravail, i.parts)
+    const bm = Math.max(0, irT - irW) + a * PS
+    return { amount: Math.round(a), flatTax: Math.round(ft), bareme: Math.round(bm) }
+  })
+
+  return { flatTax, bareme, recommended, saving, chartData, optimalRegime: recommended }
+}
+
+// ─── PEA vs CTO vs Assurance-vie ─────────────────────────────────────────
+
+export interface EnvelopeCompareInputs {
+  capital: number
+  monthly: number
+  rateGross: number      // % annuel brut
+  years: number
+  tmi: number            // 0 | 11 | 30 | 41 | 45
+  isCouple: boolean
+  peaOpenYears: number   // années déjà ouvertes (pour calculer la maturité fiscale PEA)
+}
+
+export interface EnvelopeResult {
+  grossValue: number
+  totalInvested: number
+  grossGain: number
+  taxPS: number
+  taxIR: number
+  taxTotal: number
+  netValue: number
+  netGain: number
+  netAnnualRate: number
+}
+
+export interface EnvelopeCompareResults {
+  pea: EnvelopeResult
+  cto: EnvelopeResult
+  av: EnvelopeResult
+  best: 'pea' | 'cto' | 'av'
+  chartData: { year: number; pea: number; cto: number; av: number }[]
+}
+
+function growEnvelope(capital: number, monthly: number, annualRate: number, years: number): { value: number; invested: number } {
+  const monthlyRate = annualRate / 100 / 12
+  let value = capital
+  for (let m = 0; m < years * 12; m++) {
+    value = value * (1 + monthlyRate) + monthly
+  }
+  return { value: Math.round(value), invested: Math.round(capital + monthly * years * 12) }
+}
+
+function calcOneEnvelope(i: EnvelopeCompareInputs, years: number, type: 'pea' | 'cto' | 'av'): EnvelopeResult {
+  const PS = 0.172
+  const avAbattement = i.isCouple ? 9200 : 4600
+  const { value: grossValue, invested: totalInvested } = growEnvelope(i.capital, i.monthly, i.rateGross, years)
+  const grossGain = Math.max(0, grossValue - totalInvested)
+
+  let taxIR = 0, taxPS = 0
+  if (type === 'pea') {
+    const mature = (i.peaOpenYears + years) >= 5
+    taxPS = mature ? grossGain * PS : grossGain * 0.30
+    taxIR = 0
+  } else if (type === 'cto') {
+    taxPS = grossGain * PS
+    taxIR = grossGain * 0.128
+  } else {
+    // AV ≥ 8 ans hypothèse (abattement annuel)
+    taxPS = grossGain * PS
+    taxIR = Math.max(0, grossGain - avAbattement) * 0.075
+  }
+
+  const taxTotal = taxIR + taxPS
+  const netValue = grossValue - taxTotal
+  const netGain = netValue - totalInvested
+  const netAnnualRate = totalInvested > 0 && years > 0 ? (Math.pow(netValue / totalInvested, 1 / years) - 1) * 100 : 0
+  return { grossValue, totalInvested, grossGain, taxPS, taxIR, taxTotal, netValue, netGain, netAnnualRate }
+}
+
+export function calcEnvelopeCompare(i: EnvelopeCompareInputs): EnvelopeCompareResults {
+  const pea = calcOneEnvelope(i, i.years, 'pea')
+  const cto = calcOneEnvelope(i, i.years, 'cto')
+  const av  = calcOneEnvelope(i, i.years, 'av')
+
+  const best: 'pea' | 'cto' | 'av' = pea.netValue >= cto.netValue && pea.netValue >= av.netValue
+    ? 'pea' : av.netValue >= cto.netValue ? 'av' : 'cto'
+
+  const maxY = Math.min(i.years, 40)
+  const step = Math.max(1, Math.floor(maxY / 20))
+  const chartData: { year: number; pea: number; cto: number; av: number }[] = [
+    { year: 0, pea: i.capital, cto: i.capital, av: i.capital }
+  ]
+  for (let y = step; y < maxY; y += step) {
+    chartData.push({
+      year: y,
+      pea: calcOneEnvelope(i, y, 'pea').netValue,
+      cto: calcOneEnvelope(i, y, 'cto').netValue,
+      av:  calcOneEnvelope(i, y, 'av').netValue,
+    })
+  }
+  chartData.push({ year: maxY, pea: pea.netValue, cto: cto.netValue, av: av.netValue })
+
+  return { pea, cto, av, best, chartData }
+}
+
+// ─── Épargne d'urgence ───────────────────────────────────────────────────────
+
+export interface EmergencyFundInputs {
+  monthlyExpenses: number
+  employmentType: 'cdi' | 'cdd' | 'freelance' | 'none'
+  familySituation: 'single' | 'couple' | 'family'
+  currentSavings: number
+  monthlySavings: number
+}
+
+export interface EmergencyFundResults {
+  targetMonths: number
+  targetAmount: number
+  gap: number
+  isReached: boolean
+  monthsToReach: number | null
+  coverageRatio: number
+  recommendation: string
+  chartData: { label: string; value: number; target: number }[]
+}
+
+export function calcEmergencyFund(i: EmergencyFundInputs): EmergencyFundResults {
+  let baseMonths = i.employmentType === 'cdi' ? 3 : 6
+  if (i.familySituation === 'couple') baseMonths += 1
+  if (i.familySituation === 'family') baseMonths += 2
+
+  const targetMonths = Math.min(baseMonths, 9)
+  const targetAmount = i.monthlyExpenses * targetMonths
+  const gap = Math.max(0, targetAmount - i.currentSavings)
+  const isReached = i.currentSavings >= targetAmount
+  const coverageRatio = targetAmount > 0 ? Math.min(i.currentSavings / targetAmount, 1) : 0
+  const monthsToReach = (!isReached && i.monthlySavings > 0)
+    ? Math.ceil(gap / i.monthlySavings)
+    : isReached ? 0 : null
+
+  const recMap: Record<string, string> = {
+    cdi: `En CDI, 3 mois de charges est la règle minimale. Votre situation familiale porte l'objectif à ${targetMonths} mois.`,
+    cdd: `En CDD, préférez 6 mois minimum. Votre objectif est de ${targetMonths} mois de charges.`,
+    freelance: `En freelance, l'irrégularité des revenus rend 6 à 9 mois indispensables. Objectif : ${targetMonths} mois.`,
+    none: `Sans activité professionnelle régulière, visez ${targetMonths} mois de charges pour tenir face à l'imprévu.`,
+  }
+
+  const chartData = Array.from({ length: targetMonths }, (_, m) => ({
+    label: `${m + 1} mois`,
+    value: i.monthlyExpenses * (m + 1),
+    target: targetAmount,
+  }))
+
+  return {
+    targetMonths,
+    targetAmount,
+    gap,
+    isReached,
+    monthsToReach,
+    coverageRatio,
+    recommendation: recMap[i.employmentType],
+    chartData,
+  }
+}
+
+// ─── Coût réel d'un crédit conso ────────────────────────────────────────────
+
+export interface ConsumerCreditInputs {
+  amount: number
+  taeg: number          // taux annuel en %
+  durationMonths: number
+  alternativeRate: number  // rendement placement annuel en %
+}
+
+export interface ConsumerCreditResults {
+  monthlyPayment: number
+  totalPaid: number
+  totalInterest: number
+  alternativeGain: number
+  opportunityCost: number
+  amortizationData: { month: number; remaining: number; totalPaid: number }[]
+}
+
+export function calcConsumerCredit(i: ConsumerCreditInputs): ConsumerCreditResults {
+  const r = i.taeg / 100 / 12
+  const n = i.durationMonths
+  const monthlyPayment = r > 0
+    ? i.amount * r / (1 - Math.pow(1 + r, -n))
+    : i.amount / n
+  const totalPaid = monthlyPayment * n
+  const totalInterest = totalPaid - i.amount
+
+  // Ce que le capital aurait rapporté si placé au lieu d'être remboursé
+  const altR = i.alternativeRate / 100 / 12
+  let altValue = i.amount
+  for (let m = 0; m < n; m++) {
+    altValue = altValue * (1 + altR) - monthlyPayment
+  }
+  const alternativeGain = Math.max(0, i.amount * Math.pow(1 + i.alternativeRate / 100, n / 12) - i.amount)
+  const opportunityCost = totalInterest + alternativeGain
+
+  const amortizationData: { month: number; remaining: number; totalPaid: number }[] = [
+    { month: 0, remaining: i.amount, totalPaid: 0 }
+  ]
+  let remaining = i.amount
+  for (let m = 1; m <= n; m++) {
+    const interest = remaining * r
+    const principal = monthlyPayment - interest
+    remaining = Math.max(0, remaining - principal)
+    if (m % Math.max(1, Math.floor(n / 24)) === 0 || m === n) {
+      amortizationData.push({ month: m, remaining: Math.round(remaining), totalPaid: Math.round(monthlyPayment * m) })
+    }
+  }
+
+  return { monthlyPayment, totalPaid, totalInterest, alternativeGain, opportunityCost, amortizationData }
+}
+
+// ─── Succession & Donation ───────────────────────────────────────────────────
+
+export type SuccessionRelationship = 'enfant' | 'petit_enfant' | 'frere_soeur' | 'neveu_niece' | 'autre'
+
+export interface SuccessionInputs {
+  amount: number
+  relationship: SuccessionRelationship
+  donationsLast15Years: number
+  isDonation: boolean  // true = donation, false = succession
+}
+
+export interface SuccessionResults {
+  abattementMax: number
+  abattementUsed: number
+  abattementRemaining: number
+  taxableBase: number
+  dmtg: number
+  netTransmitted: number
+  effectiveRate: number
+  slabs: { tranche: string; taux: number; impot: number }[]
+}
+
+function calcDMTG(base: number, rel: SuccessionRelationship): { total: number; slabs: { tranche: string; taux: number; impot: number }[] } {
+  type Slab = { limit: number; rate: number }
+  const SLABS_ENFANT: Slab[] = [
+    { limit: 8072,    rate: 0.05 },
+    { limit: 12109,   rate: 0.10 },
+    { limit: 15932,   rate: 0.15 },
+    { limit: 552324,  rate: 0.20 },
+    { limit: 902838,  rate: 0.30 },
+    { limit: 1805677, rate: 0.40 },
+    { limit: Infinity, rate: 0.45 },
+  ]
+  const SLABS_FRERE: Slab[] = [
+    { limit: 24430,    rate: 0.35 },
+    { limit: Infinity, rate: 0.45 },
+  ]
+  const FLAT_NEVEU   = 0.55
+  const FLAT_AUTRE   = 0.60
+
+  const slabs = rel === 'enfant' || rel === 'petit_enfant' ? SLABS_ENFANT
+    : rel === 'frere_soeur' ? SLABS_FRERE
+    : null
+
+  const result: { tranche: string; taux: number; impot: number }[] = []
+  let total = 0
+  let remaining = base
+
+  if (slabs) {
+    let prev = 0
+    for (const s of slabs) {
+      if (remaining <= 0) break
+      const width = s.limit === Infinity ? remaining : Math.min(s.limit - prev, remaining)
+      const impot = width * s.rate
+      if (width > 0) {
+        result.push({
+          tranche: s.limit === Infinity ? `> ${prev.toLocaleString('fr-FR')} €` : `${prev.toLocaleString('fr-FR')} – ${s.limit.toLocaleString('fr-FR')} €`,
+          taux: s.rate * 100,
+          impot: Math.round(impot),
+        })
+      }
+      total += impot
+      remaining -= width
+      prev = s.limit
+    }
+  } else {
+    const rate = rel === 'neveu_niece' ? FLAT_NEVEU : FLAT_AUTRE
+    const impot = base * rate
+    result.push({ tranche: 'Taux unique', taux: rate * 100, impot: Math.round(impot) })
+    total = impot
+  }
+
+  return { total, slabs: result }
+}
+
+export function calcSuccession(i: SuccessionInputs): SuccessionResults {
+  const ABATTEMENTS: Record<SuccessionRelationship, number> = {
+    enfant:       100_000,
+    petit_enfant:  31_865,
+    frere_soeur:   15_932,
+    neveu_niece:    7_967,
+    autre:          1_594,
+  }
+  const abattementMax = ABATTEMENTS[i.relationship]
+  const abattementUsed = Math.min(i.donationsLast15Years, abattementMax)
+  const abattementRemaining = abattementMax - abattementUsed
+  const abattementApplied = Math.min(i.amount, abattementRemaining)
+  const taxableBase = Math.max(0, i.amount - abattementApplied)
+  const { total: dmtg, slabs } = calcDMTG(taxableBase, i.relationship)
+  const netTransmitted = i.amount - dmtg
+  const effectiveRate = i.amount > 0 ? (dmtg / i.amount) * 100 : 0
+
+  return {
+    abattementMax,
+    abattementUsed,
+    abattementRemaining,
+    taxableBase,
+    dmtg: Math.round(dmtg),
+    netTransmitted: Math.round(netTransmitted),
+    effectiveRate,
+    slabs,
+  }
 }

@@ -20,6 +20,7 @@ export async function GET() {
       email: true,
       name: true,
       createdAt: true,
+      lastLoginAt: true,
       _count: { select: { simulations: true } }
     },
     orderBy: { createdAt: 'desc' }

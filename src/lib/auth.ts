@@ -37,10 +37,13 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
-        // Charger l'image depuis la DB à chaque nouvelle connexion
+        token.isAdmin = user.email === process.env.ADMIN_EMAIL
+        token.isDemo = user.email === 'demo@digitalstack.cloud'
+        // Charger l'image + mettre à jour lastLoginAt
         try {
-          const dbUser = await prisma.user.findUnique({
+          const dbUser = await prisma.user.update({
             where: { id: user.id as string },
+            data: { lastLoginAt: new Date() },
             select: { image: true },
           })
           if (dbUser?.image) token.picture = dbUser.image
@@ -55,6 +58,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
+        session.user.isAdmin = token.isAdmin ?? false
+        session.user.isDemo = token.isDemo ?? false
         if (token.name) session.user.name = token.name as string
         if (token.picture) session.user.image = token.picture as string
       }

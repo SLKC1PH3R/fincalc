@@ -2,19 +2,17 @@
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { cn } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Info, Wallet } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+import { CsvExport } from '@/components/CsvExport'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -29,26 +27,59 @@ function Tip({ text }: { text: string }) {
 
 function DCAPageInner() {
   const chart = useChartTheme()
-  const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100 })
+  const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [loadingPatrimoine, setLoadingPatrimoine] = useState(false)
+
+  const importPatrimoine = async () => {
+    setLoadingPatrimoine(true)
+    try {
+      const res = await fetch('/api/patrimoine/envelopes')
+      if (!res.ok) return
+      const data: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
+      const total = data.reduce((s, e) => {
+        if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+        const v = e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)
+        return s + v
+      }, 0)
+      setInputs(p => ({ ...p, startingCapital: Math.round(total) }))
+    } finally {
+      setLoadingPatrimoine(false)
+    }
+  }
+
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as DCAInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      if (p.rate !== undefined && p.targetRate === undefined) p.targetRate = p.rate
+      if (p.volatility === undefined) p.volatility = 15
+      if (p.initialPrice === undefined) p.initialPrice = 100
+      setInputs(p as DCAInputs)
+    } catch {}
   }, [restoreParam])
 
   const r = useMemo(() => calcDCA(inputs), [inputs])
 
-  return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+  const tips = [
+    `Sur ${inputs.years} ans, le DCA vous permet d'acheter plus de parts quand les prix baissent et moins quand ils montent, réduisant votre prix moyen de revient à ${fmt(r.avgCostBasis)} par part.`,
+    r.vsLumpSum >= 0 ? `Avec une volatilité de ${inputs.volatility}%, le DCA surperforme l'achat unique de ${fmt(r.vsLumpSum)} grâce au lissage des prix.` : `Avec une faible volatilité (${inputs.volatility}%), l'achat unique surperforme de ${fmt(Math.abs(r.vsLumpSum))} — logique car les prix montent régulièrement.`,
+    'Le DCA est surtout une stratégie psychologique : il élimine le stress du timing de marché et favorise la discipline sur le long terme.',
+  ]
 
-      <div className="flex items-center justify-between">
+  return (
+    <div style={{ maxWidth: 1000, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">DCA — Dollar Cost Averaging</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Investissement régulier vs achat unique — effet de la volatilité</p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Épargne</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>DCA — Dollar Cost Averaging</h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>Investissez régulièrement pour lisser les fluctuations du marché.</p>
         </div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'DCA — Investissement Régulier',
             subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
@@ -77,85 +108,115 @@ function DCAPageInner() {
             ],
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant="ghost" size="sm" onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
+            Réinitialiser
+          </Button>
         </div>
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Valeur estimée', value: fmt(r.estimatedValue) },
-          { label: 'Total investi', value: fmt(r.totalInvested) },
-          { label: 'Gain', value: fmt(r.gain), color: 'text-emerald-finance' },
-          { label: 'vs Achat unique', value: (r.vsLumpSum >= 0 ? '+' : '') + fmt(r.vsLumpSum), color: r.vsLumpSum >= 0 ? 'text-emerald-finance' : 'text-crimson-finance' },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent><div className={cn('text-2xl font-semibold tracking-tight', k.color)}>{k.value}</div></CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Two-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader><CardTitle>Paramètres</CardTitle><CardDescription>Votre stratégie DCA</CardDescription></CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Versement mensuel<Tip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
-              <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Durée<Tip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
-                <span className="text-sm font-medium">{inputs.years} ans</span>
-              </div>
-              <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Rendement annuel moyen<Tip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
-                <span className="text-sm font-medium">{inputs.targetRate}%</span>
-              </div>
-              <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Volatilité annuelle<Tip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
-                <span className="text-sm font-medium">{inputs.volatility}%</span>
-              </div>
-              <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
-              <div className="flex justify-between text-[11px] text-muted-foreground">
-                <button className="hover:text-foreground" onClick={() => set('volatility')(5)}>Obligations 5%</button>
-                <button className="hover:text-foreground" onClick={() => set('volatility')(15)}>ETF World 15%</button>
-                <button className="hover:text-foreground" onClick={() => set('volatility')(30)}>Actions 30%</button>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Prix initial de l'actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
-              <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
-            </div>
+        {/* Left — Input panel */}
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
 
-            <Separator />
-            <div className="space-y-2 rounded-md border border-border p-3">
-              {[
-                { label: 'Parts accumulées', value: r.units.toFixed(2) },
-                { label: 'Prix moyen de revient', value: fmt(r.avgCostBasis) },
-                { label: 'Gain total', value: `${fmt(r.gain)} (+${r.gainPct.toFixed(1)}%)` },
-              ].map((k, i) => (
-                <div key={i} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{k.label}</span>
-                  <span className="font-medium tabular-nums">{k.value}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<Tip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
+            <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
+          </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Évolution du portefeuille</CardTitle>
-            <CardDescription>Capital investi vs valeur de marché sur {inputs.years} ans</CardDescription>
-          </CardHeader>
-          <CardContent>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<Tip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
+            </div>
+            <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Rendement annuel moyen<Tip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
+            </div>
+            <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Volatilité annuelle<Tip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
+            </div>
+            <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
+              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(15)}>ETF World 15%</button>
+              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(30)}>Actions 30%</button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Label style={{ display: 'flex', alignItems: 'center' }}>Prix initial de l'actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
+            <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Capital de départ<Tip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
+              <button
+                onClick={importPatrimoine}
+                disabled={loadingPatrimoine}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                <Wallet style={{ width: 12, height: 12 }} />
+                {loadingPatrimoine ? 'Chargement…' : 'Importer patrimoine'}
+              </button>
+            </div>
+            <Input type="number" value={inputs.startingCapital ?? 0} onChange={e => set('startingCapital')(+e.target.value)} placeholder="0" />
+          </div>
+
+          {/* Mini stats summary */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { label: 'Parts accumulées', value: r.units.toFixed(2) },
+              { label: 'Prix moyen de revient', value: fmt(r.avgCostBasis) },
+              { label: 'Gain total', value: `${fmt(r.gain)} (+${r.gainPct.toFixed(1)}%)` },
+            ].map((k, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{k.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{k.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right — Results */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* KPI 2×2 grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px', gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Valeur finale</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.estimatedValue)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Capital investi</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalInvested)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Gain total</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: r.gain > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.gain)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Rendement</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: r.gainPct > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{r.gainPct.toFixed(1)}%</p>
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>Évolution du portefeuille</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 16 }}>Capital investi vs valeur de marché sur {inputs.years} ans</p>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
@@ -168,41 +229,32 @@ function DCAPageInner() {
                 <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
               </LineChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+              <CsvExport
+                data={r.chartData.filter((_: any, i: number) => i % 12 === 0).map((d: any) => ({ 'Année': Math.round(d.month / 12), 'Capital investi': d.invested.toFixed(0), 'Valeur portefeuille': d.value.toFixed(0), 'Gain': (d.value - d.invested).toFixed(0) }))}
+                filename="dca.csv"
+              />
+            </div>
+          </div>
 
-      <Card style={{ borderColor: r.vsLumpSum >= 0 ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)' }}>
-        <CardHeader>
-          <div className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-muted-foreground" /><CardTitle>Analyse DCA</CardTitle></div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { label: 'Gain total', value: fmtPct(r.gainPct), color: 'text-emerald-finance' },
-              { label: 'vs Lump Sum', value: (r.vsLumpSum >= 0 ? '+' : '') + fmt(r.vsLumpSum), color: r.vsLumpSum >= 0 ? 'text-emerald-finance' : 'text-muted-foreground' },
-              { label: 'Prix moyen d\'achat', value: fmt(r.avgCostBasis), color: 'text-foreground' },
-            ].map((k, i) => (
-              <div key={i} className="rounded-md border border-border p-3">
-                <p className="text-xs text-muted-foreground mb-1">{k.label}</p>
-                <p className={cn('text-lg font-semibold', k.color)}>{k.value}</p>
+          {/* Tips box */}
+          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
+              <p style={{ fontSize: 12, color: 'rgba(241,192,134,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Analyse DCA</p>
+            </div>
+            {tips.map((tip, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <Info style={{ width: 14, height: 14, color: 'var(--text-muted-c)', flexShrink: 0, marginTop: 2 }} />
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
               </div>
             ))}
           </div>
-          <Separator />
-          {[
-            { text: `Sur ${inputs.years} ans, le DCA vous permet d'acheter plus de parts quand les prix baissent et moins quand ils montent, réduisant votre prix moyen de revient à ${fmt(r.avgCostBasis)} par part.` },
-            { text: r.vsLumpSum >= 0 ? `Avec une volatilité de ${inputs.volatility}%, le DCA surperforme l'achat unique de ${fmt(r.vsLumpSum)} grâce au lissage des prix.` : `Avec une faible volatilité (${inputs.volatility}%), l'achat unique surperforme de ${fmt(Math.abs(r.vsLumpSum))} — logique car les prix montent régulièrement.` },
-            { text: 'Le DCA est surtout une stratégie psychologique : il élimine le stress du timing de marché et favorise la discipline sur le long terme.' },
-          ].map((item, i) => (
-            <div key={i} className="flex gap-3 rounded-md border border-border p-3">
-              <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+
+        </div>
+      </div>
     </div>
   )
 }
+
 export default function DCAPage() { return <Suspense><DCAPageInner /></Suspense> }

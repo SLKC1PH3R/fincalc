@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect, useMemo, type ComponentType } from 'react'
+import { useState, useEffect, useMemo, useRef, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { Tooltip, ResponsiveContainer, AreaChart, Area, XAxis, YAxis } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,11 +10,11 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3,
+  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { calcPortfolioGeo, type GeoAllocation } from '@/lib/etf-database'
+import { calcPortfolioGeo, estimatePositionIncome, type GeoAllocation } from '@/lib/etf-database'
 
 // Carte monde chargée côté client uniquement (SSR incompatible avec react-simple-maps)
 const WorldMapChart = dynamic(
@@ -90,6 +90,69 @@ function fmtCompact(n: number): string {
   return fmt(n)
 }
 
+// ── Évolution simulée ─────────────────────────────────────────────────────────
+type TimeRange = '1j' | '1s' | '1m' | '1a' | 'max'
+
+function generateEvolutionData(totalValue: number, range: TimeRange) {
+  if (totalValue <= 0) return []
+  const cfg: Record<TimeRange, { n: number; yearsBack: number; vol: number }> = {
+    '1j':  { n: 25, yearsBack: 1 / 365,  vol: 0.006 },
+    '1s':  { n: 8,  yearsBack: 7 / 365,  vol: 0.010 },
+    '1m':  { n: 31, yearsBack: 1 / 12,   vol: 0.012 },
+    '1a':  { n: 13, yearsBack: 1,         vol: 0.040 },
+    'max': { n: 61, yearsBack: 5,         vol: 0.040 },
+  }
+  const { n, yearsBack, vol } = cfg[range]
+  const annualReturn = 0.065
+  const startValue = totalValue / Math.pow(1 + annualReturn, yearsBack)
+  const stepReturn = Math.pow(1 + annualReturn, yearsBack / n) - 1
+
+  // LCG seeded pour reproductibilité
+  let seed = (Math.floor(totalValue) * 17 + 12345) % 2_147_483_647
+  const rand = () => { seed = (seed * 16807) % 2_147_483_647; return seed / 2_147_483_647 }
+
+  const pts: number[] = [startValue]
+  for (let i = 1; i < n; i++) {
+    const prev = pts[pts.length - 1]
+    pts.push(Math.max(prev * (1 + stepReturn) + (rand() - 0.5) * 2 * vol * prev, startValue * 0.7))
+  }
+  // Normaliser pour que le dernier point = totalValue
+  const scale = totalValue / pts[pts.length - 1]
+  pts.forEach((_, i) => { pts[i] = Math.round(pts[i] * scale) })
+  pts[pts.length - 1] = Math.round(totalValue)
+
+  const now = new Date()
+  return pts.map((value, i) => {
+    const t = new Date(now.getTime() - (1 - i / (n - 1)) * yearsBack * 365.25 * 86_400_000)
+    let date: string
+    if (range === '1j') date = `${String(t.getHours()).padStart(2, '0')}h`
+    else if (range === '1s') date = t.toLocaleDateString('fr-FR', { weekday: 'short' })
+    else if (range === '1m') date = t.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+    else date = t.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+    return { date, value }
+  })
+}
+
+const CHART_CATEGORIES: Record<string, { label: string; types: string[]; color: string }> = {
+  all:        { label: 'Toutes les catégories', types: [],                         color: '#f1c086' },
+  immobilier: { label: 'Immobilier',            types: ['IMMOBILIER'],             color: '#f472b6' },
+  actions:    { label: 'Actions & Fonds',        types: ['PEA','CTO','AV','PER'],  color: '#818cf8' },
+  livrets:    { label: 'Livrets',               types: ['LIVRET'],                 color: '#34d399' },
+  autres:     { label: 'Autres actifs',          types: ['CRYPTO'],                color: '#f59e0b' },
+  comptes:    { label: 'Comptes bancaires',      types: ['CASH'],                  color: '#94a3b8' },
+}
+
+const ENV_COLORS: Record<string, string> = {
+  IMMOBILIER: '#3b82f6',
+  PEA:        '#818cf8',
+  AV:         '#a78bfa',
+  CTO:        '#38bdf8',
+  PER:        '#fb923c',
+  LIVRET:     '#22c55e',
+  CRYPTO:     '#a855f7',
+  CASH:       '#94a3b8',
+}
+
 // ── Composant ─────────────────────────────────────────────────────────────────
 export default function PatrimoinePage() {
   const router = useRouter()
@@ -98,6 +161,37 @@ export default function PatrimoinePage() {
 
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
+  const [timeRange, setTimeRange] = useState<TimeRange>('1a')
+  const [snapshots, setSnapshots] = useState<{ date: string; totalValue: number; byEnvelope: Record<string, { value: number; type: string; name: string }> }[]>([])
+  const [chartCategory, setChartCategory] = useState<'all' | 'immobilier' | 'actions' | 'livrets' | 'autres' | 'comptes'>('all')
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false)
+  const catDropdownRef = useRef<HTMLDivElement>(null)
+  const [fireTarget, setFireTarget] = useState<number>(0)
+  const [fireTargetInput, setFireTargetInput] = useState('')
+  const [editingFireTarget, setEditingFireTarget] = useState(false)
+  const milestoneFiredRef = useRef<Set<string>>(new Set())
+  const [dragOver, setDragOver] = useState<string | null>(null)
+  const dragSrcIdx = useRef<number | null>(null)
+
+  const handleDragStart = (idx: number) => { dragSrcIdx.current = idx }
+  const handleDrop = async (targetIdx: number) => {
+    const srcIdx = dragSrcIdx.current
+    if (srcIdx === null || srcIdx === targetIdx) { setDragOver(null); return }
+    const reordered = [...envelopes]
+    const [moved] = reordered.splice(srcIdx, 1)
+    reordered.splice(targetIdx, 0, moved)
+    setEnvelopes(reordered)
+    setDragOver(null)
+    dragSrcIdx.current = null
+    // Persist sortOrder
+    await Promise.all(reordered.map((e, i) =>
+      fetch(`/api/patrimoine/envelopes/${e.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sortOrder: i }),
+      })
+    ))
+  }
 
   // Modal "Ajouter"
   const [showModal, setShowModal] = useState(false)
@@ -117,36 +211,97 @@ export default function PatrimoinePage() {
 
   useEffect(() => { loadEnvelopes() }, [])
 
+  // Load FIRE target from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('fincalc_fire_target')
+    if (saved) { const n = parseFloat(saved); if (n > 0) { setFireTarget(n); setFireTargetInput(String(n)) } }
+    const firedStr = localStorage.getItem('fincalc_milestones_fired')
+    if (firedStr) { try { milestoneFiredRef.current = new Set(JSON.parse(firedStr)) } catch {} }
+  }, [])
+
+  // Close category dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (catDropdownRef.current && !catDropdownRef.current.contains(e.target as Node)) {
+        setCatDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  // Fetch snapshots on mount
+  useEffect(() => {
+    fetch('/api/patrimoine/snapshots?days=1825')
+      .then(r => r.json())
+      .then((data: { date: string; totalValue: number; byEnvelope: Record<string, { value: number; type: string; name: string }> }[]) => {
+        if (Array.isArray(data)) setSnapshots(data)
+      })
+      .catch(() => {})
+  }, [])
+
   // Stats globales
-  const { totalValue, byType, byClass } = useMemo(() => {
-    let total = 0
-    const byTypeMap: Record<string, number> = {}
-    const byClassMap: Record<string, number> = {}
+  const totalValue = useMemo(() => envelopes.reduce((sum, e) => {
+    if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
+    return sum + computeMarketValue(e)
+  }, 0), [envelopes])
 
-    for (const env of envelopes) {
-      const v = computeMarketValue(env)
-      total += v
-      byTypeMap[env.type] = (byTypeMap[env.type] ?? 0) + v
-      const cls = ENVELOPE_TYPE_CONFIG[env.type].assetClass
-      byClassMap[cls] = (byClassMap[cls] ?? 0) + v
-    }
-
-    return {
-      totalValue: total,
-      byType: Object.entries(byTypeMap).map(([k, v]) => ({
-        name: ENVELOPE_TYPE_CONFIG[k as EnvelopeType].label,
-        value: v,
-        color: ENVELOPE_TYPE_CONFIG[k as EnvelopeType].color,
-      })),
-      byClass: Object.entries(byClassMap).map(([k, v]) => ({
-        name: k, value: v,
-        color: Object.values(ENVELOPE_TYPE_CONFIG).find(c => c.assetClass === k)?.color ?? '#94a3b8',
-      })),
-    }
+  // Fire-and-forget snapshot after envelopes load
+  useEffect(() => {
+    if (envelopes.length === 0) return
+    const tv = envelopes.reduce((sum, e) => {
+      if (e.type === 'IMMOBILIER') return sum + Number(e.metadata.currentValue ?? 0)
+      return sum + computeMarketValue(e)
+    }, 0)
+    if (tv <= 0) return
+    const byEnvelope = Object.fromEntries(envelopes.map(e => {
+      const value = e.type === 'IMMOBILIER'
+        ? Number(e.metadata.currentValue ?? 0)
+        : computeMarketValue(e)
+      return [e.id, { value, type: e.type, name: e.name }]
+    }))
+    fetch('/api/patrimoine/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalValue: tv, byEnvelope }),
+    }).catch(() => {})
   }, [envelopes])
 
-  // Allocation géographique agrégée
+  // Milestones
+  useEffect(() => {
+    if (loading || totalValue <= 0) return
+    const MILESTONES: { key: string; test: () => boolean; message: string }[] = [
+      { key: 'wealth_100k', test: () => totalValue >= 100_000, message: '🎉 100 000€ de patrimoine franchis !' },
+      { key: 'wealth_250k', test: () => totalValue >= 250_000, message: '🚀 250 000€ de patrimoine atteints !' },
+      { key: 'wealth_500k', test: () => totalValue >= 500_000, message: '💎 500 000€ — vous approchez la liberté financière !' },
+      { key: 'wealth_1M',   test: () => totalValue >= 1_000_000, message: '🏆 1 000 000€ — félicitations, millionnaire !' },
+    ]
+    // PEA plafond
+    for (const env of envelopes) {
+      if (env.type === 'PEA') {
+        const dep = Number(env.metadata.totalDeposited ?? 0)
+        MILESTONES.push({ key: `pea_max_${env.id}`, test: () => dep >= 150_000, message: `🎯 PEA "${env.name}" : plafond de versements 150 000€ atteint !` })
+      }
+    }
+    for (const m of MILESTONES) {
+      if (m.test() && !milestoneFiredRef.current.has(m.key)) {
+        milestoneFiredRef.current.add(m.key)
+        localStorage.setItem('fincalc_milestones_fired', JSON.stringify([...milestoneFiredRef.current]))
+        toast({ title: 'Milestone atteint !', description: m.message })
+      }
+    }
+  }, [totalValue, loading, envelopes, toast])
+
+  // Allocation géographique agrégée (actifs financiers + immobilier géolocalisé)
   const geoAlloc = useMemo((): GeoAllocation & { values: Partial<Record<keyof GeoAllocation, number>>; totalGeo: number } => {
+    const REGIONS = ['northAmerica', 'europe', 'asiaPacific', 'emergingMarkets', 'other'] as const
+    const COUNTRY_TO_REGION: Record<string, keyof GeoAllocation> = {
+      france: 'europe', europe: 'europe',
+      northAmerica: 'northAmerica', asiaPacific: 'asiaPacific',
+      emergingMarkets: 'emergingMarkets', other: 'other',
+    }
+
+    // 1. Actifs financiers (ETF / actions)
     const allPositions: { value: number; ticker?: string }[] = []
     for (const env of envelopes) {
       for (const pos of env.positions) {
@@ -156,12 +311,142 @@ export default function PatrimoinePage() {
       }
     }
     const geo = calcPortfolioGeo(allPositions)
-    const values: Partial<Record<keyof GeoAllocation, number>> = {}
-    for (const key of ['northAmerica', 'europe', 'asiaPacific', 'emergingMarkets', 'other'] as const) {
-      values[key] = geo[key] * totalValue
+
+    // Convertir en valeurs absolues
+    const geoValues: Record<keyof GeoAllocation, number> = {
+      northAmerica: geo.northAmerica * geo.totalValue,
+      europe: geo.europe * geo.totalValue,
+      asiaPacific: geo.asiaPacific * geo.totalValue,
+      emergingMarkets: geo.emergingMarkets * geo.totalValue,
+      other: geo.other * geo.totalValue,
     }
-    return { ...geo, values, totalGeo: geo.totalValue }
-  }, [envelopes, totalValue])
+    let geoTotal = geo.totalValue
+
+    // 2. Ajouter les biens immobiliers physiques selon leur pays
+    for (const env of envelopes) {
+      if (env.type === 'IMMOBILIER' && env.metadata.subType !== 'scpi') {
+        const val = env.totalValue ?? 0
+        if (val > 0) {
+          const country = String(env.metadata.country ?? 'france')
+          const region = COUNTRY_TO_REGION[country] ?? 'other'
+          geoValues[region] += val
+          geoTotal += val
+        }
+      }
+    }
+
+    // Normaliser
+    const geoNorm: GeoAllocation = geoTotal > 0
+      ? Object.fromEntries(REGIONS.map(k => [k, geoValues[k] / geoTotal])) as unknown as GeoAllocation
+      : { northAmerica: 0, europe: 0, asiaPacific: 0, emergingMarkets: 0, other: 0 }
+
+    const values: Partial<Record<keyof GeoAllocation, number>> = {}
+    for (const key of REGIONS) { values[key] = geoValues[key] }
+
+    return { ...geoNorm, values, totalGeo: geoTotal }
+  }, [envelopes])
+
+  // Revenus passifs estimés
+  const estimatedIncome = useMemo(() => {
+    let etfIncome = 0, livretIncome = 0, immoIncome = 0, avIncome = 0
+    for (const env of envelopes) {
+      if (['PEA', 'CTO', 'CRYPTO'].includes(env.type)) {
+        for (const pos of env.positions) {
+          const value = pos.pru * pos.quantity
+          etfIncome += estimatePositionIncome(pos.symbol, (pos as { isin?: string }).isin ?? null, value)
+        }
+      } else if (env.type === 'LIVRET') {
+        const balance = Number(env.metadata.balance ?? 0)
+        const rate = Number(env.metadata.interestRate ?? 0.03)
+        livretIncome += balance * rate
+      } else if (env.type === 'IMMOBILIER') {
+        immoIncome += Number(env.metadata.annualRent ?? 0)
+      } else if (env.type === 'AV') {
+        const sv = Number(env.metadata.surrenderValue ?? 0)
+        const rate = Number(env.metadata.averageRate ?? 0)
+        if (rate > 0) avIncome += sv * rate
+        for (const pos of env.positions) {
+          etfIncome += estimatePositionIncome(pos.symbol, (pos as { isin?: string }).isin ?? null, pos.pru * pos.quantity)
+        }
+      }
+    }
+    const total = etfIncome + livretIncome + immoIncome + avIncome
+    return { total, etfIncome, livretIncome, immoIncome, avIncome }
+  }, [envelopes])
+
+  // Enveloppes filtrées par catégorie sélectionnée (pour le graphique)
+  const chartEnvelopes = useMemo(() => {
+    const types = CHART_CATEGORIES[chartCategory]?.types ?? []
+    if (types.length === 0) return envelopes
+    return envelopes.filter(e => types.includes(e.type))
+  }, [envelopes, chartCategory])
+
+  const chartTotal = useMemo(() => {
+    return chartEnvelopes.reduce((s, e) => {
+      if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+      const v = e.totalValue !== null ? e.totalValue : e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0)
+      return s + v
+    }, 0)
+  }, [chartEnvelopes])
+
+  // Valeur par type depuis les enveloppes courantes
+  const typeValues = useMemo(() => {
+    const tv: Record<string, number> = {}
+    for (const e of envelopes) {
+      const val = e.type === 'IMMOBILIER'
+        ? Number(e.metadata.currentValue ?? 0)
+        : computeMarketValue(e)
+      tv[e.type] = (tv[e.type] ?? 0) + val
+    }
+    return tv
+  }, [envelopes])
+
+  // Données évolution — courbe unique filtrée par catégorie
+  const { evolutionData, isSimulated } = useMemo(() => {
+    const catTypes = CHART_CATEGORIES[chartCategory]?.types ?? []
+    const cutoffMs: Record<TimeRange, number> = {
+      '1j': 86_400_000,
+      '1s': 7 * 86_400_000,
+      '1m': 30 * 86_400_000,
+      '1a': 365 * 86_400_000,
+      'max': Infinity,
+    }
+    const isShort = timeRange === '1j' || timeRange === '1s' || timeRange === '1m'
+    const now = Date.now()
+
+    if (snapshots.length >= 2) {
+      const filtered = snapshots.filter(s => (now - new Date(s.date).getTime()) <= cutoffMs[timeRange])
+      if (filtered.length >= 2) {
+        const data = filtered.map(snap => {
+          const d = new Date(snap.date)
+          const date = isShort
+            ? `${d.getDate()}/${d.getMonth() + 1}`
+            : d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })
+          let value = snap.totalValue
+          if (catTypes.length > 0) {
+            value = Object.values(snap.byEnvelope ?? {})
+              .filter(env => catTypes.includes(env.type))
+              .reduce((s, env) => s + env.value, 0)
+          }
+          return { date, total: value }
+        })
+        return { evolutionData: data, isSimulated: false }
+      }
+    }
+
+    // Fallback simulation — courbe unique
+    const simBase = chartTotal > 0 ? chartTotal : totalValue
+    const simPts = generateEvolutionData(simBase, timeRange)
+    const data = simPts.map(pt => ({ date: pt.date, total: pt.value }))
+    return { evolutionData: data, isSimulated: true }
+  }, [snapshots, totalValue, chartTotal, timeRange, chartCategory])
+
+  const evolMin = useMemo(() => evolutionData.length ? Math.min(...evolutionData.map(d => Number(d.total))) * 0.97 : 0, [evolutionData])
+  const evolMax = useMemo(() => evolutionData.length ? Math.max(...evolutionData.map(d => Number(d.total))) * 1.02 : 0, [evolutionData])
+  const evolChange = useMemo(() => {
+    if (evolutionData.length < 2) return 0
+    return Number(evolutionData[evolutionData.length - 1].total) - Number(evolutionData[0].total)
+  }, [evolutionData])
 
   // Créer une enveloppe
   const handleCreate = async () => {
@@ -197,7 +482,7 @@ export default function PatrimoinePage() {
 
   // ── Rendu ────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 0 48px' }}>
+    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4 }}>
@@ -215,100 +500,339 @@ export default function PatrimoinePage() {
         </Button>
       </div>
 
-      {/* ── KPI ── */}
-      {loading ? (
-        <div style={{ height: 80, display: 'flex', alignItems: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
-          Chargement…
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+      {/* ── Category cards ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
           {[
-            { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f1c086' },
-            { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
-            { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
-          ].map(kpi => (
-            <div key={kpi.label} style={{
-              padding: '16px 20px', borderRadius: 12,
-              background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-            }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
-                {kpi.label}
-              </div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
-                {kpi.value}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
-            </div>
-          ))}
+            { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Building2,  color: '#f472b6', types: ['IMMOBILIER'] },
+            { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp, color: '#818cf8', types: ['PEA','CTO','AV','PER'] },
+            { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank,  color: '#34d399', types: ['LIVRET'] },
+            { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin,    color: '#f59e0b', types: ['CRYPTO'] },
+            { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet,     color: '#94a3b8', types: ['CASH'] },
+            { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard, color: '#f87171', types: [] },
+          ].map(cat => {
+            const Icon = cat.icon
+            const catValue = envelopes
+              .filter(e => (cat.types as string[]).includes(e.type))
+              .reduce((s, e) => {
+                if (e.type === 'IMMOBILIER') return s + Number(e.metadata.currentValue ?? 0)
+                return s + (e.totalValue ?? e.positions.reduce((ps, p) => ps + p.pru * p.quantity, 0))
+              }, 0)
+            const count = envelopes.filter(e => (cat.types as string[]).includes(e.type)).length
+            return (
+              <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
+                <div
+                  style={{ padding: '14px 16px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = cat.color + '55'; (e.currentTarget as HTMLElement).style.background = cat.color + '08' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 8, background: cat.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Icon style={{ width: 13, height: 13, color: cat.color }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>{cat.label}</span>
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: cat.color, fontVariantNumeric: 'tabular-nums' }}>
+                    {cat.types.length === 0 ? '—' : catValue > 0 ? fmtCompact(catValue) : count > 0 ? `${count} env.` : <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Vide</span>}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       )}
 
-      {/* ── Charts répartition ── */}
-      {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {[
-            { title: 'Répartition par enveloppe', data: byType },
-            { title: 'Répartition par classe d\'actifs', data: byClass },
-          ].map(chart => (
-            <Card key={chart.title} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <CardContent style={{ padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
-                  {chart.title}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 120, height: 120, flexShrink: 0 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={chart.data} dataKey="value" innerRadius={32} outerRadius={55} paddingAngle={2}>
-                          {chart.data.map((entry, i) => (
-                            <Cell key={i} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(v: number) => [fmtCompact(v), '']}
-                          contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
-                          itemStyle={chartTheme.itemStyle}
-                          labelStyle={chartTheme.labelStyle}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {chart.data.map(d => (
-                      <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-                        <span style={{ fontSize: 11, color: 'var(--text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {d.name}
-                        </span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
-                          {totalValue > 0 ? `${((d.value / totalValue) * 100).toFixed(1)} %` : '—'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* ── Carte monde ── */}
-      {!loading && geoAlloc.totalGeo > 0 && (
+      {/* ── Évolution du patrimoine ── */}
+      {!loading && totalValue > 0 && (
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
           <CardContent style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
-              Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
+            {/* Chart header: category dropdown + time range buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+              {/* Category dropdown */}
+              <div ref={catDropdownRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setCatDropdownOpen(o => !o)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+                    background: catDropdownOpen ? 'var(--row-hover)' : 'var(--card-dark)',
+                    border: `1.5px solid ${CHART_CATEGORIES[chartCategory].color}60`,
+                    color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: CHART_CATEGORIES[chartCategory].color, display: 'inline-block', flexShrink: 0 }} />
+                  {CHART_CATEGORIES[chartCategory].label}
+                  <svg width="12" height="12" viewBox="0 0 12 12" style={{ opacity: 0.5, transform: catDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                {catDropdownOpen && (
+                  <div style={{
+                    position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 50,
+                    background: '#111', border: '1px solid var(--card-dark-border)', borderRadius: 12,
+                    padding: '6px 0', minWidth: 220,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                  }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-subtle)', padding: '4px 16px 8px', borderBottom: '1px solid var(--card-dark-border)', marginBottom: 4 }}>
+                      Tout sélectionner
+                    </div>
+                    {Object.entries(CHART_CATEGORIES).map(([key, cat]) => (
+                      <button
+                        key={key}
+                        onClick={() => { setChartCategory(key as typeof chartCategory); setCatDropdownOpen(false) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '9px 16px', background: 'none', border: 'none',
+                          cursor: 'pointer', textAlign: 'left', transition: 'background 0.1s',
+                          color: chartCategory === key ? 'var(--text-primary)' : 'var(--text-muted-c)',
+                          fontWeight: chartCategory === key ? 700 : 500, fontSize: 13,
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}
+                      >
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, display: 'inline-block', flexShrink: 0 }} />
+                        {cat.label}
+                        {chartCategory === key && (
+                          <svg width="14" height="14" viewBox="0 0 14 14" style={{ marginLeft: 'auto', color: cat.color }}>
+                            <path d="M2.5 7l3.5 3.5 5.5-6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right side: subtitle + time range */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                    {isSimulated ? 'Projection estimée' : 'Données historiques'} — {fmtCompact(chartTotal || totalValue)}
+                    {evolChange !== 0 && (
+                      <span style={{ marginLeft: 6, color: evolChange >= 0 ? '#34d399' : '#f87171' }}>
+                        {evolChange >= 0 ? '+' : ''}{fmtCompact(evolChange)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
+                    <button key={r} onClick={() => setTimeRange(r)} style={{
+                      padding: '3px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                      background: timeRange === r ? CHART_CATEGORIES[chartCategory].color : 'transparent',
+                      color: timeRange === r ? '#fff' : 'var(--text-subtle)',
+                      border: `1px solid ${timeRange === r ? CHART_CATEGORIES[chartCategory].color : 'var(--card-dark-border)'}`,
+                      transition: 'all 0.15s',
+                    }}>
+                      {r.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
-              Calculé sur {fmtCompact(geoAlloc.totalGeo)} d'actifs boursiers reconnus
+
+            <div style={{ height: 200 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="gradTotal" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={CHART_CATEGORIES[chartCategory].color} stopOpacity={0.45} />
+                      <stop offset="95%" stopColor={CHART_CATEGORIES[chartCategory].color} stopOpacity={0.04} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
+                    interval="preserveStartEnd" />
+                  <YAxis domain={[evolMin, evolMax]} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickLine={false} axisLine={false}
+                    tickFormatter={v => fmtCompact(v)} width={64} />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.length) return null
+                      const color = CHART_CATEGORIES[chartCategory].color
+                      return (
+                        <div style={{ background: '#090909', border: `2px solid ${color}`, borderRadius: 10, padding: '8px 14px', fontSize: 12 }}>
+                          <div style={{ color, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
+                          <div style={{ color: '#fff', fontWeight: 600, marginTop: 2 }}>{fmtCompact(payload[0]?.value as number)}</div>
+                        </div>
+                      )
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    stroke={CHART_CATEGORIES[chartCategory].color}
+                    strokeWidth={2.5}
+                    fill="url(#gradTotal)"
+                    fillOpacity={1}
+                    dot={false}
+                    activeDot={{ r: 5, fill: CHART_CATEGORIES[chartCategory].color, strokeWidth: 0 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-            <WorldMapChart
-              allocation={geoAlloc}
-              values={geoAlloc.values}
-              totalValue={geoAlloc.totalGeo}
-              height={360}
-            />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── KPIs (gauche) + Répartition tabulée (droite) ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'stretch' }}>
+          {/* KPIs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f1c086' },
+              { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
+              { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{
+                flex: 1,
+                padding: '16px 20px', borderRadius: 12,
+                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              }}>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
+                  {kpi.label}
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
+                  {kpi.value}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Carte monde */}
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', flexDirection: 'column' }}>
+            <CardContent style={{ padding: 20, flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+                Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
+                {geoAlloc.totalGeo > 0
+                  ? <>Calculé sur {fmtCompact(geoAlloc.totalGeo)} d'actifs boursiers reconnus</>
+                  : 'Ajoutez des ETFs ou actions pour voir la répartition géographique'}
+              </div>
+              {geoAlloc.totalGeo > 0 && (
+                <WorldMapChart
+                  allocation={geoAlloc}
+                  values={geoAlloc.values}
+                  totalValue={geoAlloc.totalGeo}
+                  height={300}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* ── Revenus passifs estimés ── */}
+      {!loading && estimatedIncome.total > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: '18px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(52,211,153,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TrendingUp style={{ width: 13, height: 13, color: '#34d399' }} />
+                </div>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Revenus passifs estimés</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', marginLeft: 8 }}>sur 12 mois</span>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(estimatedIncome.total)}<span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted-c)' }}>/an</span></div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmt(estimatedIncome.total / 12)}/mois</div>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+              {[
+                { label: 'ETF / Actions', value: estimatedIncome.etfIncome, color: '#818cf8' },
+                { label: 'Livrets', value: estimatedIncome.livretIncome, color: '#34d399' },
+                { label: 'Immobilier', value: estimatedIncome.immoIncome, color: '#f472b6' },
+                { label: 'Assurance-vie', value: estimatedIncome.avIncome, color: '#fb923c' },
+              ].filter(s => s.value > 0).map((src, i) => (
+                <div key={i} style={{ background: 'var(--mini-card-bg)', borderRadius: 10, padding: '10px 14px' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 4 }}>{src.label}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: src.color }}>{fmt(src.value)}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 2 }}>{fmt(src.value / 12)}/mois</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 12 }}>
+              Estimation basée sur les taux de distribution des ETF reconnus, les taux de livrets renseignés et les loyers saisis. Usage indicatif.
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── FIRE Tracker ── */}
+      {!loading && totalValue > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: '18px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(241,192,134,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Flame style={{ width: 13, height: 13, color: '#f1c086' }} />
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Progression FIRE</span>
+              </div>
+              {!editingFireTarget ? (
+                <button
+                  onClick={() => setEditingFireTarget(true)}
+                  style={{ fontSize: 11, color: 'var(--text-subtle)', cursor: 'pointer', background: 'none', border: 'none', textDecoration: 'underline' }}
+                >
+                  {fireTarget > 0 ? `Cible : ${fmtCompact(fireTarget)}` : 'Définir objectif FIRE'}
+                </button>
+              ) : (
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <input
+                    value={fireTargetInput}
+                    onChange={e => setFireTargetInput(e.target.value)}
+                    placeholder="Ex: 750000"
+                    autoFocus
+                    style={{ width: 110, padding: '3px 8px', borderRadius: 6, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        const n = parseFloat(fireTargetInput.replace(/\s/g, '').replace(',', '.'))
+                        if (n > 0) { setFireTarget(n); localStorage.setItem('fincalc_fire_target', String(n)) }
+                        setEditingFireTarget(false)
+                      }
+                      if (e.key === 'Escape') setEditingFireTarget(false)
+                    }}
+                  />
+                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>€ — Entrée pour valider</span>
+                </div>
+              )}
+            </div>
+            {fireTarget > 0 ? (() => {
+              const pct = Math.min(100, (totalValue / fireTarget) * 100)
+              const remaining = Math.max(0, fireTarget - totalValue)
+              const color = pct >= 75 ? '#34d399' : pct >= 50 ? '#f1c086' : pct >= 25 ? '#f59e0b' : '#818cf8'
+              return (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                      {fmtCompact(totalValue)} / {fmtCompact(fireTarget)}
+                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color }}>{pct.toFixed(1)} %</span>
+                  </div>
+                  <div style={{ height: 10, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden', marginBottom: 8 }}>
+                    <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 999, transition: 'width 0.5s ease' }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                    Il vous reste <b style={{ color: 'var(--text-muted-c)' }}>{fmtCompact(remaining)}</b> à accumuler.
+                    {pct >= 100 && <span style={{ marginLeft: 6, color: '#34d399', fontWeight: 700 }}>🎉 Objectif FIRE atteint !</span>}
+                    {' '}
+                    <a href="/dashboard/fire" style={{ color: '#f1c086', textDecoration: 'none', marginLeft: 4 }}>Simuler →</a>
+                  </div>
+                </div>
+              )
+            })() : (
+              <div style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
+                Définissez votre objectif FIRE pour suivre votre progression.
+                Règle des 4% : accumulez 25× vos dépenses annuelles.
+                <a href="/dashboard/fire" style={{ color: '#f1c086', textDecoration: 'none', marginLeft: 6 }}>Calculer mon FIRE number →</a>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -320,7 +844,20 @@ export default function PatrimoinePage() {
         </div>
 
         {loading && (
-          <div style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Chargement…</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', minHeight: 110 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div className="animate-pulse" style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--section-border)' }} />
+                  <div>
+                    <div className="animate-pulse" style={{ width: 100, height: 12, borderRadius: 6, background: 'var(--section-border)', marginBottom: 6 }} />
+                    <div className="animate-pulse" style={{ width: 60, height: 10, borderRadius: 6, background: 'var(--section-border)' }} />
+                  </div>
+                </div>
+                <div className="animate-pulse" style={{ width: 80, height: 20, borderRadius: 6, background: 'var(--section-border)' }} />
+              </div>
+            ))}
+          </div>
         )}
 
         {!loading && envelopes.length === 0 && (
@@ -344,32 +881,43 @@ export default function PatrimoinePage() {
 
         {!loading && envelopes.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {envelopes.map(env => {
+            {envelopes.map((env, idx) => {
               const cfg = ENVELOPE_TYPE_CONFIG[env.type]
               const Icon = cfg.icon
-              const value = computeMarketValue(env)
+              const value = env.type === 'IMMOBILIER'
+                ? Number(env.metadata.currentValue ?? 0)
+                : computeMarketValue(env)
               const cap = getCapProgress(env)
 
               return (
-                <Link
+                <div
                   key={env.id}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={e => { e.preventDefault(); setDragOver(env.id) }}
+                  onDragLeave={() => setDragOver(null)}
+                  onDrop={() => handleDrop(idx)}
+                  style={{ display: 'flex', opacity: dragOver === env.id ? 0.5 : 1, transition: 'opacity 0.15s' }}
+                >
+                <Link
                   href={`/dashboard/patrimoine/${env.id}`}
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: 'none', display: 'flex', flex: 1 }}
                 >
                   <div style={{
                     padding: 18, borderRadius: 14,
-                    background: 'var(--card-dark)',
-                    border: '1px solid var(--card-dark-border)',
-                    cursor: 'pointer',
+                    background: dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)',
+                    border: `1px solid ${dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'}`,
+                    cursor: 'grab',
                     transition: 'border-color 0.15s, background 0.15s',
+                    width: '100%',
                   }}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLElement).style.borderColor = cfg.color + '60'
                       ;(e.currentTarget as HTMLElement).style.background = 'var(--row-hover)'
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'
-                      ;(e.currentTarget as HTMLElement).style.background = 'var(--card-dark)'
+                      (e.currentTarget as HTMLElement).style.borderColor = dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'
+                      ;(e.currentTarget as HTMLElement).style.background = dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -425,6 +973,7 @@ export default function PatrimoinePage() {
                     )}
                   </div>
                 </Link>
+                </div>
               )
             })}
           </div>

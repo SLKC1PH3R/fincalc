@@ -58,5 +58,3 @@ p.allowedEmail.create({ data: { email: 'votre@gmail.com' } })
 
 - Allez sur `/login`
 - Cliquez **Continuer avec Google**
-- Si votre email est dans la whitelist → connexion réussie
-- Sinon → message "Compte non autorisé"

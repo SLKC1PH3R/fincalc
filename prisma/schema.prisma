@@ -8,18 +8,34 @@ datasource db {
 }
 
 model User {
-  id             String       @id @default(cuid())
-  email          String       @unique
-  emailVerified  DateTime?    // Requis par NextAuth PrismaAdapter
+  id             String               @id @default(cuid())
+  email          String               @unique
+  emailVerified  DateTime?            // Requis par NextAuth PrismaAdapter
   name           String?
-  password       String?      // Nullable — null pour les comptes Google OAuth
-  image          String?      // Avatar URL ou base64
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  password       String?              // Nullable — null pour les comptes Google OAuth
+  image          String?              // Avatar URL ou base64
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  lastLoginAt    DateTime?
   simulations    Simulation[]
   sessions       Session[]
   accounts       Account[]
   portfolio      Portfolio?
+  scores         PatrimoineScore[]
+  snapshots      PatrimoineSnapshot[]
+  goals          PatrimoineGoal[]
+  transactions   AssetTransaction[]
+}
+
+model PatrimoineScore {
+  id        String   @id @default(cuid())
+  userId    String
+  score     Int
+  details   Json     // { savings, emergency, diversification, retirement, fiscal, debt }
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {
@@ -57,15 +73,16 @@ model VerificationToken {
 }
 
 model Simulation {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  name      String
-  inputs    Json
-  results   Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  userId     String
+  type       String
+  name       String
+  inputs     Json
+  results    Json
+  shareToken String?  @unique  // null = privé, token UUID = lien public actif
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, type])
 }
@@ -95,6 +112,7 @@ model PortfolioPosition {
   assetType   String              // STOCK | ETF | CRYPTO | SCPI | LIVRET | CASH
   symbol      String              // AAPL, bitcoin, CW8.PA, "Livret A"...
   name        String              // Nom d'affichage
+  isin        String?             // Code ISIN (optionnel)
   quantity    Float
   pru         Float               // Prix de Revient Unitaire en EUR
   currency    String              @default("EUR")
@@ -118,4 +136,54 @@ model PatrimoineEnvelope {
   updatedAt   DateTime            @updatedAt
 
   @@index([portfolioId])
+}
+
+model PatrimoineSnapshot {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime @db.Date
+  totalValue  Float
+  byEnvelope  Json
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+model PatrimoineGoal {
+  id           String    @id @default(cuid())
+  userId       String
+  title        String
+  description  String?
+  targetAmount Float
+  targetDate   DateTime?
+  envelopeId   String?   // Optionnel : lier à une enveloppe spécifique
+  color        String    @default("#f97316")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AssetTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  positionId  String?  // Position concernée (nullable — peut exister sans position liée)
+  envelopeId  String?  // Enveloppe concernée
+  symbol      String
+  name        String   @default("")
+  type        String   // BUY | SELL | DIVIDEND | SPLIT | TRANSFER
+  quantity    Float
+  price       Float    // Prix unitaire en EUR au moment de la transaction
+  fees        Float    @default(0)
+  date        DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, symbol])
+  @@index([envelopeId])
 }

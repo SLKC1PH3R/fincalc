@@ -1,17 +1,22 @@
 'use client'
 import { useState, useRef } from 'react'
-import { useSession, signIn } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/components/ui/use-toast'
-import { User, Mail, Camera, Check, Loader2 } from 'lucide-react'
+import { User, Mail, Camera, Check, Loader2, Lock, ShieldCheck, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
+
+const DEMO_EMAIL = 'demo@digitalstack.cloud'
 
 export default function SettingsPage() {
   const { data: session, update } = useSession()
   const { toast } = useToast()
+
+  const isDemo = session?.user?.email === DEMO_EMAIL
+  const isAdmin = session?.user?.isAdmin ?? false
 
   const [name, setName] = useState(session?.user?.name || '')
   const [imageUrl, setImageUrl] = useState(session?.user?.image || '')
@@ -19,6 +24,11 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [uploadingImg, setUploadingImg] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  // Admin override state for demo account
+  const [adminDemoName, setAdminDemoName] = useState('')
+  const [adminDemoImage, setAdminDemoImage] = useState('')
+  const [savingDemo, setSavingDemo] = useState(false)
 
   const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -47,8 +57,6 @@ export default function SettingsPage() {
         body: JSON.stringify({ name: name.trim(), image: imageUrl }),
       })
       if (!res.ok) throw new Error()
-
-      // Update NextAuth session
       await update({ name: name.trim(), image: imageUrl })
       toast({ title: 'Profil mis à jour', description: 'Vos modifications sont enregistrées.' })
     } catch {
@@ -58,17 +66,45 @@ export default function SettingsPage() {
     }
   }
 
+  const handleSaveDemo = async () => {
+    setSavingDemo(true)
+    try {
+      const res = await fetch('/api/user', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: adminDemoName.trim(), image: adminDemoImage.trim(), targetEmail: DEMO_EMAIL }),
+      })
+      if (!res.ok) throw new Error()
+      toast({ title: 'Compte démo mis à jour', description: 'Profil du compte de démo modifié.' })
+    } catch {
+      toast({ title: 'Erreur', description: 'Impossible de modifier le compte démo.', variant: 'destructive' })
+    } finally {
+      setSavingDemo(false)
+    }
+  }
+
+  const { theme, toggleTheme } = useTheme()
   const initials = (session?.user?.name || session?.user?.email || 'U')[0].toUpperCase()
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6 max-w-xl">
+    <div className="space-y-6 animate-fade-in px-7 py-8 max-w-xl">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Mon compte</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Gérez votre profil et vos préférences</p>
       </div>
 
+      {/* Demo account lock notice */}
+      {isDemo && (
+        <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+          <Lock className="h-4 w-4 text-amber-400 flex-shrink-0" />
+          <p className="text-sm text-amber-300">
+            Ce compte de démonstration est en lecture seule. Le nom d'affichage et la photo ne peuvent pas être modifiés.
+          </p>
+        </div>
+      )}
+
       {/* Avatar */}
-      <Card>
+      <Card className={isDemo ? 'opacity-60 pointer-events-none select-none' : ''}>
         <CardHeader>
           <CardTitle>Photo de profil</CardTitle>
           <CardDescription>JPG ou PNG · maximum 500 Ko</CardDescription>
@@ -113,7 +149,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Profile info */}
-      <Card>
+      <Card className={isDemo ? 'opacity-60 pointer-events-none select-none' : ''}>
         <CardHeader>
           <CardTitle>Informations</CardTitle>
         </CardHeader>
@@ -135,10 +171,86 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={saving} className="w-full">
+      {/* Theme preference */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Apparence</CardTitle>
+          <CardDescription>Choisissez entre le mode sombre et le mode clair</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {theme === 'dark'
+                ? <Moon className="h-4 w-4 text-muted-foreground" />
+                : <Sun className="h-4 w-4 text-muted-foreground" />}
+              <span className="text-sm font-medium">{theme === 'dark' ? 'Mode sombre' : 'Mode clair'}</span>
+            </div>
+            <button
+              onClick={toggleTheme}
+              style={{
+                width: 48, height: 26, borderRadius: 999, cursor: 'pointer', position: 'relative',
+                background: theme === 'dark' ? 'rgba(241,192,134,0.8)' : 'rgba(148,163,184,0.4)',
+                border: 'none', transition: 'background 0.2s',
+              }}
+            >
+              <span style={{
+                position: 'absolute', top: 3, width: 20, height: 20, borderRadius: '50%',
+                background: '#fff', transition: 'left 0.2s',
+                left: theme === 'dark' ? 25 : 3,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              }} />
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Button onClick={handleSave} disabled={saving || isDemo} className="w-full">
         {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
         Enregistrer les modifications
       </Button>
+
+      {/* Admin override — modify demo account */}
+      {isAdmin && (
+        <Card style={{ borderColor: 'rgba(241,192,134,0.20)', background: 'rgba(241,192,134,0.05)' }}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ShieldCheck className="h-4 w-4" style={{ color: '#f1c086' }} />
+              <span>Admin — Compte démo</span>
+            </CardTitle>
+            <CardDescription>Modifier le profil du compte de démonstration ({DEMO_EMAIL})</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-2"><User className="h-3.5 w-3.5 text-muted-foreground" />Nom d'affichage</Label>
+              <Input
+                value={adminDemoName}
+                onChange={e => setAdminDemoName(e.target.value)}
+                placeholder="Nom du compte démo"
+                maxLength={50}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-2"><Camera className="h-3.5 w-3.5 text-muted-foreground" />URL photo de profil</Label>
+              <Input
+                type="url"
+                value={adminDemoImage}
+                onChange={e => setAdminDemoImage(e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <Button
+              onClick={handleSaveDemo}
+              disabled={savingDemo || (!adminDemoName.trim() && !adminDemoImage.trim())}
+              variant="outline"
+              className="w-full"
+              style={{ borderColor: 'rgba(241,192,134,0.32)', color: '#f1c086' }}
+            >
+              {savingDemo ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
+              Mettre à jour le compte démo
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

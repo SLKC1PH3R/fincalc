@@ -1,18 +1,15 @@
 'use client'
 import { Suspense } from 'react'
 import { useState, useEffect, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcBuyRent, type BuyRentInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { cn } from '@/lib/utils'
-import { HelpCircle, Download, Home, TrendingUp, CheckCircle2, Info } from 'lucide-react'
+import { HelpCircle, Download, Home, TrendingUp } from 'lucide-react'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -30,13 +27,24 @@ function BuyRentPageInner() {
   const [inputs, setInputs] = useState<BuyRentInputs>({ price: 300000, down: 60000, loanRate: 3.5, rent: 1000, years: 20, appreciation: 2, investReturn: 7 })
   const set = (k: keyof BuyRentInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
 
-  // Restore simulation from history
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
     if (!restoreParam) return
-    try { setInputs(JSON.parse(restoreParam) as BuyRentInputs) } catch {}
+    try {
+      const p = JSON.parse(restoreParam)
+      setInputs({
+        price: p.price ?? p.purchasePrice ?? 300000,
+        down: p.down ?? p.downPayment ?? 60000,
+        loanRate: p.loanRate ?? 3.5,
+        rent: p.rent ?? p.monthlyRent ?? 1000,
+        years: p.years ?? 20,
+        appreciation: p.appreciation ?? p.propertyGrowth ?? 2,
+        investReturn: p.investReturn ?? 7,
+      })
+    } catch {}
   }, [restoreParam])
+
   const r = useMemo(() => calcBuyRent(inputs), [inputs])
 
   const tips: string[] = []
@@ -46,15 +54,21 @@ function BuyRentPageInner() {
   if (!r.buyWins) tips.push('Louer et investir la différence peut générer plus de richesse sur votre horizon. Revoyez les hypothèses de valorisation.')
   if (r.buyWins && r.breakevenYears < 10) tips.push(`Excellent investissement : seuil de rentabilité atteint en ${r.breakevenYears} ans.`)
 
-  return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+  const verdictBg = r.buyWins ? 'rgba(52,211,153,0.07)' : 'rgba(248,113,113,0.07)'
+  const verdictBorder = r.buyWins ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.25)'
+  const verdictColor = r.buyWins ? '#34d399' : '#f87171'
 
-      <div className="flex items-center justify-between">
+  return (
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Acheter vs Louer</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Comparaison patrimoniale sur {inputs.years} ans</p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Immobilier</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Acheter vs Louer</h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>Comparez la rentabilité financière de l&apos;achat immobilier face à la location sur le long terme.</p>
         </div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Acheter vs Louer',
             subtitle: `Comparaison patrimoniale sur ${inputs.years} ans`,
@@ -78,183 +92,192 @@ function BuyRentPageInner() {
         </div>
       </div>
 
-      {/* Verdict KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth) },
-          { label: 'Capital si location', value: fmt(r.rentCapital) },
-          { label: 'Avantage', value: fmt(r.delta) },
-          { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans` },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent><div className="text-2xl font-semibold tracking-tight">{k.value}</div></CardContent>
-          </Card>
-        ))}
+      {/* KPI grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine si achat</p>
+          <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.buyNetWorth)}</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Capital si location</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(r.rentCapital)}</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Avantage patrimonial</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(Math.abs(r.delta))}</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Seuil de rentabilité</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{r.breakevenYears} ans</p>
+        </div>
       </div>
 
-      {/* Verdict banner */}
-      <Card className={cn('border-2', r.buyWins ? 'border-foreground/20' : 'border-foreground/10')}>
-        <CardContent className="pt-5 pb-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {r.buyWins ? <Home className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Verdict sur {inputs.years} ans</p>
-                <p className="text-lg font-semibold tracking-tight">{r.buyWins ? 'L\'achat est plus avantageux' : 'La location est plus avantageuse'}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground mb-0.5">Avantage patrimonial</p>
-              <p className="text-2xl font-semibold tracking-tight">{fmt(r.delta)}</p>
-            </div>
+      {/* Verdict block */}
+      <div style={{ background: verdictBg, border: `1px solid ${verdictBorder}`, borderRadius: 16, padding: '18px 24px', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {r.buyWins
+            ? <Home style={{ width: 20, height: 20, color: verdictColor }} />
+            : <TrendingUp style={{ width: 20, height: 20, color: verdictColor }} />
+          }
+          <div>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Verdict sur {inputs.years} ans</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: verdictColor }}>{r.buyWins ? 'L\'achat est plus avantageux' : 'La location est plus avantageuse'}</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4 }}>Avantage patrimonial</p>
+          <p style={{ fontSize: 22, fontWeight: 800, color: verdictColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(Math.abs(r.delta))}</p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Params */}
-        <Card>
-          <CardHeader><CardTitle>Paramètres</CardTitle><CardDescription>Votre scénario</CardDescription></CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Prix du bien<Tip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." /></Label>
-              <Input type="number" value={inputs.price} onChange={e => set('price')(+e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Apport<Tip text="20% est idéal pour obtenir les meilleurs taux." /></Label>
-              <Input type="number" value={inputs.down} onChange={e => set('down')(+e.target.value)} />
-              <p className="text-[11px] text-muted-foreground">{fmtPct(inputs.down / inputs.price * 100)} du prix · Emprunt {fmt(inputs.price - inputs.down)}</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Taux du prêt<Tip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." /></Label>
-                <span className="text-sm font-medium">{inputs.loanRate}%</span>
-              </div>
-              <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => set('loanRate')(v)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1">Loyer équivalent<Tip text="Loyer pour un bien similaire. Dans le scénario location, la différence avec la mensualité est investie." /></Label>
-              <Input type="number" value={inputs.rent} onChange={e => set('rent')(+e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Durée d'analyse<Tip text="Plus la durée est longue, plus l'achat devient généralement avantageux." /></Label>
-                <span className="text-sm font-medium">{inputs.years} ans</span>
-              </div>
-              <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Valorisation immo/an<Tip text="Appréciation annuelle estimée. France longue période : ~2-3%." /></Label>
-                <span className="text-sm font-medium">{inputs.appreciation}%</span>
-              </div>
-              <Slider min={-2} max={8} step={0.5} value={[inputs.appreciation]} onValueChange={([v]) => set('appreciation')(v)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-1">Rendement placement<Tip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." /></Label>
-                <span className="text-sm font-medium">{inputs.investReturn}%</span>
-              </div>
-              <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Two-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
-        {/* Comparison */}
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle>Comparaison patrimoniale</CardTitle><CardDescription>Achat vs Location + Placement</CardDescription></CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-md border border-border p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <Home className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-sm font-medium">Scénario Achat</p>
+        {/* Input panel */}
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Label className="flex items-center gap-1">Prix du bien<Tip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." /></Label>
+            <Input type="number" value={inputs.price} onChange={e => set('price')(+e.target.value)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Label className="flex items-center gap-1">Apport<Tip text="20% est idéal pour obtenir les meilleurs taux." /></Label>
+            <Input type="number" value={inputs.down} onChange={e => set('down')(+e.target.value)} />
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(inputs.down / inputs.price * 100)} du prix · Emprunt {fmt(inputs.price - inputs.down)}</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label className="flex items-center gap-1">Taux du prêt<Tip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
+            </div>
+            <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => set('loanRate')(v)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <Label className="flex items-center gap-1">Loyer équivalent<Tip text="Loyer pour un bien similaire. Dans le scénario location, la différence avec la mensualité est investie." /></Label>
+            <Input type="number" value={inputs.rent} onChange={e => set('rent')(+e.target.value)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label className="flex items-center gap-1">Durée d&apos;analyse<Tip text="Plus la durée est longue, plus l'achat devient généralement avantageux." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
+            </div>
+            <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label className="flex items-center gap-1">Valorisation immo/an<Tip text="Appréciation annuelle estimée. France longue période : ~2-3%." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.appreciation}%</span>
+            </div>
+            <Slider min={-2} max={8} step={0.5} value={[inputs.appreciation]} onValueChange={([v]) => set('appreciation')(v)} />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Label className="flex items-center gap-1">Rendement placement<Tip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." /></Label>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.investReturn}%</span>
+            </div>
+            <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />
+          </div>
+        </div>
+
+        {/* Results panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Comparison breakdown */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Comparaison patrimoniale</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+              {/* Buy scenario */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <Home style={{ width: 14, height: 14, color: 'var(--text-muted-c)' }} />
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Scénario Achat</p>
                 </div>
-                <Separator />
-                <div className="space-y-2">
+                <div style={{ borderTop: '1px solid var(--card-dark-border)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
                     { label: 'Valeur bien', value: fmt(r.propertyValue) },
                     { label: 'Coût total', value: fmt(r.totalBuyCost) },
                     { label: 'Patrimoine net', value: fmt(r.buyNetWorth) },
                   ].map((row, i) => (
-                    <div key={i} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{row.label}</span>
-                      <span className="font-medium tabular-nums">{row.value}</span>
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                      <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
+                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="rounded-md border border-border p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-sm font-medium">Scénario Location</p>
+              {/* Rent scenario */}
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <TrendingUp style={{ width: 14, height: 14, color: 'var(--text-muted-c)' }} />
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Scénario Location</p>
                 </div>
-                <Separator />
-                <div className="space-y-2">
+                <div style={{ borderTop: '1px solid var(--card-dark-border)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
                     { label: 'Loyers payés', value: fmt(r.totalRentCost) },
                     { label: 'Capital investi', value: fmt(inputs.down) },
                     { label: 'Capital final', value: fmt(r.rentCapital) },
                   ].map((row, i) => (
-                    <div key={i} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{row.label}</span>
-                      <span className="font-medium tabular-nums">{row.value}</span>
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                      <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
+                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="rounded-md border border-border p-4 space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Bilan comparatif</p>
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Achat</span>
-                  <span className="font-semibold tabular-nums">{fmt(r.buyNetWorth)}</span>
+            {/* Visual comparison bars */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Bilan comparatif</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+                  <span style={{ color: 'var(--text-muted-c)' }}>Achat</span>
+                  <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(r.buyNetWorth)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full bg-foreground rounded-full" style={{ width: `${Math.min(r.buyNetWorth / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%` }} />
+                <div style={{ height: 8, borderRadius: 99, background: 'rgba(255,255,255,0.07)', overflow: 'hidden', marginBottom: 8 }}>
+                  <div style={{ height: '100%', background: 'var(--text-primary)', borderRadius: 99, width: `${Math.min(r.buyNetWorth / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%` }} />
                 </div>
-                <div className="flex justify-between text-sm mt-2">
-                  <span className="text-muted-foreground">Location</span>
-                  <span className="font-semibold tabular-nums">{fmt(r.rentCapital)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+                  <span style={{ color: 'var(--text-muted-c)' }}>Location</span>
+                  <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(r.rentCapital)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full bg-muted-foreground rounded-full" style={{ width: `${Math.min(r.rentCapital / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%` }} />
+                <div style={{ height: 8, borderRadius: 99, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: 'rgba(255,255,255,0.4)', borderRadius: 99, width: `${Math.min(r.rentCapital / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%` }} />
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
 
-      {/* Synthèse */}
-      <Card style={{ borderColor: r.buyWins ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)' }}>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            <CardTitle>Analyse — {r.buyWins ? 'Achat avantageux' : 'Location avantageuse'} sur {inputs.years} ans</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {r.buyWins
-              ? `L'achat génère ${fmt(r.delta)} de patrimoine supplémentaire sur ${inputs.years} ans. Le seuil de rentabilité est atteint en ${r.breakevenYears} ans.`
-              : `Louer et investir la différence génère ${fmt(r.delta)} de capital supplémentaire. Le rendement du placement (${inputs.investReturn}%) surpasse la valorisation immobilière (${inputs.appreciation}%).`}
-          </p>
-          <div className="space-y-2">
-            {tips.map((tip, i) => (
-              <div key={i} className="flex gap-3 rounded-md border border-border p-3">
-                <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[10px] font-semibold">{i + 1}</span>
+          {/* Tips / Analysis */}
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${verdictBorder}`, borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+              Analyse — {r.buyWins ? 'Achat avantageux' : 'Location avantageuse'} sur {inputs.years} ans
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>
+              {r.buyWins
+                ? `L'achat génère ${fmt(r.delta)} de patrimoine supplémentaire sur ${inputs.years} ans. Le seuil de rentabilité est atteint en ${r.breakevenYears} ans.`
+                : `Louer et investir la différence génère ${fmt(Math.abs(r.delta))} de capital supplémentaire. Le rendement du placement (${inputs.investReturn}%) surpasse la valorisation immobilière (${inputs.appreciation}%).`}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {tips.map((tip, i) => (
+                <div key={i} style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', gap: 12 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700 }}>{i + 1}</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{tip}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

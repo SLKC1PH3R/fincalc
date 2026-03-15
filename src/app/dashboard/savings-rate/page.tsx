@@ -2,12 +2,11 @@
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Sankey, Tooltip, ResponsiveContainer } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { fmt, fmtPct } from '@/lib/utils'
-import { Download, Plus, X, TrendingUp, Minus, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Download, Plus, X, TrendingUp, Minus, AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react'
 import { printReport } from '@/lib/print'
 
 interface LineItem { id: string; name: string; value: number }
@@ -146,14 +145,14 @@ function ItemRow({ item, onChange, onRemove, placeholder }: {
   placeholder?: string
 }) {
   return (
-    <div className="flex gap-2 items-center">
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <Input
         value={item.name}
         onChange={e => onChange('name', e.target.value)}
         className="h-7 text-xs flex-1"
         placeholder={placeholder ?? 'Nom'}
       />
-      <div className="flex items-center gap-1 flex-shrink-0">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
         <Input
           type="number"
           value={item.value || ''}
@@ -161,19 +160,23 @@ function ItemRow({ item, onChange, onRemove, placeholder }: {
           className="h-7 text-xs w-24 tabular-nums"
           placeholder="0"
         />
-        <span className="text-[11px] text-white/30 w-4 flex-shrink-0">€</span>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', width: 16, flexShrink: 0 }}>€</span>
       </div>
       <button
         onClick={onRemove}
-        className="h-5 w-5 flex items-center justify-center text-white/20 hover:text-red-400 transition-colors flex-shrink-0"
+        style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
       >
-        <X className="h-3 w-3" />
+        <X style={{ width: 12, height: 12 }} />
       </button>
     </div>
   )
 }
 
 function SavingsRatePageInner() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const [revenus, setRevenus] = useState<LineItem[]>(DEFAULT_REVENUS)
   const [investCats, setInvestCats] = useState<Category[]>(DEFAULT_INVEST)
   const [depenseCats, setDepenseCats] = useState<Category[]>(DEFAULT_DEPENSES)
@@ -184,9 +187,15 @@ function SavingsRatePageInner() {
     if (!restoreParam) return
     try {
       const p = JSON.parse(restoreParam)
-      if (p.revenus) setRevenus(p.revenus)
-      if (p.investCats) setInvestCats(p.investCats)
-      if (p.depenseCats) setDepenseCats(p.depenseCats)
+      const migrateItems = (arr: any[]): LineItem[] =>
+        arr.map((x: any) => ({ id: x.id ?? uid(), name: x.name ?? x.label ?? '', value: x.value ?? x.amount ?? 0 }))
+      const migrateCats = (arr: any[], fallbackName: string): Category[] => {
+        if (arr[0]?.items !== undefined) return arr
+        return [{ id: uid(), name: fallbackName, items: migrateItems(arr) }]
+      }
+      if (p.revenus) setRevenus(migrateItems(p.revenus))
+      if (p.investCats) setInvestCats(migrateCats(p.investCats, 'Investissements'))
+      if (p.depenseCats) setDepenseCats(migrateCats(p.depenseCats, 'Dépenses'))
     } catch {}
   }, [restoreParam])
 
@@ -225,25 +234,53 @@ function SavingsRatePageInner() {
     : savingsRate > 0 ? 'moyen'
     : 'nul'
   const scoreConf = {
-    deficit: { label: 'Déficit', Icon: AlertCircle, color: 'text-red-400', border: 'rgba(239,68,68,0.35)', msg: 'Vos dépenses dépassent vos revenus. Identifiez les postes à réduire en priorité.' },
-    excellent: { label: 'Excellent', Icon: CheckCircle2, color: 'text-emerald-400', border: 'rgba(52,211,153,0.35)', msg: `Bravo ! Vous épargnez ${savingsRate.toFixed(0)}% de vos revenus. Continuez à maximiser vos investissements.` },
-    bien: { label: 'Bien', Icon: TrendingUp, color: 'text-blue-400', border: 'rgba(96,165,250,0.35)', msg: `Votre taux d'épargne de ${savingsRate.toFixed(0)}% est sain. Visez 20% pour accélérer votre liberté financière.` },
-    moyen: { label: 'À améliorer', Icon: Minus, color: 'text-amber-400', border: 'rgba(251,191,36,0.35)', msg: `Vous épargnez ${savingsRate.toFixed(0)}% de vos revenus. Visez 10% minimum en réduisant les dépenses non essentielles.` },
-    nul: { label: 'Aucune épargne', Icon: AlertCircle, color: 'text-amber-400', border: 'rgba(251,191,36,0.35)', msg: "Vous n'avez aucune épargne mensuelle. Commencez par mettre de côté 5% de vos revenus chaque mois." },
+    deficit:   { label: 'Déficit',        Icon: AlertCircle,  color: '#ef4444', borderColor: 'rgba(239,68,68,0.25)',    msg: 'Vos dépenses dépassent vos revenus. Identifiez les postes à réduire en priorité.' },
+    excellent: { label: 'Excellent',      Icon: CheckCircle2, color: '#34d399', borderColor: 'rgba(52,211,153,0.25)',   msg: `Bravo ! Vous épargnez ${savingsRate.toFixed(0)}% de vos revenus. Continuez à maximiser vos investissements.` },
+    bien:      { label: 'Bien',           Icon: TrendingUp,   color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)',   msg: `Votre taux d'épargne de ${savingsRate.toFixed(0)}% est sain. Visez 20% pour accélérer votre liberté financière.` },
+    moyen:     { label: 'À améliorer',    Icon: Minus,        color: '#fbbf24', borderColor: 'rgba(251,191,36,0.25)',   msg: `Vous épargnez ${savingsRate.toFixed(0)}% de vos revenus. Visez 10% minimum en réduisant les dépenses non essentielles.` },
+    nul:       { label: 'Aucune épargne', Icon: AlertCircle,  color: '#fbbf24', borderColor: 'rgba(251,191,36,0.25)',   msg: "Vous n'avez aucune épargne mensuelle. Commencez par mettre de côté 5% de vos revenus chaque mois." },
   }[score]
 
-  const kpiColor = { deficit: 'text-red-400', excellent: 'text-emerald-400', bien: 'text-blue-400', moyen: 'text-amber-400', nul: 'text-amber-400' }[score]
+  const kpiAccentColor = { deficit: '#ef4444', excellent: '#34d399', bien: '#60a5fa', moyen: '#fbbf24', nul: '#fbbf24' }[score]
+
+  const handleReset = () => {
+    setRevenus(DEFAULT_REVENUS)
+    setInvestCats(DEFAULT_INVEST)
+    setDepenseCats(DEFAULT_DEPENSES)
+  }
+
+  // Panel card helper
+  const panelStyle = {
+    background: 'var(--card-dark)',
+    border: '1px solid var(--card-dark-border)',
+    borderRadius: 16,
+    padding: 18,
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: 12,
+  }
+  const panelHeaderStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  }
 
   return (
-    <div className="space-y-6 animate-fade-in p-5 md:p-6">
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Taux d&apos;épargne</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Revenus · Investissements · Dépenses</p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Budget</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+            Taux d&apos;épargne
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
+            Analysez votre capacité d&apos;épargne mensuelle et son impact sur votre liberté financière à long terme.
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: "Taux d'épargne",
             subtitle: `Taux : ${savingsRate.toFixed(0)}% — Balance : ${fmt(balance)}/mois`,
@@ -263,229 +300,258 @@ function SavingsRatePageInner() {
             inputs={{ revenus, investCats, depenseCats } as unknown as Record<string, unknown>}
             results={{ savingsRate, totalRevenu, totalInvest, totalDepense, balance } as unknown as Record<string, unknown>}
           />
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
+          </Button>
         </div>
       </div>
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "Taux d'épargne", value: `${savingsRate.toFixed(1)}%`, sub: `${fmt(totalInvest)} investis/mois`, accent: true },
-          { label: 'Revenus mensuels', value: fmt(totalRevenu) },
-          { label: 'Investissements', value: fmt(totalInvest) },
-          { label: 'Dépenses', value: fmt(totalDepense) },
-        ].map((k, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2"><CardDescription>{k.label}</CardDescription></CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-semibold tracking-tight ${k.accent ? kpiColor : ''}`}>{k.value}</div>
-              {k.sub && <p className="text-xs text-muted-foreground mt-1">{k.sub}</p>}
-            </CardContent>
-          </Card>
-        ))}
+      {/* KPI grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Taux d&apos;épargne</p>
+          <p style={{ fontSize: 22, fontWeight: 800, color: kpiAccentColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{savingsRate.toFixed(1)}%</p>
+          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>{fmt(totalInvest)} investis/mois</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Revenus mensuels</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalRevenu)}</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Investissements</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: '#34d399', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalInvest)}</p>
+        </div>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
+          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Dépenses</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      {/* Progress bar visual */}
+      {totalRevenu > 0 && (
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px', marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Balance mensuelle</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: balance >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{fmt(balance)}</span>
+          </div>
+          <div style={{ height: 8, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
+            <div style={{ height: '100%', background: '#34d399', width: `${Math.min(totalInvest / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
+            <div style={{ height: '100%', background: '#fb923c', width: `${Math.min(totalDepense / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+            <span style={{ fontSize: 11, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#34d399', display: 'inline-block' }} />
+              Épargne {fmtPct(totalRevenu > 0 ? totalInvest / totalRevenu * 100 : 0)}
+            </span>
+            <span style={{ fontSize: 11, color: '#fb923c', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#fb923c', display: 'inline-block' }} />
+              Dépenses {fmtPct(totalRevenu > 0 ? totalDepense / totalRevenu * 100 : 0)}
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* ── Left: input panels ── */}
-        <div className="lg:col-span-2 space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Revenus */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Revenus</CardTitle>
-                <span className="text-sm font-semibold tabular-nums" style={{ color: INCOME_COLOR }}>{fmt(totalRevenu)}</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {revenus.map(r => (
-                <ItemRow
-                  key={r.id}
-                  item={r}
-                  onChange={(k, v) => updateRevenu(r.id, k, v)}
-                  onRemove={() => removeRevenu(r.id)}
-                  placeholder="Source de revenu"
-                />
-              ))}
-              <button
-                onClick={addRevenu}
-                className="flex items-center gap-1.5 text-xs text-white/35 hover:text-white/70 transition-colors pt-1"
-              >
-                <Plus className="h-3 w-3" />Ajouter une source de revenu
-              </button>
-            </CardContent>
-          </Card>
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Revenus</p>
+              <span style={{ fontSize: 13, fontWeight: 700, color: INCOME_COLOR, fontVariantNumeric: 'tabular-nums' }}>{fmt(totalRevenu)}</span>
+            </div>
+            {revenus.map(r => (
+              <ItemRow
+                key={r.id}
+                item={r}
+                onChange={(k, v) => updateRevenu(r.id, k, v)}
+                onRemove={() => removeRevenu(r.id)}
+                placeholder="Source de revenu"
+              />
+            ))}
+            <button
+              onClick={addRevenu}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+            >
+              <Plus style={{ width: 12, height: 12 }} />Ajouter une source de revenu
+            </button>
+          </div>
 
           {/* Investissements */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Investissements</CardTitle>
-                <span className="text-sm font-semibold tabular-nums" style={{ color: '#34d399' }}>{fmt(totalInvest)}</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {investCats.map(cat => {
-                const total = cat.items.reduce((s, i) => s + i.value, 0)
-                return (
-                  <div key={cat.id} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={cat.name}
-                        onChange={e => updateCatName(setInvestCats, cat.id, e.target.value)}
-                        className="h-7 text-xs font-semibold flex-1"
-                      />
-                      <span className="text-xs text-white/40 tabular-nums flex-shrink-0">{fmt(total)}</span>
-                      {investCats.length > 1 && (
-                        <button onClick={() => removeCat(setInvestCats, cat.id)} className="text-white/20 hover:text-red-400 transition-colors">
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </div>
-                    {cat.items.map(item => (
-                      <div key={item.id} className="pl-3">
-                        <ItemRow
-                          item={item}
-                          onChange={(k, v) => updateCatItem(setInvestCats, cat.id, item.id, k, v)}
-                          onRemove={() => removeCatItem(setInvestCats, cat.id, item.id)}
-                        />
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => addCatItem(setInvestCats, cat.id)}
-                      className="flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors pl-3 pt-0.5"
-                    >
-                      <Plus className="h-3 w-3" />Ajouter un investissement
-                    </button>
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Investissements</p>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalInvest)}</span>
+            </div>
+            {investCats.map(cat => {
+              const total = cat.items.reduce((s, i) => s + i.value, 0)
+              return (
+                <div key={cat.id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Input
+                      value={cat.name}
+                      onChange={e => updateCatName(setInvestCats, cat.id, e.target.value)}
+                      className="h-7 text-xs font-semibold flex-1"
+                    />
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
+                    {investCats.length > 1 && (
+                      <button onClick={() => removeCat(setInvestCats, cat.id)}
+                        style={{ color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
+                        <X style={{ width: 14, height: 14 }} />
+                      </button>
+                    )}
                   </div>
-                )
-              })}
-              <button
-                onClick={() => addCat(setInvestCats, 'Nouvelle catégorie')}
-                className="flex items-center gap-1.5 text-xs text-white/25 hover:text-white/55 transition-colors w-full pt-2"
-                style={{ borderTop: '1px dashed rgba(255,255,255,0.08)' }}
-              >
-                <Plus className="h-3 w-3" />Nouvelle catégorie d&apos;investissement
-              </button>
-            </CardContent>
-          </Card>
+                  {cat.items.map(item => (
+                    <div key={item.id} style={{ paddingLeft: 12 }}>
+                      <ItemRow
+                        item={item}
+                        onChange={(k, v) => updateCatItem(setInvestCats, cat.id, item.id, k, v)}
+                        onRemove={() => removeCatItem(setInvestCats, cat.id, item.id)}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => addCatItem(setInvestCats, cat.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                  >
+                    <Plus style={{ width: 12, height: 12 }} />Ajouter un investissement
+                  </button>
+                </div>
+              )
+            })}
+            <button
+              onClick={() => addCat(setInvestCats, 'Nouvelle catégorie')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
+            >
+              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie d&apos;investissement
+            </button>
+          </div>
 
           {/* Dépenses */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">Dépenses</CardTitle>
-                <span className="text-sm font-semibold tabular-nums text-white/60">{fmt(totalDepense)}</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {depenseCats.map(cat => {
-                const total = cat.items.reduce((s, i) => s + i.value, 0)
-                return (
-                  <div key={cat.id} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={cat.name}
-                        onChange={e => updateCatName(setDepenseCats, cat.id, e.target.value)}
-                        className="h-7 text-xs font-semibold flex-1"
-                      />
-                      <span className="text-xs text-white/40 tabular-nums flex-shrink-0">{fmt(total)}</span>
-                      {depenseCats.length > 1 && (
-                        <button onClick={() => removeCat(setDepenseCats, cat.id)} className="text-white/20 hover:text-red-400 transition-colors">
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </div>
-                    {cat.items.map(item => (
-                      <div key={item.id} className="pl-3">
-                        <ItemRow
-                          item={item}
-                          onChange={(k, v) => updateCatItem(setDepenseCats, cat.id, item.id, k, v)}
-                          onRemove={() => removeCatItem(setDepenseCats, cat.id, item.id)}
-                        />
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => addCatItem(setDepenseCats, cat.id)}
-                      className="flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors pl-3 pt-0.5"
-                    >
-                      <Plus className="h-3 w-3" />Ajouter une dépense
-                    </button>
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Dépenses</p>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</span>
+            </div>
+            {depenseCats.map(cat => {
+              const total = cat.items.reduce((s, i) => s + i.value, 0)
+              return (
+                <div key={cat.id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Input
+                      value={cat.name}
+                      onChange={e => updateCatName(setDepenseCats, cat.id, e.target.value)}
+                      className="h-7 text-xs font-semibold flex-1"
+                    />
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
+                    {depenseCats.length > 1 && (
+                      <button onClick={() => removeCat(setDepenseCats, cat.id)}
+                        style={{ color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
+                        <X style={{ width: 14, height: 14 }} />
+                      </button>
+                    )}
                   </div>
-                )
-              })}
-              <button
-                onClick={() => addCat(setDepenseCats, 'Nouvelle catégorie')}
-                className="flex items-center gap-1.5 text-xs text-white/25 hover:text-white/55 transition-colors w-full pt-2"
-                style={{ borderTop: '1px dashed rgba(255,255,255,0.08)' }}
-              >
-                <Plus className="h-3 w-3" />Nouvelle catégorie de dépense
-              </button>
-            </CardContent>
-          </Card>
+                  {cat.items.map(item => (
+                    <div key={item.id} style={{ paddingLeft: 12 }}>
+                      <ItemRow
+                        item={item}
+                        onChange={(k, v) => updateCatItem(setDepenseCats, cat.id, item.id, k, v)}
+                        onRemove={() => removeCatItem(setDepenseCats, cat.id, item.id)}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => addCatItem(setDepenseCats, cat.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                  >
+                    <Plus style={{ width: 12, height: 12 }} />Ajouter une dépense
+                  </button>
+                </div>
+              )
+            })}
+            <button
+              onClick={() => addCat(setDepenseCats, 'Nouvelle catégorie')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
+            >
+              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie de dépense
+            </button>
+          </div>
 
         </div>
 
         {/* ── Right: Sankey + analysis ── */}
-        <div className="lg:col-span-3 space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Flux financier mensuel</CardTitle>
-              <CardDescription>Revenus → Budget → Investissements &amp; Dépenses</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {sankeyData.nodes.length > 0 ? (
-                <ResponsiveContainer width="100%" height={480}>
-                  <Sankey
-                    data={sankeyData}
-                    nodePadding={12}
-                    nodeWidth={22}
-                    margin={{ top: 20, right: 185, bottom: 20, left: 130 }}
-                    iterations={64}
-                    node={(props: Parameters<typeof SankeyNodeRenderer>[0]) => <SankeyNodeRenderer {...props} />}
-                    link={(props: Parameters<typeof SankeyLinkRenderer>[0]) => <SankeyLinkRenderer {...props} />}
-                  >
-                    <Tooltip
-                      formatter={(v: number) => [fmt(v), '']}
-                      contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
-                      itemStyle={{ color: '#fff' }}
-                      labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
-                    />
-                  </Sankey>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
-                  Ajoutez des revenus pour afficher le graphique
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Sankey chart */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Flux financier mensuel</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 16 }}>Revenus → Budget → Investissements &amp; Dépenses</p>
+            {!mounted ? (
+              <div style={{ height: 480 }} />
+            ) : sankeyData.nodes.length > 0 ? (
+              <ResponsiveContainer width="100%" height={480}>
+                <Sankey
+                  data={sankeyData}
+                  nodePadding={12}
+                  nodeWidth={22}
+                  margin={{ top: 20, right: 185, bottom: 20, left: 130 }}
+                  iterations={64}
+                  node={(props: Parameters<typeof SankeyNodeRenderer>[0]) => <SankeyNodeRenderer {...props} />}
+                  link={(props: Parameters<typeof SankeyLinkRenderer>[0]) => <SankeyLinkRenderer {...props} />}
+                >
+                  <Tooltip
+                    formatter={(v: number) => [fmt(v), '']}
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
+                    itemStyle={{ color: '#fff' }}
+                    labelStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                  />
+                </Sankey>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--text-muted-c)' }}>
+                Ajoutez des revenus pour afficher le graphique
+              </div>
+            )}
+          </div>
 
           {/* Analysis */}
-          <Card style={{ borderColor: scoreConf.border }}>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <scoreConf.Icon className={`h-4 w-4 ${scoreConf.color}`} />
-                <CardTitle>Analyse — Taux d&apos;épargne {scoreConf.label}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground leading-relaxed">{scoreConf.msg}</p>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: 'Balance mensuelle', value: fmt(balance), color: balance >= 0 ? 'text-emerald-400' : 'text-red-400' },
-                  { label: '% revenus épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'text-white/80' },
-                  { label: '% revenus dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'text-white/80' },
-                ].map((m, i) => (
-                  <div key={i} className="rounded-lg p-3 text-center" style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <p className="text-[11px] text-white/35 mb-1">{m.label}</p>
-                    <p className={`text-base font-semibold tabular-nums ${m.color}`}>{m.value}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+                Analyse — Taux d&apos;épargne {scoreConf.label}
+              </p>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>{scoreConf.msg}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+              {[
+                { label: 'Balance mensuelle', value: fmt(balance), color: balance >= 0 ? '#34d399' : '#ef4444' },
+                { label: '% revenus épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'var(--text-primary)' },
+                { label: '% revenus dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'var(--text-primary)' },
+              ].map((m, i) => (
+                <div key={i} style={{ borderRadius: 10, padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4 }}>{m.label}</p>
+                  <p style={{ fontSize: 15, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.color }}>{m.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
         </div>
       </div>

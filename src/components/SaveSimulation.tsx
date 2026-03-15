@@ -5,6 +5,7 @@ import { Save, Check, X, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
+import { ShareButton } from '@/components/ShareButton'
 
 interface SaveSimulationProps {
   type: string
@@ -93,7 +94,7 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
   }
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5 flex-wrap">
       {simId && (
         <Button onClick={handleUpdate} disabled={saving || updated} size="sm" className="gap-2" style={{ background: 'rgb(22,163,74)', borderColor: 'transparent', color: '#fff' }}>
           {updated ? <Check className="h-3.5 w-3.5" /> : <RefreshCw className="h-3.5 w-3.5" />}
@@ -104,6 +105,7 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
         {saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
         {saved ? 'Sauvegardé' : 'Sauvegarder'}
       </Button>
+      {simId && <ShareButton simulationId={simId} />}
     </div>
   )
 }

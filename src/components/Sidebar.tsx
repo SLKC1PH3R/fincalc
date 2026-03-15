@@ -7,7 +7,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Bitcoin, Award, CreditCard, Target, Flag, Coins, FileText, SlidersHorizontal,
+  Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -28,37 +28,49 @@ const PATRIMOINE_CATEGORIES = [
   { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
 ]
 
-const GESTION_ITEMS = [
-  { href: '/dashboard/goals',      label: 'Mes Objectifs', icon: Flag     },
-  { href: '/dashboard/rebalancing', label: 'Rééquilibrage', icon: Target  },
-  { href: '/dashboard/tax-report', label: 'Rapport Fiscal', icon: FileText },
+const SIMULATEURS_GROUPS = [
+  {
+    label: 'Placements',
+    items: [
+      { href: '/dashboard/compound',  label: 'Intérêts composés', icon: TrendingUp },
+      { href: '/dashboard/dca',       label: 'DCA',               icon: RefreshCw  },
+      { href: '/dashboard/fire',      label: 'FI/RE',             icon: Flame      },
+      { href: '/dashboard/dividends', label: 'Revenus passifs',   icon: Coins      },
+      { href: '/dashboard/benchmark', label: 'Benchmarks',        icon: BarChart3  },
+    ],
+  },
+  {
+    label: 'Immobilier',
+    items: [
+      { href: '/dashboard/buyrent',  label: 'Acheter vs Louer',     icon: Home      },
+      { href: '/dashboard/mortgage', label: 'Prêt immobilier',      icon: Building2 },
+      { href: '/dashboard/rental',   label: 'Rentabilité locative', icon: Wallet    },
+    ],
+  },
+  {
+    label: 'Fiscalité & Retraite',
+    items: [
+      { href: '/dashboard/tax',              label: 'Impôts IR',          icon: Receipt   },
+      { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème', icon: Receipt   },
+      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',  icon: Wallet    },
+      { href: '/dashboard/retirement',       label: 'Retraite',           icon: PiggyBank },
+      { href: '/dashboard/succession',       label: 'Succession & Don.',  icon: Users     },
+    ],
+  },
+  {
+    label: 'Budget & Épargne',
+    items: [
+      { href: '/dashboard/savings-rate',    label: "Taux d'épargne",  icon: Percent    },
+      { href: '/dashboard/budget',          label: 'Budget 50/30/20', icon: Calculator },
+      { href: '/dashboard/emergency-fund',  label: 'Épargne urgence', icon: ShieldCheck },
+      { href: '/dashboard/consumer-credit', label: 'Crédit conso',    icon: CreditCard },
+      { href: '/dashboard/transactions',    label: "Carnet d'ordres", icon: History    },
+    ],
+  },
 ]
 
-const OUTILS_ITEMS = [
-  { href: '/dashboard/compound',          label: 'Intérêts Composés',   icon: TrendingUp },
-  { href: '/dashboard/dca',              label: 'DCA',                  icon: RefreshCw  },
-  { href: '/dashboard/fire',             label: 'FI/RE',                icon: Flame      },
-  { href: '/dashboard/buyrent',          label: 'Acheter vs Louer',     icon: Home       },
-  { href: '/dashboard/mortgage',         label: 'Prêt Immobilier',      icon: Building2  },
-  { href: '/dashboard/rental',           label: 'Rentabilité Locative', icon: Wallet     },
-  { href: '/dashboard/tax',              label: 'Impôts IR',            icon: Receipt    },
-  { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème',   icon: Receipt    },
-  { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',    icon: Wallet     },
-  { href: '/dashboard/retirement',       label: 'Retraite',             icon: PiggyBank  },
-  { href: '/dashboard/savings-rate',     label: "Taux d'épargne",       icon: Percent    },
-  { href: '/dashboard/budget',           label: 'Budget 50/30/20',      icon: Calculator },
-  { href: '/dashboard/dividends',        label: 'Revenus Passifs',       icon: Coins      },
-  { href: '/dashboard/benchmark',        label: 'Benchmarks',            icon: BarChart3  },
-  { href: '/dashboard/emergency-fund',   label: 'Épargne urgence',       icon: ShieldCheck },
-  { href: '/dashboard/consumer-credit',  label: 'Crédit conso',          icon: CreditCard },
-  { href: '/dashboard/succession',       label: 'Succession & Don.',     icon: Users      },
-  { href: '/dashboard/transactions',     label: "Carnet d'ordres",       icon: History    },
-]
-
-const COMPTE_ITEMS = [
-  { href: '/dashboard/settings', label: 'Mon compte', icon: Settings },
-  { href: '/dashboard/history',  label: 'Historique', icon: History  },
-]
+// Flat list of all simulator hrefs (for active detection)
+const ALL_SIM_HREFS = SIMULATEURS_GROUPS.flatMap(g => g.items.map(i => i.href))
 
 interface SimEntry { id: string; type: string; name: string; inputs: Record<string, unknown> }
 
@@ -97,8 +109,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
-  const [gestionExpanded, setGestionExpanded] = useState<boolean>(() => pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href))
-  const [outilsExpanded, setOutilsExpanded] = useState(false)
+  const [simulateursExpanded, setSimulateursExpanded] = useState(() => ALL_SIM_HREFS.some(h => pathname === h))
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [score, setScore] = useState<number | null>(null)
   const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
@@ -176,7 +187,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
   useEffect(() => {
     if (pathname.startsWith('/dashboard/')) setExpandedHref(pathname)
-    if (pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href)) setGestionExpanded(true)
+    if (ALL_SIM_HREFS.some(h => pathname === h)) setSimulateursExpanded(true)
   }, [pathname])
 
   const deleteSim = async (id: string) => {
@@ -598,28 +609,26 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '6px 8px' : '4px 8px' }}>
 
-          {/* Score Patrimonial — shown only when no score widget (collapsed OR score===null) */}
+          {/* Tableau de bord */}
+          <div style={{ marginBottom: 4 }}>
+            <NavItem href="/dashboard" label="Tableau de bord" icon={BarChart3} active={pathname === '/dashboard'} />
+          </div>
+
+          {/* Score Patrimonial (collapsed or no widget) */}
           {(collapsed || score === null) && (
-            <div style={{ marginBottom: 2 }}>
-              <NavItem
-                href="/dashboard/score"
-                label="Score Patrimonial"
-                icon={Award}
-                active={pathname === '/dashboard/score'}
-              />
+            <div style={{ marginBottom: 4 }}>
+              <NavItem href="/dashboard/score" label="Score Patrimonial" icon={Award} active={pathname === '/dashboard/score'} />
             </div>
           )}
 
-          {/* Thin divider */}
-          <div style={{ height: 1, margin: '6px 4px', background: 'var(--sb-divider)' }} />
+          {/* thin divider */}
+          <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />
 
-          {/* ── Patrimoine section ── */}
+          {/* ── PATRIMOINE ── */}
           <div style={{ marginBottom: 2 }}>
             <SectionLabel label="Patrimoine" sectionKey="Patrimoine" />
-
             {(collapsed || !collapsedSections.has('Patrimoine')) && (
               <div className="space-y-0.5">
-                {/* Vue d'ensemble row */}
                 <NavItem
                   href="/dashboard/patrimoine"
                   label="Vue d'ensemble"
@@ -629,225 +638,150 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   expanded={patrimoineExpanded}
                   onToggleExpand={() => setPatrimoineExpanded(v => !v)}
                 />
-
-                {/* Category sub-links — expanded */}
                 {!collapsed && patrimoineExpanded && (
-                  <div
-                    className="mt-0.5 ml-10 space-y-0.5"
-                    style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}
-                  >
+                  <div className="mt-0.5 ml-10 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
                     {PATRIMOINE_CATEGORIES.slice(1).map(cat => {
                       const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                      return (
-                        <SubItem
-                          key={cat.href}
-                          href={cat.href}
-                          label={cat.label}
-                          icon={cat.icon}
-                          active={isActive}
-                        />
-                      )
+                      return <SubItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
                     })}
                   </div>
                 )}
-
-                {/* Category icons — collapsed */}
                 {collapsed && PATRIMOINE_CATEGORIES.slice(1).map(cat => {
                   const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                  return (
-                    <NavItem
-                      key={cat.href}
-                      href={cat.href}
-                      label={cat.label}
-                      icon={cat.icon}
-                      active={isActive}
-                    />
-                  )
+                  return <NavItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
                 })}
-
-                {/* Gestion personnelle sub-section */}
-                <NavItem
-                  href="/dashboard/gestion"
-                  label="Gestion personnelle"
-                  icon={SlidersHorizontal}
-                  active={pathname === '/dashboard/gestion' || GESTION_ITEMS.some(i => pathname === i.href)}
-                  expandable={!collapsed}
-                  expanded={gestionExpanded}
-                  onToggleExpand={() => setGestionExpanded(v => !v)}
-                />
-
-                {!collapsed && gestionExpanded && (
-                  <div
-                    className="mt-0.5 ml-10 space-y-0.5"
-                    style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}
-                  >
-                    {GESTION_ITEMS.map(item => (
-                      <SubItem
-                        key={item.href}
-                        href={item.href}
-                        label={item.label}
-                        icon={item.icon}
-                        active={pathname === item.href}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {collapsed && GESTION_ITEMS.map(item => (
-                  <NavItem
-                    key={item.href}
-                    href={item.href}
-                    label={item.label}
-                    icon={item.icon}
-                    active={pathname === item.href}
-                  />
-                ))}
               </div>
             )}
           </div>
 
-          {/* ── Outils section ── */}
-          <div style={{ marginBottom: 2, marginTop: 10, borderTop: '1px solid var(--sb-divider)', paddingTop: 6 }}>
-            <SectionLabel label="Calculateurs" sectionKey="Outils" />
+          {/* thin divider */}
+          <div style={{ height: 1, margin: '6px 4px', background: 'var(--sb-divider)' }} />
 
-            {(collapsed || !collapsedSections.has('Outils')) && (
+          {/* ── SIMULATEURS ── */}
+          <div style={{ marginBottom: 2 }}>
+            <SectionLabel label="Simulateurs" sectionKey="Simulateurs" />
+            {(collapsed || !collapsedSections.has('Simulateurs')) && (
               <div className="space-y-0.5">
-                {/* Calculateurs header row */}
-                <NavItem
-                  href="/dashboard"
-                  label="Calculateurs"
-                  icon={BarChart3}
-                  active={pathname === '/dashboard'}
-                  expandable={!collapsed}
-                  expanded={outilsExpanded}
-                  onToggleExpand={() => setOutilsExpanded(v => !v)}
-                />
 
-                {/* Sub-items — expanded */}
-                {!collapsed && outilsExpanded && (
-                  <div
-                    className="mt-0.5 ml-10 space-y-0.5"
-                    style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}
-                  >
-                    {OUTILS_ITEMS.map(item => {
-                      const isActive = pathname === item.href
-                      const type = item.href.split('/').pop()
-                      const itemSims = type ? sims.filter(s => s.type === type) : []
-                      const isExpanded = expandedHref === item.href
-                      return (
-                        <div key={item.href}>
-                          <div className="flex items-center gap-0.5">
-                            <SubItem
-                              href={item.href}
-                              label={item.label}
-                              icon={item.icon}
-                              active={isActive}
-                            />
-                            {/* badge */}
-                            {itemSims.length > 0 && !isActive && (
-                              <span style={{
-                                fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.08)',
-                                padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2,
-                              }}>
-                                {itemSims.length}
-                              </span>
-                            )}
-                            {itemSims.length > 0 && (
-                              <button
-                                onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
-                                style={{
-                                  width: 18, height: 18,
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  borderRadius: 4, border: 'none', background: 'none',
-                                  cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)',
-                                }}
-                                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                              >
-                                <ChevronDown style={{ width: 10, height: 10, transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
-                              </button>
-                            )}
-                          </div>
-                          {isExpanded && itemSims.length > 0 && (
-                            <div className="mt-0.5 ml-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 8 }}>
-                              {itemSims.slice(0, 5).map(sim => {
-                                const isActiveSim = activeSimId === sim.id
+                {/* collapsed: all sim icons flat */}
+                {collapsed && ALL_SIM_HREFS.map(href => {
+                  const item = SIMULATEURS_GROUPS.flatMap(g => g.items).find(i => i.href === href)!
+                  return <NavItem key={href} href={href} label={item.label} icon={item.icon} active={pathname === href} />
+                })}
+
+                {/* expanded: header + grouped sub-items */}
+                {!collapsed && (
+                  <>
+                    <NavItem
+                      href="/dashboard"
+                      label="Simulateurs"
+                      icon={Calculator}
+                      active={false}
+                      expandable
+                      expanded={simulateursExpanded}
+                      onToggleExpand={() => setSimulateursExpanded(v => !v)}
+                    />
+                    {simulateursExpanded && (
+                      <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
+                        {SIMULATEURS_GROUPS.map(group => (
+                          <div key={group.label} style={{ marginBottom: 10 }}>
+                            {/* group label */}
+                            <p style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em', color: 'var(--sb-text-section)', padding: '6px 8px 4px', margin: 0 }}>
+                              {group.label}
+                            </p>
+                            <div className="space-y-0.5">
+                              {group.items.map(item => {
+                                const isActive = pathname === item.href
+                                const type = item.href.split('/').pop()
+                                const itemSims = type ? sims.filter(s => s.type === type) : []
+                                const isExpanded = expandedHref === item.href
                                 return (
-                                  <div
-                                    key={sim.id}
-                                    className="group flex items-center rounded-lg"
-                                    style={{ background: isActiveSim ? 'rgba(241,192,134,0.06)' : 'transparent' }}
-                                    onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                                    onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                                  >
-                                    <Link
-                                      href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                      className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
-                                      style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f1c086' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
-                                      onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
-                                      onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
-                                    >
-                                      {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
-                                      <span className="truncate">{sim.name}</span>
-                                    </Link>
-                                    <button
-                                      onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
-                                      className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                                      style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
-                                      title="Supprimer"
-                                    >
-                                      <Trash2 style={{ width: 10, height: 10 }} />
-                                    </button>
+                                  <div key={item.href}>
+                                    <div className="flex items-center gap-0.5">
+                                      <SubItem href={item.href} label={item.label} icon={item.icon} active={isActive} />
+                                      {itemSims.length > 0 && !isActive && (
+                                        <span style={{ fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
+                                          {itemSims.length}
+                                        </span>
+                                      )}
+                                      {itemSims.length > 0 && (
+                                        <button
+                                          onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
+                                          style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)' }}
+                                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                                        >
+                                          <ChevronDown style={{ width: 10, height: 10, transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                                        </button>
+                                      )}
+                                    </div>
+                                    {isExpanded && itemSims.length > 0 && (
+                                      <div className="mt-0.5 ml-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 8 }}>
+                                        {itemSims.slice(0, 5).map(sim => {
+                                          const isActiveSim = activeSimId === sim.id
+                                          return (
+                                            <div key={sim.id} className="group flex items-center rounded-lg"
+                                              style={{ background: isActiveSim ? 'rgba(241,192,134,0.06)' : 'transparent' }}
+                                              onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
+                                              onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                                            >
+                                              <Link
+                                                href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                                className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
+                                                style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f1c086' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
+                                                onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
+                                                onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
+                                              >
+                                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                                                <span className="truncate">{sim.name}</span>
+                                              </Link>
+                                              <button
+                                                onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                                                className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
+                                                style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                                                title="Supprimer"
+                                              >
+                                                <Trash2 style={{ width: 10, height: 10 }} />
+                                              </button>
+                                            </div>
+                                          )
+                                        })}
+                                        {itemSims.length > 5 && (
+                                          <Link href="/dashboard/history" className="block py-1 px-2 rounded-lg"
+                                            style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
+                                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+                                          >
+                                            +{itemSims.length - 5} de plus…
+                                          </Link>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
                                 )
                               })}
-                              {itemSims.length > 5 && (
-                                <Link
-                                  href="/dashboard/history"
-                                  className="block py-1 px-2 rounded-lg"
-                                  style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
-                                >
-                                  +{itemSims.length - 5} de plus…
-                                </Link>
-                              )}
                             </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-
-                {/* Icons only — collapsed sidebar */}
-                {collapsed && (
-                  <>
-                    <NavItem href="/dashboard" label="Calculateurs" icon={BarChart3} active={pathname === '/dashboard'} />
-                    {OUTILS_ITEMS.map(item => (
-                      <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={pathname === item.href} />
-                    ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
             )}
           </div>
 
-          {/* ── Compte ── */}
-          <div style={{ marginBottom: 2, marginTop: 10, borderTop: '1px solid var(--sb-divider)', paddingTop: 6 }}>
-            <SectionLabel label="Compte" sectionKey="Compte" />
-            {(collapsed || !collapsedSections.has('Compte')) && (
-              <div className="space-y-0.5">
-                {COMPTE_ITEMS.map(item => (
-                  <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={pathname === item.href} />
-                ))}
-              </div>
-            )}
+          {/* thin divider */}
+          <div style={{ height: 1, margin: '6px 4px', background: 'var(--sb-divider)' }} />
+
+          {/* Historique — accès rapide */}
+          <div style={{ marginBottom: 2 }}>
+            <NavItem href="/dashboard/history" label="Historique" icon={History} active={pathname === '/dashboard/history'} />
           </div>
 
           {/* Admin */}
           {isAdmin && (
-            <div style={{ marginBottom: 2 }}>
+            <div style={{ marginTop: 6 }}>
               <SectionLabel label="Admin" sectionKey="Admin" />
               {(collapsed || !collapsedSections.has('Admin')) && (
                 <NavItem href="/dashboard/admin" label="Administration" icon={Shield} active={pathname === '/dashboard/admin'} />
@@ -893,7 +827,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   </p>
                 </div>
               </div>
-              {/* Theme + Logout */}
+              {/* Theme + Settings + Logout */}
               <div className="flex items-center gap-1 px-1">
                 <button
                   onClick={toggleTheme}
@@ -907,12 +841,20 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--sb-hover-bg)'; e.currentTarget.style.color = 'var(--sb-text)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--sb-text-dim)' }}
                 >
-                  {theme === 'dark'
-                    ? <Sun style={{ width: 13, height: 13 }} />
-                    : <Moon style={{ width: 13, height: 13 }} />
-                  }
+                  {theme === 'dark' ? <Sun style={{ width: 13, height: 13 }} /> : <Moon style={{ width: 13, height: 13 }} />}
                   {theme === 'dark' ? 'Clair' : 'Sombre'}
                 </button>
+                <Link
+                  href="/dashboard/settings"
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: 6, padding: '6px 8px', borderRadius: 10,
+                    textDecoration: 'none', fontSize: 11, color: pathname === '/dashboard/settings' ? 'var(--sb-text)' : 'var(--sb-text-dim)',
+                  }}
+                >
+                  <Settings style={{ width: 13, height: 13 }} />
+                  Paramètres
+                </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
                   title="Déconnexion"

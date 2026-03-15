@@ -673,10 +673,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 {!collapsed && (
                   <>
                     <NavItem
-                      href="/dashboard"
+                      href="/dashboard/simulateurs"
                       label="Simulateurs"
                       icon={Calculator}
-                      active={false}
+                      active={pathname === '/dashboard/simulateurs'}
                       expandable
                       expanded={simulateursExpanded}
                       onToggleExpand={() => setSimulateursExpanded(v => !v)}

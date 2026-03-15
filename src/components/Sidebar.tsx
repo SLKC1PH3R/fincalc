@@ -8,7 +8,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
-  Sun, Moon, Plus, Landmark, Bitcoin,
+  Sun, Moon, Plus, Landmark, Bitcoin, LayoutGrid,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -254,6 +254,22 @@ function SidebarInner({ user, isAdmin }: SidebarProps) {
             >
               <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
               {!collapsed && <span className="text-xs font-medium">Synthèse</span>}
+            </Link>
+          </div>
+
+          {/* Simulateurs — standalone */}
+          <div>
+            <Link
+              href="/dashboard/simulateurs"
+              title={collapsed ? 'Simulateurs' : undefined}
+              className={cn(
+                'sb-link flex items-center gap-2.5 rounded-lg',
+                collapsed ? 'px-2 py-2 justify-center' : 'px-2.5 py-2',
+                pathname === '/dashboard/simulateurs' && 'sb-link-active'
+              )}
+            >
+              <LayoutGrid className="h-3.5 w-3.5 flex-shrink-0" />
+              {!collapsed && <span className="text-xs font-medium">Simulateurs</span>}
             </Link>
           </div>
 

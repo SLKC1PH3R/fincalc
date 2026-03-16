@@ -230,6 +230,10 @@ export default function HomePage() {
 
   const lastSimByType = sims.reduce((acc, s) => { if (!acc[s.type]) acc[s.type] = s; return acc }, {} as Record<string, Simulation>)
   const byType = sims.reduce((acc, s) => { acc[s.type] = (acc[s.type] || 0) + 1; return acc }, {} as Record<string, number>)
+  const sortedModules = [...QUICK_MODULES].sort((a, b) => {
+    const ta = a.href.replace('/dashboard/', ''), tb = b.href.replace('/dashboard/', '')
+    return (byType[tb] ?? 0) - (byType[ta] ?? 0)
+  })
   const distData = Object.entries(byType).map(([type, count]) => ({
     name: TYPE_META[type]?.label || type, value: count, color: TYPE_META[type]?.color || '#6b7280',
   })).sort((a, b) => b.value - a.value)
@@ -588,7 +592,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-              {QUICK_MODULES.map(mod => {
+              {sortedModules.map(mod => {
                 const preview = lastSimByType[mod.href.replace('/dashboard/', '')] &&
                   getSimPreview(mod.href.replace('/dashboard/', ''), lastSimByType[mod.href.replace('/dashboard/', '')]?.results)
                 return (
@@ -626,7 +630,7 @@ export default function HomePage() {
                 <LayoutGrid className="h-4 w-4" style={{ color: GOLD }} />
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>Tous les simulateurs</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>10+ outils financiers</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{'37 simulateurs & outils'}</p>
                 </div>
               </div>
               <ArrowUpRight className="h-4 w-4 flex-shrink-0" style={{ color: GOLD }} />

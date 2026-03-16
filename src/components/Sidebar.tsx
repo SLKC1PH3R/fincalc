@@ -8,7 +8,7 @@ import {
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
-  ShieldCheck, Users,
+  ShieldCheck, Users, Scale, Landmark,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -20,7 +20,7 @@ type Icon = (props: any) => any
 // ── Patrimoine categories ─────────────────────────────────────────────────────
 const PATRIMOINE_CATEGORIES = [
   { href: '/dashboard/patrimoine',            label: "Vue d'ensemble",    icon: BarChart3  },
-  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Building2  },
+  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
   { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
   { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
   { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
@@ -51,8 +51,8 @@ const SIMULATEURS_GROUPS = [
     label: 'Fiscalité & Retraite',
     items: [
       { href: '/dashboard/tax',              label: 'Impôts IR',          icon: Receipt   },
-      { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème', icon: Receipt   },
-      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',  icon: Wallet    },
+      { href: '/dashboard/flat-tax',         label: 'Flat Tax vs Barème', icon: Scale     },
+      { href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV',  icon: Landmark  },
       { href: '/dashboard/retirement',       label: 'Retraite',           icon: PiggyBank },
       { href: '/dashboard/succession',       label: 'Succession & Don.',  icon: Users     },
     ],

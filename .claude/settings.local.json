@@ -14,7 +14,9 @@
       "Bash(cmd /c node -e \"var fs=require\\(''fs''\\);var l=fs.readFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/page.tsx'',''utf8''\\).split\\(''\\\\n''\\);var n=l.slice\\(0,1045\\).concat\\(l.slice\\(1168\\)\\);fs.writeFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/page.tsx'',n.join\\(''\\\\n''\\)\\);process.stdout.write\\(''Done ''+l.length+''->''+n.length+''\\\\n''\\);\")",
       "Bash(powershell.exe -Command \"$f=''c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\dashboard\\\\patrimoine\\\\page.tsx''; $l=[System.IO.File]::ReadAllLines\\($f\\); $n=$l[0..1044]+$l[1167..\\($l.Length-1\\)]; [System.IO.File]::WriteAllLines\\($f,$n\\); Write-Host \\($l.Length.ToString\\(\\)+'' -> ''+$n.Length.ToString\\(\\)\\)\")",
       "Bash(awk 'NR<1046 || NR>1168' src/app/dashboard/patrimoine/page.tsx)",
-      "Bash(mv /tmp/page_new.tsx src/app/dashboard/patrimoine/page.tsx)"
+      "Bash(mv /tmp/page_new.tsx src/app/dashboard/patrimoine/page.tsx)",
+      "Bash(grep -n \"13 calculateurs\\\\|GOLD\\\\|const GOLD\\\\|f97316\\\\|Essayer sans\\\\|X,\\\\|{ X }\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
+      "Bash(grep -n \"f97316\\\\|249,115,22\\\\|13 cal\\\\|13 sim\\\\|v: ''13''\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")"
     ]
   }
 }

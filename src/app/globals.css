@@ -273,8 +273,8 @@ html { scroll-behavior: smooth; }
   --card-dark-border: rgba(0,0,0,0.08);
   --mini-card-bg: #f1f5f9;
   --text-primary: #111111;
-  --text-muted-c: rgba(0,0,0,0.40);
-  --text-subtle: rgba(0,0,0,0.25);
+  --text-muted-c: rgba(0,0,0,0.58);
+  --text-subtle: rgba(0,0,0,0.42);
   --text-em: rgba(0,0,0,0.75);
   --section-border: rgba(0,0,0,0.05);
   --row-hover: rgba(0,0,0,0.03);
@@ -331,6 +331,16 @@ html { scroll-behavior: smooth; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* ── Focus-visible ring ─────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+*:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ── Card micro-animations ──────────────────────────────────────────────── */

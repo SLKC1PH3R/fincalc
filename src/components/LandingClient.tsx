@@ -26,7 +26,8 @@ import {
   Globe,
   Euro,
   Percent,
-  Bitcoin
+  Bitcoin,
+  Users,
 } from 'lucide-react'
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -615,7 +616,7 @@ function DashboardPreview() {
             ))}
           </div>
           <div style={{ flex: 1, margin: '0 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.25)', textAlign: 'center', fontFamily: 'monospace' }}>
-            fire.digitalstack.cloud/dashboard
+            app.fincalc.fr/dashboard
           </div>
         </div>
 
@@ -1635,6 +1636,63 @@ export function LandingClient() {
         </div>
       </section>
 
+      {/* ── POUR QUI ? ────────────────────────────────────────────────── */}
+      <section id="pour-qui" style={{ padding: '80px 20px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 52 }}>
+              <SectionTag><Users style={{ width: 11, height: 11 }} /> Pour qui</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+                FinCalc s&apos;adapte à votre profil
+              </h2>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', maxWidth: 520, margin: '0 auto' }}>
+                Que vous débutiez ou optimisiez, trouvez les outils faits pour vous.
+              </p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+              {[
+                {
+                  emoji: '🌱', label: 'Jeune actif 25–35 ans',
+                  desc: 'Commencez à investir, visualisez la puissance des intérêts composés et planifiez votre indépendance financière.',
+                  tools: ['Intérêts composés', 'DCA', 'FI/RE'],
+                  color: '#34d399',
+                },
+                {
+                  emoji: '🏠', label: 'Propriétaire',
+                  desc: 'Optimisez votre crédit, calculez la rentabilité locative et comparez achat vs location.',
+                  tools: ['Prêt immobilier', 'Acheter vs Louer', 'Locatif'],
+                  color: '#f472b6',
+                },
+                {
+                  emoji: '📈', label: 'Investisseur',
+                  desc: 'Suivez votre portefeuille, optimisez votre fiscalité et choisissez la meilleure enveloppe.',
+                  tools: ['PEA vs CTO vs AV', 'Flat Tax vs Barème', 'Portfolio'],
+                  color: '#818cf8',
+                },
+                {
+                  emoji: '🔥', label: 'Futur retraité',
+                  desc: 'Planifiez votre retraite anticipée, calculez votre score patrimonial et simulez votre succession.',
+                  tools: ['FI/RE', 'Retraite', 'Score Patrimonial'],
+                  color: GOLD,
+                },
+              ].map(({ emoji, label, desc, tools, color }) => (
+                <div key={label} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.025)', border: `1px solid ${color}22`, padding: '28px 24px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle at top right, ${color}15, transparent 70%)`, borderRadius: 18 }} />
+                  <div style={{ fontSize: 32, marginBottom: 14 }}>{emoji}</div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>{label}</h3>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
+                    {tools.map(t => (
+                      <span key={t} style={{ fontSize: 11, fontWeight: 600, color, background: `${color}15`, border: `1px solid ${color}30`, borderRadius: 6, padding: '3px 9px' }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </RevealSection>
+        </div>
+      </section>
+
       {/* ── WHY FINCALC ───────────────────────────────────────────────── */}
       <section id="why" style={{ padding: '80px 20px 100px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
@@ -1707,6 +1765,49 @@ export function LandingClient() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ──────────────────────────────────────────────── */}
+      <section style={{ padding: '80px 20px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <SectionTag><Star style={{ width: 11, height: 11 }} /> Ils l&apos;utilisent</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', lineHeight: 1.2 }}>
+                Ce qu&apos;ils en disent
+              </h2>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+              {[
+                {
+                  text: "J'ai enfin compris ma tranche marginale d'imposition grâce au simulateur IR. J'économise maintenant 1 200 €/an en optimisant mes revenus.",
+                  name: 'Thomas M.', role: 'Développeur, 31 ans', stars: 5,
+                },
+                {
+                  text: "Le comparateur PEA vs CTO m'a convaincu en 5 minutes de transférer mon CTO. La différence fiscale sur 20 ans est énorme.",
+                  name: 'Léa R.', role: 'Ingénieure, 28 ans', stars: 5,
+                },
+                {
+                  text: "Le calculateur FI/RE m'a montré que je pouvais partir à 52 ans au lieu de 62 en épargnant 200 €/mois de plus. Game changer.",
+                  name: 'Marc D.', role: 'Cadre, 44 ans', stars: 5,
+                },
+              ].map(({ text, name, role, stars }) => (
+                <div key={name} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {Array.from({ length: stars }).map((_, i) => (
+                      <span key={i} style={{ color: GOLD, fontSize: 13 }}>★</span>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, flex: 1 }}>&ldquo;{text}&rdquo;</p>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{name}</p>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </RevealSection>
         </div>
       </section>
 

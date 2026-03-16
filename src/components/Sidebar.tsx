@@ -8,7 +8,7 @@ import {
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
-  ShieldCheck, Users, Scale, Landmark,
+  ShieldCheck, Users, Scale, Landmark, Search, X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -111,6 +111,22 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [simulateursExpanded, setSimulateursExpanded] = useState(() => ALL_SIM_HREFS.some(h => pathname === h))
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const [search, setSearch] = useState('')
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => {
+    const activeGroup = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label
+    const all = new Set(SIMULATEURS_GROUPS.map(g => g.label))
+    if (activeGroup) all.delete(activeGroup)
+    return all
+  })
+  const toggleGroup = (label: string) => setCollapsedGroups((prev: Set<string>) => {
+    const next = new Set(prev)
+    if (next.has(label)) next.delete(label); else next.add(label)
+    return next
+  })
+  useEffect(() => {
+    const ag = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label
+    if (ag) setCollapsedGroups((prev: Set<string>) => { const next = new Set(prev); next.delete(ag); return next })
+  }, [pathname])
   const [score, setScore] = useState<number | null>(null)
   const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
   const [sparklineHistory, setSparklineHistory] = useState<number[]>([])
@@ -435,6 +451,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 </Link>
                 <button
                   onClick={toggle}
+                  aria-label="Réduire la sidebar"
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', padding: 4, borderRadius: 8 }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-text)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
@@ -588,6 +605,37 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           )}
         </div>
 
+        {/* ── Search bar ── */}
+        {!collapsed && (
+          <div style={{ padding: '0 10px 8px', flexShrink: 0 }}>
+            <div style={{ position: 'relative' }}>
+              <Search style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', width: 12, height: 12, color: 'var(--sb-text-dim)', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                placeholder="Rechercher un simulateur…"
+                value={search}
+                onChange={(e: { target: { value: string } }) => setSearch(e.target.value)}
+                aria-label="Rechercher un simulateur"
+                style={{
+                  width: '100%', padding: '6px 28px 6px 28px', borderRadius: 8,
+                  border: '1px solid var(--sb-divider)', background: 'var(--sb-hover-bg)',
+                  color: 'var(--sb-text-strong)', fontSize: 11, outline: 'none',
+                  fontFamily: 'inherit',
+                }}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  aria-label="Effacer la recherche"
+                  style={{ position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', padding: 2, display: 'flex' }}
+                >
+                  <X style={{ width: 11, height: 11 }} />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Demo banner */}
         {isDemo && (
           <div style={{ padding: collapsed ? '4px 8px' : '0 10px 8px', display: 'flex', justifyContent: 'center' }}>
@@ -683,13 +731,29 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     />
                     {simulateursExpanded && (
                       <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                        {SIMULATEURS_GROUPS.map(group => (
+                        {/* Search results flat list */}
+                        {search.trim() ? (
+                          <div className="space-y-0.5 py-1">
+                            {SIMULATEURS_GROUPS.flatMap(g => g.items)
+                              .filter(item => item.label.toLowerCase().includes(search.toLowerCase()))
+                              .map(item => (
+                                <SubItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={pathname === item.href} />
+                              ))}
+                          </div>
+                        ) : SIMULATEURS_GROUPS.map(group => (
                           <div key={group.label} style={{ marginBottom: 10 }}>
-                            {/* group label */}
-                            <p style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em', color: 'var(--sb-text-section)', padding: '6px 8px 4px', margin: 0 }}>
-                              {group.label}
-                            </p>
-                            <div className="space-y-0.5">
+                            {/* group header with collapse toggle */}
+                            <button
+                              onClick={() => toggleGroup(group.label)}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px 4px', margin: 0 }}
+                            >
+                              <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.10em', color: 'var(--sb-text-section)' }}>
+                                {group.label}
+                              </span>
+                              <ChevronDown style={{ width: 9, height: 9, color: 'var(--sb-text-dim)', transform: collapsedGroups.has(group.label) ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }} />
+                            </button>
+                            {!collapsedGroups.has(group.label) && (
+                              <div className="space-y-0.5">
                               {group.items.map(item => {
                                 const isActive = pathname === item.href
                                 const type = item.href.split('/').pop()
@@ -760,7 +824,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                   </div>
                                 )
                               })}
-                            </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -832,6 +897,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 <button
                   onClick={toggleTheme}
                   title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+                  aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: 6, padding: '6px 8px', borderRadius: 10,
@@ -877,6 +943,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               <button
                 onClick={toggle}
                 title="Ouvrir"
+                aria-label="Ouvrir la sidebar"
                 style={{
                   width: '100%', display: 'flex', justifyContent: 'center',
                   padding: '8px 0', borderRadius: 10, border: 'none',
@@ -890,6 +957,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               <button
                 onClick={toggleTheme}
                 title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+                aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
                 style={{
                   width: '100%', display: 'flex', justifyContent: 'center',
                   padding: '8px 0', borderRadius: 10, border: 'none',

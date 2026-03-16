@@ -35,7 +35,7 @@ function getSimPreview(type: string, results: Record<string, unknown>): string |
     case 'dca':          return r.finalValue != null ? fmt(Number(r.finalValue)) : r.total != null ? fmt(Number(r.total)) : null
     case 'fire':         return r.yearsToFire != null ? `${r.yearsToFire} ans` : r.fireAge != null ? `à ${r.fireAge} ans` : null
     case 'mortgage':     return r.monthlyPayment != null ? `${fmt(Number(r.monthlyPayment))}/mois` : null
-    case 'buyrent':      return r.buyBetter != null ? (r.buyBetter ? 'Achat ✓' : 'Location ✓') : null
+    case 'buyrent':      return r.buyBetter != null ? (r.buyBetter ? 'Achat' : 'Location') : null
     case 'rental':       return r.grossYield != null ? `${Number(r.grossYield).toFixed(2)}% brut` : null
     case 'tax':          return r.netTax != null ? fmt(Number(r.netTax)) : null
     case 'flat-tax':     return r.flatTax != null ? fmt(Number(r.flatTax)) : null
@@ -140,6 +140,7 @@ export default function HomePage() {
   const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[] } | null>(null)
   const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
   const [indices, setIndices] = useState<MarketIndex[]>([])
+  const [indicesLoadedAt, setIndicesLoadedAt] = useState(0)
   const [onboardingDismissed, setOnboardingDismissed] = useState(true) // default true to avoid flash
 
   // Load simulations + envelopes
@@ -178,7 +179,7 @@ export default function HomePage() {
       body: JSON.stringify({ positions: [] }),
     })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.indices) setIndices(d.indices) })
+      .then(d => { if (d?.indices) { setIndices(d.indices); setIndicesLoadedAt(Date.now()) } })
       .catch(() => {})
   }, [])
 
@@ -261,6 +262,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2" style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
               {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+              {indicesLoadedAt > 0 && ` · Marchés ${timeAgo(new Date(indicesLoadedAt).toISOString()).toLowerCase()}`}
             </div>
           </div>
 

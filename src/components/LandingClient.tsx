@@ -1,5 +1,7 @@
 'use client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { useState, useEffect, useRef } from 'react'
 import {
   TrendingUp,
@@ -50,6 +52,11 @@ const MODULES = [
   { icon: Layers, label: 'PEA vs CTO vs AV', desc: 'Simulez la fiscalité nette de chaque enveloppe d\'investissement sur la durée.', tag: 'Investissement', color: '#c084fc' },
   { icon: Percent, label: 'Taux d\'épargne', desc: 'Calculez et optimisez votre taux d\'épargne mensuel selon vos revenus et objectifs.', tag: 'Budget', color: '#34d399' },
   { icon: Star, label: 'Score Patrimonial', desc: 'Obtenez votre score global et des recommandations concrètes sur 6 piliers patrimoniaux.', tag: 'Patrimoine', color: '#f1c086' },
+  { icon: Shield, label: 'Épargne de précaution', desc: 'Calculez le montant optimal de votre fonds d\'urgence selon vos charges, emploi et situation.', tag: 'Budget', color: '#fbbf24' },
+  { icon: Wallet, label: 'Coût réel crédit conso', desc: 'TAEG → mensualité, coût total des intérêts, coût d\'opportunité vs placement alternatif.', tag: 'Fiscal', color: '#fb7185' },
+  { icon: Building2, label: 'Succession & Donations', desc: 'DMTG par lien de parenté, abattements, barème progressif, optimisation renouvellement 15 ans.', tag: 'Fiscal', color: '#818cf8' },
+  { icon: TrendingUp, label: 'Revenus passifs', desc: 'Simulez un portefeuille dividendes : revenu mensuel généré selon le capital et le rendement.', tag: 'Investissement', color: GOLD },
+  { icon: BarChart3, label: 'Benchmarks', desc: 'Comparez la performance de votre portefeuille aux indices de référence (CAC 40, MSCI World…).', tag: 'Investissement', color: '#a3e635' },
 ]
 
 const SECURITY = [
@@ -69,14 +76,14 @@ const WHY = [
 
 const HOW = [
   { step: '01', title: 'Créez un compte', desc: 'En 30 secondes avec votre email ou votre compte Google. Aucune carte bancaire.' },
-  { step: '02', title: 'Lancez une simulation', desc: 'Choisissez parmi 37 simulateurs et renseignez vos paramètres en quelques clics.' },
+  { step: '02', title: 'Lancez une simulation', desc: 'Choisissez parmi 32 simulateurs et renseignez vos paramètres en quelques clics.' },
   { step: '03', title: 'Visualisez votre avenir', desc: 'Graphiques interactifs, synthèses détaillées et recommandations personnalisées.' },
 ]
 
 const ROADMAP = [
   // ── Disponible ──────────────────────────────────────────────────────────
   { status: 'done', label: 'Connexion Google OAuth', desc: 'Authentification sécurisée via Google' },
-  { status: 'done', label: '37 simulateurs & outils', desc: 'Épargne, Immobilier, Fiscal, Budget, Patrimoine' },
+  { status: 'done', label: '32 simulateurs & outils', desc: 'Épargne, Immobilier, Fiscal, Budget, Patrimoine' },
   { status: 'done', label: 'Historique des simulations', desc: 'Sauvegarde et restauration des scénarios' },
   { status: 'done', label: 'Mode sombre / clair', desc: 'Personnalisation de l\'interface' },
   // Mars 2026
@@ -514,6 +521,85 @@ function MiniScore() {
       {pillars.map((h, i) => (
         <rect key={i} x={W * 0.62 + i * 17} y={H - 6 - h * (H - 18)} width={11} height={h * (H - 18)} rx={3} fill={pillarColors[i]} opacity={0.6} />
       ))}
+    </svg>
+  )
+}
+
+function MiniEmergencyFund() {
+  const W = 280, H = 78, barY = 22, barH = 16, pct = 0.62
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      <rect x={0} y={barY} width={W} height={barH} rx={barH / 2} fill="rgba(251,191,36,0.10)" />
+      <rect x={0} y={barY} width={pct * W} height={barH} rx={barH / 2} fill="#fbbf24" opacity={0.75} />
+      <text x={pct * W + 8} y={barY + barH / 2 + 4} fontSize="11" fontWeight="700" fill="#fbbf24">62 %</text>
+      {[1, 3, 6].map((m, i) => (
+        <g key={i}>
+          <line x1={m / 6 * W} y1={barY + barH + 4} x2={m / 6 * W} y2={barY + barH + 10} stroke="rgba(255,255,255,0.15)" strokeWidth={1} />
+          <text x={m / 6 * W} y={barY + barH + 20} fontSize="8" textAnchor="middle" fill="rgba(255,255,255,0.22)">{m} mois</text>
+        </g>
+      ))}
+      <text x={0} y={H - 2} fontSize="9" fill="rgba(255,255,255,0.25)">Objectif : 6 mois de charges</text>
+    </svg>
+  )
+}
+function MiniConsumerCredit() {
+  const bars = 8, W = 280, H = 78, gap = 5
+  const bw = (W - (bars - 1) * gap) / bars
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      {Array.from({ length: bars }, (_, i) => {
+        const t = i / (bars - 1)
+        const intH = Math.round(Math.max(3, (1 - t) * 36 + 4))
+        const capH = Math.round((0.9 - t * 0.4) * 28 + 8)
+        const x = i * (bw + gap)
+        return (
+          <g key={i}>
+            <rect x={x} y={H - intH - capH} width={bw} height={intH} rx={2} fill="rgba(251,113,133,0.5)" />
+            <rect x={x} y={H - capH} width={bw} height={capH} rx={2} fill="rgba(251,113,133,0.82)" />
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+function MiniSuccession() {
+  const W = 280, H = 78
+  const data = [{ h: 58, label: 'Enfant' }, { h: 40, label: 'Frère' }, { h: 26, label: 'Neveu' }, { h: 16, label: 'Tiers' }]
+  const bw = W / data.length - 8
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      {data.map((d, i) => (
+        <g key={i}>
+          <rect x={i * (W / data.length) + 4} y={H - 14 - d.h} width={bw} height={d.h} rx={3} fill="#818cf8" opacity={0.75 - i * 0.1} />
+          <text x={i * (W / data.length) + 4 + bw / 2} y={H - 2} fontSize="8" textAnchor="middle" fill="rgba(255,255,255,0.25)">{d.label}</text>
+        </g>
+      ))}
+    </svg>
+  )
+}
+function MiniDividends() {
+  const bars = 10, W = 280, H = 78, gap = 5
+  const bw = (W - (bars - 1) * gap) / bars
+  const amounts = [0.30, 0.34, 0.38, 0.42, 0.46, 0.50, 0.55, 0.60, 0.65, 0.72]
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      {amounts.map((a, i) => (
+        <rect key={i} x={i * (bw + gap)} y={H - a * (H - 10)} width={bw} height={a * (H - 10)} rx={2} fill={GOLD} opacity={0.45 + (i / amounts.length) * 0.45} />
+      ))}
+    </svg>
+  )
+}
+function MiniBenchmark() {
+  const W = 280, H = 78
+  const mkPts = (fn: (t: number) => number) => Array.from({ length: 18 }, (_, i) => { const t = i / 17; return `${(t * W).toFixed(1)},${(H - 6 - fn(t) * (H - 14)).toFixed(1)}` })
+  const portfolio = mkPts(t => Math.pow(t, 1.05) * 0.96)
+  const world = mkPts(t => Math.pow(t, 1.2) * 0.82)
+  const cac = mkPts(t => t * 0.65 + t * t * 0.12)
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 78, display: 'block', marginBottom: 4 }}>
+      <path d={`M ${portfolio.join(' L ')}`} fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" />
+      <path d={`M ${world.join(' L ')}`} fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="4,2" strokeLinejoin="round" />
+      <path d={`M ${cac.join(' L ')}`} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeDasharray="2,2" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -1004,174 +1090,317 @@ function RatesWidget() {
   )
 }
 
+// ─── Social Proof Bar ─────────────────────────────────────────────────────
+function SocialProofBar() {
+  const { ref, visible } = useInView(0.2)
+  const count = useCountUp(12843, 2200, visible)
+  return (
+    <section style={{ padding: '0 20px 72px' }}>
+      <div ref={ref} style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+          background: 'rgba(255,255,255,0.025)',
+          borderRadius: 20, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden',
+        }}>
+          {[
+            { value: visible ? count.toLocaleString('fr-FR') : '0', label: 'Simulations lancées ce mois', color: GOLD },
+            { value: 'Infiniment', label: 'Temps économisé vs Excel', color: '#34d399' },
+            { value: 'Zéro', label: 'Données bancaires requises', color: '#38bdf8' },
+          ].map((s, i) => (
+            <div key={s.label} style={{
+              padding: 'clamp(20px,3vw,36px) clamp(16px,2vw,28px)',
+              textAlign: 'center',
+              borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+            }}>
+              <div style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, color: s.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.32)', marginTop: 8, lineHeight: 1.5 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ─── Interactive Compound Interest Demo ───────────────────────────────────
 function InteractiveDemo() {
+  const [tab, setTab] = useState<'compound' | 'fire'>('compound')
+
+  // ── Compound state ──
   const [capital, setCapital] = useState(10000)
   const [monthly, setMonthly] = useState(300)
   const [rate, setRate] = useState(7)
   const [years, setYears] = useState(20)
   const [hoverPct, setHoverPct] = useState<number | null>(null)
 
-  // Compute yearly data points (fast enough to do inline)
-  const data: { invested: number; value: number }[] = []
-  let value = capital
-  let invested = capital
-  for (let y = 0; y <= years; y++) {
-    data.push({ invested: Math.round(invested), value: Math.round(value) })
-    for (let m = 0; m < 12; m++) {
-      value = (value + monthly) * (1 + rate / 100 / 12)
-      invested += monthly
-    }
-  }
+  // ── FIRE state ──
+  const [firePatrimoine, setFirePatrimoine] = useState(30000)
+  const [fireEpargne, setFireEpargne] = useState(1500)
+  const [fireRate, setFireRate] = useState(7)
+  const [fireDepenses, setFireDepenses] = useState(3000)
 
-  const finalValue = data[data.length - 1].value
-  const totalInvested = data[data.length - 1].invested
+  const fmtFull = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €'
+
+  // ── Compound computation ──
+  const compoundData: { invested: number; value: number }[] = []
+  let _v = capital, _i = capital
+  for (let y = 0; y <= years; y++) {
+    compoundData.push({ invested: Math.round(_i), value: Math.round(_v) })
+    for (let m = 0; m < 12; m++) { _v = (_v + monthly) * (1 + rate / 100 / 12); _i += monthly }
+  }
+  const finalValue = compoundData[compoundData.length - 1].value
+  const totalInvested = compoundData[compoundData.length - 1].invested
   const gains = finalValue - totalInvested
   const rendement = Math.round((gains / totalInvested) * 100)
 
-  const fmtK = (n: number) =>
-    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2)} M€`
-      : n >= 1000 ? `${Math.round(n / 1000)} k€`
-        : `${n} €`
-  const fmtFull = (n: number) =>
-    n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €'
+  // ── FIRE computation ──
+  const fireTarget = fireDepenses * 12 * 25
+  const MAX_FIRE_YEARS = 45
+  const fireData: { value: number }[] = []
+  let fv = firePatrimoine
+  let fireYear = -1
+  for (let y = 0; y <= MAX_FIRE_YEARS; y++) {
+    fireData.push({ value: Math.round(fv) })
+    if (fv >= fireTarget && fireYear === -1) fireYear = y
+    for (let m = 0; m < 12; m++) { fv = (fv + fireEpargne) * (1 + fireRate / 100 / 12) }
+  }
+  const annees = fireYear >= 0 ? fireYear : null
+  const displayFireData = annees !== null ? fireData.slice(0, annees + 2) : fireData
+  const fireColor = '#fb923c'
 
-  // SVG inline chart
-  const W = 500; const H = 110
+  // ── SVG dimensions ──
+  const W = 560, H = 160
+
+  // Compound paths
   const maxV = finalValue
-  const toX = (i: number) => (i / (data.length - 1)) * W
-  const toY = (v: number) => H - (v / maxV) * H * 0.88 - 4
-  const pathValue = data.map((d, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(d.value).toFixed(1)}`).join(' ')
-  const pathInvested = data.map((d, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(d.invested).toFixed(1)}`).join(' ')
+  const toXc = (i: number) => (i / (compoundData.length - 1)) * W
+  const toYc = (v: number) => H - (v / maxV) * H * 0.88 - 4
+  const pathValue = compoundData.map((d, i) => `${i === 0 ? 'M' : 'L'}${toXc(i).toFixed(1)},${toYc(d.value).toFixed(1)}`).join(' ')
+  const pathInvested = compoundData.map((d, i) => `${i === 0 ? 'M' : 'L'}${toXc(i).toFixed(1)},${toYc(d.invested).toFixed(1)}`).join(' ')
   const areaValue = pathValue + ` L${W},${H} L0,${H} Z`
   const areaInvested = pathInvested + ` L${W},${H} L0,${H} Z`
 
+  // FIRE paths
+  const maxFire = Math.max(fireTarget * 1.1, ...displayFireData.map(d => d.value))
+  const toXf = (i: number) => (i / Math.max(displayFireData.length - 1, 1)) * W
+  const toYf = (v: number) => H - (v / maxFire) * H * 0.88 - 4
+  const fireValuePath = displayFireData.map((d, i) => `${i === 0 ? 'M' : 'L'}${toXf(i).toFixed(1)},${toYf(d.value).toFixed(1)}`).join(' ')
+  const fireAreaPath = fireValuePath + ` L${toXf(displayFireData.length - 1)},${H} L0,${H} Z`
+  const targetY = toYf(fireTarget)
+
+  // Hover for compound
+  const hovIdx = hoverPct !== null ? Math.round(hoverPct * (compoundData.length - 1)) : null
+  const hd = hovIdx !== null ? compoundData[hovIdx] : null
+
+  const activeColor = tab === 'compound' ? GOLD : fireColor
+
   return (
-    <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: 28 }}>
-      {/* KPIs */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Valeur finale estimée</p>
-          <p style={{ fontSize: 32, fontWeight: 800, color: GOLD, lineHeight: 1, letterSpacing: '-0.03em' }}>{fmtFull(finalValue)}</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', marginTop: 4 }}>après {years} ans · <span style={{ color: '#34d399' }}>+{fmtFull(gains)}</span> d&apos;intérêts</p>
-        </div>
-        <div style={{ display: 'flex', gap: 20 }}>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, fontWeight: 700, color: '#34d399', lineHeight: 1 }}>{rendement}%</p>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Rendement net</p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.6)', lineHeight: 1 }}>{fmtFull(totalInvested)}</p>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Capital investi</p>
-          </div>
-        </div>
-      </div>
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.035), rgba(241,192,134,0.015))',
+      border: `1px solid ${activeColor}25`,
+      borderRadius: 24, padding: 'clamp(24px,4vw,40px)',
+      boxShadow: `0 0 80px ${activeColor}08`,
+      position: 'relative', overflow: 'hidden',
+      transition: 'border-color 0.4s',
+    }}>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', top: -80, right: -80, width: 300, height: 300, borderRadius: '50%', background: `radial-gradient(circle, ${activeColor}0b, transparent 65%)`, pointerEvents: 'none', transition: 'background 0.4s' }} />
 
-      {/* SVG Chart */}
-      {(() => {
-        const hovIdx = hoverPct !== null ? Math.round(hoverPct * (data.length - 1)) : null
-        const hd = hovIdx !== null ? data[hovIdx] : null
-        return (
-          <div style={{ borderRadius: 10, overflow: 'visible', marginBottom: 14, position: 'relative', cursor: 'crosshair' }}
-            onMouseMove={e => {
-              const rect = e.currentTarget.getBoundingClientRect()
-              setHoverPct(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)))
-            }}
-            onMouseLeave={() => setHoverPct(null)}
-          >
-            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: 110, borderRadius: 10, overflow: 'hidden' }}>
-              <defs>
-                <linearGradient id="demo-grad-v" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
-                  <stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
-                </linearGradient>
-                <linearGradient id="demo-grad-i" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#34d399" stopOpacity="0.14" />
-                  <stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
-                </linearGradient>
-              </defs>
-              <path d={areaValue} fill="url(#demo-grad-v)" />
-              <path d={areaInvested} fill="url(#demo-grad-i)" />
-              <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
-              <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
-              {hovIdx !== null && hd && (
-                <>
-                  <line x1={toX(hovIdx)} y1={0} x2={toX(hovIdx)} y2={H} stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-                  <circle cx={toX(hovIdx)} cy={toY(hd.value)} r={3.5} fill={GOLD} stroke="#0c0c0c" strokeWidth="1.5" />
-                  <circle cx={toX(hovIdx)} cy={toY(hd.invested)} r={3.5} fill="#34d399" stroke="#0c0c0c" strokeWidth="1.5" />
-                </>
-              )}
-            </svg>
-            {/* HTML Tooltip overlay */}
-            {hovIdx !== null && hd && hoverPct !== null && (
-              <div style={{
-                position: 'absolute',
-                top: 6,
-                left: hoverPct > 0.6 ? 'auto' : `calc(${(hoverPct * 100).toFixed(1)}% + 10px)`,
-                right: hoverPct > 0.6 ? `calc(${((1 - hoverPct) * 100).toFixed(1)}% + 10px)` : 'auto',
-                background: 'rgba(8,8,8,0.95)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 8, padding: '8px 12px',
-                pointerEvents: 'none', zIndex: 10, minWidth: 190,
-              }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Année {hovIdx}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Valeur</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{fmtFull(hd.value)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: 3 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Investi</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>{fmtFull(hd.invested)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 4, marginTop: 2 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Gains</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>+{fmtFull(hd.value - hd.invested)}</span>
-                </div>
-              </div>
-            )}
-          </div>
-        )
-      })()}
-
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 20, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <div style={{ width: 16, height: 2, background: GOLD, borderRadius: 1 }} />
-          Valeur finale
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <svg width="16" height="2"><line x1="0" y1="1" x2="16" y2="1" stroke="#34d399" strokeWidth="1.5" strokeDasharray="4,2" /></svg>
-          Capital investi
-        </div>
-      </div>
-
-      {/* Sliders */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px 24px' }}>
-        {(
-          [
-            { label: 'Capital initial', value: capital, min: 1000, max: 100000, step: 500, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
-            { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly },
-            { label: 'Rendement annuel', value: rate, min: 1, max: 15, step: 0.5, display: `${rate} %/an`, set: setRate },
-            { label: 'Durée', value: years, min: 5, max: 40, step: 1, display: `${years} ans`, set: setYears },
-          ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]
-        ).map(({ label, value, min, max, step, display, set }) => (
-          <div key={label}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.33)' }}>{label}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: GOLD }}>{display}</span>
-            </div>
-            <input
-              type="range" min={min} max={max} step={step} value={value}
-              onChange={e => set(Number(e.target.value))}
-              style={{ width: '100%', accentColor: GOLD, cursor: 'pointer', height: 3 }}
-            />
-          </div>
+      {/* Tab selector */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
+        {([
+          { id: 'compound' as const, label: 'Intérêts composés', icon: TrendingUp, color: GOLD },
+          { id: 'fire' as const, label: 'FI/RE', icon: Flame, color: fireColor },
+        ] as const).map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{
+            display: 'flex', alignItems: 'center', gap: 7, padding: '8px 18px', borderRadius: 9,
+            border: tab === t.id ? `1px solid ${t.color}35` : '1px solid transparent',
+            cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+            background: tab === t.id ? 'rgba(255,255,255,0.07)' : 'transparent',
+            color: tab === t.id ? t.color : 'rgba(255,255,255,0.32)',
+            transition: 'all 0.2s',
+          }}>
+            <t.icon style={{ width: 13, height: 13 }} />
+            {t.label}
+          </button>
         ))}
       </div>
 
-      <p style={{ marginTop: 16, fontSize: 10, color: 'rgba(255,255,255,0.16)', textAlign: 'center' }}>
-        Simulation indicative · rendement constant hypothétique · sans frais ni fiscalité
-      </p>
+      {/* ── COMPOUND MODE ── */}
+      {tab === 'compound' && (
+        <>
+          {/* KPI grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
+            {[
+              { label: 'Valeur finale', value: finalValue >= 1_000_000 ? `${(finalValue / 1_000_000).toFixed(2)} M€` : `${Math.round(finalValue / 1000)} k€`, color: GOLD, big: true },
+              { label: 'Gains nets', value: `+${gains >= 1_000_000 ? `${(gains / 1_000_000).toFixed(2)} M€` : `${Math.round(gains / 1000)} k€`}`, color: '#34d399', big: true },
+              { label: 'Rendement total', value: `${rendement}%`, color: 'rgba(255,255,255,0.75)', big: true },
+              { label: 'Capital investi', value: fmtFull(totalInvested), color: 'rgba(255,255,255,0.4)', big: false },
+            ].map(k => (
+              <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Chart */}
+          <div style={{ borderRadius: 12, marginBottom: 14, position: 'relative', cursor: 'crosshair' }}
+            onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); setHoverPct(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))) }}
+            onMouseLeave={() => setHoverPct(null)}
+          >
+            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
+              <defs>
+                <linearGradient id="demo2-v" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.32" /><stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
+                </linearGradient>
+                <linearGradient id="demo2-i" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#34d399" stopOpacity="0.15" /><stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
+                </linearGradient>
+              </defs>
+              <path d={areaValue} fill="url(#demo2-v)" />
+              <path d={areaInvested} fill="url(#demo2-i)" />
+              <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinejoin="round" />
+              <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
+              {hovIdx !== null && hd && (
+                <>
+                  <line x1={toXc(hovIdx)} y1={0} x2={toXc(hovIdx)} y2={H} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                  <circle cx={toXc(hovIdx)} cy={toYc(hd.value)} r={4} fill={GOLD} stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+                  <circle cx={toXc(hovIdx)} cy={toYc(hd.invested)} r={4} fill="#34d399" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+                </>
+              )}
+            </svg>
+            {hovIdx !== null && hd && hoverPct !== null && (
+              <div style={{
+                position: 'absolute', top: 8,
+                left: hoverPct > 0.6 ? 'auto' : `calc(${(hoverPct * 100).toFixed(1)}% + 12px)`,
+                right: hoverPct > 0.6 ? `calc(${((1 - hoverPct) * 100).toFixed(1)}% + 12px)` : 'auto',
+                background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 10, padding: '10px 14px', pointerEvents: 'none', zIndex: 10, minWidth: 200,
+              }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Année {hovIdx}</p>
+                {[['Valeur', fmtFull(hd.value), GOLD], ['Investi', fmtFull(hd.invested), '#34d399'], ['Gains', `+${fmtFull(hd.value - hd.invested)}`, '#fff']].map(([l, v, c], i) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: i === 1 ? 4 : 0, paddingTop: i === 2 ? 6 : 0, borderTop: i === 2 ? '1px solid rgba(255,255,255,0.07)' : 'none', marginTop: i === 2 ? 4 : 0 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{l}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 20, height: 2.5, background: GOLD, borderRadius: 2 }} /> Valeur finale
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" /></svg> Capital investi
+            </div>
+          </div>
+
+          {/* Sliders */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
+            {([
+              { label: 'Capital initial', value: capital, min: 1000, max: 100000, step: 500, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
+              { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly },
+              { label: 'Rendement annuel', value: rate, min: 1, max: 15, step: 0.5, display: `${rate} %/an`, set: setRate },
+              { label: 'Durée', value: years, min: 5, max: 40, step: 1, display: `${years} ans`, set: setYears },
+            ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
+              <div key={label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{display}</span>
+                </div>
+                <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: GOLD, cursor: 'pointer', height: 4 }} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ── FIRE MODE ── */}
+      {tab === 'fire' && (
+        <>
+          {/* KPI grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
+            {[
+              { label: 'Objectif FIRE', value: `${Math.round(fireTarget / 1000)} k€`, sub: 'règle des 4 %', color: fireColor, big: true },
+              { label: 'Années restantes', value: annees !== null ? `${annees} ans` : '> 45 ans', color: annees !== null ? '#34d399' : 'rgba(255,255,255,0.4)', big: true },
+              { label: 'Revenu passif cible', value: `${fmtFull(fireDepenses)}/mois`, color: 'rgba(255,255,255,0.7)', big: false },
+              { label: 'Patrimoine actuel', value: `${Math.round(firePatrimoine / 1000)} k€`, color: 'rgba(255,255,255,0.4)', big: false },
+            ].map(k => (
+              <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
+                {'sub' in k && k.sub && <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginTop: 4 }}>{k.sub}</p>}
+              </div>
+            ))}
+          </div>
+
+          {/* FIRE Chart */}
+          <div style={{ borderRadius: 12, marginBottom: 14 }}>
+            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
+              <defs>
+                <linearGradient id="fire2-g" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={fireColor} stopOpacity="0.30" /><stop offset="100%" stopColor={fireColor} stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              <rect x={0} y={0} width={W} height={targetY} fill="rgba(52,211,153,0.03)" />
+              <line x1={0} y1={targetY} x2={W} y2={targetY} stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" strokeOpacity="0.55" />
+              <path d={fireAreaPath} fill="url(#fire2-g)" />
+              <path d={fireValuePath} fill="none" stroke={fireColor} strokeWidth="2.5" strokeLinejoin="round" />
+              {annees !== null && (
+                <>
+                  <circle cx={toXf(annees)} cy={targetY} r={12} fill={fireColor} opacity="0.15" />
+                  <circle cx={toXf(annees)} cy={targetY} r={5} fill={fireColor} opacity="0.9" />
+                </>
+              )}
+            </svg>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 20, height: 2.5, background: fireColor, borderRadius: 2 }} /> Croissance portefeuille
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" /></svg> Objectif FIRE
+            </div>
+          </div>
+
+          {/* FIRE Sliders */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
+            {([
+              { label: 'Patrimoine actuel', value: firePatrimoine, min: 0, max: 200000, step: 5000, display: `${Math.round(firePatrimoine / 1000)} k€`, set: setFirePatrimoine },
+              { label: 'Épargne mensuelle', value: fireEpargne, min: 100, max: 5000, step: 100, display: `${fireEpargne} €/mois`, set: setFireEpargne },
+              { label: 'Rendement estimé', value: fireRate, min: 1, max: 15, step: 0.5, display: `${fireRate} %/an`, set: setFireRate },
+              { label: 'Dépenses/mois cible', value: fireDepenses, min: 1000, max: 10000, step: 200, display: `${fmtFull(fireDepenses)}/mois`, set: setFireDepenses },
+            ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
+              <div key={label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: fireColor }}>{display}</span>
+                </div>
+                <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: fireColor, cursor: 'pointer', height: 4 }} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ── Bottom CTA ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)' }}>
+          Simulation indicative · rendement constant · sans frais ni fiscalité
+        </p>
+        <Link href="/login"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, background: `${activeColor}1a`, border: `1px solid ${activeColor}40`, color: activeColor, textDecoration: 'none', fontSize: 13, fontWeight: 600, transition: 'all 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = `${activeColor}2e`; e.currentTarget.style.borderColor = `${activeColor}70` }}
+          onMouseLeave={e => { e.currentTarget.style.background = `${activeColor}1a`; e.currentTarget.style.borderColor = `${activeColor}40` }}>
+          Sauvegarder ce scénario <ArrowRight style={{ width: 13, height: 13 }} />
+        </Link>
+      </div>
     </div>
   )
 }
@@ -1276,10 +1505,19 @@ function CompetitorTable() {
 
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
   const [heroVisible, setHeroVisible] = useState(false)
+  const [demoLoading, setDemoLoading] = useState(false)
+
+  const loginAsDemo = async () => {
+    setDemoLoading(true)
+    const res = await signIn('credentials', { email: 'demo@digitalstack.cloud', password: 'demo@2026', redirect: false })
+    if (res?.ok) router.push('/dashboard/patrimoine')
+    else setDemoLoading(false)
+  }
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20)
@@ -1442,7 +1680,7 @@ export function LandingClient() {
           {/* Badge */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, marginBottom: 28 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
-            37 simulateurs · Fiscalité française 2026
+            32 simulateurs · Fiscalité française 2026
           </div>
 
           {/* Headline */}
@@ -1482,24 +1720,28 @@ export function LandingClient() {
 
           {/* Demo hint */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
-            <Link href="/login" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '8px 16px', borderRadius: 20,
-              background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.20)',
-              textDecoration: 'none', transition: 'all 0.2s',
-            }}
+            <button
+              onClick={loginAsDemo}
+              disabled={demoLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '8px 16px', borderRadius: 20, cursor: demoLoading ? 'wait' : 'pointer',
+                background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.20)',
+                transition: 'all 0.2s', fontFamily: 'inherit',
+              }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.13)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.07)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)' }}
             >
               <span style={{ fontSize: 13 }}>⚡</span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#f1c086' }}>Accéder au compte démo</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>— identifiants disponibles sur la page de connexion</span>
-            </Link>
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#f1c086' }}>
+                {demoLoading ? 'Connexion en cours…' : 'Accéder au compte démo'}
+              </span>
+            </button>
           </div>
 
           {/* Stats */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
-            {[{ v: '37', l: 'Simulateurs' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
+            {[{ v: '32', l: 'Simulateurs' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
               <div key={s.l} style={{ textAlign: 'center' }}>
                 <span style={{
                   display: 'block', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.03em',
@@ -1518,21 +1760,24 @@ export function LandingClient() {
         </div>
       </section>
 
+      {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
+      <SocialProofBar />
+
       {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
       <RatesWidget />
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
-      <section id="demo" style={{ padding: '60px 20px 80px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+      <section id="demo" style={{ padding: '60px 20px 100px' }}>
+        <div style={{ maxWidth: 980, margin: '0 auto' }}>
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <SectionTag><TrendingUp style={{ width: 11, height: 11 }} /> Essayez maintenant</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Sans compte requis</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Voyez votre épargne{' '}
                 <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>fructifier</span>
               </h2>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', marginTop: 10, lineHeight: 1.7 }}>
-                Manipulez les curseurs — aucun compte requis.
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>
+                Manipulez les curseurs en temps réel — deux simulateurs disponibles sans inscription.
               </p>
             </div>
           </RevealSection>
@@ -1549,7 +1794,7 @@ export function LandingClient() {
           {/* Header */}
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> 37 simulateurs</SectionTag>
+              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> 32 simulateurs</SectionTag>
               <h2 style={{ fontSize: 'clamp(2rem,5vw,3.4rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Tous les outils pour{' '}
                 <span style={{
@@ -1582,12 +1827,17 @@ export function LandingClient() {
             <RevealSection delay={420}><BentoFeaturedCard mod={MODULES[10]} preview={<MiniPEAvsCTO />} /></RevealSection>
             <RevealSection delay={480}><BentoFeaturedCard mod={MODULES[11]} preview={<MiniTauxEpargne />} /></RevealSection>
             <RevealSection delay={540}><BentoFeaturedCard mod={MODULES[12]} preview={<MiniScore />} /></RevealSection>
+            <RevealSection delay={600}><BentoFeaturedCard mod={MODULES[13]} preview={<MiniEmergencyFund />} /></RevealSection>
+            <RevealSection delay={660}><BentoFeaturedCard mod={MODULES[14]} preview={<MiniConsumerCredit />} /></RevealSection>
+            <RevealSection delay={720}><BentoFeaturedCard mod={MODULES[15]} preview={<MiniSuccession />} /></RevealSection>
+            <RevealSection delay={780}><BentoFeaturedCard mod={MODULES[16]} preview={<MiniDividends />} /></RevealSection>
+            <RevealSection delay={840}><BentoFeaturedCard mod={MODULES[17]} preview={<MiniBenchmark />} /></RevealSection>
           </div>
 
           {/* CTA strip — after all 9 cards */}
           <RevealSection delay={100}>
             <div style={{ textAlign: 'center', padding: '52px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>37 simulateurs · 100 % gratuit · sans carte bancaire</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>32 simulateurs · 100 % gratuit · sans carte bancaire</p>
               <Link href="/login"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${GOLD}55` }}
@@ -1597,6 +1847,54 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
+        </div>
+      </section>
+
+      {/* ── GESTION & SUIVI ───────────────────────────────────────────── */}
+      <section style={{ padding: '0 20px 80px' }}>
+        <div style={{ maxWidth: 1152, margin: '0 auto' }}>
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+              <SectionTag><Globe style={{ width: 11, height: 11 }} /> Gestion & Suivi</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
+                Suivez votre patrimoine en temps réel
+              </h2>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>15 pages de gestion incluses dans votre compte FinCalc</p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+              {[
+                { icon: Building2, label: 'Vue d\'ensemble patrimoine', desc: 'Dashboard global : valeur totale, répartition, carte monde', color: GOLD, tag: 'Patrimoine' },
+                { icon: Building2, label: 'Immobilier', desc: 'Biens, valeur, crédit restant, loyers perçus', color: '#f472b6', tag: 'Patrimoine' },
+                { icon: TrendingUp, label: 'Actions & Fonds', desc: 'Positions en PEA, CTO, AV, PER', color: '#34d399', tag: 'Patrimoine' },
+                { icon: PiggyBank, label: 'Livrets', desc: 'Livret A, LDDS, LEP et plafonds', color: '#38bdf8', tag: 'Patrimoine' },
+                { icon: Bitcoin, label: 'Autres actifs', desc: 'Crypto-monnaies et actifs alternatifs', color: '#fb923c', tag: 'Patrimoine' },
+                { icon: Wallet, label: 'Comptes bancaires', desc: 'Soldes et suivi des comptes courants', color: '#a78bfa', tag: 'Patrimoine' },
+                { icon: Receipt, label: 'Emprunts', desc: 'Vue d\'ensemble de tous les crédits en cours', color: '#fb7185', tag: 'Patrimoine' },
+                { icon: BarChart3, label: 'Mon Portefeuille', desc: 'Positions boursières avec prix live (Finnhub + CoinGecko)', color: '#38bdf8', tag: 'Suivi' },
+                { icon: RefreshCw, label: 'Rééquilibrage', desc: 'Arbitrages nécessaires pour revenir à l\'allocation cible', color: '#34d399', tag: 'Suivi' },
+                { icon: Star, label: 'Mes Objectifs', desc: 'Objectifs financiers personnalisés avec progression', color: GOLD, tag: 'Suivi' },
+                { icon: Layers, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND avec P&L', color: '#c084fc', tag: 'Suivi' },
+                { icon: Calculator, label: 'Rapport Fiscal', desc: 'Plus-values, durées de détention, enveloppes', color: '#fbbf24', tag: 'Suivi' },
+                { icon: Star, label: 'Score Patrimonial', desc: 'Notation 0-100 sur 6 piliers (épargne, dettes, diversification…)', color: GOLD, tag: 'Analyse' },
+                { icon: Globe, label: 'Gestion personnelle', desc: 'Vue synthétique : allocation, objectifs, situation fiscale', color: '#818cf8', tag: 'Analyse' },
+                { icon: Layers, label: 'Détail enveloppe', desc: 'Page individuelle avec positions, historique et performance', color: 'rgba(255,255,255,0.5)', tag: 'Patrimoine' },
+              ].map((item) => (
+                <Link key={item.label} href="/login" style={{ textDecoration: 'none' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px 16px', transition: 'all 0.2s', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = `${item.color}35` }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: `${item.color}18`, border: `1px solid ${item.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <item.icon style={{ width: 13, height: 13, color: item.color }} />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.82)' }}>{item.label}</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', lineHeight: 1.55, margin: 0 }}>{item.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </RevealSection>
         </div>
       </section>
 

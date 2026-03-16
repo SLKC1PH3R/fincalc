@@ -6,7 +6,15 @@
       "Bash(powershell.exe -Command \"npx tsc --noEmit 2>&1 | Select-Object -First 30\")",
       "Bash(powershell.exe -Command \"& { $env:Path += '';C:\\\\Program Files\\\\nodejs''; npx tsc --noEmit 2>&1 | Select-Object -First 30 }\")",
       "Bash(find c:UsersjeremDownloadsfincalc -name *wizard* -o -name *onboard*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(grep -n \"loan\\\\|mortgage\\\\|dette\\\\|debt\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/page.tsx)",
+      "Bash(grep -rn \"IMMOBILIER\\\\|immobilier\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/page.tsx)",
+      "Bash(grep -n \"ImmobilierSection\\\\|purchasePrice\\\\|currentValue\\\\|annualRent\\\\|surface\\\\|city\\\\|country\\\\|notary\\\\|subType\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/[id]/page.tsx)",
+      "Bash(node -e \":*)",
+      "Bash(cmd /c node -e \"var fs=require\\(''fs''\\);var l=fs.readFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/page.tsx'',''utf8''\\).split\\(''\\\\n''\\);var n=l.slice\\(0,1045\\).concat\\(l.slice\\(1168\\)\\);fs.writeFileSync\\(''c:/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/page.tsx'',n.join\\(''\\\\n''\\)\\);process.stdout.write\\(''Done ''+l.length+''->''+n.length+''\\\\n''\\);\")",
+      "Bash(powershell.exe -Command \"$f=''c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\dashboard\\\\patrimoine\\\\page.tsx''; $l=[System.IO.File]::ReadAllLines\\($f\\); $n=$l[0..1044]+$l[1167..\\($l.Length-1\\)]; [System.IO.File]::WriteAllLines\\($f,$n\\); Write-Host \\($l.Length.ToString\\(\\)+'' -> ''+$n.Length.ToString\\(\\)\\)\")",
+      "Bash(awk 'NR<1046 || NR>1168' src/app/dashboard/patrimoine/page.tsx)",
+      "Bash(mv /tmp/page_new.tsx src/app/dashboard/patrimoine/page.tsx)"
     ]
   }
 }

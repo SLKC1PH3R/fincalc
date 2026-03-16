@@ -10,7 +10,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, ChevronRight, X, BarChart3, CreditCard, Flame,
+  Landmark, Bitcoin, X, CreditCard, Flame,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -172,6 +172,7 @@ export default function PatrimoinePage() {
   const milestoneFiredRef = useRef<Set<string>>(new Set())
   const [dragOver, setDragOver] = useState<string | null>(null)
   const dragSrcIdx = useRef<number | null>(null)
+  const [assetFilter, setAssetFilter] = useState<'all'|'actions'|'immobilier'|'livrets'|'autres'|'comptes'>('all')
 
   const handleDragStart = (idx: number) => { dragSrcIdx.current = idx }
   const handleDrop = async (targetIdx: number) => {
@@ -401,6 +402,44 @@ export default function PatrimoinePage() {
     return tv
   }, [envelopes])
 
+  // Dettes (crédits immobiliers)
+  const dettes = useMemo(() =>
+    envelopes.filter(e => e.type === 'IMMOBILIER')
+      .reduce((s, e) => s + Number((e.metadata as Record<string,unknown>).creditRemaining ?? 0), 0),
+    [envelopes]
+  )
+  const patrimoineNet = totalValue - dettes
+
+  // Perf mensuelle par enveloppe (depuis snapshots si dispo)
+  const monthlyPerfByEnv = useMemo((): Record<string, number> => {
+    if (snapshots.length < 2) return {}
+    const now = Date.now()
+    const thirtyDaysAgo = now - 30 * 86_400_000
+    const older = snapshots.filter(s => new Date(s.date).getTime() <= thirtyDaysAgo)
+    if (!older.length) return {}
+    const refSnap = older[older.length - 1]
+    const result: Record<string, number> = {}
+    for (const env of envelopes) {
+      const oldVal = (refSnap.byEnvelope?.[env.id] as { value?: number } | undefined)?.value ?? null
+      const currentVal = env.type === 'IMMOBILIER'
+        ? Number(env.metadata.currentValue ?? 0)
+        : computeMarketValue(env)
+      if (oldVal !== null && oldVal > 0) result[env.id] = ((currentVal - oldVal) / oldVal) * 100
+    }
+    return result
+  }, [snapshots, envelopes])
+
+  // Enveloppes filtrées par filtre tableau
+  const filteredEnvelopes = useMemo(() => {
+    const filterTypes: Record<string, string[]> = {
+      all: [], actions: ['PEA','CTO','AV','PER'], immobilier: ['IMMOBILIER'],
+      livrets: ['LIVRET'], autres: ['CRYPTO'], comptes: ['CASH'],
+    }
+    const types = filterTypes[assetFilter] ?? []
+    if (types.length === 0) return envelopes
+    return envelopes.filter(e => types.includes(e.type))
+  }, [envelopes, assetFilter])
+
   // Données évolution — courbe unique filtrée par catégorie
   const { evolutionData, isSimulated } = useMemo(() => {
     const catTypes = CHART_CATEGORIES[chartCategory]?.types ?? []
@@ -482,7 +521,7 @@ export default function PatrimoinePage() {
 
   // ── Rendu ────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
+    <div className="space-y-6" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 28px 48px' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4 }}>
@@ -499,6 +538,23 @@ export default function PatrimoinePage() {
           Ajouter une enveloppe
         </Button>
       </div>
+
+      {/* ── 3 KPI cards ── */}
+      {!loading && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {[
+            { label: 'Patrimoine Net', value: fmtCompact(patrimoineNet), sub: `Brut ${fmtCompact(totalValue)}`, color: '#f1c086' },
+            { label: 'Total Dettes', value: dettes > 0 ? fmtCompact(dettes) : '—', sub: dettes > 0 ? 'Crédits immobiliers en cours' : 'Aucun emprunt renseigné', color: dettes > 0 ? '#f87171' : 'var(--text-muted-c)' },
+            { label: fireTarget > 0 ? `Vers ${fmtCompact(fireTarget)}` : 'Vers objectif FIRE', value: fireTarget > 0 ? `${Math.min(100, Math.round((patrimoineNet / fireTarget) * 100))}%` : '—', sub: fireTarget > 0 ? `Reste ${fmtCompact(Math.max(0, fireTarget - patrimoineNet))}` : 'Définissez votre cible FIRE ↓', color: '#a78bfa' },
+          ].map((kpi, i) => (
+            <div key={i} style={{ padding: '20px 24px', borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 8 }}>{kpi.label}</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', marginBottom: 4 }}>{kpi.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{kpi.sub}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Category cards ── */}
       {!loading && (
@@ -542,8 +598,9 @@ export default function PatrimoinePage() {
         </div>
       )}
 
-      {/* ── Évolution du patrimoine ── */}
+      {/* ── Évolution + Milestones ── */}
       {!loading && totalValue > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, alignItems: 'start' }}>
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
           <CardContent style={{ padding: 20 }}>
             {/* Chart header: category dropdown + time range buttons */}
@@ -671,57 +728,177 @@ export default function PatrimoinePage() {
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* ── KPIs (gauche) + Répartition tabulée (droite) ── */}
-      {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, alignItems: 'stretch' }}>
-          {/* KPIs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[
-              { label: 'Patrimoine total', value: fmtCompact(totalValue), sub: 'Valeur consolidée (±prix réels)', color: '#f1c086' },
-              { label: 'Enveloppes actives', value: String(envelopes.length), sub: 'Comptes et actifs suivis', color: '#818cf8' },
-              { label: 'Classes d\'actifs', value: String(new Set(envelopes.map(e => ENVELOPE_TYPE_CONFIG[e.type].assetClass)).size), sub: 'Diversification', color: '#34d399' },
-            ].map(kpi => (
-              <div key={kpi.label} style={{
-                flex: 1,
-                padding: '16px 20px', borderRadius: 12,
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-                display: 'flex', flexDirection: 'column', justifyContent: 'center',
-              }}>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>
-                  {kpi.label}
-                </div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>
-                  {kpi.value}
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>
-              </div>
-            ))}
-          </div>
+        {/* Milestones + Structure bar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', flex: 1 }}>
+            <CardContent style={{ padding: '18px 20px' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Paliers patrimoniaux</div>
+              {(() => {
+                const mls = [
+                  { label: '50k €', val: 50_000 },
+                  { label: '100k €', val: 100_000 },
+                  { label: '250k €', val: 250_000 },
+                  { label: '500k €', val: 500_000 },
+                ]
+                const doneCount = mls.filter(m => patrimoineNet >= m.val).length
+                const nextM = mls.find(m => patrimoineNet < m.val)
+                return (
+                  <div>
+                    <div style={{ position: 'relative', paddingTop: 10, marginBottom: 8 }}>
+                      <div style={{ position: 'absolute', top: 20, left: 10, right: 10, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                      <div style={{ position: 'absolute', top: 19, left: 10, width: `calc(${(doneCount / 4) * 100}% - 10px)`, height: 3, background: 'linear-gradient(90deg, #f1c086, rgba(241,192,134,0.5))', borderRadius: 99 }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+                        {mls.map((m, i) => {
+                          const done = patrimoineNet >= m.val
+                          return (
+                            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 2 }}>
+                              <div style={{ width: 22, height: 22, borderRadius: '50%', background: done ? '#f1c086' : 'rgba(255,255,255,0.06)', border: done ? 'none' : '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: done ? '#090c12' : 'rgba(255,255,255,0.2)' }}>
+                                {done ? '✓' : ''}
+                              </div>
+                              <span style={{ fontSize: 9, color: done ? 'var(--text-muted-c)' : 'var(--text-subtle)', textAlign: 'center', whiteSpace: 'nowrap' }}>{m.label}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    {nextM ? (
+                      <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(241,192,134,0.07)', borderRadius: 9, border: '1px solid rgba(241,192,134,0.18)' }}>
+                        <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginBottom: 3 }}>Prochain palier</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#f1c086' }}>{nextM.label}</div>
+                        <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Reste {fmtCompact(nextM.val - patrimoineNet)}</div>
+                      </div>
+                    ) : (
+                      <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(52,211,153,0.07)', borderRadius: 9, border: '1px solid rgba(52,211,153,0.2)' }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>🎉 Tous les paliers atteints !</div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
+            </CardContent>
+          </Card>
 
-          {/* Carte monde */}
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', flexDirection: 'column' }}>
-            <CardContent style={{ padding: 20, flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
-                Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
-                {geoAlloc.totalGeo > 0
-                  ? <>Calculé sur {fmtCompact(geoAlloc.totalGeo)} d'actifs boursiers reconnus</>
-                  : 'Ajoutez des ETFs ou actions pour voir la répartition géographique'}
-              </div>
-              {geoAlloc.totalGeo > 0 && (
-                <WorldMapChart
-                  allocation={geoAlloc}
-                  values={geoAlloc.values}
-                  totalValue={geoAlloc.totalGeo}
-                  height={300}
-                />
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+            <CardContent style={{ padding: '14px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>Structure du patrimoine</div>
+              {totalValue > 0 ? (
+                <>
+                  <div style={{ height: 8, borderRadius: 99, overflow: 'hidden', display: 'flex', marginBottom: 8 }}>
+                    <div style={{ width: `${Math.round((patrimoineNet / totalValue) * 100)}%`, height: '100%', background: 'linear-gradient(90deg, rgba(241,192,134,0.7), #f1c086)' }} />
+                    {dettes > 0 && <div style={{ flex: 1, height: '100%', background: 'rgba(248,113,113,0.35)' }} />}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
+                    <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                      <div style={{ width: 6, height: 6, borderRadius: 1, background: '#f1c086' }} />
+                      <span style={{ color: 'var(--text-muted-c)' }}>Net {Math.round((patrimoineNet / totalValue) * 100)}%</span>
+                    </div>
+                    {dettes > 0 && (
+                      <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                        <div style={{ width: 6, height: 6, borderRadius: 1, background: 'rgba(248,113,113,0.5)' }} />
+                        <span style={{ color: 'var(--text-muted-c)' }}>Dettes {Math.round((dettes / totalValue) * 100)}%</span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Patrimoine 100% net.</div>
               )}
             </CardContent>
           </Card>
         </div>
+        </div>
+      )}
+
+      {/* ── Tableau des actifs ── */}
+      {!loading && envelopes.length > 0 && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--section-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Détail des actifs</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {([
+                { key: 'all',        label: 'Tous' },
+                { key: 'actions',    label: 'Actions & Fonds' },
+                { key: 'immobilier', label: 'Immobilier' },
+                { key: 'livrets',    label: 'Livrets' },
+                { key: 'autres',     label: 'Crypto' },
+                { key: 'comptes',    label: 'Liquidités' },
+              ] as { key: typeof assetFilter; label: string }[]).map(f => {
+                const isActive = assetFilter === f.key
+                const catColor = (CHART_CATEGORIES[f.key as keyof typeof CHART_CATEGORIES]?.color) ?? '#f1c086'
+                return (
+                  <button key={f.key} onClick={() => setAssetFilter(f.key)} style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: isActive ? 700 : 400, cursor: 'pointer', background: isActive ? catColor + '18' : 'transparent', border: `1px solid ${isActive ? catColor + '50' : 'var(--card-dark-border)'}`, color: isActive ? catColor : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+                    {f.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  {['Actif', 'Type', 'Valeur', 'Part', 'Perf. 1M', 'Tendance'].map((h, i) => (
+                    <th key={i} style={{ padding: '10px 16px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, borderBottom: '1px solid var(--section-border)', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEnvelopes.map((env) => {
+                  const cfg = ENVELOPE_TYPE_CONFIG[env.type]
+                  const Icon = cfg.icon
+                  const value = env.type === 'IMMOBILIER'
+                    ? Number(env.metadata.currentValue ?? 0)
+                    : computeMarketValue(env)
+                  const part = totalValue > 0 ? (value / totalValue) * 100 : 0
+                  const perf = monthlyPerfByEnv[env.id] ?? null
+                  return (
+                    <tr
+                      key={env.id}
+                      onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}
+                      style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)'}
+                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                    >
+                      <td style={{ padding: '13px 16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 30, height: 30, borderRadius: 8, background: cfg.color + '18', border: `1px solid ${cfg.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Icon style={{ width: 13, height: 13, color: cfg.color }} />
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{env.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '13px 16px', textAlign: 'right' }}>
+                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 99, background: cfg.color + '18', color: cfg.color, fontWeight: 600, whiteSpace: 'nowrap' }}>{cfg.label}</span>
+                      </td>
+                      <td style={{ padding: '13px 16px', textAlign: 'right', color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                      </td>
+                      <td style={{ padding: '13px 16px', textAlign: 'right', color: 'var(--text-muted-c)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                        {value > 0 ? `${part.toFixed(1)}%` : '—'}
+                      </td>
+                      <td style={{ padding: '13px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        {perf !== null ? (
+                          <span style={{ fontSize: 13, fontWeight: 600, color: perf >= 0 ? '#34d399' : '#f87171' }}>{perf >= 0 ? '+' : ''}{perf.toFixed(2)}%</span>
+                        ) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                      </td>
+                      <td style={{ padding: '13px 16px', textAlign: 'right' }}>
+                        {perf !== null ? (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '3px 8px', borderRadius: 99, background: perf >= 0 ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)', color: perf >= 0 ? '#34d399' : '#f87171', fontSize: 10, fontWeight: 700 }}>
+                            {perf >= 0 ? '↑' : '↓'} {Math.abs(perf).toFixed(1)}%
+                          </div>
+                        ) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                      </td>
+                    </tr>
+                  )
+                })}
+                {filteredEnvelopes.length === 0 && (
+                  <tr><td colSpan={6} style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Aucun actif dans cette catégorie</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
 
       {/* ── Revenus passifs estimés ── */}
@@ -837,148 +1014,35 @@ export default function PatrimoinePage() {
         </Card>
       )}
 
-      {/* ── Liste enveloppes ── */}
-      <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
-          Mes enveloppes ({envelopes.length})
-        </div>
-
-        {loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', minHeight: 110 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <div className="animate-pulse" style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--section-border)' }} />
-                  <div>
-                    <div className="animate-pulse" style={{ width: 100, height: 12, borderRadius: 6, background: 'var(--section-border)', marginBottom: 6 }} />
-                    <div className="animate-pulse" style={{ width: 60, height: 10, borderRadius: 6, background: 'var(--section-border)' }} />
-                  </div>
-                </div>
-                <div className="animate-pulse" style={{ width: 80, height: 20, borderRadius: 6, background: 'var(--section-border)' }} />
+      {/* ── Répartition géographique ── */}
+      {!loading && (
+        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <CardContent style={{ padding: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+              Quelle est la répartition <strong>géographique</strong> de mon patrimoine ?
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16 }}>
+              {geoAlloc.totalGeo > 0
+                ? <>Calculé sur {fmtCompact(geoAlloc.totalGeo)} d&apos;actifs boursiers reconnus</>
+                : 'Ajoutez des ETFs ou actions pour voir la répartition géographique'}
+            </div>
+            {geoAlloc.totalGeo > 0 && (
+              <WorldMapChart
+                allocation={geoAlloc}
+                values={geoAlloc.values}
+                totalValue={geoAlloc.totalGeo}
+                height={300}
+              />
+            )}
+            {geoAlloc.totalGeo === 0 && (
+              <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-subtle)', fontSize: 13 }}>
+                Aucune donnée géographique — ajoutez des ETFs ou actions pour visualiser votre exposition mondiale.
               </div>
-            ))}
-          </div>
-        )}
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-        {!loading && envelopes.length === 0 && (
-          <div style={{
-            textAlign: 'center', padding: '48px 24px',
-            background: 'var(--card-dark)', border: '2px dashed var(--card-dark-border)', borderRadius: 16,
-          }}>
-            <BarChart3 style={{ width: 40, height: 40, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
-              Aucune enveloppe pour l'instant
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-subtle)', marginBottom: 20 }}>
-              Commencez par ajouter votre premier actif patrimonial
-            </div>
-            <Button onClick={openModal} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter une enveloppe
-            </Button>
-          </div>
-        )}
-
-        {!loading && envelopes.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {envelopes.map((env, idx) => {
-              const cfg = ENVELOPE_TYPE_CONFIG[env.type]
-              const Icon = cfg.icon
-              const value = env.type === 'IMMOBILIER'
-                ? Number(env.metadata.currentValue ?? 0)
-                : computeMarketValue(env)
-              const cap = getCapProgress(env)
-
-              return (
-                <div
-                  key={env.id}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragOver={e => { e.preventDefault(); setDragOver(env.id) }}
-                  onDragLeave={() => setDragOver(null)}
-                  onDrop={() => handleDrop(idx)}
-                  style={{ display: 'flex', opacity: dragOver === env.id ? 0.5 : 1, transition: 'opacity 0.15s' }}
-                >
-                <Link
-                  href={`/dashboard/patrimoine/${env.id}`}
-                  style={{ textDecoration: 'none', display: 'flex', flex: 1 }}
-                >
-                  <div style={{
-                    padding: 18, borderRadius: 14,
-                    background: dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)',
-                    border: `1px solid ${dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'}`,
-                    cursor: 'grab',
-                    transition: 'border-color 0.15s, background 0.15s',
-                    width: '100%',
-                  }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = cfg.color + '60'
-                      ;(e.currentTarget as HTMLElement).style.background = 'var(--row-hover)'
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.borderColor = dragOver === env.id ? cfg.color + '60' : 'var(--card-dark-border)'
-                      ;(e.currentTarget as HTMLElement).style.background = dragOver === env.id ? 'var(--row-hover)' : 'var(--card-dark)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{
-                          width: 36, height: 36, borderRadius: 10,
-                          background: cfg.color + '18',
-                          border: `1px solid ${cfg.color}30`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        }}>
-                          <Icon style={{ width: 16, height: 16, color: cfg.color }} />
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{env.name}</div>
-                          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.label}</div>
-                        </div>
-                      </div>
-                      <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', flexShrink: 0, marginTop: 4 }} />
-                    </div>
-
-                    {/* Valeur */}
-                    <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: cap ? 10 : 0 }}>
-                      {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>}
-                    </div>
-
-                    {/* Barre de progression (PEA, Livrets) */}
-                    {cap && (
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                            {env.type === 'PEA' ? 'Versements' : 'Solde'} / plafond
-                          </span>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
-                            {fmtCompact(cap.current)} / {fmtCompact(cap.max)}
-                          </span>
-                        </div>
-                        <div style={{ height: 4, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
-                          <div style={{
-                            height: '100%',
-                            width: `${Math.min(100, (cap.current / cap.max) * 100).toFixed(1)}%`,
-                            background: cfg.color,
-                            borderRadius: 999,
-                          }} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Nb positions */}
-                    {env.positionCount > 0 && (
-                      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-subtle)' }}>
-                        {env.positionCount} position{env.positionCount > 1 ? 's' : ''}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
 
       {/* ── Modal Ajouter ── */}
       {showModal && (

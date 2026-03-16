@@ -521,7 +521,7 @@ export default function PatrimoinePage() {
 
   // ── Rendu ────────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6" style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 28px 48px' }}>
+    <div className="space-y-6" style={{ padding: 'clamp(20px,3vw,36px) clamp(16px,3vw,28px) 48px' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4 }}>
@@ -541,18 +541,51 @@ export default function PatrimoinePage() {
 
       {/* ── 3 KPI cards ── */}
       {!loading && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {[
-            { label: 'Patrimoine Net', value: fmtCompact(patrimoineNet), sub: `Brut ${fmtCompact(totalValue)}`, color: '#f1c086' },
-            { label: 'Total Dettes', value: dettes > 0 ? fmtCompact(dettes) : '—', sub: dettes > 0 ? 'Crédits immobiliers en cours' : 'Aucun emprunt renseigné', color: dettes > 0 ? '#f87171' : 'var(--text-muted-c)' },
-            { label: fireTarget > 0 ? `Vers ${fmtCompact(fireTarget)}` : 'Vers objectif FIRE', value: fireTarget > 0 ? `${Math.min(100, Math.round((patrimoineNet / fireTarget) * 100))}%` : '—', sub: fireTarget > 0 ? `Reste ${fmtCompact(Math.max(0, fireTarget - patrimoineNet))}` : 'Définissez votre cible FIRE ↓', color: '#a78bfa' },
-          ].map((kpi, i) => (
-            <div key={i} style={{ padding: '20px 24px', borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 8 }}>{kpi.label}</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', marginBottom: 4 }}>{kpi.value}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{kpi.sub}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {/* Patrimoine Net */}
+          <div style={{ padding: '20px 22px', borderRadius: 16, background: 'linear-gradient(135deg, rgba(241,192,134,0.10), transparent)', border: '1px solid rgba(241,192,134,0.18)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 14, right: 16, background: 'rgba(241,192,134,0.12)', borderRadius: 10, padding: '7px 8px', display: 'flex' }}>
+              <Landmark size={16} color="#f1c086" />
             </div>
-          ))}
+            <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 10 }}>Patrimoine Net</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: '#f1c086', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace', marginBottom: 4 }}>{fmtCompact(patrimoineNet)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Brut <span style={{ color: 'var(--text-muted-c)', fontWeight: 500 }}>{fmtCompact(totalValue)}</span></div>
+          </div>
+
+          {/* Total Dettes */}
+          <div style={{ padding: '20px 22px', borderRadius: 16, background: dettes > 0 ? 'linear-gradient(135deg, rgba(248,113,113,0.08), transparent)' : 'var(--card-dark)', border: `1px solid ${dettes > 0 ? 'rgba(248,113,113,0.18)' : 'var(--card-dark-border)'}`, position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 14, right: 16, background: dettes > 0 ? 'rgba(248,113,113,0.12)' : 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '7px 8px', display: 'flex' }}>
+              <CreditCard size={16} color={dettes > 0 ? '#f87171' : 'var(--text-subtle)'} />
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 10 }}>Total Dettes</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: dettes > 0 ? '#f87171' : 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace', marginBottom: 4 }}>
+              {dettes > 0 ? fmtCompact(dettes) : '—'}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{dettes > 0 ? 'Crédits immobiliers en cours' : 'Aucun emprunt renseigné'}</div>
+          </div>
+
+          {/* Objectif FIRE */}
+          <div style={{ padding: '20px 22px', borderRadius: 16, background: 'linear-gradient(135deg, rgba(167,139,250,0.10), transparent)', border: '1px solid rgba(167,139,250,0.18)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 14, right: 16, background: 'rgba(167,139,250,0.12)', borderRadius: 10, padding: '7px 8px', display: 'flex' }}>
+              <Flame size={16} color="#a78bfa" />
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 10 }}>
+              {fireTarget > 0 ? `Vers ${fmtCompact(fireTarget)}` : 'Objectif FIRE'}
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: '#a78bfa', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace', marginBottom: 6 }}>
+              {fireTarget > 0 ? `${Math.min(100, Math.round((patrimoineNet / fireTarget) * 100))}%` : '—'}
+            </div>
+            {fireTarget > 0 ? (
+              <>
+                <div style={{ height: 4, borderRadius: 2, background: 'rgba(167,139,250,0.15)', marginBottom: 6, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 2, background: '#a78bfa', width: `${Math.min(100, Math.round((patrimoineNet / fireTarget) * 100))}%`, transition: 'width 0.6s ease' }} />
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Reste <span style={{ color: 'var(--text-muted-c)', fontWeight: 500 }}>{fmtCompact(Math.max(0, fireTarget - patrimoineNet))}</span></div>
+              </>
+            ) : (
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Définissez votre cible FIRE ↓</div>
+            )}
+          </div>
         </div>
       )}
 

@@ -1603,7 +1603,7 @@ function OpportunityCostWidget() {
               <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 10, background: '#fb923c', color: '#000', fontWeight: 700, fontSize: 13, textDecoration: 'none', flexShrink: 0, transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(251,146,60,0.4)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-                Commencer à investir <ArrowRight style={{ width: 13, height: 13 }} />
+                Simuler dès maintenant <ArrowRight style={{ width: 13, height: 13 }} />
               </Link>
             </div>
           </div>

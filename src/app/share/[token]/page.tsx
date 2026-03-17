@@ -56,12 +56,12 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
       {/* Navbar */}
       <nav style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <TrendingUp style={{ width: 14, height: 14, color: '#f97316' }} />
+          <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
           </div>
           <span style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>FinCalc</span>
         </Link>
-        <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
+        <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
           Créer mon compte gratuit →
         </Link>
       </nav>
@@ -75,7 +75,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             Simulation partagée · {createdAt}
           </p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, letterSpacing: '-0.03em', marginBottom: 6 }}>{sim.name}</h1>
-          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#f97316', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.22)', borderRadius: 6, padding: '3px 10px' }}>
+          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#f1c086', background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.22)', borderRadius: 6, padding: '3px 10px' }}>
             {typeLabel}
           </span>
         </div>
@@ -93,14 +93,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         </div>
 
         {/* CTA */}
-        <div style={{ background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.15)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
+        <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
             Lancez votre propre simulation
           </p>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', marginBottom: 20 }}>
             FinCalc est 100% gratuit. 9 calculateurs financiers, historique illimité, partage de simulations.
           </p>
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, background: '#f97316', color: '#111', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
+          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, background: '#f1c086', color: '#111', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
             Créer mon compte FinCalc gratuit →
           </Link>
         </div>
@@ -113,9 +113,26 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   const { token } = await params
   const sim = await getSharedSim(token)
   if (!sim) return { title: 'Simulation introuvable · FinCalc' }
+  const baseUrl = process.env.NEXTAUTH_URL ?? 'https://app.fincalc.fr'
+  const firstValue = Object.values(sim.results ?? {}).find(v => typeof v === 'number') as number | undefined
+  const ogParams = new URLSearchParams({
+    type: sim.type,
+    title: sim.name,
+    subtitle: TYPE_LABELS[sim.type] ?? sim.type,
+    ...(firstValue != null ? { value: String(Math.round(firstValue)) } : {}),
+  })
   return {
     title: `${sim.name} · FinCalc`,
     description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via FinCalc — calculateur financier gratuit.`,
-    openGraph: { title: `${sim.name} · FinCalc`, description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type}` },
+    openGraph: {
+      title: `${sim.name} · FinCalc`,
+      description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via FinCalc`,
+      images: [{ url: `${baseUrl}/api/og?${ogParams}`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${sim.name} · FinCalc`,
+      images: [`${baseUrl}/api/og?${ogParams}`],
+    },
   }
 }

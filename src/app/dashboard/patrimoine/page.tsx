@@ -15,6 +15,7 @@ import {
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { calcPortfolioGeo, estimatePositionIncome, type GeoAllocation } from '@/lib/etf-database'
+import { FrenchAverageWidget } from '@/components/FrenchAverageWidget'
 
 // Carte monde chargée côté client uniquement (SSR incompatible avec react-simple-maps)
 const WorldMapChart = dynamic(
@@ -629,6 +630,11 @@ export default function PatrimoinePage() {
             )
           })}
         </div>
+      )}
+
+      {/* ── vs Moyenne française ── */}
+      {!loading && patrimoineNet > 0 && (
+        <FrenchAverageWidget patrimoineNet={patrimoineNet} />
       )}
 
       {/* ── Évolution + Milestones ── */}

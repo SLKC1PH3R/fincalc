@@ -80,7 +80,7 @@ export function ShareButton({ simulationId, className }: ShareButtonProps) {
             />
             <button
               onClick={handleCopy}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, background: state === 'copied' ? 'rgba(52,211,153,0.1)' : 'rgba(249,115,22,0.1)', border: `1px solid ${state === 'copied' ? 'rgba(52,211,153,0.2)' : 'rgba(249,115,22,0.2)'}`, cursor: 'pointer', fontSize: 11, fontWeight: 600, color: state === 'copied' ? '#34d399' : '#f97316', flexShrink: 0 }}>
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, background: state === 'copied' ? 'rgba(52,211,153,0.1)' : 'rgba(241,192,134,0.1)', border: `1px solid ${state === 'copied' ? 'rgba(52,211,153,0.2)' : 'rgba(241,192,134,0.2)'}`, cursor: 'pointer', fontSize: 11, fontWeight: 600, color: state === 'copied' ? '#34d399' : '#f1c086', flexShrink: 0 }}>
               {state === 'copied' ? <Check style={{ width: 12, height: 12 }} /> : <Copy style={{ width: 12, height: 12 }} />}
               {state === 'copied' ? 'Copié !' : 'Copier'}
             </button>

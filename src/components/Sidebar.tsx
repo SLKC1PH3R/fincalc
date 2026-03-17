@@ -922,7 +922,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   Paramètres
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
+                  onClick={() => signOut({ callbackUrl: '/' })}
                   title="Déconnexion"
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -969,7 +969,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 {theme === 'dark' ? <Sun style={{ width: 16, height: 16 }} /> : <Moon style={{ width: 16, height: 16 }} />}
               </button>
               <button
-                onClick={() => signOut({ callbackUrl: 'https://fire.digitalstack.cloud/' })}
+                onClick={() => signOut({ callbackUrl: '/' })}
                 title="Déconnexion"
                 style={{
                   width: '100%', display: 'flex', justifyContent: 'center',

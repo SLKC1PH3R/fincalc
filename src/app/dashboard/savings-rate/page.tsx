@@ -8,6 +8,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { fmt, fmtPct } from '@/lib/utils'
 import { Download, Plus, X, TrendingUp, Minus, AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { FrenchAverageWidget } from '@/components/FrenchAverageWidget'
 
 interface LineItem { id: string; name: string; value: number }
 interface Category { id: string; name: string; items: LineItem[] }
@@ -552,6 +553,8 @@ function SavingsRatePageInner() {
               ))}
             </div>
           </div>
+
+          <FrenchAverageWidget tauxEpargne={savingsRate} label="Votre taux" />
 
         </div>
       </div>

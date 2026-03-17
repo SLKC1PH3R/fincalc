@@ -154,7 +154,7 @@ export function printReport(config: PrintConfig) {
 
   <div class="footer">
     <span>FinCalc — Outils de Finance Personnelle</span>
-    <span>fire.digitalstack.cloud</span>
+    <span>app.fincalc.fr</span>
   </div>
 
   <script>

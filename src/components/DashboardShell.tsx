@@ -23,7 +23,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           </button>
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #f97316, #fb923c)' }}>
+              style={{ background: 'linear-gradient(135deg, #c8922a, #f1c086)' }}>
               <TrendingUp className="h-3 w-3" style={{ color: '#0a0a0a' }} />
             </div>
             <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>FinCalc</span>

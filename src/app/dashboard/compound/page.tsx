@@ -1,6 +1,6 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
@@ -10,7 +10,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcCompound, type CompoundInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, GitCompare } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
@@ -32,6 +32,10 @@ function CompoundPageInner() {
   useEffect(() => setMounted(true), [])
   const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
   const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [compareMode, setCompareMode] = useState(false)
+  const [inputsB, setInputsB] = useState<CompoundInputs>({ capital: 10000, monthly: 800, rate: 9, years: 20, frequency: 12 })
+  const setB = (k: keyof CompoundInputs) => (v: any) => setInputsB(p => ({ ...p, [k]: v }))
+  const rB = useMemo(() => calcCompound(inputsB), [inputsB])
 
   // Restore simulation from history
   const searchParams = useSearchParams()
@@ -90,6 +94,10 @@ function CompoundPageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="compound" name={`Composés ${fmt(inputs.capital)}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
+          <Button variant={compareMode ? 'default' : 'outline'} size="sm" onClick={() => setCompareMode(v => !v)} style={compareMode ? { background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)', color: '#818cf8' } : {}}>
+            <GitCompare className="h-3.5 w-3.5 mr-1.5" />
+            Comparer
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => setInputs({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })}>
             Réinitialiser
           </Button>
@@ -216,6 +224,97 @@ function CompoundPageInner() {
 
         </div>
       </div>
+
+      {/* ── Comparateur côte à côte ── */}
+      {compareMode && (
+        <div style={{ marginTop: 32, borderTop: '1px solid var(--card-dark-border)', paddingTop: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <GitCompare style={{ width: 16, height: 16, color: '#818cf8' }} />
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Comparateur de scénarios</h2>
+            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Scénario A vs Scénario B côte à côte</span>
+          </div>
+
+          {/* Two input panels */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            {[
+              { label: 'Scénario A', color: '#f1c086', inp: inputs, setFn: set },
+              { label: 'Scénario B', color: '#818cf8', inp: inputsB, setFn: setB },
+            ].map(({ label, color, inp, setFn }) => (
+              <div key={label} style={{ background: 'var(--card-dark)', border: `1px solid ${color}25`, borderRadius: 16, padding: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>{label}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+                  {(
+                    [
+                      { key: 'capital' as keyof CompoundInputs, label: 'Capital initial (€)', type: 'input', min: 0, max: 500000, step: 1000 },
+                      { key: 'monthly' as keyof CompoundInputs, label: 'Versement mensuel (€)', type: 'input', min: 0, max: 5000, step: 50 },
+                      { key: 'rate' as keyof CompoundInputs, label: `Taux annuel: ${inp.rate}%`, type: 'slider', min: 0.5, max: 20, step: 0.1 },
+                      { key: 'years' as keyof CompoundInputs, label: `Durée: ${inp.years} ans`, type: 'slider', min: 1, max: 40, step: 1 },
+                    ]
+                  ).map(({ key, label: l, type: fieldType, min, max, step }) => (
+                    <div key={String(key)}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{l}</span>
+                      </div>
+                      {fieldType === 'input' ? (
+                        <Input type="number" value={inp[key] as number} onChange={e => setFn(key)(+e.target.value)} style={{ height: 34, fontSize: 13 }} />
+                      ) : (
+                        <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
+            {[
+              { label: 'Capital final A', value: fmt(r.final), color: '#f1c086' },
+              { label: 'Capital final B', value: fmt(rB.final), color: '#818cf8' },
+              { label: 'Différence', value: fmt(Math.abs(rB.final - r.final)), color: rB.final > r.final ? '#34d399' : '#f87171' },
+              { label: 'B surperforme A de', value: `${rB.final > r.final ? '+' : '-'}${((Math.abs(rB.final - r.final) / r.final) * 100).toFixed(1)}%`, color: rB.final > r.final ? '#34d399' : '#f87171' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 4 }}>{kpi.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison chart */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Évolution comparée sur {Math.max(inputs.years, inputsB.years)} ans</p>
+            {mounted && (() => {
+              const yearsMax = Math.max(inputs.years, inputsB.years)
+              const dataA = calcCompound({ ...inputs, years: yearsMax }).chartData
+              const dataB = calcCompound({ ...inputsB, years: yearsMax }).chartData
+              const merged = dataA.map((pt: { year: number; total: number; invested: number }, i: number) => ({
+                year: pt.year,
+                'Scénario A': pt.total,
+                'Scénario B': dataB[i]?.total ?? 0,
+                'Investi A': pt.invested,
+                'Investi B': dataB[i]?.invested ?? 0,
+              }))
+              return (
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
+                    <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <Line type="monotone" dataKey="Scénario A" stroke="#f1c086" strokeWidth={2.5} dot={false} />
+                    <Line type="monotone" dataKey="Scénario B" stroke="#818cf8" strokeWidth={2.5} dot={false} />
+                    <Line type="monotone" dataKey="Investi A" stroke="#f1c08650" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                    <Line type="monotone" dataKey="Investi B" stroke="#818cf850" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )
+            })()}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

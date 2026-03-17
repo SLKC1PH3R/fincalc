@@ -17,7 +17,13 @@
       "Bash(mv /tmp/page_new.tsx src/app/dashboard/patrimoine/page.tsx)",
       "Bash(grep -n \"13 calculateurs\\\\|GOLD\\\\|const GOLD\\\\|f97316\\\\|Essayer sans\\\\|X,\\\\|{ X }\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
       "Bash(grep -n \"f97316\\\\|249,115,22\\\\|13 cal\\\\|13 sim\\\\|v: ''13''\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
-      "Bash(node_modules/.bin/tsc --noEmit --skipLibCheck)"
+      "Bash(node_modules/.bin/tsc --noEmit --skipLibCheck)",
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/jerem/Downloads/fincalc/src/app/dashboard/patrimoine/**)",
+      "Bash(done)",
+      "Bash(cat /c/Users/jerem/Downloads/fincalc/src/app/api/auth/[...nextauth]/route.ts)",
+      "Bash(grep -n \"og\\\\|meta\\\\|openGraph\\\\|twitter\" /c/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)"
     ]
   }
 }

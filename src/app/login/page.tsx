@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { TrendingUp, Loader2, Eye, EyeOff, Zap } from 'lucide-react'
 
-const GOLD = '#f97316'
+const GOLD = '#f1c086'
+const GOLD_DARK = 'rgba(241,192,134,0.10)'
+const GOLD_BORDER = 'rgba(241,192,134,0.20)'
 const DEMO_EMAIL = 'demo@digitalstack.cloud'
 const DEMO_PASSWORD = 'demo@2026'
 
@@ -39,7 +41,7 @@ function DashboardPreview() {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
           <div style={{ flex: 1, margin: '0 8px', background: 'rgba(255,255,255,0.05)', borderRadius: 4, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>fire.digitalstack.cloud/dashboard</span>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>app.fincalc.fr/dashboard</span>
           </div>
         </div>
         <Image src="/dashboard-desktop.png" alt="Dashboard FinCalc" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
@@ -180,12 +182,13 @@ function AuthForm() {
     backfaceVisibility: 'hidden',
     WebkitBackfaceVisibility: 'hidden',
     borderRadius: 16,
-    background: 'linear-gradient(160deg, #111 0%, #0d0d0d 100%)',
+    background: 'linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
     border: '1px solid rgba(255,255,255,0.08)',
     padding: '28px 28px 24px',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+    boxShadow: '0 24px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)',
+    backdropFilter: 'blur(12px)',
   }
 
   /* ── Login face ── */
@@ -292,16 +295,20 @@ function AuthForm() {
   )
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#080808' }}>
+    <div className="min-h-screen flex" style={{ background: '#050505' }}>
 
       {/* ── LEFT: Form ── */}
       <div className="flex flex-col w-full lg:w-1/2 flex-shrink-0 relative z-10" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 0%, ${GOLD}08, transparent 60%)` }} />
+        {/* Ambient orbs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '5%', right: '-5%', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.04) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+        </div>
 
         <div className="relative flex flex-col flex-1 px-8 py-10 md:px-12">
           {/* Logo */}
           <div className="flex items-center gap-2.5 mb-auto pb-8">
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 17, height: 17, color: '#000' }} />
             </div>
             <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
@@ -318,27 +325,23 @@ function AuthForm() {
                 style={{
                   width: '100%', marginBottom: 16, padding: '12px 16px',
                   borderRadius: 12, cursor: loading || loadingGoogle ? 'not-allowed' : 'pointer',
-                  border: '1px solid rgba(251,146,60,0.3)',
-                  background: 'rgba(251,146,60,0.06)',
+                  border: `1px solid ${GOLD_BORDER}`,
+                  background: GOLD_DARK,
                   textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
                   opacity: loading || loadingGoogle ? 0.6 : 1,
                   transition: 'all 0.15s',
                 }}
-                onMouseEnter={e => { if (!loading && !loadingGoogle) { e.currentTarget.style.background = 'rgba(251,146,60,0.11)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.5)' } }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.06)'; e.currentTarget.style.borderColor = 'rgba(251,146,60,0.3)' }}
+                onMouseEnter={e => { if (!loading && !loadingGoogle) { e.currentTarget.style.background = 'rgba(241,192,134,0.15)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)' } }}
+                onMouseLeave={e => { e.currentTarget.style.background = GOLD_DARK; e.currentTarget.style.borderColor = GOLD_BORDER }}
               >
-                <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {loading ? <Loader2 style={{ width: 14, height: 14, color: '#fb923c', animation: 'spin 1s linear infinite' }} /> : <Zap style={{ width: 14, height: 14, color: '#fb923c' }} />}
+                <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(241,192,134,0.12)', border: `1px solid ${GOLD_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {loading ? <Loader2 style={{ width: 14, height: 14, color: GOLD, animation: 'spin 1s linear infinite' }} /> : <Zap style={{ width: 14, height: 14, color: GOLD }} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#fb923c', marginBottom: 2 }}>Accès démo instantané</p>
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <span>{DEMO_EMAIL}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                    <span>Mot de passe : {DEMO_PASSWORD}</span>
-                  </p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: GOLD, marginBottom: 2 }}>⚡ Accéder au compte démo</p>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Explorez toutes les fonctionnalités sans inscription</p>
                 </div>
-                <span style={{ fontSize: 11, color: 'rgba(251,146,60,0.7)', flexShrink: 0, fontWeight: 500 }}>→</span>
+                <span style={{ fontSize: 14, color: `rgba(241,192,134,0.6)`, flexShrink: 0 }}>→</span>
               </button>
 
               {/* ── Tab toggle — the flip trigger ── */}
@@ -417,7 +420,8 @@ function AuthForm() {
 
       {/* ── RIGHT: Dashboard Preview ── */}
       <div className="hidden lg:flex flex-1 flex-col relative overflow-hidden" style={{ background: '#050505' }}>
-        <div className="absolute pointer-events-none" style={{ top: '-15%', right: '-15%', width: '70%', height: '70%', background: `radial-gradient(ellipse, ${GOLD}0a, transparent 65%)` }} />
+        <div className="absolute pointer-events-none" style={{ top: '-15%', right: '-15%', width: '70%', height: '70%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.08) 0%, transparent 65%)', filter: 'blur(60px)' }} />
+        <div className="absolute pointer-events-none" style={{ bottom: '10%', left: '-10%', width: '40%', height: '40%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.04) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '25%', background: 'linear-gradient(to top, #050505, transparent)' }} />
         <div className="flex-1 flex items-center justify-center px-8 py-12" style={{ minHeight: 0 }}>
           <div style={{ position: 'relative', width: '100%', height: '100%' }}>

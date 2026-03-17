@@ -1503,6 +1503,116 @@ function CompetitorTable() {
   )
 }
 
+// ─── Hero FIRE mini-calc ──────────────────────────────────────────────────
+function HeroFireCalc() {
+  const [epargne, setEpargne] = useState(500)
+  const [age, setAge] = useState(30)
+  const target = 900000 // 3 000 €/mois × 12 × 25 (règle des 4 %)
+  const r = 0.07 / 12
+  const rawMonths = epargne > 0 ? Math.log(1 + (target * r) / epargne) / Math.log(1 + r) : Infinity
+  const years = isFinite(rawMonths) ? Math.ceil(rawMonths / 12) : null
+  const libertyAge = years !== null ? age + years : null
+  const fmtTarget = `${Math.round(target / 1000)} k€`
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,146,60,0.22)', borderRadius: 20, padding: '22px 26px', marginTop: 36, backdropFilter: 'blur(12px)', textAlign: 'left' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <Flame style={{ width: 13, height: 13, color: '#fb923c' }} />
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Mon objectif FI/RE</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 28px', marginBottom: 18 }}>
+        {[
+          { label: 'Épargne mensuelle', value: epargne, min: 100, max: 3000, step: 50, display: `${epargne} €/mois`, set: setEpargne },
+          { label: 'Âge actuel', value: age, min: 18, max: 55, step: 1, display: `${age} ans`, set: setAge },
+        ].map(s => (
+          <div key={s.label}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)' }}>{s.label}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#fb923c' }}>{s.display}</span>
+            </div>
+            <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+              onChange={e => s.set(Number(e.target.value))}
+              style={{ width: '100%', accentColor: '#fb923c', height: 3, cursor: 'pointer' }} />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <div>
+          {libertyAge !== null
+            ? <p style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
+                Libre financièrement à <span style={{ color: '#fb923c' }}>{libertyAge} ans</span>
+                <span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.35)', marginLeft: 8 }}>dans {years} ans · cible {fmtTarget}</span>
+              </p>
+            : <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>Augmentez votre épargne pour atteindre l&apos;indépendance</p>
+          }
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Hypothèse : 7%/an · dépenses 3 000 €/mois · règle des 4 %</p>
+        </div>
+        <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 9, background: 'rgba(251,146,60,0.14)', border: '1px solid rgba(251,146,60,0.30)', color: '#fb923c', fontSize: 12, fontWeight: 600, textDecoration: 'none', flexShrink: 0, transition: 'all 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.24)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.14)' }}>
+          Simuler en détail <ArrowRight style={{ width: 12, height: 12 }} />
+        </a>
+      </div>
+    </div>
+  )
+}
+
+// ─── Opportunity cost widget ───────────────────────────────────────────────
+function OpportunityCostWidget() {
+  const [capital, setCapital] = useState(10000)
+  const [annees, setAnnees] = useState(3)
+  const r = 0.07 / 12
+  const manque = Math.round(capital * (Math.pow(1 + r, annees * 12) - 1))
+  const fmtFull = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €'
+  return (
+    <section style={{ padding: '0 20px 80px' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto' }}>
+        <RevealSection>
+          <div style={{ background: 'linear-gradient(135deg, rgba(251,146,60,0.05), rgba(241,192,134,0.02))', border: '1px solid rgba(251,146,60,0.18)', borderRadius: 24, padding: 'clamp(24px,4vw,40px)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: -50, right: -50, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,146,60,0.09), transparent 65%)', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
+              <Zap style={{ width: 13, height: 13, color: '#fb923c' }} />
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Coût d&apos;inaction</span>
+            </div>
+            <h3 style={{ fontSize: 'clamp(1.2rem,3vw,1.7rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.025em', marginBottom: 6 }}>
+              Votre épargne dort sur un compte courant ?
+            </h3>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.38)', marginBottom: 24, lineHeight: 1.6 }}>
+              Chaque mois sans investir a un coût réel. Calculez le vôtre.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 32px', marginBottom: 24 }}>
+              {[
+                { label: 'Capital non investi', value: capital, min: 1000, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
+                { label: 'Depuis (années)', value: annees, min: 1, max: 15, step: 1, display: `${annees} an${annees > 1 ? 's' : ''}`, set: setAnnees },
+              ].map(s => (
+                <div key={s.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{s.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#fb923c' }}>{s.display}</span>
+                  </div>
+                  <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+                    onChange={e => s.set(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: '#fb923c', height: 3, cursor: 'pointer' }} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, padding: '18px 20px', background: 'rgba(0,0,0,0.28)', borderRadius: 14, border: '1px solid rgba(251,146,60,0.14)' }}>
+              <div>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)', marginBottom: 5 }}>Manque à gagner estimé (vs ETF MSCI World à 7%/an)</p>
+                <p style={{ fontSize: 30, fontWeight: 800, color: '#fb923c', letterSpacing: '-0.03em', lineHeight: 1 }}>−{fmtFull(manque)}</p>
+              </div>
+              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 10, background: '#fb923c', color: '#000', fontWeight: 700, fontSize: 13, textDecoration: 'none', flexShrink: 0, transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(251,146,60,0.4)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+                Commencer à investir <ArrowRight style={{ width: 13, height: 13 }} />
+              </Link>
+            </div>
+          </div>
+        </RevealSection>
+      </div>
+    </section>
+  )
+}
+
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
   const router = useRouter()
@@ -1739,8 +1849,11 @@ export function LandingClient() {
             </button>
           </div>
 
+          {/* Hero mini FIRE calc */}
+          <HeroFireCalc />
+
           {/* Stats */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap', marginTop: 48 }}>
             {[{ v: '32', l: 'Simulateurs' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
               <div key={s.l} style={{ textAlign: 'center' }}>
                 <span style={{
@@ -1786,6 +1899,9 @@ export function LandingClient() {
           </RevealSection>
         </div>
       </section>
+
+      {/* ── OPPORTUNITY COST ──────────────────────────────────────────── */}
+      <OpportunityCostWidget />
 
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>

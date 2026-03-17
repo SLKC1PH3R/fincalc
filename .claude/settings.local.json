@@ -16,7 +16,8 @@
       "Bash(awk 'NR<1046 || NR>1168' src/app/dashboard/patrimoine/page.tsx)",
       "Bash(mv /tmp/page_new.tsx src/app/dashboard/patrimoine/page.tsx)",
       "Bash(grep -n \"13 calculateurs\\\\|GOLD\\\\|const GOLD\\\\|f97316\\\\|Essayer sans\\\\|X,\\\\|{ X }\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
-      "Bash(grep -n \"f97316\\\\|249,115,22\\\\|13 cal\\\\|13 sim\\\\|v: ''13''\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")"
+      "Bash(grep -n \"f97316\\\\|249,115,22\\\\|13 cal\\\\|13 sim\\\\|v: ''13''\" \"c:/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
+      "Bash(node_modules/.bin/tsc --noEmit --skipLibCheck)"
     ]
   }
 }

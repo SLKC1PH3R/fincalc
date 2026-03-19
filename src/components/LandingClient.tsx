@@ -1094,6 +1094,7 @@ function RatesWidget() {
 function SocialProofBar() {
   const { ref, visible } = useInView(0.2)
   const count = useCountUp(12843, 2200, visible)
+  const hours = useCountUp(19264, 2400, visible)
   return (
     <section style={{ padding: '0 20px 72px' }}>
       <div ref={ref} style={{ maxWidth: 900, margin: '0 auto' }}>
@@ -1104,7 +1105,7 @@ function SocialProofBar() {
         }}>
           {[
             { value: visible ? count.toLocaleString('fr-FR') : '0', label: 'Simulations lancées ce mois', color: GOLD },
-            { value: 'Infiniment', label: 'Temps économisé vs Excel', color: '#34d399' },
+            { value: visible ? `${hours.toLocaleString('fr-FR')} h` : '0 h', label: 'Économisées vs Excel ce mois', color: '#34d399' },
             { value: 'Zéro', label: 'Données bancaires requises', color: '#38bdf8' },
           ].map((s, i) => (
             <div key={s.label} style={{

@@ -1850,16 +1850,6 @@ export function LandingClient() {
             </button>
           </div>
 
-          {/* Hero mini FIRE calc */}
-          <div style={{ marginTop: 40, textAlign: 'center' }}>
-            <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', margin: '0 0 4px' }}>
-              Commençons maintenant
-            </p>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#fb923c', opacity: 0.8 }}>
-              <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <HeroFireCalc />
 
           {/* Stats */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap', marginTop: 48 }}>
@@ -1891,9 +1881,23 @@ export function LandingClient() {
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
       <section id="demo" style={{ padding: '60px 20px 100px' }}>
         <div style={{ maxWidth: 980, margin: '0 auto' }}>
+
+          {/* Hero FIRE calc — above demo title */}
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 40 }}>
-              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Sans compte requis</SectionTag>
+            <div style={{ textAlign: 'center', marginBottom: 12 }}>
+              <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', margin: '0 0 4px' }}>
+                Commençons maintenant
+              </p>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#fb923c', opacity: 0.8 }}>
+                <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <HeroFireCalc />
+          </RevealSection>
+
+          <RevealSection delay={80}>
+            <div style={{ textAlign: 'center', marginBottom: 40, marginTop: 56 }}>
+              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Essayez maintenant nos simulateurs</SectionTag>
               <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Voyez votre épargne{' '}
                 <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>fructifier</span>

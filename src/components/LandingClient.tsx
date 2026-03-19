@@ -36,6 +36,8 @@ import {
   Target,
   FileText,
   LayoutDashboard,
+  Scale,
+  Landmark,
 } from 'lucide-react'
 
 // ─── Constants ────────────────────────────────────────────────────────────

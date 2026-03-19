@@ -1204,6 +1204,7 @@ function InteractiveDemo() {
       boxShadow: `0 0 80px ${activeColor}08`,
       position: 'relative', overflow: 'hidden',
       transition: 'border-color 0.4s',
+      height: '100%', boxSizing: 'border-box',
     }}>
       {/* Ambient glow */}
       <div style={{ position: 'absolute', top: -80, right: -80, width: 300, height: 300, borderRadius: '50%', background: `radial-gradient(circle, ${activeColor}0b, transparent 65%)`, pointerEvents: 'none', transition: 'background 0.4s' }} />
@@ -1892,7 +1893,7 @@ export function LandingClient() {
           </RevealSection>
 
           {/* Two-column layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: 16, alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: 16, alignItems: 'stretch' }}>
 
             {/* Left column — FIRE calc + Opportunity cost */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1905,8 +1906,10 @@ export function LandingClient() {
             </div>
 
             {/* Right column — tabbed simulator */}
-            <RevealSection delay={120}>
-              <InteractiveDemo />
+            <RevealSection delay={120} style={{ height: '100%' }}>
+              <div style={{ height: '100%' }}>
+                <InteractiveDemo />
+              </div>
             </RevealSection>
           </div>
         </div>

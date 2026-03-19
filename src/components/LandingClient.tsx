@@ -1516,7 +1516,7 @@ function HeroFireCalc() {
   const libertyAge = years !== null ? age + years : null
   const fmtTarget = `${Math.round(target / 1000)} k€`
   return (
-    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,146,60,0.22)', borderRadius: 20, padding: '22px 26px', marginTop: 36, backdropFilter: 'blur(12px)', textAlign: 'left' }}>
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,146,60,0.22)', borderRadius: 20, padding: '22px 26px', textAlign: 'left' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         <Flame style={{ width: 13, height: 13, color: '#fb923c' }} />
         <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Mon objectif FI/RE</span>
@@ -1566,10 +1566,7 @@ function OpportunityCostWidget() {
   const manque = Math.round(capital * (Math.pow(1 + r, annees * 12) - 1))
   const fmtFull = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €'
   return (
-    <section style={{ padding: '0 20px 80px' }}>
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{ background: 'linear-gradient(135deg, rgba(251,146,60,0.05), rgba(241,192,134,0.02))', border: '1px solid rgba(251,146,60,0.18)', borderRadius: 24, padding: 'clamp(24px,4vw,40px)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ background: 'linear-gradient(135deg, rgba(251,146,60,0.05), rgba(241,192,134,0.02))', border: '1px solid rgba(251,146,60,0.18)', borderRadius: 20, padding: '22px 24px', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: -50, right: -50, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,146,60,0.09), transparent 65%)', pointerEvents: 'none' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
               <Zap style={{ width: 13, height: 13, color: '#fb923c' }} />
@@ -1609,9 +1606,6 @@ function OpportunityCostWidget() {
               </Link>
             </div>
           </div>
-        </RevealSection>
-      </div>
-    </section>
   )
 }
 
@@ -1881,41 +1875,42 @@ export function LandingClient() {
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
       <section id="demo" style={{ padding: '60px 20px 100px' }}>
-        <div style={{ maxWidth: 980, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto' }}>
 
-          {/* Hero FIRE calc — above demo title */}
+          {/* Section header */}
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 12 }}>
-              <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', margin: '0 0 4px' }}>
-                Commençons maintenant
-              </p>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#fb923c', opacity: 0.8 }}>
-                <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <HeroFireCalc />
-          </RevealSection>
-
-          <RevealSection delay={80}>
-            <div style={{ textAlign: 'center', marginBottom: 40, marginTop: 56 }}>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
               <SectionTag><Zap style={{ width: 11, height: 11 }} /> Essayez maintenant nos simulateurs</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
-                Voyez votre épargne{' '}
-                <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>fructifier</span>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 10px' }}>
+                Commençons{' '}
+                <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>maintenant</span>
               </h2>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>
-                Manipulez les curseurs en temps réel — deux simulateurs disponibles sans inscription.
+                Manipulez les curseurs en temps réel — sans inscription, sans données bancaires.
               </p>
             </div>
           </RevealSection>
-          <RevealSection delay={100}>
-            <InteractiveDemo />
-          </RevealSection>
+
+          {/* Two-column layout */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: 16, alignItems: 'start' }}>
+
+            {/* Left column — FIRE calc + Opportunity cost */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <RevealSection>
+                <HeroFireCalc />
+              </RevealSection>
+              <RevealSection delay={80}>
+                <OpportunityCostWidget />
+              </RevealSection>
+            </div>
+
+            {/* Right column — tabbed simulator */}
+            <RevealSection delay={120}>
+              <InteractiveDemo />
+            </RevealSection>
+          </div>
         </div>
       </section>
-
-      {/* ── OPPORTUNITY COST ──────────────────────────────────────────── */}
-      <OpportunityCostWidget />
 
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>

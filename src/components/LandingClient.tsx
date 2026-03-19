@@ -1656,7 +1656,7 @@ export function LandingClient() {
 
           {/* Desktop links */}
           <div style={{ alignItems: 'center', gap: 24 }} className="hidden md:flex">
-            {[['#modules', 'Modules'], ['#rates', 'Taux en Direct'], ['#how', 'Comment ça marche'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#roadmap', 'Roadmap']].map(([href, label]) => (
+            {[['#rates', 'Taux en direct'], ['#demo', 'Simulateurs'], ['#modules', 'Nos modules'], ['#how', 'Comment ça marche ?'], ['#pour-qui', 'Pour qui ?'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#avis', 'Avis'], ['#roadmap', 'Roadmap'], ['#comparatif', 'Comparatif'], ['#faq', 'FAQ']].map(([href, label]) => (
               <a key={href} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.15s', position: 'relative' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#fff'; const u = e.currentTarget.querySelector<HTMLElement>('.nav-underline'); if (u) u.style.width = '100%' }}
                 onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; const u = e.currentTarget.querySelector<HTMLElement>('.nav-underline'); if (u) u.style.width = '0' }}>
@@ -1707,19 +1707,24 @@ export function LandingClient() {
         {/* Mobile menu */}
         <div style={{
           overflow: 'hidden',
-          maxHeight: menuOpen ? 320 : 0,
+          maxHeight: menuOpen ? 680 : 0,
           transition: 'max-height 0.35s cubic-bezier(0.23, 1, 0.32, 1)',
           background: '#0a0a0a',
           borderTop: menuOpen ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
         }}>
           <div style={{ padding: '16px 20px 20px' }}>
             {[
-              ['#modules', 'Modules'],
-              ['#rates', 'Taux en Direct'],
-              ['#how', 'Comment ça marche'],
+              ['#rates', 'Taux en direct'],
+              ['#demo', 'Simulateurs'],
+              ['#modules', 'Nos modules'],
+              ['#how', 'Comment ça marche ?'],
+              ['#pour-qui', 'Pour qui ?'],
               ['#why', 'Nos engagements'],
               ['#security', 'Sécurité'],
+              ['#avis', 'Avis'],
               ['#roadmap', 'Roadmap'],
+              ['#comparatif', 'Comparatif'],
+              ['#faq', 'FAQ'],
             ].map(([href, label]) => (
               <a
                 key={href}
@@ -2231,7 +2236,7 @@ export function LandingClient() {
       </section>
 
       {/* ── TESTIMONIALS ──────────────────────────────────────────────── */}
-      <section style={{ padding: '80px 20px' }}>
+      <section id="avis" style={{ padding: '80px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>

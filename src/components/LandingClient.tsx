@@ -31,6 +31,11 @@ import {
   Bitcoin,
   Users,
   Award,
+  ChevronDown,
+  BookOpen,
+  Target,
+  FileText,
+  LayoutDashboard,
 } from 'lucide-react'
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -1618,6 +1623,7 @@ export function LandingClient() {
   const heroRef = useRef<HTMLDivElement>(null)
   const [heroVisible, setHeroVisible] = useState(false)
   const [demoLoading, setDemoLoading] = useState(false)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
 
   const loginAsDemo = async () => {
     setDemoLoading(true)
@@ -1654,16 +1660,158 @@ export function LandingClient() {
             <span style={{ fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
           </Link>
 
-          {/* Desktop links */}
-          <div style={{ alignItems: 'center', gap: 24 }} className="hidden md:flex">
-            {[['#rates', 'Taux en direct'], ['#demo', 'Simulateurs'], ['#modules', 'Nos modules'], ['#how', 'Comment ça marche ?'], ['#pour-qui', 'Pour qui ?'], ['#why', 'Nos engagements'], ['#security', 'Sécurité'], ['#avis', 'Avis'], ['#roadmap', 'Roadmap'], ['#comparatif', 'Comparatif'], ['#faq', 'FAQ']].map(([href, label]) => (
-              <a key={href} href={href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.15s', position: 'relative' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#fff'; const u = e.currentTarget.querySelector<HTMLElement>('.nav-underline'); if (u) u.style.width = '100%' }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; const u = e.currentTarget.querySelector<HTMLElement>('.nav-underline'); if (u) u.style.width = '0' }}>
-                {label}
-                <span className="nav-underline" style={{ position: 'absolute', bottom: -2, left: 0, width: 0, height: 1, background: GOLD, transition: 'width 0.25s ease', display: 'block' }} />
-              </a>
-            ))}
+          {/* Desktop nav — dropdowns */}
+          <div style={{ alignItems: 'center', gap: 2 }} className="hidden md:flex">
+
+            {/* Taux en direct — live dot + simple link */}
+            <a href="#rates" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'color 0.15s, background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.background = 'transparent' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block', flexShrink: 0 }} />
+              Taux en direct
+            </a>
+
+            {/* Simulateurs dropdown */}
+            {(() => {
+              const key = 'sim'
+              const items = [
+                { icon: TrendingUp, label: 'Intérêts composés', desc: 'Visualisez la croissance de votre épargne', color: GOLD, href: '/tools/interets-composes' },
+                { icon: Flame, label: 'FI/RE', desc: 'Calculez votre date d\'indépendance financière', color: '#fb923c', href: '/tools/fire' },
+                { icon: Home, label: 'Crédit immobilier', desc: 'Mensualités, coût total, amortissement', color: '#f472b6', href: '/tools/pret-immobilier' },
+                { icon: Scale, label: 'Acheter vs Louer', desc: 'Comparaison patrimoniale sur 20 ans', color: '#38bdf8', href: '/tools/acheter-ou-louer' },
+                { icon: Receipt, label: 'Flat Tax vs Barème', desc: 'Optimisez vos revenus de capitaux', color: '#818cf8', href: '/tools/flat-tax-bareme' },
+                { icon: Landmark, label: 'PEA vs CTO vs AV', desc: 'Choisissez la meilleure enveloppe fiscale', color: '#fb923c', href: '/tools/pea-cto-av' },
+                { icon: PiggyBank, label: 'Retraite', desc: 'Estimez votre pension et épargne nécessaire', color: '#a78bfa', href: '/tools/retraite' },
+                { icon: RefreshCw, label: 'DCA', desc: 'Simulez l\'investissement régulier automatisé', color: '#22c55e', href: '/tools/dca' },
+                { icon: Calculator, label: 'Impôts IR', desc: 'Calculez votre impôt sur le revenu', color: '#34d399', href: '/tools/impots-ir' },
+                { icon: Percent, label: 'Budget 50/30/20', desc: 'Optimisez la répartition de vos revenus', color: '#60a5fa', href: '/tools/budget-50-30-20' },
+              ]
+              return (
+                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                    Simulateurs <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
+                  </button>
+                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                      {items.map(it => (
+                        <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                          <div style={{ width: 30, height: 30, borderRadius: 8, background: it.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                            <it.icon style={{ width: 13, height: 13, color: it.color }} />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '0 0 2px' }}>{it.label}</p>
+                            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.4 }}>{it.desc}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 10, paddingTop: 10 }}>
+                      <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: GOLD, textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'background 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = GOLD + '10' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                        Voir tous les simulateurs → <BarChart3 style={{ width: 11, height: 11 }} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Patrimoine dropdown */}
+            {(() => {
+              const key = 'pat'
+              const items = [
+                { icon: LayoutDashboard, label: 'Vue d\'ensemble', desc: 'Dashboard global : valeur, répartition, carte monde', color: GOLD, href: '/dashboard/patrimoine' },
+                { icon: BarChart3, label: 'Mon portefeuille', desc: 'Positions live via Finnhub & CoinGecko', color: '#38bdf8', href: '/dashboard/portfolio' },
+                { icon: Award, label: 'Score patrimonial', desc: 'Notation 0-100 sur 6 piliers', color: '#a78bfa', href: '/dashboard/score' },
+                { icon: Target, label: 'Mes objectifs', desc: 'Progression vers vos objectifs financiers', color: '#fb923c', href: '/dashboard/goals' },
+                { icon: FileText, label: 'Rapport fiscal', desc: 'Plus-values, durées, optimisation', color: '#34d399', href: '/dashboard/tax' },
+                { icon: BookOpen, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND + P&L', color: '#c084fc', href: '/dashboard/transactions' },
+              ]
+              return (
+                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                    Patrimoine <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
+                  </button>
+                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                      {items.map(it => (
+                        <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                          <div style={{ width: 30, height: 30, borderRadius: 8, background: it.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                            <it.icon style={{ width: 13, height: 13, color: it.color }} />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '0 0 2px' }}>{it.label}</p>
+                            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.4 }}>{it.desc}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Ressources dropdown */}
+            {(() => {
+              const key = 'res'
+              const links = [
+                { label: 'Comment ça marche ?', desc: 'Comprendre FinCalc en 3 étapes', href: '#how', color: GOLD },
+                { label: 'Pour qui ?', desc: 'Épargnants, investisseurs, expatriés…', href: '#pour-qui', color: '#38bdf8' },
+                { label: 'Avis utilisateurs', desc: 'Ce que pensent nos membres', href: '#avis', color: '#a78bfa' },
+                { label: 'FAQ', desc: 'Questions fréquentes', href: '#faq', color: '#34d399' },
+              ]
+              return (
+                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                    Ressources <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
+                  </button>
+                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 300, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                    {links.map(it => (
+                      <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{it.label}</span>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{it.desc}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* À propos dropdown */}
+            {(() => {
+              const key = 'about'
+              const links = [
+                { label: 'Nos engagements', desc: 'Transparence, éthique, données', href: '#why' },
+                { label: 'Sécurité', desc: 'Zéro donnée bancaire, chiffrement AES-256', href: '#security' },
+                { label: 'Roadmap', desc: 'Les fonctionnalités à venir', href: '#roadmap' },
+                { label: 'Comparatif', desc: 'FinCalc vs alternatives', href: '#comparatif' },
+              ]
+              return (
+                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                    À propos <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
+                  </button>
+                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 280, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                    {links.map(it => (
+                      <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{it.label}</span>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{it.desc}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
           </div>
 
           {/* Desktop CTA */}
@@ -1715,16 +1863,16 @@ export function LandingClient() {
           <div style={{ padding: '16px 20px 20px' }}>
             {[
               ['#rates', 'Taux en direct'],
-              ['#demo', 'Simulateurs'],
-              ['#modules', 'Nos modules'],
+              ['/tools', 'Tous les simulateurs'],
+              ['#modules', 'Patrimoine'],
               ['#how', 'Comment ça marche ?'],
               ['#pour-qui', 'Pour qui ?'],
+              ['#avis', 'Avis'],
+              ['#faq', 'FAQ'],
               ['#why', 'Nos engagements'],
               ['#security', 'Sécurité'],
-              ['#avis', 'Avis'],
               ['#roadmap', 'Roadmap'],
               ['#comparatif', 'Comparatif'],
-              ['#faq', 'FAQ'],
             ].map(([href, label]) => (
               <a
                 key={href}

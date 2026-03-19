@@ -1850,6 +1850,14 @@ export function LandingClient() {
           </div>
 
           {/* Hero mini FIRE calc */}
+          <div style={{ marginTop: 40, textAlign: 'center' }}>
+            <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', margin: '0 0 4px' }}>
+              Commençons maintenant
+            </p>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: '#fb923c', opacity: 0.8 }}>
+              <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <HeroFireCalc />
 
           {/* Stats */}

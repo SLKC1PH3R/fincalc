@@ -30,6 +30,7 @@ import {
   Percent,
   Bitcoin,
   Users,
+  Award,
 } from 'lucide-react'
 
 // ─── Constants ────────────────────────────────────────────────────────────
@@ -1983,45 +1984,81 @@ export function LandingClient() {
       <section style={{ padding: '0 20px 80px' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
               <SectionTag><Globe style={{ width: 11, height: 11 }} /> Gestion & Suivi</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Suivez votre patrimoine en temps réel
               </h2>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>15 pages de gestion incluses dans votre compte FinCalc</p>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>15 pages de gestion incluses dans votre compte FinCalc</p>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
-              {[
-                { icon: Building2, label: 'Vue d\'ensemble patrimoine', desc: 'Dashboard global : valeur totale, répartition, carte monde', color: GOLD, tag: 'Patrimoine' },
-                { icon: Building2, label: 'Immobilier', desc: 'Biens, valeur, crédit restant, loyers perçus', color: '#f472b6', tag: 'Patrimoine' },
-                { icon: TrendingUp, label: 'Actions & Fonds', desc: 'Positions en PEA, CTO, AV, PER', color: '#34d399', tag: 'Patrimoine' },
-                { icon: PiggyBank, label: 'Livrets', desc: 'Livret A, LDDS, LEP et plafonds', color: '#38bdf8', tag: 'Patrimoine' },
-                { icon: Bitcoin, label: 'Autres actifs', desc: 'Crypto-monnaies et actifs alternatifs', color: '#fb923c', tag: 'Patrimoine' },
-                { icon: Wallet, label: 'Comptes bancaires', desc: 'Soldes et suivi des comptes courants', color: '#a78bfa', tag: 'Patrimoine' },
-                { icon: Receipt, label: 'Emprunts', desc: 'Vue d\'ensemble de tous les crédits en cours', color: '#fb7185', tag: 'Patrimoine' },
-                { icon: BarChart3, label: 'Mon Portefeuille', desc: 'Positions boursières avec prix live (Finnhub + CoinGecko)', color: '#38bdf8', tag: 'Suivi' },
-                { icon: RefreshCw, label: 'Rééquilibrage', desc: 'Arbitrages nécessaires pour revenir à l\'allocation cible', color: '#34d399', tag: 'Suivi' },
-                { icon: Star, label: 'Mes Objectifs', desc: 'Objectifs financiers personnalisés avec progression', color: GOLD, tag: 'Suivi' },
-                { icon: Layers, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND avec P&L', color: '#c084fc', tag: 'Suivi' },
-                { icon: Calculator, label: 'Rapport Fiscal', desc: 'Plus-values, durées de détention, enveloppes', color: '#fbbf24', tag: 'Suivi' },
-                { icon: Star, label: 'Score Patrimonial', desc: 'Notation 0-100 sur 6 piliers (épargne, dettes, diversification…)', color: GOLD, tag: 'Analyse' },
-                { icon: Globe, label: 'Gestion personnelle', desc: 'Vue synthétique : allocation, objectifs, situation fiscale', color: '#818cf8', tag: 'Analyse' },
-                { icon: Layers, label: 'Détail enveloppe', desc: 'Page individuelle avec positions, historique et performance', color: 'rgba(255,255,255,0.5)', tag: 'Patrimoine' },
-              ].map((item) => (
-                <Link key={item.label} href="/login" style={{ textDecoration: 'none' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px 16px', transition: 'all 0.2s', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = `${item.color}35` }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: `${item.color}18`, border: `1px solid ${item.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <item.icon style={{ width: 13, height: 13, color: item.color }} />
+          </RevealSection>
+
+          {[
+            {
+              tag: 'Patrimoine', tagColor: GOLD,
+              items: [
+                { icon: Globe, label: 'Vue d\'ensemble', desc: 'Dashboard global : valeur totale, répartition par classe, carte monde géographique', color: GOLD },
+                { icon: Building2, label: 'Immobilier', desc: 'Biens, valeur de marché, crédit restant et loyers perçus', color: '#f472b6' },
+                { icon: TrendingUp, label: 'Actions & Fonds', desc: 'Positions en PEA, CTO, Assurance Vie, PER — valeur en temps réel', color: '#34d399' },
+                { icon: PiggyBank, label: 'Livrets', desc: 'Livret A, LDDS, LEP avec suivi des plafonds et intérêts', color: '#38bdf8' },
+                { icon: Bitcoin, label: 'Autres actifs', desc: 'Crypto-monnaies, métaux précieux et actifs alternatifs', color: '#fb923c' },
+                { icon: Wallet, label: 'Comptes bancaires', desc: 'Soldes et suivi de vos comptes courants et d\'épargne', color: '#a78bfa' },
+                { icon: Receipt, label: 'Emprunts', desc: 'Vue consolidée de tous vos crédits : immobilier, conso, pro', color: '#fb7185' },
+                { icon: Layers, label: 'Détail enveloppe', desc: 'Page individuelle avec positions, historique et performance par enveloppe', color: 'rgba(255,255,255,0.45)' },
+              ],
+            },
+            {
+              tag: 'Suivi & Trading', tagColor: '#38bdf8',
+              items: [
+                { icon: BarChart3, label: 'Mon Portefeuille', desc: 'Positions boursières avec prix live via Finnhub & CoinGecko', color: '#38bdf8' },
+                { icon: RefreshCw, label: 'Rééquilibrage', desc: 'Arbitrages nécessaires pour retrouver votre allocation cible', color: '#34d399' },
+                { icon: Star, label: 'Mes Objectifs', desc: 'Objectifs financiers personnalisés avec barre de progression', color: GOLD },
+                { icon: Layers, label: 'Carnet d\'ordres', desc: 'Journal BUY / SELL / DIVIDEND avec calcul du P&L réalisé', color: '#c084fc' },
+              ],
+            },
+            {
+              tag: 'Analyse & Fiscal', tagColor: '#818cf8',
+              items: [
+                { icon: Calculator, label: 'Rapport Fiscal', desc: 'Plus-values, durées de détention, optimisation par enveloppe', color: '#fbbf24' },
+                { icon: Award, label: 'Score Patrimonial', desc: 'Notation 0-100 sur 6 piliers : épargne, dettes, diversification…', color: GOLD },
+                { icon: Globe, label: 'Gestion personnelle', desc: 'Vue synthétique : allocation globale, objectifs, situation fiscale', color: '#818cf8' },
+              ],
+            },
+          ].map(group => (
+            <RevealSection key={group.tag}>
+              <div style={{ marginBottom: 40 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: group.tagColor }} />
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{group.tag}</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+                  {group.items.map(item => (
+                    <Link key={item.label} href="/login" style={{ textDecoration: 'none' }}>
+                      <div
+                        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '18px 20px', transition: 'border-color 0.15s, background 0.15s', cursor: 'pointer', height: '100%', boxSizing: 'border-box' as const }}
+                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color + '44'; el.style.background = item.color + '08' }}
+                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(255,255,255,0.07)'; el.style.background = 'rgba(255,255,255,0.02)' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: item.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <item.icon style={{ width: 15, height: 15, color: item.color }} />
+                          </div>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>{item.label}</span>
+                        </div>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.82)' }}>{item.label}</span>
-                    </div>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', lineHeight: 1.55, margin: 0 }}>{item.desc}</p>
-                  </div>
-                </Link>
-              ))}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </RevealSection>
+          ))}
+
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginTop: 8 }}>
+              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 24px', borderRadius: 24, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                Accéder à toutes les pages <ArrowRight style={{ width: 14, height: 14 }} />
+              </Link>
             </div>
           </RevealSection>
         </div>

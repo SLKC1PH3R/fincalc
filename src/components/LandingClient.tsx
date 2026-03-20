@@ -1698,6 +1698,14 @@ export function LandingClient() {
   const [heroVisible, setHeroVisible] = useState(false)
   const [demoLoading, setDemoLoading] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const menuCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const openMenuDelayed = (key: string) => {
+    if (menuCloseTimer.current) clearTimeout(menuCloseTimer.current)
+    setOpenMenu(key)
+  }
+  const closeMenuDelayed = () => {
+    menuCloseTimer.current = setTimeout(() => setOpenMenu(null), 120)
+  }
 
   const loginAsDemo = async () => {
     setDemoLoading(true)
@@ -1761,11 +1769,12 @@ export function LandingClient() {
                 { icon: Percent, label: 'Budget 50/30/20', desc: 'Optimisez la répartition de vos revenus', color: '#60a5fa', href: '/tools/budget-50-30-20' },
               ]
               return (
-                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
                   <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Simulateurs <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
-                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
                         <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -1789,6 +1798,7 @@ export function LandingClient() {
                       </Link>
                     </div>
                   </div>
+                  </div>
                 </div>
               )
             })()}
@@ -1805,11 +1815,12 @@ export function LandingClient() {
                 { icon: BookOpen, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND + P&L', color: '#c084fc', href: '/patrimoine/carnet-ordres' },
               ]
               return (
-                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
                   <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Patrimoine <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
-                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
                         <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -1832,6 +1843,7 @@ export function LandingClient() {
                         Voir toutes les pages de gestion → <Globe style={{ width: 11, height: 11 }} />
                       </Link>
                     </div>
+                  </div>
                   </div>
                 </div>
               )

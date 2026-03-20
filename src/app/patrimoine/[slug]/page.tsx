@@ -204,6 +204,27 @@ const PAGE_CONTENT: Record<string, PageContent> = {
     ],
     href: '/dashboard/portfolio',
   },
+  'mon-portefeuille': {
+    title: 'Mon Portefeuille — positions live',
+    tag: 'Suivi & Trading',
+    color: '#38bdf8',
+    desc: "Suivi en temps réel de vos positions boursières et crypto avec prix live via Finnhub et CoinGecko. P&L latent, performance par position et vue d'ensemble du portefeuille.",
+    why: [
+      "Voir la valorisation de chaque position mise à jour en temps réel",
+      "Calculer le P&L latent et le rendement de chaque ligne",
+      "Analyser la diversification de votre portefeuille par secteur et géographie",
+    ],
+    steps: [
+      "Ajoutez vos positions avec le ticker, la quantité et le prix de revient moyen",
+      "Les prix se mettent à jour automatiquement via Finnhub (actions) et CoinGecko (crypto)",
+      "Consultez le P&L latent, le rendement total et la répartition de votre portefeuille",
+    ],
+    cases: [
+      "Trader actif suivant un portefeuille de 15 actions avec valorisation live",
+      "Investisseur long terme suivant son ETF World + quelques positions individuelles",
+    ],
+    href: '/dashboard/portfolio',
+  },
   'reequilibrage': {
     title: 'Rééquilibrage de portefeuille',
     tag: 'Suivi & Trading',
@@ -226,6 +247,27 @@ const PAGE_CONTENT: Record<string, PageContent> = {
     href: '/dashboard/portfolio',
   },
   'objectifs': {
+    title: 'Mes Objectifs financiers',
+    tag: 'Suivi & Trading',
+    color: '#fb923c',
+    desc: "Créez et suivez vos objectifs financiers personnalisés avec barre de progression, date cible et épargne mensuelle nécessaire pour les atteindre.",
+    why: [
+      "Donner un sens concret à votre épargne avec des objectifs chiffrés",
+      "Calculer automatiquement l'effort d'épargne mensuel pour chaque objectif",
+      "Rester motivé grâce au suivi visuel de la progression vers chaque objectif",
+    ],
+    steps: [
+      "Créez un objectif avec un nom, un montant cible et une date souhaitée",
+      "Associez un compte ou une enveloppe à cet objectif",
+      "Suivez la progression et ajustez votre épargne si nécessaire",
+    ],
+    cases: [
+      "Couple épargnant pour un apport immobilier de 40 000€ dans 3 ans",
+      "Parent constituant un capital études de 20 000€ pour son enfant en 10 ans",
+    ],
+    href: '/dashboard/goals',
+  },
+  'mes-objectifs': {
     title: 'Mes Objectifs financiers',
     tag: 'Suivi & Trading',
     color: '#fb923c',

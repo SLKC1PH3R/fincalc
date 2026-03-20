@@ -40,7 +40,7 @@ const GROUPS = [
         label: "Vue d'ensemble",
         description: 'Bilan patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.',
         icon: Layers,
-        href: '/dashboard/patrimoine',
+        href: '/patrimoine/vue-ensemble',
       },
       {
         slug: 'immobilier',
@@ -102,7 +102,7 @@ const GROUPS = [
         label: 'Mon Portefeuille',
         description: 'Tracker de positions en temps réel : prix, variation, poids et performance globale.',
         icon: BarChart3,
-        href: '/dashboard/portfolio',
+        href: '/patrimoine/mon-portefeuille',
       },
       {
         slug: 'rééquilibrage',
@@ -143,7 +143,7 @@ const GROUPS = [
         label: 'Score Patrimonial',
         description: 'Note globale de la santé de votre patrimoine basée sur diversification, liquidité et risque.',
         icon: Award,
-        href: '/dashboard/score',
+        href: '/patrimoine/score-patrimonial',
       },
       {
         slug: 'gestion-personnelle',

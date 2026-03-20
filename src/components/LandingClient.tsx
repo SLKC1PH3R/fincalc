@@ -1209,7 +1209,7 @@ function InteractiveDemo() {
       border: `1px solid ${activeColor}25`,
       borderRadius: 24, padding: 'clamp(24px,4vw,40px)',
       boxShadow: `0 0 80px ${activeColor}08`,
-      position: 'relative', overflow: 'hidden',
+      position: 'relative',
       transition: 'border-color 0.4s',
       height: '100%', boxSizing: 'border-box',
     }}>
@@ -1217,7 +1217,7 @@ function InteractiveDemo() {
       <div style={{ position: 'absolute', top: -80, right: -80, width: 300, height: 300, borderRadius: '50%', background: `radial-gradient(circle, ${activeColor}0b, transparent 65%)`, pointerEvents: 'none', transition: 'background 0.4s' }} />
 
       {/* Tab selector */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 4, width: 'fit-content', position: 'relative', zIndex: 2 }}>
         {([
           { id: 'compound' as const, label: 'Intérêts composés', icon: TrendingUp, color: GOLD },
           { id: 'fire' as const, label: 'FI/RE', icon: Flame, color: fireColor },
@@ -1236,180 +1236,252 @@ function InteractiveDemo() {
         ))}
       </div>
 
-      {/* ── COMPOUND MODE ── */}
-      {tab === 'compound' && (
-        <>
-          {/* KPI grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
-            {[
-              { label: 'Valeur finale', value: finalValue >= 1_000_000 ? `${(finalValue / 1_000_000).toFixed(2)} M€` : `${Math.round(finalValue / 1000)} k€`, color: GOLD, big: true },
-              { label: 'Gains nets', value: `+${gains >= 1_000_000 ? `${(gains / 1_000_000).toFixed(2)} M€` : `${Math.round(gains / 1000)} k€`}`, color: '#34d399', big: true },
-              { label: 'Rendement total', value: `${rendement}%`, color: 'rgba(255,255,255,0.75)', big: true },
-              { label: 'Capital investi', value: fmtFull(totalInvested), color: 'rgba(255,255,255,0.4)', big: false },
-            ].map(k => (
-              <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
-                <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
-              </div>
-            ))}
-          </div>
+      {/* Flip container */}
+      <div style={{ perspective: '1400px', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          position: 'relative',
+          transformStyle: 'preserve-3d' as any,
+          transform: tab === 'fire' ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transition: 'transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1)',
+        }}>
+          {/* FRONT FACE: Compound */}
+          <div style={{ backfaceVisibility: 'hidden' as any, WebkitBackfaceVisibility: 'hidden' as any }}>
+            {/* KPI grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
+              {[
+                { label: 'Valeur finale', value: finalValue >= 1_000_000 ? `${(finalValue / 1_000_000).toFixed(2)} M€` : `${Math.round(finalValue / 1000)} k€`, color: GOLD, big: true },
+                { label: 'Gains nets', value: `+${gains >= 1_000_000 ? `${(gains / 1_000_000).toFixed(2)} M€` : `${Math.round(gains / 1000)} k€`}`, color: '#34d399', big: true },
+                { label: 'Rendement total', value: `${rendement}%`, color: 'rgba(255,255,255,0.75)', big: true },
+                { label: 'Capital investi', value: fmtFull(totalInvested), color: 'rgba(255,255,255,0.4)', big: false },
+              ].map(k => (
+                <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                  <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
+                </div>
+              ))}
+            </div>
 
-          {/* Chart */}
-          <div style={{ borderRadius: 12, marginBottom: 14, position: 'relative', cursor: 'crosshair' }}
-            onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); setHoverPct(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))) }}
-            onMouseLeave={() => setHoverPct(null)}
-          >
-            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
-              <defs>
-                <linearGradient id="demo2-v" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.32" /><stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
-                </linearGradient>
-                <linearGradient id="demo2-i" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#34d399" stopOpacity="0.15" /><stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
-                </linearGradient>
-              </defs>
-              <path d={areaValue} fill="url(#demo2-v)" />
-              <path d={areaInvested} fill="url(#demo2-i)" />
-              <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinejoin="round" />
-              <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
-              {hovIdx !== null && hd && (
-                <>
-                  <line x1={toXc(hovIdx)} y1={0} x2={toXc(hovIdx)} y2={H} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-                  <circle cx={toXc(hovIdx)} cy={toYc(hd.value)} r={4} fill={GOLD} stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
-                  <circle cx={toXc(hovIdx)} cy={toYc(hd.invested)} r={4} fill="#34d399" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
-                </>
+            {/* Chart */}
+            <div style={{ borderRadius: 12, marginBottom: 14, position: 'relative', cursor: 'crosshair' }}
+              onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); setHoverPct(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width))) }}
+              onMouseLeave={() => setHoverPct(null)}
+            >
+              <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
+                <defs>
+                  <linearGradient id="demo2-v" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={GOLD} stopOpacity="0.32" /><stop offset="100%" stopColor={GOLD} stopOpacity="0.02" />
+                  </linearGradient>
+                  <linearGradient id="demo2-i" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#34d399" stopOpacity="0.15" /><stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
+                  </linearGradient>
+                </defs>
+                <path d={areaValue} fill="url(#demo2-v)" />
+                <path d={areaInvested} fill="url(#demo2-i)" />
+                <path d={pathValue} fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinejoin="round" />
+                <path d={pathInvested} fill="none" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" strokeLinejoin="round" />
+                {hovIdx !== null && hd && (
+                  <>
+                    <line x1={toXc(hovIdx)} y1={0} x2={toXc(hovIdx)} y2={H} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+                    <circle cx={toXc(hovIdx)} cy={toYc(hd.value)} r={4} fill={GOLD} stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+                    <circle cx={toXc(hovIdx)} cy={toYc(hd.invested)} r={4} fill="#34d399" stroke="rgba(0,0,0,0.5)" strokeWidth="1.5" />
+                  </>
+                )}
+              </svg>
+              {hovIdx !== null && hd && hoverPct !== null && (
+                <div style={{
+                  position: 'absolute', top: 8,
+                  left: hoverPct > 0.6 ? 'auto' : `calc(${(hoverPct * 100).toFixed(1)}% + 12px)`,
+                  right: hoverPct > 0.6 ? `calc(${((1 - hoverPct) * 100).toFixed(1)}% + 12px)` : 'auto',
+                  background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 10, padding: '10px 14px', pointerEvents: 'none', zIndex: 10, minWidth: 200,
+                }}>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Année {hovIdx}</p>
+                  {[['Valeur', fmtFull(hd.value), GOLD], ['Investi', fmtFull(hd.invested), '#34d399'], ['Gains', `+${fmtFull(hd.value - hd.invested)}`, '#fff']].map(([l, v, c], i) => (
+                    <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: i === 1 ? 4 : 0, paddingTop: i === 2 ? 6 : 0, borderTop: i === 2 ? '1px solid rgba(255,255,255,0.07)' : 'none', marginTop: i === 2 ? 4 : 0 }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{l}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{v}</span>
+                    </div>
+                  ))}
+                </div>
               )}
-            </svg>
-            {hovIdx !== null && hd && hoverPct !== null && (
-              <div style={{
-                position: 'absolute', top: 8,
-                left: hoverPct > 0.6 ? 'auto' : `calc(${(hoverPct * 100).toFixed(1)}% + 12px)`,
-                right: hoverPct > 0.6 ? `calc(${((1 - hoverPct) * 100).toFixed(1)}% + 12px)` : 'auto',
-                background: 'rgba(8,8,8,0.96)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 10, padding: '10px 14px', pointerEvents: 'none', zIndex: 10, minWidth: 200,
-              }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Année {hovIdx}</p>
-                {[['Valeur', fmtFull(hd.value), GOLD], ['Investi', fmtFull(hd.invested), '#34d399'], ['Gains', `+${fmtFull(hd.value - hd.invested)}`, '#fff']].map(([l, v, c], i) => (
-                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, marginBottom: i === 1 ? 4 : 0, paddingTop: i === 2 ? 6 : 0, borderTop: i === 2 ? '1px solid rgba(255,255,255,0.07)' : 'none', marginTop: i === 2 ? 4 : 0 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{l}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: c }}>{v}</span>
+            </div>
+
+            {/* Legend */}
+            <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 20, height: 2.5, background: GOLD, borderRadius: 2 }} /> Valeur finale
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" /></svg> Capital investi
+              </div>
+            </div>
+
+            {/* Sliders */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
+              {([
+                { label: 'Capital initial', value: capital, min: 1000, max: 100000, step: 500, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
+                { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly },
+                { label: 'Rendement annuel', value: rate, min: 1, max: 15, step: 0.5, display: `${rate} %/an`, set: setRate },
+                { label: 'Durée', value: years, min: 5, max: 40, step: 1, display: `${years} ans`, set: setYears },
+              ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
+                <div key={label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{display}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 20, height: 2.5, background: GOLD, borderRadius: 2 }} /> Valeur finale
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="5,3" /></svg> Capital investi
-            </div>
-          </div>
-
-          {/* Sliders */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
-            {([
-              { label: 'Capital initial', value: capital, min: 1000, max: 100000, step: 500, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital },
-              { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly },
-              { label: 'Rendement annuel', value: rate, min: 1, max: 15, step: 0.5, display: `${rate} %/an`, set: setRate },
-              { label: 'Durée', value: years, min: 5, max: 40, step: 1, display: `${years} ans`, set: setYears },
-            ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
-              <div key={label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: GOLD }}>{display}</span>
+                  <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: GOLD, cursor: 'pointer', height: 4 }} />
                 </div>
-                <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: GOLD, cursor: 'pointer', height: 4 }} />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* ── FIRE MODE ── */}
-      {tab === 'fire' && (
-        <>
-          {/* KPI grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
-            {[
-              { label: 'Objectif FIRE', value: `${Math.round(fireTarget / 1000)} k€`, sub: 'règle des 4 %', color: fireColor, big: true },
-              { label: 'Années restantes', value: annees !== null ? `${annees} ans` : '> 45 ans', color: annees !== null ? '#34d399' : 'rgba(255,255,255,0.4)', big: true },
-              { label: 'Revenu passif cible', value: `${fmtFull(fireDepenses)}/mois`, color: 'rgba(255,255,255,0.7)', big: false },
-              { label: 'Patrimoine actuel', value: `${Math.round(firePatrimoine / 1000)} k€`, color: 'rgba(255,255,255,0.4)', big: false },
-            ].map(k => (
-              <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
-                <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
-                {'sub' in k && k.sub && <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginTop: 4 }}>{k.sub}</p>}
-              </div>
-            ))}
-          </div>
-
-          {/* FIRE Chart */}
-          <div style={{ borderRadius: 12, marginBottom: 14 }}>
-            <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
-              <defs>
-                <linearGradient id="fire2-g" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={fireColor} stopOpacity="0.30" /><stop offset="100%" stopColor={fireColor} stopOpacity="0.02" />
-                </linearGradient>
-              </defs>
-              <rect x={0} y={0} width={W} height={targetY} fill="rgba(52,211,153,0.03)" />
-              <line x1={0} y1={targetY} x2={W} y2={targetY} stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" strokeOpacity="0.55" />
-              <path d={fireAreaPath} fill="url(#fire2-g)" />
-              <path d={fireValuePath} fill="none" stroke={fireColor} strokeWidth="2.5" strokeLinejoin="round" />
-              {annees !== null && (
-                <>
-                  <circle cx={toXf(annees)} cy={targetY} r={12} fill={fireColor} opacity="0.15" />
-                  <circle cx={toXf(annees)} cy={targetY} r={5} fill={fireColor} opacity="0.9" />
-                </>
-              )}
-            </svg>
-          </div>
-
-          {/* Legend */}
-          <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 20, height: 2.5, background: fireColor, borderRadius: 2 }} /> Croissance portefeuille
+              ))}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" /></svg> Objectif FIRE
+
+            {/* Bottom CTA */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as any, gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)' }}>
+                Simulation indicative · rendement constant · sans frais ni fiscalité
+              </p>
+              <Link href="/login"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, background: `${GOLD}1a`, border: `1px solid ${GOLD}40`, color: GOLD, textDecoration: 'none', fontSize: 13, fontWeight: 600, transition: 'all 0.2s' }}
+                onMouseEnter={(e: any) => { e.currentTarget.style.background = `${GOLD}2e`; e.currentTarget.style.borderColor = `${GOLD}70` }}
+                onMouseLeave={(e: any) => { e.currentTarget.style.background = `${GOLD}1a`; e.currentTarget.style.borderColor = `${GOLD}40` }}>
+                Sauvegarder ce scénario <ArrowRight style={{ width: 13, height: 13 }} />
+              </Link>
             </div>
           </div>
 
-          {/* FIRE Sliders */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
-            {([
-              { label: 'Patrimoine actuel', value: firePatrimoine, min: 0, max: 200000, step: 5000, display: `${Math.round(firePatrimoine / 1000)} k€`, set: setFirePatrimoine },
-              { label: 'Épargne mensuelle', value: fireEpargne, min: 100, max: 5000, step: 100, display: `${fireEpargne} €/mois`, set: setFireEpargne },
-              { label: 'Rendement estimé', value: fireRate, min: 1, max: 15, step: 0.5, display: `${fireRate} %/an`, set: setFireRate },
-              { label: 'Dépenses/mois cible', value: fireDepenses, min: 1000, max: 10000, step: 200, display: `${fmtFull(fireDepenses)}/mois`, set: setFireDepenses },
-            ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
-              <div key={label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: fireColor }}>{display}</span>
+          {/* BACK FACE: FIRE */}
+          <div style={{
+            position: 'absolute' as any, top: 0, left: 0, right: 0,
+            backfaceVisibility: 'hidden' as any, WebkitBackfaceVisibility: 'hidden' as any,
+            transform: 'rotateY(180deg)',
+          }}>
+            {/* KPI grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10, marginBottom: 24 }}>
+              {[
+                { label: 'Objectif FIRE', value: `${Math.round(fireTarget / 1000)} k€`, sub: 'règle des 4 %', color: fireColor, big: true },
+                { label: 'Années restantes', value: annees !== null ? `${annees} ans` : '> 45 ans', color: annees !== null ? '#34d399' : 'rgba(255,255,255,0.4)', big: true },
+                { label: 'Revenu passif cible', value: `${fmtFull(fireDepenses)}/mois`, color: 'rgba(255,255,255,0.7)', big: false },
+                { label: 'Patrimoine actuel', value: `${Math.round(firePatrimoine / 1000)} k€`, color: 'rgba(255,255,255,0.4)', big: false },
+              ].map(k => (
+                <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                  <p style={{ fontSize: k.big ? 26 : 18, fontWeight: 800, color: k.color, lineHeight: 1, letterSpacing: '-0.03em' }}>{k.value}</p>
+                  {'sub' in k && k.sub && <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginTop: 4 }}>{k.sub}</p>}
                 </div>
-                <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: fireColor, cursor: 'pointer', height: 4 }} />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+              ))}
+            </div>
 
-      {/* ── Bottom CTA ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)' }}>
-          Simulation indicative · rendement constant · sans frais ni fiscalité
-        </p>
-        <Link href="/login"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, background: `${activeColor}1a`, border: `1px solid ${activeColor}40`, color: activeColor, textDecoration: 'none', fontSize: 13, fontWeight: 600, transition: 'all 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = `${activeColor}2e`; e.currentTarget.style.borderColor = `${activeColor}70` }}
-          onMouseLeave={e => { e.currentTarget.style.background = `${activeColor}1a`; e.currentTarget.style.borderColor = `${activeColor}40` }}>
-          Sauvegarder ce scénario <ArrowRight style={{ width: 13, height: 13 }} />
-        </Link>
+            {/* FIRE Chart */}
+            <div style={{ borderRadius: 12, marginBottom: 14 }}>
+              <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block', height: H, borderRadius: 10 }}>
+                <defs>
+                  <linearGradient id="fire2-g" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={fireColor} stopOpacity="0.30" /><stop offset="100%" stopColor={fireColor} stopOpacity="0.02" />
+                  </linearGradient>
+                </defs>
+                <rect x={0} y={0} width={W} height={targetY} fill="rgba(52,211,153,0.03)" />
+                <line x1={0} y1={targetY} x2={W} y2={targetY} stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" strokeOpacity="0.55" />
+                <path d={fireAreaPath} fill="url(#fire2-g)" />
+                <path d={fireValuePath} fill="none" stroke={fireColor} strokeWidth="2.5" strokeLinejoin="round" />
+                {annees !== null && (
+                  <>
+                    <circle cx={toXf(annees)} cy={targetY} r={12} fill={fireColor} opacity="0.15" />
+                    <circle cx={toXf(annees)} cy={targetY} r={5} fill={fireColor} opacity="0.9" />
+                  </>
+                )}
+              </svg>
+            </div>
+
+            {/* Legend */}
+            <div style={{ display: 'flex', gap: 20, marginBottom: 24, fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 20, height: 2.5, background: fireColor, borderRadius: 2 }} /> Croissance portefeuille
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="20" height="3"><line x1="0" y1="1.5" x2="20" y2="1.5" stroke="#34d399" strokeWidth="1.5" strokeDasharray="6,4" /></svg> Objectif FIRE
+              </div>
+            </div>
+
+            {/* FIRE Sliders */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px 32px', marginBottom: 24 }}>
+              {([
+                { label: 'Patrimoine actuel', value: firePatrimoine, min: 0, max: 200000, step: 5000, display: `${Math.round(firePatrimoine / 1000)} k€`, set: setFirePatrimoine },
+                { label: 'Épargne mensuelle', value: fireEpargne, min: 100, max: 5000, step: 100, display: `${fireEpargne} €/mois`, set: setFireEpargne },
+                { label: 'Rendement estimé', value: fireRate, min: 1, max: 15, step: 0.5, display: `${fireRate} %/an`, set: setFireRate },
+                { label: 'Dépenses/mois cible', value: fireDepenses, min: 1000, max: 10000, step: 200, display: `${fmtFull(fireDepenses)}/mois`, set: setFireDepenses },
+              ] as { label: string; value: number; min: number; max: number; step: number; display: string; set: (v: number) => void }[]).map(({ label, value, min, max, step, display, set }) => (
+                <div key={label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: fireColor }}>{display}</span>
+                  </div>
+                  <input type="range" min={min} max={max} step={step} value={value} onChange={e => set(Number(e.target.value))} style={{ width: '100%', accentColor: fireColor, cursor: 'pointer', height: 4 }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom CTA */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as any, gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)' }}>
+                Simulation indicative · rendement constant · sans frais ni fiscalité
+              </p>
+              <Link href="/login"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, background: `${fireColor}1a`, border: `1px solid ${fireColor}40`, color: fireColor, textDecoration: 'none', fontSize: 13, fontWeight: 600, transition: 'all 0.2s' }}
+                onMouseEnter={(e: any) => { e.currentTarget.style.background = `${fireColor}2e`; e.currentTarget.style.borderColor = `${fireColor}70` }}
+                onMouseLeave={(e: any) => { e.currentTarget.style.background = `${fireColor}1a`; e.currentTarget.style.borderColor = `${fireColor}40` }}>
+                Sauvegarder ce scénario <ArrowRight style={{ width: 13, height: 13 }} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Roadmap Flip Card ────────────────────────────────────────────────────
+function RoadmapFlipCard({ item, barColor, phaseId }: { item: { label: string; desc: string }; barColor: string; phaseId: string }) {
+  const [flipped, setFlipped] = useState(false)
+  const emoji = phaseId === 'done' ? '✅' : phaseId === 'wip' ? '⚡' : '📅'
+  return (
+    <div
+      onMouseEnter={() => setFlipped(true)}
+      onMouseLeave={() => setFlipped(false)}
+      style={{ perspective: '600px', height: 96 }}
+    >
+      <div style={{
+        position: 'relative', width: '100%', height: '100%',
+        transformStyle: 'preserve-3d' as any,
+        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        transition: 'transform 0.42s ease',
+      }}>
+        {/* Front */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backfaceVisibility: 'hidden' as any,
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderTop: `2px solid ${barColor}`,
+          borderRadius: 12,
+          padding: '10px 14px',
+          display: 'flex', flexDirection: 'column' as any, justifyContent: 'center', gap: 6,
+        }}>
+          <span style={{ fontSize: 13, color: '#fff', fontWeight: 600, lineHeight: 1.3 }}>{item.label}</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em' }}>{emoji} Survolez pour en savoir plus</span>
+        </div>
+        {/* Back */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backfaceVisibility: 'hidden' as any,
+          transform: 'rotateY(180deg)',
+          background: `${barColor}12`,
+          border: `1px solid ${barColor}35`,
+          borderTop: `2px solid ${barColor}`,
+          borderRadius: 12,
+          padding: '10px 14px',
+          display: 'flex', alignItems: 'center',
+        }}>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+        </div>
       </div>
     </div>
   )
@@ -1690,9 +1762,9 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Simulateurs <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
-                  </button>
+                  </Link>
                   <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
@@ -1734,9 +1806,9 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Patrimoine <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
-                  </button>
+                  </Link>
                   <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
@@ -2454,57 +2526,43 @@ export function LandingClient() {
             </div>
           </RevealSection>
 
-          {/* Phase grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
-            {ROADMAP_PHASES.map((phase, pi) => {
-              const barColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.15)'
-              const badgeBg = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.06)'
-              const badgeColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.35)'
-              return (
-                <RevealSection key={phase.id} delay={pi * 80}>
-                  <div style={{
-                    background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20,
-                    overflow: 'hidden', position: 'relative',
-                  }}>
-                    {/* Status color bar */}
-                    <div style={{ height: 3, background: barColor, borderRadius: '0 0 2px 2px', marginBottom: 0 }} />
-                    <div style={{ padding: '20px 20px 24px' }}>
-                      {/* Header */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{phase.period}</span>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: badgeColor, background: badgeBg, border: `1px solid ${barColor}40`, padding: '3px 10px', borderRadius: 100, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                          {phase.label}
-                        </div>
-                      </div>
-                      {/* Items list */}
-                      <ul style={{ display: 'flex', flexDirection: 'column', gap: 10, listStyle: 'none', padding: 0, margin: 0 }}>
-                        {phase.items.slice(0, phase.id === 'planned' ? 6 : undefined).map((item, i) => (
-                          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                            <Check style={{
-                              width: 14, height: 14, flexShrink: 0, marginTop: 2,
-                              color: phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.2)',
-                            }} />
-                            <div>
-                              <p style={{ fontSize: 13, fontWeight: 500, color: phase.id === 'planned' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.82)', lineHeight: 1.3 }}>{item.label}</p>
-                              {item.desc && phase.id !== 'planned' && (
-                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 2, lineHeight: 1.45 }}>{item.desc}</p>
-                              )}
-                            </div>
-                          </li>
-                        ))}
-                        {phase.id === 'planned' && phase.items.length > 6 && (
-                          <li style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', paddingLeft: 24 }}>
-                            + {phase.items.length - 6} autres fonctionnalités…
-                          </li>
-                        )}
-                      </ul>
+          {/* Phase groups with flip cards */}
+          {ROADMAP_PHASES.map((phase, pi) => {
+            const barColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.3)'
+            const badgeBg = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.06)'
+            const badgeColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.35)'
+            const displayItems = phase.id === 'planned' ? phase.items.slice(0, 9) : phase.items
+            return (
+              <RevealSection key={phase.id} delay={pi * 80}>
+                <div style={{ marginBottom: 40 }}>
+                  {/* Phase header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                    <div style={{ height: 3, width: 32, background: barColor, borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{phase.period}</span>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: badgeColor, background: badgeBg, border: `1px solid ${barColor}40`, padding: '3px 10px', borderRadius: 100, letterSpacing: '0.06em', textTransform: 'uppercase' as any }}>
+                      {phase.label}
                     </div>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)', marginLeft: 4 }}>{phase.items.length} fonctionnalités</span>
                   </div>
-                </RevealSection>
-              )
-            })}
-          </div>
+                  {/* Flip cards grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
+                    {displayItems.map((item, i) => (
+                      <RoadmapFlipCard key={i} item={item} barColor={barColor} phaseId={phase.id} />
+                    ))}
+                    {phase.id === 'planned' && phase.items.length > 9 && (
+                      <div style={{
+                        height: 96, borderRadius: 12, border: '1px dashed rgba(255,255,255,0.12)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, color: 'rgba(255,255,255,0.25)',
+                      }}>
+                        + {phase.items.length - 9} autres…
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </RevealSection>
+            )
+          })}
         </div>
       </section>
 

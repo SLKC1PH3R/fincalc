@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { TrendingUp } from 'lucide-react'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 
 export const metadata = {
   title: 'Politique de confidentialité — PatrImo',
@@ -11,11 +11,8 @@ export default function PolitiqueConfidentialite() {
       {/* Navbar */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(6,6,6,0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0 20px', height: 64, display: 'flex', alignItems: 'center' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>PatrImo</span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <PatrimoLogo width={120} uid="politique" />
           </Link>
           <Link href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>← Retour</Link>
         </div>

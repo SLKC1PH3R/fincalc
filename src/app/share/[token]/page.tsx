@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { TrendingUp } from 'lucide-react'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 
 const TYPE_LABELS: Record<string, string> = {
   compound: 'Intérêts Composés', dca: 'DCA', fire: 'FI/RE',
@@ -55,11 +55,8 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
       {/* Navbar */}
       <nav style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
-          </div>
-          <span style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>PatrImo</span>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <PatrimoLogo width={120} uid="share" />
         </Link>
         <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
           Créer mon compte gratuit →

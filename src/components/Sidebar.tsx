@@ -13,6 +13,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
 import { useTheme } from '@/contexts/ThemeContext'
+import { PatrimoLogo, PatrimoPIcon } from '@/components/PatrimoLogo'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Icon = (props: any) => any
@@ -435,19 +436,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             <div>
               {/* Logo row */}
               <div className="flex items-center justify-between mb-4">
-                <Link href="/dashboard" className="flex items-center gap-2.5 group" style={{ textDecoration: 'none' }}>
-                  <div
-                    className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
-                    style={{ background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)' }}
-                  >
-                    <TrendingUp style={{ color: '#0a0a0a', width: 15, height: 15 }} />
-                  </div>
-                  <span
-                    className="sb-gold-text"
-                    style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.04em', fontFamily: 'Geist, -apple-system, sans-serif' }}
-                  >
-                    PatrImo
-                  </span>
+                <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                  <PatrimoLogo width={126} uid="sb" />
                 </Link>
                 <button
                   onClick={toggle}
@@ -597,10 +587,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             <button
               onClick={toggle}
               title="Ouvrir"
-              className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)', border: 'none', cursor: 'pointer' }}
+              className="flex items-center justify-center transition-transform hover:scale-105"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <TrendingUp style={{ color: '#0a0a0a', width: 15, height: 15 }} />
+              <PatrimoPIcon size={28} uid="sb-col" />
             </button>
           )}
         </div>

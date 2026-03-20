@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { TrendingUp, Loader2, Eye, EyeOff, Zap } from 'lucide-react'
+import { Loader2, Eye, EyeOff, Zap } from 'lucide-react'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 
 const GOLD = '#f1c086'
 const GOLD_DARK = 'rgba(241,192,134,0.10)'
@@ -414,11 +415,8 @@ function AuthForm() {
 
         <div className="relative flex flex-col flex-1 px-8 py-10 md:px-12">
           {/* Logo */}
-          <div className="flex items-center gap-2.5 mb-auto pb-8">
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 17, height: 17, color: '#000' }} />
-            </div>
-            <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
+          <div className="mb-auto pb-8">
+            <PatrimoLogo width={136} uid="login" />
           </div>
 
           {/* Form area */}

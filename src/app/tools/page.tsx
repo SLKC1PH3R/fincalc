@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { TrendingUp } from 'lucide-react'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 import type { Metadata } from 'next'
 import { ToolsGrid } from './ToolsGrid'
 
@@ -19,11 +19,8 @@ export default function ToolsPage() {
       {/* Header */}
       <header style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '16px 0' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 16, height: 16, color: '#000' }} />
-            </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>PatrImo</span>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <PatrimoLogo width={130} uid="tools" />
           </Link>
           <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →

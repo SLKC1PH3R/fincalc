@@ -39,6 +39,7 @@ import {
   Scale,
   Landmark,
 } from 'lucide-react'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 
 // ─── Constants ────────────────────────────────────────────────────────────
 const GOLD = '#f1c086'
@@ -1923,43 +1924,54 @@ function OpportunityCostWidget() {
 function FIntroAnimation({ onDone }: { onDone: () => void }) {
   const [fading, setFading] = useState(false)
   useEffect(() => {
-    const t1 = setTimeout(() => setFading(true), 2300)
-    const t2 = setTimeout(() => onDone(), 3000)
+    const t1 = setTimeout(() => setFading(true), 2200)
+    const t2 = setTimeout(() => onDone(), 2900)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [onDone])
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999, background: '#000',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column', gap: 28,
+      flexDirection: 'column', gap: 24,
       opacity: fading ? 0 : 1,
       transition: 'opacity 0.7s ease',
       pointerEvents: fading ? 'none' : 'all',
     }}>
-      <svg viewBox="0 0 100 164" width="64" height="105" style={{ overflow: 'visible' }}>
-        {/* Vertical stem */}
-        <path d="M 22,12 L 22,152"
-          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
-          style={{ strokeDasharray: 140, strokeDashoffset: 140, animation: 'draw-stroke 0.85s cubic-bezier(0.4,0,0.2,1) forwards 0.25s' } as React.CSSProperties}
+      {/* P icon — circle first, then letter */}
+      <svg width="80" height="94" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="gIntro" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#f1c086" />
+            <stop offset="100%" stopColor="#c8922a" />
+          </linearGradient>
+        </defs>
+        {/* Dot — pop in first */}
+        <circle
+          cx="9" cy="5" r="4" fill="url(#gIntro)"
+          style={{
+            opacity: 0,
+            transformBox: 'fill-box', transformOrigin: 'center',
+            animation: 'logo-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards 0.25s',
+          } as React.CSSProperties}
         />
-        {/* Top of P bump */}
-        <path d="M 22,12 L 76,12"
-          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
-          style={{ strokeDasharray: 56, strokeDashoffset: 56, animation: 'draw-stroke 0.4s cubic-bezier(0.4,0,0.2,1) forwards 1.0s' } as React.CSSProperties}
-        />
-        {/* P arc + bottom return */}
-        <path d="M 76,12 C 102,12 102,72 76,72 L 22,72"
-          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round" strokeLinejoin="round"
-          style={{ strokeDasharray: 145, strokeDashoffset: 145, animation: 'draw-stroke 0.7s cubic-bezier(0.4,0,0.2,1) forwards 1.4s' } as React.CSSProperties}
-        />
+        {/* P — rises up after */}
+        <text
+          x="0" y="38"
+          fontFamily="Geist, Inter, sans-serif"
+          fontWeight="900"
+          fontSize="36"
+          fill="url(#gIntro)"
+          letterSpacing="-2"
+          style={{ opacity: 0, animation: 'fade-in-intro 0.6s cubic-bezier(0.4,0,0.2,1) forwards 0.55s' } as React.CSSProperties}
+        >P</text>
       </svg>
+
+      {/* Full wordmark — fades in last */}
       <div style={{
-        opacity: 0, animation: 'fade-in-intro 0.5s ease forwards 1.85s',
-        display: 'flex', alignItems: 'center', gap: 6,
+        opacity: 0,
+        animation: 'fade-in-intro 0.55s ease forwards 1.1s',
       } as React.CSSProperties}>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.45em', textTransform: 'uppercase', fontFamily: "'Inter Tight', 'Inter', system-ui, sans-serif" }}>
-          PatrImo
-        </span>
+        <PatrimoLogo width={148} uid="intro" />
       </div>
     </div>
   )
@@ -2047,11 +2059,8 @@ export function LandingClient() {
       }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 15, height: 15, color: '#0a0a0a' }} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <PatrimoLogo width={130} uid="nav" />
           </Link>
 
           {/* Desktop nav — dropdowns */}

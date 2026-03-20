@@ -2,9 +2,10 @@
 import { useSidebar } from './SidebarContext'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
-import { PanelLeftOpen, TrendingUp } from 'lucide-react'
+import { PanelLeftOpen } from 'lucide-react'
 import Link from 'next/link'
 import { NotificationCenter } from './NotificationCenter'
+import { PatrimoLogo } from '@/components/PatrimoLogo'
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const { collapsed, toggle } = useSidebar()
@@ -21,12 +22,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <button onClick={toggle} style={{ color: 'var(--sb-text-dim)' }} className="transition-colors">
             <PanelLeftOpen className="h-5 w-5" />
           </button>
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #c8922a, #f1c086)' }}>
-              <TrendingUp className="h-3 w-3" style={{ color: '#0a0a0a' }} />
-            </div>
-            <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>PatrImo</span>
+          <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <PatrimoLogo width={110} uid="shell" />
           </Link>
         </div>
         <NotificationCenter />

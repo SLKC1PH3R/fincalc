@@ -1,5 +1,5 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
@@ -32,27 +32,133 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default:            'Une erreur est survenue. Réessayez.',
 }
 
+const DESKTOP_IMGS  = ['/1.png', '/2.png', '/3.png', '/4.png']
+const MOBILE_IMGS   = ['/5.jpeg', '/6.jpeg', '/7.jpeg', '/8.jpeg']
+const SCREEN_LABELS = ['Vue d\'ensemble', 'Simulateurs', 'Patrimoine', 'Analytics']
+
+function useCycle(len: number, ms: number, initial = 0) {
+  const [idx, setIdx]       = useState(initial)
+  const [visible, setVisible] = useState(true)
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => { setIdx(i => (i + 1) % len); setVisible(true) }, 480)
+    }, ms)
+    return () => clearInterval(iv)
+  }, [len, ms])
+  return { idx, visible }
+}
+
 function DashboardPreview() {
+  const desktop = useCycle(DESKTOP_IMGS.length, 3800)
+  const mobile  = useCycle(MOBILE_IMGS.length,  3200, 1)
+
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ position: 'relative', width: '82%', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 32px 64px rgba(0,0,0,0.8)' }}>
-        <div style={{ background: '#141414', padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
-          <div style={{ flex: 1, margin: '0 8px', background: 'rgba(255,255,255,0.05)', borderRadius: 4, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>finance.digitalstack.cloud/dashboard</span>
+    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 16 }}>
+
+      {/* ── Desktop frame ── */}
+      <div style={{ position: 'relative', width: '78%' }}>
+        <div style={{
+          borderRadius: 13, overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)',
+        }}>
+          {/* Browser chrome */}
+          <div style={{ background: '#111', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+              {['#ff5f57','#febc2e','#28c840'].map((c,i) => (
+                <span key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block' }} />
+              ))}
+            </div>
+            <div style={{ flex: 1, margin: '0 6px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 5, padding: '3px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.18)', fontFamily: 'monospace' }}>
+                <span style={{ color: 'rgba(255,255,255,0.07)' }}>https://</span>
+                finance.digitalstack.cloud
+                <span style={{ color: `${GOLD}55` }}>/dashboard</span>
+              </span>
+            </div>
+            {/* Active section chip */}
+            <div style={{
+              background: `${GOLD}14`, border: `1px solid ${GOLD}30`,
+              borderRadius: 20, padding: '2px 8px',
+              fontSize: 9, fontWeight: 700, color: GOLD,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              transition: 'opacity 0.45s ease',
+              opacity: desktop.visible ? 1 : 0,
+            }}>
+              {SCREEN_LABELS[desktop.idx]}
+            </div>
+          </div>
+
+          {/* Screenshot */}
+          <div style={{ position: 'relative', background: '#0a0a0a', lineHeight: 0 }}>
+            <Image
+              src={DESKTOP_IMGS[desktop.idx]}
+              alt={`PatrImo — ${SCREEN_LABELS[desktop.idx]}`}
+              width={1200} height={750}
+              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.48s ease', opacity: desktop.visible ? 1 : 0 }}
+              priority={desktop.idx === 0}
+            />
+            {/* Bottom fade */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: 'linear-gradient(to top, rgba(10,10,10,0.7), transparent)', pointerEvents: 'none' }} />
           </div>
         </div>
-        <Image src="/dashboard-desktop.png" alt="Dashboard PatrImo" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
-      </div>
-      <div style={{ position: 'absolute', left: 0, bottom: -20, width: '26%', borderRadius: 22, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 48px rgba(0,0,0,0.9)', background: '#000' }}>
-        <div style={{ background: '#111', height: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: 40, height: 5, background: '#000', borderRadius: 3 }} />
+
+        {/* Progress pills — desktop */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 12 }}>
+          {DESKTOP_IMGS.map((_, i) => (
+            <div key={i} style={{
+              height: 4, borderRadius: 3,
+              width: i === desktop.idx ? 20 : 5,
+              background: i === desktop.idx ? GOLD : 'rgba(255,255,255,0.15)',
+              transition: 'all 0.45s cubic-bezier(0.4,0,0.2,1)',
+              boxShadow: i === desktop.idx ? `0 0 8px ${GOLD}60` : 'none',
+            }} />
+          ))}
         </div>
-        <Image src="/dashboard-mobile.png" alt="Dashboard mobile PatrImo" width={390} height={844} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
-        <div style={{ background: '#111', height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
+      </div>
+
+      {/* ── Mobile frame ── */}
+      <div style={{ position: 'absolute', right: '0%', bottom: '-2%', width: '22%' }}>
+        <div style={{
+          borderRadius: 26, overflow: 'hidden',
+          border: '2px solid rgba(255,255,255,0.13)',
+          boxShadow: '0 28px 70px rgba(0,0,0,0.92), 0 0 0 1px rgba(255,255,255,0.04)',
+          background: '#0a0a0a',
+        }}>
+          {/* Notch */}
+          <div style={{ background: '#111', height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 48, height: 7, background: '#000', borderRadius: 4 }} />
+          </div>
+
+          {/* Screenshot */}
+          <div style={{ position: 'relative', lineHeight: 0 }}>
+            <Image
+              src={MOBILE_IMGS[mobile.idx]}
+              alt="PatrImo mobile"
+              width={390} height={844}
+              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.48s ease', opacity: mobile.visible ? 1 : 0 }}
+            />
+          </div>
+
+          {/* Home bar */}
+          <div style={{ background: '#111', height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 42, height: 4, background: 'rgba(255,255,255,0.22)', borderRadius: 2 }} />
+          </div>
+        </div>
+
+        {/* Progress pills — mobile */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 10 }}>
+          {MOBILE_IMGS.map((_, i) => (
+            <div key={i} style={{
+              height: 3, borderRadius: 2,
+              width: i === mobile.idx ? 14 : 4,
+              background: i === mobile.idx ? GOLD : 'rgba(255,255,255,0.15)',
+              transition: 'all 0.45s cubic-bezier(0.4,0,0.2,1)',
+              boxShadow: i === mobile.idx ? `0 0 6px ${GOLD}50` : 'none',
+            }} />
+          ))}
         </div>
       </div>
     </div>

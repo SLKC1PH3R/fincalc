@@ -329,7 +329,7 @@ export default function TaxReportPage() {
       }}>
         <Info style={{ width: 16, height: 16, color: '#f1c086', flexShrink: 0, marginTop: 1 }} />
         <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: 0, lineHeight: 1.6 }}>
-          <strong style={{ color: '#f1c086' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans FinCalc.
+          <strong style={{ color: '#f1c086' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans PatrImo.
           Il ne constitue pas un conseil fiscal. Consultez un conseiller fiscal ou votre notaire pour votre situation personnelle.
           Les montants de plus-values réalisées nécessitent un relevé auprès de votre courtier.
         </p>

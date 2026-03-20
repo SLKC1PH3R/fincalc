@@ -10,7 +10,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    const saved = localStorage.getItem('fincalc-theme') as Theme | null
+    const saved = localStorage.getItem('patrimo-theme') as Theme | null
     const initial = saved || 'dark'
     setTheme(initial)
     document.documentElement.classList.remove('dark', 'light')
@@ -22,7 +22,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(next)
     document.documentElement.classList.remove('dark', 'light')
     document.documentElement.classList.add(next)
-    localStorage.setItem('fincalc-theme', next)
+    localStorage.setItem('patrimo-theme', next)
   }
 
   return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>

@@ -67,7 +67,7 @@ export default function GestionPage() {
       setEnvelopes(e)
       const prog: Record<string, number> = {}
       for (const goal of g) {
-        const stored = localStorage.getItem(`fincalc_goal_progress_${goal.id}`)
+        const stored = localStorage.getItem(`patrimo_goal_progress_${goal.id}`)
         if (stored) prog[goal.id] = Number(stored)
       }
       setGoalProgress(prog)

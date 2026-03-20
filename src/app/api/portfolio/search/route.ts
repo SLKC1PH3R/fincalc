@@ -32,7 +32,7 @@ async function searchByIsin(isin: string): Promise<SearchResult[]> {
       `${YAHOO_SEARCH}?q=${upper}&quotesCount=3&newsCount=0&enableFuzzyQuery=false`,
       {
         next: { revalidate: 300 },
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; FinCalc/1.0)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PatrImo/1.0)' },
       }
     )
     if (res.ok) {

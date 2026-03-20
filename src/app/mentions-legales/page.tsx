@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { TrendingUp } from 'lucide-react'
 
 export const metadata = {
-  title: 'Mentions légales — FinCalc',
+  title: 'Mentions légales — PatrImo',
 }
 
 export default function MentionsLegales() {
@@ -15,7 +15,7 @@ export default function MentionsLegales() {
             <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>FinCalc</span>
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>PatrImo</span>
           </Link>
           <Link href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>← Retour</Link>
         </div>
@@ -31,7 +31,7 @@ export default function MentionsLegales() {
         {[
           {
             title: '1. Éditeur du site',
-            content: `Le site FinCalc (accessible à l'adresse app.fincalc.fr) est édité par DigitalStack, entreprise individuelle immatriculée en France.\n\nResponsable de la publication : Jeremy\nContact : contact@fincalc.app`,
+            content: `Le site PatrImo (accessible à l'adresse finance.digitalstack.cloud) est édité par DigitalStack, entreprise individuelle immatriculée en France.\n\nResponsable de la publication : Jeremy\nContact : contact@digitalstack.cloud`,
           },
           {
             title: '2. Hébergement',
@@ -39,19 +39,19 @@ export default function MentionsLegales() {
           },
           {
             title: '3. Propriété intellectuelle',
-            content: `L'ensemble du contenu de ce site (textes, graphismes, logotypes, icônes, images) est la propriété exclusive de FinCalc ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est interdite.`,
+            content: `L'ensemble du contenu de ce site (textes, graphismes, logotypes, icônes, images) est la propriété exclusive de PatrImo ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est interdite.`,
           },
           {
             title: '4. Limitation de responsabilité',
-            content: `Les calculs et simulations fournis par FinCalc sont à titre purement indicatif. Ils ne constituent pas un conseil financier, fiscal ou juridique. FinCalc décline toute responsabilité pour les décisions prises sur la base de ces simulations. Consultez un professionnel agréé pour vos décisions d'investissement.`,
+            content: `Les calculs et simulations fournis par PatrImo sont à titre purement indicatif. Ils ne constituent pas un conseil financier, fiscal ou juridique. PatrImo décline toute responsabilité pour les décisions prises sur la base de ces simulations. Consultez un professionnel agréé pour vos décisions d'investissement.`,
           },
           {
             title: '5. Données personnelles',
-            content: `Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits, contactez-nous à : contact@fincalc.app.\n\nPour plus d'informations, consultez notre Politique de confidentialité.`,
+            content: `Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ces droits, contactez-nous à : contact@digitalstack.cloud.\n\nPour plus d'informations, consultez notre Politique de confidentialité.`,
           },
           {
             title: '6. Cookies',
-            content: `FinCalc utilise uniquement des cookies techniques nécessaires au fonctionnement du service (authentification, session). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.`,
+            content: `PatrImo utilise uniquement des cookies techniques nécessaires au fonctionnement du service (authentification, session). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.`,
           },
           {
             title: '7. Droit applicable',

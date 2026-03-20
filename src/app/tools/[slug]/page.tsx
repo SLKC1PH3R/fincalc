@@ -310,7 +310,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/succession',
   },
   'score-patrimonial': {
-    title: 'Score patrimonial FinCalc',
+    title: 'Score patrimonial PatrImo',
     tag: 'Retraite',
     color: '#f1c086',
     desc: 'Obtenez une notation 0-100 de votre santé financière sur 6 piliers : épargne, dettes, diversification, fiscal, prévoyance, FIRE.',
@@ -400,15 +400,15 @@ type Props = { params: Promise<{ slug: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const tool = TOOL_CONTENT[slug]
-  if (!tool) return { title: 'Simulateur — FinCalc' }
+  if (!tool) return { title: 'Simulateur — PatrImo' }
   return {
-    title: `${tool.title} — FinCalc`,
+    title: `${tool.title} — PatrImo`,
     description: tool.desc,
     openGraph: {
-      title: `${tool.title} — FinCalc`,
+      title: `${tool.title} — PatrImo`,
       description: tool.desc,
-      url: `https://app.fincalc.fr/tools/${slug}`,
-      images: [{ url: `https://app.fincalc.fr/api/og?type=${slug}&title=${encodeURIComponent(tool.title)}`, width: 1200, height: 630 }],
+      url: `https://finance.digitalstack.cloud/tools/${slug}`,
+      images: [{ url: `https://finance.digitalstack.cloud/api/og?type=${slug}&title=${encodeURIComponent(tool.title)}`, width: 1200, height: 630 }],
     },
   }
 }
@@ -434,7 +434,7 @@ export default async function ToolSlugPage({ params }: Props) {
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 16, height: 16, color: '#000' }} />
             </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>FinCalc</span>
+            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>PatrImo</span>
           </Link>
           <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →

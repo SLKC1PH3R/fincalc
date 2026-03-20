@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { TrendingUp, Zap, Shield, Star, Check, ArrowRight } from 'lucide-react'
 
 export const metadata = {
-  title: 'À propos — FinCalc',
+  title: 'À propos — PatrImo',
 }
 
 export default function About() {
@@ -15,7 +15,7 @@ export default function About() {
             <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>FinCalc</span>
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>PatrImo</span>
           </Link>
           <Link href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>← Retour</Link>
         </div>
@@ -28,10 +28,10 @@ export default function About() {
         </div>
         <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2rem,4vw,2.8rem)', fontWeight: 400, letterSpacing: '-0.025em', marginBottom: 20, lineHeight: 1.15 }}>
           À propos de{' '}
-          <span style={{ fontStyle: 'italic', color: '#f1c086' }}>FinCalc</span>
+          <span style={{ fontStyle: 'italic', color: '#f1c086' }}>PatrImo</span>
         </h1>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', lineHeight: 1.8, marginBottom: 48, maxWidth: 600 }}>
-          FinCalc est né d'un constat simple : les outils de simulation financière disponibles en France sont soit trop complexes, soit trop imprécis, soit noyés dans la publicité. Nous avons voulu créer l'alternative.
+          PatrImo est né d'un constat simple : les outils de simulation financière disponibles en France sont soit trop complexes, soit trop imprécis, soit noyés dans la publicité. Nous avons voulu créer l'alternative.
         </p>
 
         {/* Mission */}
@@ -49,7 +49,7 @@ export default function About() {
             { icon: Zap, title: 'Simplicité', desc: 'Des outils puissants qui restent accessibles à tous, sans jargon inutile.' },
             { icon: Shield, title: 'Confidentialité', desc: 'Vos données ne sont jamais vendues ni partagées. Point final.' },
             { icon: Star, title: 'Qualité', desc: 'Des modèles financiers précis, mis à jour chaque année avec la fiscalité française.' },
-            { icon: Check, title: 'Gratuité', desc: 'FinCalc sera toujours gratuit. C\'est une promesse, pas un argument marketing.' },
+            { icon: Check, title: 'Gratuité', desc: 'PatrImo sera toujours gratuit. C\'est une promesse, pas un argument marketing.' },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '20px' }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
@@ -65,7 +65,7 @@ export default function About() {
         <div style={{ background: 'linear-gradient(135deg, rgba(241,192,134,0.06) 0%, rgba(52,211,153,0.03) 100%)', border: '1px solid rgba(241,192,134,0.2)', borderRadius: 20, padding: '32px', marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 14 }}>Stack technique</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.8, marginBottom: 16 }}>
-            FinCalc est construit avec des technologies modernes et open-source :
+            PatrImo est construit avec des technologies modernes et open-source :
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {['Next.js 15', 'TypeScript', 'Tailwind CSS', 'NextAuth', 'Neon (PostgreSQL)', 'Vercel', 'Recharts'].map(tech => (
@@ -81,7 +81,7 @@ export default function About() {
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)', marginBottom: 20 }}>
             Une question, une suggestion, un bug à signaler ?
           </p>
-          <a href="mailto:contact@fincalc.app" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: '#f1c086', color: '#000', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+          <a href="mailto:contact@digitalstack.cloud" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: '#f1c086', color: '#000', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
             Nous contacter <ArrowRight style={{ width: 14, height: 14 }} />
           </a>
         </div>

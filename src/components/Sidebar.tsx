@@ -160,7 +160,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   }, [])
 
   useEffect(() => {
-    const saved = localStorage.getItem('fincalc_fire_target')
+    const saved = localStorage.getItem('patrimo_fire_target')
     if (saved) { const n = parseFloat(saved); if (n > 0) setFireTarget(n) }
   }, [])
 
@@ -446,7 +446,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     className="sb-gold-text"
                     style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.04em', fontFamily: 'Geist, -apple-system, sans-serif' }}
                   >
-                    FinCalc
+                    PatrImo
                   </span>
                 </Link>
                 <button

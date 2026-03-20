@@ -341,7 +341,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Suivre votre progression dans le temps avec un score trimestriel",
     ],
     steps: [
-      "Renseignez ou mettez à jour votre situation patrimoniale dans FinCalc",
+      "Renseignez ou mettez à jour votre situation patrimoniale dans PatrImo",
       "L'algorithme analyse automatiquement les 6 piliers de votre situation",
       "Recevez votre score, le détail pilier par pilier et des recommandations",
     ],
@@ -379,14 +379,14 @@ type Props = { params: Promise<{ slug: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const page = PAGE_CONTENT[slug]
-  if (!page) return { title: 'Gestion patrimoniale — FinCalc' }
+  if (!page) return { title: 'Gestion patrimoniale — PatrImo' }
   return {
-    title: `${page.title} — FinCalc`,
+    title: `${page.title} — PatrImo`,
     description: page.desc,
     openGraph: {
-      title: `${page.title} — FinCalc`,
+      title: `${page.title} — PatrImo`,
       description: page.desc,
-      url: `https://app.fincalc.fr/patrimoine/${slug}`,
+      url: `https://finance.digitalstack.cloud/patrimoine/${slug}`,
     },
   }
 }
@@ -410,7 +410,7 @@ export default async function PatrimoineSlugPage({ params }: Props) {
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 16, height: 16, color: '#000' }} />
             </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>FinCalc</span>
+            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>PatrImo</span>
           </Link>
           <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →
@@ -506,7 +506,7 @@ export default async function PatrimoineSlugPage({ params }: Props) {
             Accédez à cette page gratuitement
           </h3>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', margin: '0 0 32px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
-            Créez un compte FinCalc pour gérer votre patrimoine, suivre vos actifs et accéder aux 18 simulateurs.
+            Créez un compte PatrImo pour gérer votre patrimoine, suivre vos actifs et accéder aux 18 simulateurs.
           </p>
           <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '13px 30px', borderRadius: 24, background: 'linear-gradient(135deg, #c8922a, #f1c086)', color: '#000', fontWeight: 700, fontSize: 15 }}>
             Commencer gratuitement

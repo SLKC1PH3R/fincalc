@@ -499,7 +499,7 @@ export default function GoalsPage() {
   useEffect(() => {
     const stored: Record<string, number> = {}
     for (const goal of goals) {
-      const key = `fincalc_goal_progress_${goal.id}`
+      const key = `patrimo_goal_progress_${goal.id}`
       const val = localStorage.getItem(key)
       if (val !== null) stored[goal.id] = Number(val)
     }
@@ -508,7 +508,7 @@ export default function GoalsPage() {
 
   const handleProgressChange = (id: string, value: number) => {
     setManualProgress(prev => ({ ...prev, [id]: value }))
-    localStorage.setItem(`fincalc_goal_progress_${id}`, String(value))
+    localStorage.setItem(`patrimo_goal_progress_${id}`, String(value))
   }
 
   // Add goal
@@ -569,7 +569,7 @@ export default function GoalsPage() {
     const res = await fetch(`/api/goals/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setGoals(prev => prev.filter(g => g.id !== id))
-      localStorage.removeItem(`fincalc_goal_progress_${id}`)
+      localStorage.removeItem(`patrimo_goal_progress_${id}`)
     }
   }
 

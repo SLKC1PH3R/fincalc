@@ -507,7 +507,7 @@ export default function HomePage() {
             <div style={{ background: `linear-gradient(135deg, ${GOLD}0a, rgba(129,140,248,0.06))`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 16, padding: '20px 22px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, marginBottom: 4 }}>Bienvenue sur FinCalc</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, marginBottom: 4 }}>Bienvenue sur PatrImo</p>
                   <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
                     Commencez par 3 étapes simples pour tirer le meilleur de l&apos;app.
                   </p>

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart'
-const HEADERS = { 'User-Agent': 'Mozilla/5.0 (compatible; FinCalc/1.0)' }
+const HEADERS = { 'User-Agent': 'Mozilla/5.0 (compatible; PatrImo/1.0)' }
 
 const BENCHMARKS = [
   { symbol: 'IWDA.AS', label: 'MSCI World' },

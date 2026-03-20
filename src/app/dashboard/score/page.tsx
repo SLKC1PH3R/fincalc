@@ -156,7 +156,7 @@ export default function ScorePage() {
       <div style={{ marginBottom: 32 }}>
         <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Votre profil financier</p>
         <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          Score Patrimonial FinCalc
+          Score Patrimonial PatrImo
         </h1>
         <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
           Calculé à partir de vos simulations et de votre tableau patrimonial. Se met à jour à chaque connexion.

@@ -71,7 +71,7 @@ export function printReport(config: PrintConfig) {
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>FinCalc — ${config.title}</title>
+  <title>PatrImo — ${config.title}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -138,7 +138,7 @@ export function printReport(config: PrintConfig) {
           <polyline points="16 7 22 7 22 13"/>
         </svg>
       </div>
-      <span class="brand-name">FinCalc</span>
+      <span class="brand-name">PatrImo</span>
     </div>
     <div class="header-right">
       <div class="header-title">${config.title}</div>
@@ -153,8 +153,8 @@ export function printReport(config: PrintConfig) {
   ${tipsHtml}
 
   <div class="footer">
-    <span>FinCalc — Outils de Finance Personnelle</span>
-    <span>app.fincalc.fr</span>
+    <span>PatrImo — Outils de Finance Personnelle</span>
+    <span>finance.digitalstack.cloud</span>
   </div>
 
   <script>

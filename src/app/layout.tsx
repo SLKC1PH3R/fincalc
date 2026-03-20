@@ -4,7 +4,7 @@ import { Providers } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
-  title: 'FinCalc — Outils de Finance Personnelle',
+  title: 'PatrImo — Outils de Finance Personnelle',
   description: 'Calculateurs financiers : intérêts composés, FI/RE, impôts, prêt immobilier',
   icons: {
     icon: '/icon.svg',

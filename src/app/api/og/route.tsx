@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
             <div style={{ width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg, #c8922a, ${GOLD})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontSize: 22, color: '#000' }}>↗</span>
             </div>
-            <span style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>FinCalc</span>
+            <span style={{ fontSize: 28, fontWeight: 800, color: '#fff' }}>PatrImo</span>
           </div>
 
           {/* Score gauge */}
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
             <span style={{ fontSize: 18, color, fontWeight: 600 }}>{label}</span>
           </div>
 
-          <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>app.fincalc.fr · Pilotez votre patrimoine</span>
+          <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>finance.digitalstack.cloud · Pilotez votre patrimoine</span>
         </div>
       </div>,
       { width: 1200, height: 630 }
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Simulation share ─────────────────────────────────────────────────────────
-  const title = searchParams.get('title') || 'Simulation FinCalc'
+  const title = searchParams.get('title') || 'Simulation PatrImo'
   const subtitle = searchParams.get('subtitle') || ''
   const value = searchParams.get('value') ? parseFloat(searchParams.get('value')!) : null
   const value2 = searchParams.get('value2') ? parseFloat(searchParams.get('value2')!) : null
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
           <div style={{ width: 40, height: 40, borderRadius: 10, background: `linear-gradient(135deg, #c8922a, ${GOLD})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 20, color: '#000' }}>↗</span>
           </div>
-          <span style={{ fontSize: 24, fontWeight: 800, color: '#fff' }}>FinCalc</span>
+          <span style={{ fontSize: 24, fontWeight: 800, color: '#fff' }}>PatrImo</span>
         </div>
         <div style={{ display: 'flex', background: `${tagColor}18`, border: `1px solid ${tagColor}40`, borderRadius: 20, padding: '6px 18px' }}>
           <span style={{ fontSize: 14, color: tagColor, fontWeight: 700, letterSpacing: '0.06em' }}>{tag}</span>
@@ -123,8 +123,8 @@ export async function GET(req: NextRequest) {
 
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 52px 36px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
-        <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>app.fincalc.fr · Simulation partagée</span>
-        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>Résultats indicatifs — voir les hypothèses sur FinCalc</span>
+        <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>finance.digitalstack.cloud · Simulation partagée</span>
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)' }}>Résultats indicatifs — voir les hypothèses sur PatrImo</span>
       </div>
     </div>,
     { width: 1200, height: 630 }

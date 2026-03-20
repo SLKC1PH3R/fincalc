@@ -4,12 +4,12 @@ import type { Metadata } from 'next'
 import { ToolsGrid } from './ToolsGrid'
 
 export const metadata: Metadata = {
-  title: 'Simulateurs financiers gratuits — FinCalc',
+  title: 'Simulateurs financiers gratuits — PatrImo',
   description: 'Calculez vos intérêts composés, simulez votre retraite FIRE, optimisez vos impôts et votre crédit immobilier. Gratuit, sans inscription.',
   openGraph: {
-    title: 'Simulateurs financiers gratuits — FinCalc',
+    title: 'Simulateurs financiers gratuits — PatrImo',
     description: '18 simulateurs pour piloter votre patrimoine, vos investissements et votre fiscalité.',
-    url: 'https://app.fincalc.fr/tools',
+    url: 'https://finance.digitalstack.cloud/tools',
   },
 }
 
@@ -23,7 +23,7 @@ export default function ToolsPage() {
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 16, height: 16, color: '#000' }} />
             </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>FinCalc</span>
+            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>PatrImo</span>
           </Link>
           <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →

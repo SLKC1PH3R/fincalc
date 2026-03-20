@@ -1423,7 +1423,7 @@ function PortfolioPageInner() {
       {totalValue > 0 && (
         <div>
           <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-            Aller plus loin avec FinCalc
+            Aller plus loin avec PatrImo
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[

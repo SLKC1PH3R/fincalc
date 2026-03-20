@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { TrendingUp } from 'lucide-react'
 
 export const metadata = {
-  title: 'Politique de confidentialité — FinCalc',
+  title: 'Politique de confidentialité — PatrImo',
 }
 
 export default function PolitiqueConfidentialite() {
@@ -15,7 +15,7 @@ export default function PolitiqueConfidentialite() {
             <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>FinCalc</span>
+            <span style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>PatrImo</span>
           </Link>
           <Link href="/" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>← Retour</Link>
         </div>
@@ -31,7 +31,7 @@ export default function PolitiqueConfidentialite() {
         {[
           {
             title: '1. Responsable du traitement',
-            content: `FinCalc (DigitalStack) est responsable du traitement de vos données personnelles.\nContact : contact@fincalc.app`,
+            content: `PatrImo (DigitalStack) est responsable du traitement de vos données personnelles.\nContact : contact@digitalstack.cloud`,
           },
           {
             title: '2. Données collectées',
@@ -39,7 +39,7 @@ export default function PolitiqueConfidentialite() {
           },
           {
             title: '3. Finalités du traitement',
-            content: `Vos données sont utilisées pour :\n• Fournir et améliorer le service FinCalc\n• Sauvegarder et restaurer vos simulations\n• Vous envoyer des communications liées au service (si vous y avez consenti)\n• Assurer la sécurité du service`,
+            content: `Vos données sont utilisées pour :\n• Fournir et améliorer le service PatrImo\n• Sauvegarder et restaurer vos simulations\n• Vous envoyer des communications liées au service (si vous y avez consenti)\n• Assurer la sécurité du service`,
           },
           {
             title: '4. Base légale',
@@ -55,7 +55,7 @@ export default function PolitiqueConfidentialite() {
           },
           {
             title: '7. Vos droits (RGPD)',
-            content: `Conformément au RGPD, vous disposez des droits suivants :\n• Droit d'accès à vos données\n• Droit de rectification\n• Droit à l'effacement (\"droit à l'oubli\")\n• Droit à la portabilité\n• Droit d'opposition\n\nPour exercer ces droits, contactez-nous à : contact@fincalc.app`,
+            content: `Conformément au RGPD, vous disposez des droits suivants :\n• Droit d'accès à vos données\n• Droit de rectification\n• Droit à l'effacement (\"droit à l'oubli\")\n• Droit à la portabilité\n• Droit d'opposition\n\nPour exercer ces droits, contactez-nous à : contact@digitalstack.cloud`,
           },
           {
             title: '8. Sécurité',

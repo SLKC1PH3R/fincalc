@@ -215,9 +215,9 @@ export default function PatrimoinePage() {
 
   // Load FIRE target from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('fincalc_fire_target')
+    const saved = localStorage.getItem('patrimo_fire_target')
     if (saved) { const n = parseFloat(saved); if (n > 0) { setFireTarget(n); setFireTargetInput(String(n)) } }
-    const firedStr = localStorage.getItem('fincalc_milestones_fired')
+    const firedStr = localStorage.getItem('patrimo_milestones_fired')
     if (firedStr) { try { milestoneFiredRef.current = new Set(JSON.parse(firedStr)) } catch {} }
   }, [])
 
@@ -288,7 +288,7 @@ export default function PatrimoinePage() {
     for (const m of MILESTONES) {
       if (m.test() && !milestoneFiredRef.current.has(m.key)) {
         milestoneFiredRef.current.add(m.key)
-        localStorage.setItem('fincalc_milestones_fired', JSON.stringify([...milestoneFiredRef.current]))
+        localStorage.setItem('patrimo_milestones_fired', JSON.stringify([...milestoneFiredRef.current]))
         toast({ title: 'Milestone atteint !', description: m.message })
       }
     }
@@ -1009,7 +1009,7 @@ export default function PatrimoinePage() {
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         const n = parseFloat(fireTargetInput.replace(/\s/g, '').replace(',', '.'))
-                        if (n > 0) { setFireTarget(n); localStorage.setItem('fincalc_fire_target', String(n)) }
+                        if (n > 0) { setFireTarget(n); localStorage.setItem('patrimo_fire_target', String(n)) }
                         setEditingFireTarget(false)
                       }
                       if (e.key === 'Escape') setEditingFireTarget(false)

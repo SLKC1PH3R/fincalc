@@ -41,16 +41,16 @@ function DashboardPreview() {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
           <div style={{ flex: 1, margin: '0 8px', background: 'rgba(255,255,255,0.05)', borderRadius: 4, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>app.fincalc.fr/dashboard</span>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>finance.digitalstack.cloud/dashboard</span>
           </div>
         </div>
-        <Image src="/dashboard-desktop.png" alt="Dashboard FinCalc" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
+        <Image src="/dashboard-desktop.png" alt="Dashboard PatrImo" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
       </div>
       <div style={{ position: 'absolute', left: 0, bottom: -20, width: '26%', borderRadius: 22, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 48px rgba(0,0,0,0.9)', background: '#000' }}>
         <div style={{ background: '#111', height: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: 40, height: 5, background: '#000', borderRadius: 3 }} />
         </div>
-        <Image src="/dashboard-mobile.png" alt="Dashboard mobile FinCalc" width={390} height={844} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
+        <Image src="/dashboard-mobile.png" alt="Dashboard mobile PatrImo" width={390} height={844} style={{ display: 'block', width: '100%', height: 'auto' }} priority />
         <div style={{ background: '#111', height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
         </div>
@@ -312,7 +312,7 @@ function AuthForm() {
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 17, height: 17, color: '#000' }} />
             </div>
-            <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
           </div>
 
           {/* Form area */}
@@ -437,7 +437,7 @@ function AuthForm() {
             {[
               { title: 'Vos données sont chiffrées', desc: 'Toutes les transmissions sont sécurisées via HTTPS/TLS.' },
               { title: 'Aucune donnée bancaire requise', desc: 'Aucun RIB, aucun accès à vos comptes. Zéro risque.' },
-              { title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par FinCalc.' },
+              { title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par PatrImo.' },
               { title: 'Vos simulations restent privées', desc: 'Stockées sur votre compte uniquement. Jamais partagées ni revendues.' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>

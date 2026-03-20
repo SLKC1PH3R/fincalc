@@ -70,7 +70,7 @@ const MODULES = [
 const SECURITY = [
   { icon: Lock, title: 'Vos données sont chiffrées', desc: 'Toutes les transmissions sont sécurisées via HTTPS/TLS.' },
   { icon: EyeOff, title: 'Aucune donnée bancaire requise', desc: 'Aucun RIB, aucun accès à vos comptes. Zéro risque.' },
-  { icon: Shield, title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par FinCalc.' },
+  { icon: Shield, title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par PatrImo.' },
   { icon: BarChart3, title: 'Vos simulations restent privées', desc: 'Stockées sur votre compte uniquement. Jamais partagées ni revendues.' },
 ]
 
@@ -756,7 +756,7 @@ function ProductShowcase() {
           </div>
           {/* URL bar */}
           <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 7, padding: '5px 14px', fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', fontFamily: 'monospace', letterSpacing: '-0.01em' }}>
-            <span style={{ color: 'rgba(255,255,255,0.15)' }}>https://</span>app.fincalc.fr<span style={{ color: GOLD + '99' }}>/simulateurs/interets-composes</span>
+            <span style={{ color: 'rgba(255,255,255,0.15)' }}>https://</span>finance.digitalstack.cloud<span style={{ color: GOLD + '99' }}>/simulateurs/interets-composes</span>
           </div>
           {/* Phase tabs */}
           <div style={{ display: 'flex', gap: 4 }}>
@@ -777,7 +777,7 @@ function ProductShowcase() {
               <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <TrendingUp style={{ width: 12, height: 12, color: '#0a0a0a' }} />
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
             </div>
             {[
               { label: 'Tableau de bord', active: false },
@@ -896,7 +896,7 @@ function ProductShowcase() {
                   </div>
                   <div>
                     <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: '0 0 2px' }}>Simulation — Intérêts Composés</p>
-                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0 }}>20 mars 2026 · FinCalc</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0 }}>20 mars 2026 · PatrImo</p>
                   </div>
                   <div style={{ marginLeft: 'auto', padding: '4px 10px', borderRadius: 100, background: '#34d39920', border: '1px solid #34d39940', fontSize: 9, color: '#34d399', fontWeight: 600 }}>
                     Prêt
@@ -940,7 +940,7 @@ function DashboardPreview() {
             ))}
           </div>
           <div style={{ flex: 1, margin: '0 12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.25)', textAlign: 'center', fontFamily: 'monospace' }}>
-            app.fincalc.fr/dashboard
+            finance.digitalstack.cloud/dashboard
           </div>
         </div>
 
@@ -953,7 +953,7 @@ function DashboardPreview() {
               <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <TrendingUp style={{ width: 13, height: 13, color: '#0a0a0a' }} />
               </div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
             </div>
             {/* Nav items */}
             {[
@@ -1734,7 +1734,7 @@ const COMPETITOR_FEATURES: { label: string; fincalc: FeatureVal; finary: Feature
 
 function CompetitorTable() {
   const cols = [
-    { name: 'FinCalc', key: 'fincalc' as const, highlight: true, color: GOLD },
+    { name: 'PatrImo', key: 'fincalc' as const, highlight: true, color: GOLD },
     { name: 'Finary', key: 'finary' as const, highlight: false, color: 'rgba(255,255,255,0.45)' },
     { name: 'Votre banque', key: 'bank' as const, highlight: false, color: 'rgba(255,255,255,0.32)' },
   ]
@@ -1745,7 +1745,7 @@ function CompetitorTable() {
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Comparatif</SectionTag>
             <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
-              FinCalc vs les{' '}
+              PatrImo vs les{' '}
               <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>alternatives</span>
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', marginTop: 12, lineHeight: 1.7 }}>
@@ -1942,15 +1942,15 @@ function FIntroAnimation({ onDone }: { onDone: () => void }) {
           stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
           style={{ strokeDasharray: 140, strokeDashoffset: 140, animation: 'draw-stroke 0.85s cubic-bezier(0.4,0,0.2,1) forwards 0.25s' } as React.CSSProperties}
         />
-        {/* Top horizontal */}
-        <path d="M 22,12 L 90,12"
+        {/* Top of P bump */}
+        <path d="M 22,12 L 76,12"
           stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
-          style={{ strokeDasharray: 68, strokeDashoffset: 68, animation: 'draw-stroke 0.5s cubic-bezier(0.4,0,0.2,1) forwards 1.0s' } as React.CSSProperties}
+          style={{ strokeDasharray: 56, strokeDashoffset: 56, animation: 'draw-stroke 0.4s cubic-bezier(0.4,0,0.2,1) forwards 1.0s' } as React.CSSProperties}
         />
-        {/* Middle horizontal */}
-        <path d="M 22,80 L 74,80"
-          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
-          style={{ strokeDasharray: 52, strokeDashoffset: 52, animation: 'draw-stroke 0.4s cubic-bezier(0.4,0,0.2,1) forwards 1.45s' } as React.CSSProperties}
+        {/* P arc + bottom return */}
+        <path d="M 76,12 C 102,12 102,72 76,72 L 22,72"
+          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round" strokeLinejoin="round"
+          style={{ strokeDasharray: 145, strokeDashoffset: 145, animation: 'draw-stroke 0.7s cubic-bezier(0.4,0,0.2,1) forwards 1.4s' } as React.CSSProperties}
         />
       </svg>
       <div style={{
@@ -1958,7 +1958,7 @@ function FIntroAnimation({ onDone }: { onDone: () => void }) {
         display: 'flex', alignItems: 'center', gap: 6,
       } as React.CSSProperties}>
         <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.45em', textTransform: 'uppercase', fontFamily: "'Inter Tight', 'Inter', system-ui, sans-serif" }}>
-          FinCalc
+          PatrImo
         </span>
       </div>
     </div>
@@ -2051,7 +2051,7 @@ export function LandingClient() {
             <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 15, height: 15, color: '#0a0a0a' }} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
+            <span style={{ fontWeight: 700, fontSize: 15, color: '#fff', letterSpacing: '-0.02em' }}>PatrImo</span>
           </Link>
 
           {/* Desktop nav — dropdowns */}
@@ -2165,7 +2165,7 @@ export function LandingClient() {
             {(() => {
               const key = 'res'
               const links = [
-                { label: 'Comment ça marche ?', desc: 'Comprendre FinCalc en 3 étapes', href: '#how', color: GOLD },
+                { label: 'Comment ça marche ?', desc: 'Comprendre PatrImo en 3 étapes', href: '#how', color: GOLD },
                 { label: 'Pour qui ?', desc: 'Épargnants, investisseurs, expatriés…', href: '#pour-qui', color: '#38bdf8' },
                 { label: 'Avis utilisateurs', desc: 'Ce que pensent nos membres', href: '#avis', color: '#a78bfa' },
                 { label: 'FAQ', desc: 'Questions fréquentes', href: '#faq', color: '#34d399' },
@@ -2198,7 +2198,7 @@ export function LandingClient() {
                 { label: 'Nos engagements', desc: 'Transparence, éthique, données', href: '#why' },
                 { label: 'Sécurité', desc: 'Zéro donnée bancaire, chiffrement AES-256', href: '#security' },
                 { label: 'Roadmap', desc: 'Les fonctionnalités à venir', href: '#roadmap' },
-                { label: 'Comparatif', desc: 'FinCalc vs alternatives', href: '#comparatif' },
+                { label: 'Comparatif', desc: 'PatrImo vs alternatives', href: '#comparatif' },
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
@@ -2555,7 +2555,7 @@ export function LandingClient() {
               <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Suivez votre patrimoine en temps réel
               </h2>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>15 pages de gestion incluses dans votre compte FinCalc</p>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>15 pages de gestion incluses dans votre compte PatrImo</p>
             </div>
           </RevealSection>
 
@@ -2673,7 +2673,7 @@ export function LandingClient() {
             <div style={{ textAlign: 'center', marginBottom: 52 }}>
               <SectionTag><Users style={{ width: 11, height: 11 }} /> Pour qui</SectionTag>
               <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
-                FinCalc s&apos;adapte à votre profil
+                PatrImo s&apos;adapte à votre profil
               </h2>
               <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', maxWidth: 520, margin: '0 auto' }}>
                 Que vous débutiez ou optimisiez, trouvez les outils faits pour vous.
@@ -2731,7 +2731,7 @@ export function LandingClient() {
 
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
-              <SectionTag><Star style={{ width: 11, height: 11 }} /> Pourquoi FinCalc</SectionTag>
+              <SectionTag><Star style={{ width: 11, height: 11 }} /> Pourquoi PatrImo</SectionTag>
               <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Conçu pour les{' '}
                 <span style={{
@@ -2852,10 +2852,10 @@ export function LandingClient() {
                 <span style={{
                   background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
                   WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                }}>FinCalc</span>
+                }}>PatrImo</span>
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.32)', maxWidth: 500, margin: '0 auto' }}>
-                FinCalc évolue en continu. Voici les fonctionnalités déjà disponibles et ce qui arrive.
+                PatrImo évolue en continu. Voici les fonctionnalités déjà disponibles et ce qui arrive.
               </p>
             </div>
           </RevealSection>
@@ -2919,11 +2919,11 @@ export function LandingClient() {
               {[
                 {
                   q: 'Est-ce vraiment gratuit, pour toujours ?',
-                  a: 'Oui, FinCalc est 100 % gratuit. Aucune fonctionnalité premium cachée, aucune limitation dans le temps, aucune carte bancaire requise. Jamais.',
+                  a: 'Oui, PatrImo est 100 % gratuit. Aucune fonctionnalité premium cachée, aucune limitation dans le temps, aucune carte bancaire requise. Jamais.',
                 },
                 {
                   q: 'Faut-il connecter mon compte bancaire ?',
-                  a: 'Non. FinCalc fonctionne sans aucun accès à vos comptes bancaires. Vous saisissez vous-même vos données — vous gardez le contrôle total.',
+                  a: 'Non. PatrImo fonctionne sans aucun accès à vos comptes bancaires. Vous saisissez vous-même vos données — vous gardez le contrôle total.',
                 },
                 {
                   q: 'Où sont stockées mes données ?',
@@ -2986,7 +2986,7 @@ export function LandingClient() {
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <TrendingUp style={{ width: 13, height: 13, color: '#0a0a0a' }} />
                 </div>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>FinCalc</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>PatrImo</span>
               </div>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', lineHeight: 1.7 }}>
                 Outils de finance personnelle pour investisseurs français.
@@ -3020,7 +3020,7 @@ export function LandingClient() {
             {/* À propos */}
             <div>
               <h4 style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>À propos</h4>
-              {[['/about', 'À propos de FinCalc'], ['mailto:contact@fincalc.app', 'Contact']].map(([href, label]) => (
+              {[['/about', 'À propos de PatrImo'], ['mailto:contact@digitalstack.cloud', 'Contact']].map(([href, label]) => (
                 <a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', marginBottom: 10, transition: 'color 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>
@@ -3032,7 +3032,7 @@ export function LandingClient() {
 
           {/* Bottom bar */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2026 FinCalc · Tous droits réservés</p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>© 2026 PatrImo · Tous droits réservés</p>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.18)', maxWidth: 420, textAlign: 'right', lineHeight: 1.6 }}>
               Calculs fournis à titre indicatif uniquement. Consultez un conseiller financier agréé pour vos décisions d'investissement.
             </p>

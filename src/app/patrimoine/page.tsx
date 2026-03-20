@@ -19,14 +19,14 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Gestion patrimoniale — FinCalc',
+  title: 'Gestion patrimoniale — PatrImo',
   description:
     'Suivez et gérez votre patrimoine en temps réel : immobilier, actions, livrets, crypto, PEA, assurance vie et plus. 15 pages de gestion patrimoniale gratuites.',
   openGraph: {
-    title: 'Gestion patrimoniale — FinCalc',
+    title: 'Gestion patrimoniale — PatrImo',
     description:
       '15 pages pour piloter votre patrimoine : bilan complet, suivi de portefeuille, rééquilibrage, score patrimonial et rapport fiscal.',
-    url: 'https://app.fincalc.fr/patrimoine',
+    url: 'https://finance.digitalstack.cloud/patrimoine',
   },
 }
 
@@ -166,7 +166,7 @@ export default function PatrimoinePage() {
             <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <TrendingUp style={{ width: 16, height: 16, color: '#000' }} />
             </div>
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>FinCalc</span>
+            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>PatrImo</span>
           </Link>
           <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →

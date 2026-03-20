@@ -118,7 +118,7 @@ export function FrenchAverageWidget({ patrimoineNet, tauxEpargne, label = 'votre
           <div style={{ fontSize: 12, color: 'var(--text-subtle)', borderTop: '1px solid var(--card-dark-border)', paddingTop: 10 }}>
             {(pct ?? 0) >= 75 ? '🎯 Excellent niveau de patrimoine — vous êtes dans le quart supérieur des Français.'
               : (pct ?? 0) >= 50 ? '📈 Au-dessus de la médiane nationale — continuez sur votre lancée.'
-              : (pct ?? 0) >= 25 ? '💡 Sous la médiane — des simulations FinCalc peuvent vous aider à optimiser.'
+              : (pct ?? 0) >= 25 ? '💡 Sous la médiane — des simulations PatrImo peuvent vous aider à optimiser.'
               : '🚀 Fort potentiel de progression — l\'effet des intérêts composés jouera en votre faveur.'}
           </div>
         </div>

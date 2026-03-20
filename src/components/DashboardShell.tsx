@@ -26,7 +26,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               style={{ background: 'linear-gradient(135deg, #c8922a, #f1c086)' }}>
               <TrendingUp className="h-3 w-3" style={{ color: '#0a0a0a' }} />
             </div>
-            <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>FinCalc</span>
+            <span className="font-bold" style={{ fontSize: 14, letterSpacing: '-0.02em', color: 'var(--sb-text-strong)' }}>PatrImo</span>
           </Link>
         </div>
         <NotificationCenter />

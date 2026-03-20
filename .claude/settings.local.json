@@ -26,7 +26,11 @@
       "Bash(grep -n \"og\\\\|meta\\\\|openGraph\\\\|twitter\" /c/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)",
       "Bash(grep -n 'href.*\\\\\\\\\\\\\\\\tools\\\\|href=\"\"/tools\"\"' \"/c/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
       "Bash(grep -n \": ''[^'']*''[a-zA-ZÀ-ÿ]\" \"/c/Users/jerem/Downloads/fincalc/src/app/patrimoine/page.tsx\")",
-      "WebFetch(domain:www.refractweb.com)"
+      "WebFetch(domain:www.refractweb.com)",
+      "Bash(grep -ri \"fincalc\\\\|FinCalc\" c:/Users/jerem/Downloads/fincalc --include=*.json --include=*.md --include=*.env* -l)",
+      "Read(//c/Users/jerem/Downloads/**)",
+      "Read(//c/Users/jerem/Downloads/fincalc/**)",
+      "Bash(cd c:/Users/jerem/Downloads/fincalc grep -n \"digitalstack\\\\|PatrImo\" src/components/LandingClient.tsx)"
     ]
   }
 }

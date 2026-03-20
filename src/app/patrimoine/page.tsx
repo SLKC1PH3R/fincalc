@@ -37,7 +37,7 @@ const GROUPS = [
     pages: [
       {
         slug: 'vue-ensemble',
-        label: 'Vue d'ensemble',
+        label: "Vue d'ensemble",
         description: 'Bilan patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.',
         icon: Layers,
         href: '/dashboard/patrimoine',
@@ -59,7 +59,7 @@ const GROUPS = [
       {
         slug: 'livrets',
         label: 'Livrets',
-        description: 'Centralisez vos livrets d'épargne (Livret A, LDDS, LEP…) et suivez les intérêts générés.',
+        description: "Centralisez vos livrets d'épargne (Livret A, LDDS, LEP…) et suivez les intérêts générés.",
         icon: PiggyBank,
         href: '/patrimoine/livrets',
       },
@@ -87,7 +87,7 @@ const GROUPS = [
       {
         slug: 'detail-enveloppe',
         label: 'Détail enveloppe',
-        description: 'Fiche complète d'une enveloppe avec historique, performances et métadonnées personnalisées.',
+        description: "Fiche complète d'une enveloppe avec historique, performances et métadonnées personnalisées.",
         icon: Building2,
         href: '/patrimoine/detail-enveloppe',
       },
@@ -114,13 +114,13 @@ const GROUPS = [
       {
         slug: 'mes-objectifs',
         label: 'Mes Objectifs',
-        description: 'Définissez des objectifs d'épargne ou d'investissement et suivez votre progression.',
+        description: "Définissez des objectifs d'épargne ou d'investissement et suivez votre progression.",
         icon: Star,
         href: '/patrimoine/mes-objectifs',
       },
       {
         slug: 'carnet-ordres',
-        label: 'Carnet d'ordres',
+        label: "Carnet d'ordres",
         description: 'Journalisez vos ordres passés, suivez vos PRU et calculez vos plus-values latentes.',
         icon: BookOpen,
         href: '/patrimoine/carnet-ordres',
@@ -148,7 +148,7 @@ const GROUPS = [
       {
         slug: 'gestion-personnelle',
         label: 'Gestion personnelle',
-        description: 'Vue personnalisée de votre situation : taux d'épargne, budget mensuel et projections FIRE.',
+        description: "Vue personnalisée de votre situation : taux d'épargne, budget mensuel et projections FIRE.",
         icon: Globe,
         href: '/patrimoine/gestion-personnelle',
       },

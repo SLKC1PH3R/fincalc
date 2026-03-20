@@ -1859,11 +1859,12 @@ export function LandingClient() {
                 { label: 'FAQ', desc: 'Questions fréquentes', href: '#faq', color: '#34d399' },
               ]
               return (
-                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
                   <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     Ressources <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
-                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 300, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 300, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
                     {links.map(it => (
                       <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
@@ -1872,6 +1873,7 @@ export function LandingClient() {
                         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{it.desc}</span>
                       </a>
                     ))}
+                  </div>
                   </div>
                 </div>
               )
@@ -1887,11 +1889,12 @@ export function LandingClient() {
                 { label: 'Comparatif', desc: 'FinCalc vs alternatives', href: '#comparatif' },
               ]
               return (
-                <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>
+                <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
                   <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#fff' : 'rgba(255,255,255,0.5)', background: openMenu === key ? 'rgba(255,255,255,0.06)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     À propos <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
-                  <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '50%', transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 280, boxShadow: '0 24px 60px rgba(0,0,0,0.7)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
+                  <div style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: 16, width: 280, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
                     {links.map(it => (
                       <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
@@ -1900,6 +1903,7 @@ export function LandingClient() {
                         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{it.desc}</span>
                       </a>
                     ))}
+                  </div>
                   </div>
                 </div>
               )

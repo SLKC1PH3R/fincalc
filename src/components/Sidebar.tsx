@@ -19,13 +19,13 @@ type Icon = (props: any) => any
 
 // ── Patrimoine categories ─────────────────────────────────────────────────────
 const PATRIMOINE_CATEGORIES = [
-  { href: '/dashboard/patrimoine',            label: "Vue d'ensemble",    icon: BarChart3  },
-  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
-  { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
-  { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
-  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
-  { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
-  { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
+  { href: '/patrimoine/vue-ensemble',    label: "Vue d'ensemble",    icon: BarChart3  },
+  { href: '/patrimoine/immobilier',      label: 'Immobilier',        icon: Home       },
+  { href: '/patrimoine/actions-fonds',   label: 'Actions & Fonds',   icon: TrendingUp },
+  { href: '/patrimoine/livrets',         label: 'Livrets',           icon: PiggyBank  },
+  { href: '/patrimoine/autres-actifs',   label: 'Autres actifs',     icon: Bitcoin    },
+  { href: '/patrimoine/comptes-bancaires', label: 'Comptes bancaires', icon: Wallet   },
+  { href: '/patrimoine/emprunts',        label: 'Emprunts',          icon: CreditCard },
 ]
 
 const SIMULATEURS_GROUPS = [
@@ -678,10 +678,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             {(collapsed || !collapsedSections.has('Patrimoine')) && (
               <div className="space-y-0.5">
                 <NavItem
-                  href="/dashboard/patrimoine"
+                  href="/patrimoine/vue-ensemble"
                   label="Vue d'ensemble"
                   icon={BarChart3}
-                  active={pathname === '/dashboard/patrimoine'}
+                  active={pathname === '/patrimoine/vue-ensemble' || pathname === '/dashboard/patrimoine'}
                   expandable={!collapsed}
                   expanded={patrimoineExpanded}
                   onToggleExpand={() => setPatrimoineExpanded(v => !v)}

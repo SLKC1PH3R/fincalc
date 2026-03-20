@@ -110,6 +110,7 @@ function AuthForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const urlError = searchParams.get('error')
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard/patrimoine'
   const displayError = error || (urlError ? (ERROR_MESSAGES[urlError] || ERROR_MESSAGES.Default) : '')
 
   const isRegister = mode === 'register'
@@ -123,7 +124,7 @@ function AuthForm() {
 
   const handleGoogle = async () => {
     setLoadingGoogle(true)
-    await signIn('google', { callbackUrl: '/dashboard/patrimoine' })
+    await signIn('google', { callbackUrl })
   }
 
   const loginAsDemo = async () => {
@@ -131,7 +132,7 @@ function AuthForm() {
     setError('')
     const res = await signIn('credentials', { email: DEMO_EMAIL, password: DEMO_PASSWORD, redirect: false })
     if (res?.ok) {
-      router.push('/dashboard/patrimoine')
+      router.push(callbackUrl)
     } else {
       setError('Compte démo temporairement indisponible.')
       setLoading(false)
@@ -158,7 +159,7 @@ function AuthForm() {
       }
       const loginRes = await signIn('credentials', { email, password, redirect: false })
       if (loginRes?.ok) {
-        router.push('/dashboard/patrimoine')
+        router.push(callbackUrl)
       } else {
         setSuccess('Compte créé ! Vous pouvez vous connecter.')
         setMode('login')
@@ -167,7 +168,7 @@ function AuthForm() {
     } else {
       const res = await signIn('credentials', { email, password, redirect: false })
       if (res?.ok) {
-        router.push('/dashboard/patrimoine')
+        router.push(callbackUrl)
       } else {
         setError('Email ou mot de passe incorrect.')
         setLoading(false)

@@ -55,7 +55,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Propriétaire d'une RP et d'un appartement locatif voulant suivre son équité globale",
       "Investisseur en SCPI consolidant ses parts avec ses biens en direct",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/immobilier',
   },
   'actions-fonds': {
     title: 'Actions & Fonds',
@@ -76,7 +76,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Investisseur avec 80 000€ répartis sur PEA, CTO et AV voulant une vue consolidée",
       "Épargnant voulant connaître sa vraie performance nette après frais et fiscalité",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/actions',
   },
   'livrets': {
     title: 'Livrets & Épargne réglementée',
@@ -97,7 +97,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Épargnant voulant savoir s'il a de la place sur son LEP avant d'y transférer de l'argent",
       "Famille avec 4 livrets dans 2 banques différentes cherchant une vue consolidée",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/livrets',
   },
   'autres-actifs': {
     title: 'Autres actifs & Crypto',
@@ -118,7 +118,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Investisseur avec 5% de son patrimoine en Bitcoin et Ethereum suivant la volatilité",
       "Collectionneur de pièces d'or intégrant ses métaux précieux dans son bilan patrimonial",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/autres',
   },
   'comptes-bancaires': {
     title: 'Comptes bancaires',
@@ -139,7 +139,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Client multi-bancaire (BNP, Boursorama, Revolut) voulant son solde total en temps réel",
       "Chef d'entreprise distinguant comptes pro et comptes perso dans son bilan",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/comptes',
   },
   'emprunts': {
     title: "Vue consolidée des emprunts",
@@ -160,7 +160,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Propriétaire avec un crédit immo et un crédit auto voulant son endettement total",
       "Investisseur locatif avec 3 crédits immobiliers suivant son levier financier",
     ],
-    href: '/dashboard/patrimoine',
+    href: '/dashboard/patrimoine/emprunts',
   },
   'detail-enveloppe': {
     title: "Détail d'une enveloppe",
@@ -244,7 +244,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Investisseur 80/20 (actions/obligations) dont le portefeuille est passé à 88/12 après une hausse",
       "Gestionnaire d'un portefeuille multi-classes rééquilibrant trimestriellement",
     ],
-    href: '/dashboard/portfolio',
+    href: '/dashboard/rebalancing',
   },
   'objectifs': {
     title: 'Mes Objectifs financiers',
@@ -370,7 +370,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Cadre voulant une synthèse mensuelle croisant revenus, dépenses et patrimoine",
       "Couple en chemin vers le FIRE suivant leur progression vers l'objectif chaque mois",
     ],
-    href: '/dashboard',
+    href: '/dashboard/gestion',
   },
 }
 

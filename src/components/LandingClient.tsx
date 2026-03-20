@@ -697,6 +697,236 @@ function FaqItem({ q, a, gold, goldBorder }: { q: string; a: string; gold: strin
 }
 
 // ─── Dashboard Preview (mini) ─────────────────────────────────────────────
+// ─── Scroll indicator (RefractWeb style) ─────────────────────────────────
+function HeroScrollIndicator() {
+  return (
+    <div style={{
+      position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+      pointerEvents: 'none',
+    }}>
+      <span style={{
+        fontSize: 9, fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase',
+        color: 'rgba(255,255,255,0.22)',
+        fontFamily: "'Inter Tight', 'Inter', system-ui, sans-serif",
+      }}>Scroll</span>
+      <div style={{ width: 1, height: 40, background: 'rgba(255,255,255,0.1)', position: 'relative', overflow: 'hidden', borderRadius: 1 }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 12,
+          background: 'linear-gradient(to bottom, rgba(241,192,134,0.7), transparent)',
+          borderRadius: 1,
+          animation: 'scroll-dot 1.8s cubic-bezier(0.4,0,0.2,1) infinite',
+        }} />
+      </div>
+    </div>
+  )
+}
+
+// ─── Product Showcase (replaces DashboardPreview) ─────────────────────────
+function ProductShowcase() {
+  const [phase, setPhase] = useState(0) // 0=input, 1=results, 2=export
+  const phases = ['Simulation', 'Résultats', 'Export PDF']
+
+  useEffect(() => {
+    const timer = setInterval(() => setPhase(p => (p + 1) % 3), 4000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const chartPts = Array.from({ length: 20 }, (_, i) => {
+    const t = i / 19
+    const y = 72 - Math.pow(t, 1.7) * 60
+    return `${(t * 260).toFixed(1)},${y.toFixed(1)}`
+  }).join(' ')
+
+  return (
+    <div style={{ position: 'relative', maxWidth: 980, margin: '0 auto', padding: '0 16px' }}>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', inset: -40, background: `radial-gradient(ellipse at 50% 60%, rgba(241,192,134,0.08) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: -1, borderRadius: 22, background: 'linear-gradient(135deg, rgba(241,192,134,0.15), rgba(255,255,255,0.04), transparent)', pointerEvents: 'none', zIndex: 0 }} />
+
+      {/* Browser frame */}
+      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 48px 96px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), 0 0 80px rgba(241,192,134,0.06)', zIndex: 1 }}>
+
+        {/* Browser chrome */}
+        <div style={{ background: '#0a0a0a', padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['rgba(255,96,96,0.5)', 'rgba(255,189,0,0.45)', 'rgba(40,200,80,0.4)'].map((c, i) => (
+              <div key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+            ))}
+          </div>
+          {/* URL bar */}
+          <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 7, padding: '5px 14px', fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', fontFamily: 'monospace', letterSpacing: '-0.01em' }}>
+            <span style={{ color: 'rgba(255,255,255,0.15)' }}>https://</span>app.fincalc.fr<span style={{ color: GOLD + '99' }}>/simulateurs/interets-composes</span>
+          </div>
+          {/* Phase tabs */}
+          <div style={{ display: 'flex', gap: 4 }}>
+            {phases.map((p, i) => (
+              <div key={p} style={{ padding: '3px 10px', borderRadius: 6, fontSize: 10, fontWeight: 600, letterSpacing: '0.01em', background: i === phase ? 'rgba(241,192,134,0.15)' : 'transparent', color: i === phase ? GOLD : 'rgba(255,255,255,0.2)', border: i === phase ? `1px solid ${GOLD}30` : '1px solid transparent', transition: 'all 0.3s' }}>
+                {p}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* App shell */}
+        <div style={{ display: 'flex', height: 420, background: '#080808' }}>
+
+          {/* Sidebar */}
+          <div style={{ width: 168, flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)', background: '#060606', padding: '14px 8px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '0 8px 14px', marginBottom: 4 }}>
+              <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TrendingUp style={{ width: 12, height: 12, color: '#0a0a0a' }} />
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' }}>FinCalc</span>
+            </div>
+            {[
+              { label: 'Tableau de bord', active: false },
+              { label: 'Intérêts Composés', active: true },
+              { label: 'DCA', active: false },
+              { label: 'FI/RE', active: false },
+              { label: 'Immobilier', active: false, header: true },
+              { label: 'Crédit Immo', active: false },
+              { label: 'Patrimoine', active: false, header: true },
+              { label: 'Vue globale', active: false },
+            ].map((item, i) => item.header
+              ? <p key={i} style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.16)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '10px 8px 2px', margin: 0 }}>{item.label}</p>
+              : <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 7, fontSize: 11, color: item.active ? '#fff' : 'rgba(255,255,255,0.28)', background: item.active ? 'rgba(241,192,134,0.12)' : 'transparent', borderLeft: item.active ? `2px solid ${GOLD}` : '2px solid transparent' }}>
+                  {item.active && <div style={{ width: 4, height: 4, borderRadius: '50%', background: GOLD, flexShrink: 0 }} />}
+                  <span>{item.label}</span>
+                </div>
+            )}
+          </div>
+
+          {/* Main content — animated phases */}
+          <div style={{ flex: 1, padding: '20px 24px', overflow: 'hidden', position: 'relative' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 3px' }}>Simulateur</p>
+                <p style={{ fontSize: 15, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', margin: 0 }}>Intérêts Composés</p>
+              </div>
+              {/* Export button - glows in phase 2 */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                background: phase === 2 ? GOLD : 'rgba(255,255,255,0.05)',
+                color: phase === 2 ? '#000' : 'rgba(255,255,255,0.35)',
+                border: phase === 2 ? 'none' : '1px solid rgba(255,255,255,0.07)',
+                boxShadow: phase === 2 ? `0 0 24px ${GOLD}60` : 'none',
+                transition: 'all 0.5s cubic-bezier(0.4,0,0.2,1)',
+              }}>
+                <FileText style={{ width: 12, height: 12 }} />
+                Export PDF
+              </div>
+            </div>
+
+            {/* Phase 0 — inputs */}
+            <div style={{ opacity: phase === 0 ? 1 : 0, position: phase === 0 ? 'relative' : 'absolute', top: phase === 0 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 0 ? 'all' : 'none' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                {[
+                  { label: 'Capital initial', value: '10 000 €', accent: true },
+                  { label: 'Versement mensuel', value: '300 €', accent: false },
+                  { label: 'Rendement annuel', value: '7 %', accent: false },
+                  { label: 'Durée', value: '20 ans', accent: false },
+                ].map(f => (
+                  <div key={f.label} style={{ background: '#0f0f0f', border: `1px solid ${f.accent ? GOLD + '30' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, padding: '12px 14px' }}>
+                    <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>{f.label}</p>
+                    <p style={{ fontSize: 17, fontWeight: 700, color: f.accent ? GOLD : '#fff', letterSpacing: '-0.02em', margin: 0 }}>{f.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 14, background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, position: 'relative' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: '65%', background: `linear-gradient(to right, #34d399, ${GOLD})`, borderRadius: 2 }} />
+                  <div style={{ position: 'absolute', left: '65%', top: '50%', transform: 'translate(-50%,-50%)', width: 12, height: 12, borderRadius: '50%', background: '#fff', border: `2px solid ${GOLD}`, boxShadow: `0 0 10px ${GOLD}60` }} />
+                </div>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>Durée: 20 ans</span>
+              </div>
+            </div>
+
+            {/* Phase 1 — results */}
+            <div style={{ opacity: phase === 1 ? 1 : 0, position: phase === 1 ? 'relative' : 'absolute', top: phase === 1 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 1 ? 'all' : 'none' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
+                {[
+                  { label: 'Capital final', value: '186 420 €', color: GOLD, big: true },
+                  { label: 'Total versé', value: '82 000 €', color: '#fff' },
+                  { label: 'Intérêts générés', value: '104 420 €', color: '#34d399' },
+                ].map(s => (
+                  <div key={s.label} style={{ background: '#0f0f0f', border: `1px solid rgba(255,255,255,0.06)`, borderRadius: 10, padding: '11px 13px' }}>
+                    <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 5px' }}>{s.label}</p>
+                    <p style={{ fontSize: s.big ? 16 : 14, fontWeight: 700, color: s.color, letterSpacing: '-0.025em', margin: 0 }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Chart */}
+              <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Évolution du capital</p>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    {[['#34d399', 'Versements'], [GOLD, 'Intérêts']].map(([c, l]) => (
+                      <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>
+                        <div style={{ width: 8, height: 2, borderRadius: 1, background: c }} />
+                        {l}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <svg viewBox="0 0 270 80" width="100%" height={80} style={{ overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={GOLD} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <polyline points={chartPts} fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <polyline points={`0,72 ${chartPts} 260,80 0,80`} fill="url(#cg1)" stroke="none" />
+                  {/* Last point glow */}
+                  <circle cx="260" cy="12" r="4" fill={GOLD} opacity="0.9" />
+                  <circle cx="260" cy="12" r="8" fill={GOLD} opacity="0.15" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Phase 2 — PDF export */}
+            <div style={{ opacity: phase === 2 ? 1 : 0, position: phase === 2 ? 'relative' : 'absolute', top: phase === 2 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 2 ? 'all' : 'none' }}>
+              {/* PDF preview card */}
+              <div style={{ background: '#111', border: `1px solid ${GOLD}25`, borderRadius: 12, padding: '16px 18px', marginBottom: 12, boxShadow: `0 0 32px ${GOLD}10` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 34, height: 40, borderRadius: 4, background: '#1a0a00', border: `1px solid ${GOLD}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 8, fontWeight: 800, color: GOLD, letterSpacing: '-0.02em' }}>PDF</span>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: '0 0 2px' }}>Simulation — Intérêts Composés</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0 }}>20 mars 2026 · FinCalc</p>
+                  </div>
+                  <div style={{ marginLeft: 'auto', padding: '4px 10px', borderRadius: 100, background: '#34d39920', border: '1px solid #34d39940', fontSize: 9, color: '#34d399', fontWeight: 600 }}>
+                    Prêt
+                  </div>
+                </div>
+                {/* Mini preview lines */}
+                {[['Capital final', '186 420 €', GOLD], ['Total versé', '82 000 €', 'rgba(255,255,255,0.5)'], ['Gain net', '104 420 €', '#34d399']].map(([l, v, c]) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: 11 }}>
+                    <span style={{ color: 'rgba(255,255,255,0.35)' }}>{l}</span>
+                    <span style={{ color: c, fontWeight: 600 }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ flex: 1, padding: '10px 14px', borderRadius: 9, background: GOLD, color: '#000', fontSize: 11, fontWeight: 700, textAlign: 'center', boxShadow: `0 8px 24px ${GOLD}40` }}>
+                  Télécharger le PDF
+                </div>
+                <div style={{ padding: '10px 14px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                  Partager
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function DashboardPreview() {
   return (
     <div style={{ position: 'relative', maxWidth: 920, margin: '0 auto', padding: '0 16px' }}>
@@ -1775,7 +2005,6 @@ export function LandingClient() {
   const [introComplete, setIntroComplete] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const heroRef = useRef<HTMLDivElement>(null)
   const [heroVisible, setHeroVisible] = useState(false)
   const [demoLoading, setDemoLoading] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
@@ -1809,11 +2038,12 @@ export function LandingClient() {
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: 64,
-        background: scrolled ? 'rgba(6,6,6,0.92)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.05)' : '1px solid transparent',
-        transition: 'all 0.3s',
+        height: 60,
+        background: scrolled ? 'rgba(4,4,4,0.88)' : 'transparent',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+        transition: 'background 0.4s, border-color 0.4s',
       }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
@@ -1994,16 +2224,16 @@ export function LandingClient() {
           </div>
 
           {/* Desktop CTA */}
-          <div style={{ alignItems: 'center', gap: 10 }} className="hidden md:flex">
-            <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.55)', textDecoration: 'none', padding: '8px 16px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', transition: 'all 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.55)' }}>
+          <div style={{ alignItems: 'center', gap: 16 }} className="hidden md:flex">
+            <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.42)', textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.42)' }}>
               Se connecter
             </Link>
-            <Link href="/login" style={{ fontSize: 13, fontWeight: 600, color: '#000', textDecoration: 'none', padding: '8px 18px', borderRadius: 9, background: GOLD, transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = `0 6px 20px ${GOLD}50` }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-              Commencer
+            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: '#000', textDecoration: 'none', padding: '9px 20px', borderRadius: 100, background: '#fff', letterSpacing: '-0.01em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 4px 20px ${GOLD}50` }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
+              Commencer <ArrowRight style={{ width: 13, height: 13 }} />
             </Link>
           </div>
 
@@ -2145,14 +2375,14 @@ export function LandingClient() {
 
           {/* CTAs */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 12, fontSize: 14, fontWeight: 600, background: GOLD, color: '#000', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${GOLD}50` }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
+              onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
               Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
-            <a href="#modules" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 12, fontSize: 14, fontWeight: 500, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
+            <a href="#modules" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
               Voir les modules
             </a>
           </div>
@@ -2194,10 +2424,13 @@ export function LandingClient() {
           </div>
         </div>
 
-        {/* Dashboard preview */}
-        <div style={{ width: '100%', marginTop: 64, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(30px)', transition: 'all 1s ease 0.3s' }}>
-          <DashboardPreview />
+        {/* Product showcase */}
+        <div style={{ width: '100%', marginTop: 72, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(30px)', transition: 'all 1s ease 0.3s' }}>
+          <ProductShowcase />
         </div>
+
+        {/* Scroll indicator */}
+        <HeroScrollIndicator />
       </section>
 
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}

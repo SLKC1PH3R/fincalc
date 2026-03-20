@@ -133,6 +133,24 @@
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
+  @keyframes scroll-dot {
+    0%   { transform: translateY(0);    opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(28px); opacity: 0; }
+  }
+  @keyframes showcase-fade {
+    0%, 100% { opacity: 0; transform: translateY(6px); }
+    8%, 88%  { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bar-grow {
+    from { width: 0; }
+    to   { width: var(--bar-w, 70%); }
+  }
+  @keyframes counter-up {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
   .animate-float-med { animation: float-med 4.5s ease-in-out infinite; }
   .animate-float-fast { animation: float-fast 3s ease-in-out infinite; }

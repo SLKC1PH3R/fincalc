@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Calculez vos intérêts composés, simulez votre retraite FIRE, optimisez vos impôts et votre crédit immobilier. Gratuit, sans inscription.',
   openGraph: {
     title: 'Simulateurs financiers gratuits — FinCalc',
-    description: '32 simulateurs pour piloter votre patrimoine, vos investissements et votre fiscalité.',
+    description: '18 simulateurs pour piloter votre patrimoine, vos investissements et votre fiscalité.',
     url: 'https://app.fincalc.fr/tools',
   },
 }
@@ -35,7 +35,7 @@ export default function ToolsPage() {
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 20, background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.2)', fontSize: 12, color: '#f1c086', fontWeight: 600, letterSpacing: '0.06em', marginBottom: 16 }}>
-            32 SIMULATEURS GRATUITS
+            18 SIMULATEURS GRATUITS
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, margin: '0 0 16px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
             Simulateurs financiers

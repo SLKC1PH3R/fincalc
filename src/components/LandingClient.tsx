@@ -84,7 +84,7 @@ const WHY = [
 
 const HOW = [
   { step: '01', title: 'Créez un compte', desc: 'En 30 secondes avec votre email ou votre compte Google. Aucune carte bancaire.' },
-  { step: '02', title: 'Lancez une simulation', desc: 'Choisissez parmi 32 simulateurs et renseignez vos paramètres en quelques clics.' },
+  { step: '02', title: 'Lancez une simulation', desc: 'Choisissez parmi 18 simulateurs et renseignez vos paramètres en quelques clics.' },
   { step: '03', title: 'Visualisez votre avenir', desc: 'Graphiques interactifs, synthèses détaillées et recommandations personnalisées.' },
 ]
 
@@ -1753,6 +1753,13 @@ export function LandingClient() {
                         </Link>
                       ))}
                     </div>
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 10, paddingTop: 10 }}>
+                      <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: GOLD, textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'background 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = GOLD + '10' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}>
+                        Voir toutes les pages de gestion → <Globe style={{ width: 11, height: 11 }} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )
@@ -1942,7 +1949,7 @@ export function LandingClient() {
           {/* Badge */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, marginBottom: 28 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
-            32 simulateurs · Fiscalité française 2026
+            18 simulateurs · 15 pages de gestion · Fiscalité 2026
           </div>
 
           {/* Headline */}
@@ -2004,7 +2011,7 @@ export function LandingClient() {
 
           {/* Stats */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap', marginTop: 48 }}>
-            {[{ v: '32', l: 'Simulateurs' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
+            {[{ v: '18', l: 'Simulateurs' }, { v: '15', l: 'Pages de gestion' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
               <div key={s.l} style={{ textAlign: 'center' }}>
                 <span style={{
                   display: 'block', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.03em',
@@ -2077,7 +2084,7 @@ export function LandingClient() {
           {/* Header */}
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> 32 simulateurs</SectionTag>
+              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> 18 simulateurs</SectionTag>
               <h2 style={{ fontSize: 'clamp(2rem,5vw,3.4rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Tous les outils pour{' '}
                 <span style={{
@@ -2120,7 +2127,7 @@ export function LandingClient() {
           {/* CTA strip — after all 9 cards */}
           <RevealSection delay={100}>
             <div style={{ textAlign: 'center', padding: '52px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>32 simulateurs · 100 % gratuit · sans carte bancaire</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>18 simulateurs · 100 % gratuit · sans carte bancaire</p>
               <Link href="/login"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${GOLD}55` }}

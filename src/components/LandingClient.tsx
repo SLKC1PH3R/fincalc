@@ -1797,12 +1797,12 @@ export function LandingClient() {
             {(() => {
               const key = 'pat'
               const items = [
-                { icon: LayoutDashboard, label: 'Vue d\'ensemble', desc: 'Dashboard global : valeur, répartition, carte monde', color: GOLD, href: '/dashboard/patrimoine' },
-                { icon: BarChart3, label: 'Mon portefeuille', desc: 'Positions live via Finnhub & CoinGecko', color: '#38bdf8', href: '/dashboard/portfolio' },
-                { icon: Award, label: 'Score patrimonial', desc: 'Notation 0-100 sur 6 piliers', color: '#a78bfa', href: '/dashboard/score' },
-                { icon: Target, label: 'Mes objectifs', desc: 'Progression vers vos objectifs financiers', color: '#fb923c', href: '/dashboard/goals' },
-                { icon: FileText, label: 'Rapport fiscal', desc: 'Plus-values, durées, optimisation', color: '#34d399', href: '/dashboard/tax' },
-                { icon: BookOpen, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND + P&L', color: '#c084fc', href: '/dashboard/transactions' },
+                { icon: LayoutDashboard, label: 'Vue d\'ensemble', desc: 'Dashboard global : valeur, répartition, carte monde', color: GOLD, href: '/patrimoine/vue-ensemble' },
+                { icon: BarChart3, label: 'Mon portefeuille', desc: 'Positions live via Finnhub & CoinGecko', color: '#38bdf8', href: '/patrimoine/mon-portefeuille' },
+                { icon: Award, label: 'Score patrimonial', desc: 'Notation 0-100 sur 6 piliers', color: '#a78bfa', href: '/patrimoine/score-patrimonial' },
+                { icon: Target, label: 'Mes objectifs', desc: 'Progression vers vos objectifs financiers', color: '#fb923c', href: '/patrimoine/mes-objectifs' },
+                { icon: FileText, label: 'Rapport fiscal', desc: 'Plus-values, durées, optimisation', color: '#34d399', href: '/patrimoine/rapport-fiscal' },
+                { icon: BookOpen, label: 'Carnet d\'ordres', desc: 'Journal BUY/SELL/DIVIDEND + P&L', color: '#c084fc', href: '/patrimoine/carnet-ordres' },
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => setOpenMenu(key)} onMouseLeave={() => setOpenMenu(null)}>

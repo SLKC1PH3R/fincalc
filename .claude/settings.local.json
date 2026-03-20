@@ -25,7 +25,8 @@
       "Bash(cat /c/Users/jerem/Downloads/fincalc/src/app/api/auth/[...nextauth]/route.ts)",
       "Bash(grep -n \"og\\\\|meta\\\\|openGraph\\\\|twitter\" /c/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)",
       "Bash(grep -n 'href.*\\\\\\\\\\\\\\\\tools\\\\|href=\"\"/tools\"\"' \"/c/Users/jerem/Downloads/fincalc/src/components/LandingClient.tsx\")",
-      "Bash(grep -n \": ''[^'']*''[a-zA-ZÀ-ÿ]\" \"/c/Users/jerem/Downloads/fincalc/src/app/patrimoine/page.tsx\")"
+      "Bash(grep -n \": ''[^'']*''[a-zA-ZÀ-ÿ]\" \"/c/Users/jerem/Downloads/fincalc/src/app/patrimoine/page.tsx\")",
+      "WebFetch(domain:www.refractweb.com)"
     ]
   }
 }

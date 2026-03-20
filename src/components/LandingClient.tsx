@@ -1689,9 +1689,90 @@ function OpportunityCostWidget() {
   )
 }
 
+// ─── Intro animation — "F" draws itself then fades out ───────────────────
+function FIntroAnimation({ onDone }: { onDone: () => void }) {
+  const [fading, setFading] = useState(false)
+  useEffect(() => {
+    const t1 = setTimeout(() => setFading(true), 2300)
+    const t2 = setTimeout(() => onDone(), 3000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [onDone])
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999, background: '#000',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexDirection: 'column', gap: 28,
+      opacity: fading ? 0 : 1,
+      transition: 'opacity 0.7s ease',
+      pointerEvents: fading ? 'none' : 'all',
+    }}>
+      <svg viewBox="0 0 100 164" width="64" height="105" style={{ overflow: 'visible' }}>
+        {/* Vertical stem */}
+        <path d="M 22,12 L 22,152"
+          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
+          style={{ strokeDasharray: 140, strokeDashoffset: 140, animation: 'draw-stroke 0.85s cubic-bezier(0.4,0,0.2,1) forwards 0.25s' } as React.CSSProperties}
+        />
+        {/* Top horizontal */}
+        <path d="M 22,12 L 90,12"
+          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
+          style={{ strokeDasharray: 68, strokeDashoffset: 68, animation: 'draw-stroke 0.5s cubic-bezier(0.4,0,0.2,1) forwards 1.0s' } as React.CSSProperties}
+        />
+        {/* Middle horizontal */}
+        <path d="M 22,80 L 74,80"
+          stroke="#f1c086" strokeWidth="9" fill="none" strokeLinecap="round"
+          style={{ strokeDasharray: 52, strokeDashoffset: 52, animation: 'draw-stroke 0.4s cubic-bezier(0.4,0,0.2,1) forwards 1.45s' } as React.CSSProperties}
+        />
+      </svg>
+      <div style={{
+        opacity: 0, animation: 'fade-in-intro 0.5s ease forwards 1.85s',
+        display: 'flex', alignItems: 'center', gap: 6,
+      } as React.CSSProperties}>
+        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', letterSpacing: '0.45em', textTransform: 'uppercase', fontFamily: "'Inter Tight', 'Inter', system-ui, sans-serif" }}>
+          FinCalc
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ─── Tools marquee ticker ─────────────────────────────────────────────────
+const TICKER_ITEMS = [
+  'Intérêts Composés', 'Simulateur FI/RE', 'Crédit Immobilier', 'Flat Tax vs Barème',
+  'PEA vs CTO vs AV', 'Score Patrimonial', 'Budget 50/30/20', 'Simulateur Retraite',
+  'DCA', 'Acheter vs Louer', 'Rentabilité Locative', 'Impôts IR',
+  "Épargne d'urgence", 'Crédit Conso', 'Succession & Donation', 'Revenus Passifs', 'Benchmarks',
+]
+function ToolsTicker() {
+  const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
+  return (
+    <div style={{
+      overflow: 'hidden',
+      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      padding: '15px 0',
+    }}>
+      <div style={{
+        display: 'flex',
+        animation: 'marquee-scroll 45s linear infinite',
+        width: 'max-content',
+      }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 600, whiteSpace: 'nowrap', padding: '0 28px' }}>
+              {item}
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.08)', fontSize: 8, flexShrink: 0 }}>✦</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
   const router = useRouter()
+  const [introComplete, setIntroComplete] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -1722,7 +1803,8 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div className="grid-bg" style={{ background: '#050505', color: '#fff', minHeight: '100vh', fontFamily: "'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div className="grid-bg" style={{ background: '#000', color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+      {!introComplete && <FIntroAnimation onDone={() => setIntroComplete(true)} />}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{
@@ -2041,7 +2123,7 @@ export function LandingClient() {
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontSize: 'clamp(2.8rem,6.5vw,4.8rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.035em', color: '#fff', marginBottom: 24 }}>
+          <h1 style={{ fontSize: 'clamp(3.4rem,8vw,6.5rem)', fontWeight: 800, lineHeight: 1.04, letterSpacing: '-0.05em', color: '#fff', marginBottom: 24 }}>
             Prenez le contrôle de votre{' '}
             <span style={{
               fontWeight: 700,
@@ -2120,6 +2202,9 @@ export function LandingClient() {
 
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
       <SocialProofBar />
+
+      {/* ── TOOLS TICKER ──────────────────────────────────────────────── */}
+      <ToolsTicker />
 
       {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
       <RatesWidget />

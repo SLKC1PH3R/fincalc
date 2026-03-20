@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600&display=swap');
 
 @tailwind base;
@@ -122,6 +122,17 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+  @keyframes draw-stroke {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes fade-in-intro {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
   .animate-float-med { animation: float-med 4.5s ease-in-out infinite; }
   .animate-float-fast { animation: float-fast 3s ease-in-out infinite; }
@@ -229,9 +240,9 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
-  background-size: 64px 64px;
+    linear-gradient(rgba(255,255,255,0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.038) 1px, transparent 1px);
+  background-size: 80px 80px;
   pointer-events: none;
   z-index: 0;
 }

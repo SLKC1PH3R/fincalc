@@ -2355,85 +2355,87 @@ export function LandingClient() {
         {/* Grain */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
 
-        {/* Content */}
+        {/* Two-column hero */}
         <div style={{
-          position: 'relative', maxWidth: 760, textAlign: 'center',
+          position: 'relative', maxWidth: 1320, width: '100%',
+          display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: 56,
+          alignItems: 'center',
           opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(20px)',
           transition: 'all 0.8s ease',
         }}>
-          {/* Badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, marginBottom: 28 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
-            18 simulateurs · 15 pages de gestion · Fiscalité 2026
-          </div>
 
-          {/* Headline */}
-          <h1 style={{ fontSize: 'clamp(3.4rem,8vw,6.5rem)', fontWeight: 800, lineHeight: 1.04, letterSpacing: '-0.05em', color: '#fff', marginBottom: 24 }}>
-            Prenez le contrôle de votre{' '}
-            <span style={{
-              fontWeight: 700,
-              background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
-              backgroundSize: '200% auto',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-              animation: 'shimmer 4s linear infinite',
-            }}>
-              avenir financier
-            </span>
-            , dès maintenant
-          </h1>
-
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 36px' }}>
-            Le seul outil <strong style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>100&nbsp;% gratuit</strong> qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.
-          </p>
-
-          {/* CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
-              onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
-              Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
-            </Link>
-            <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
-              Voir la démo
-            </a>
-          </div>
-
-          {/* Social proof mini-bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-            {/* Avatar stack */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
-                <div key={i} style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
-                  border: '2px solid #000',
-                  marginLeft: i === 0 ? 0 : -8,
-                  zIndex: 4 - i,
-                  position: 'relative',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 700, color: '#fff',
-                }}>
-                  {['J','M','A','T'][i]}
-                </div>
-              ))}
+          {/* ── LEFT: text content ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            {/* Badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, marginBottom: 28 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
+              18 simulateurs · 15 pages · Fiscalité 2026
             </div>
-            {/* Stars */}
-            <div style={{ display: 'flex', gap: 2 }}>
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} style={{ width: 12, height: 12, fill: GOLD, color: GOLD }} />
-              ))}
-            </div>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.01em' }}>
-              <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>3 847</span> utilisateurs actifs
-            </span>
-          </div>
 
-          {/* Demo hint */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 48 }}>
+            {/* Headline */}
+            <h1 style={{ fontSize: 'clamp(2.6rem,4.5vw,5rem)', fontWeight: 800, lineHeight: 1.06, letterSpacing: '-0.045em', color: '#fff', marginBottom: 22, textAlign: 'left' }}>
+              Prenez le contrôle de votre{' '}
+              <span style={{
+                fontWeight: 700,
+                background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+                animation: 'shimmer 4s linear infinite',
+              }}>
+                avenir financier
+              </span>
+              , dès maintenant
+            </h1>
+
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.58)', lineHeight: 1.75, maxWidth: 500, marginBottom: 32 }}>
+              Le seul outil <strong style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>100&nbsp;% gratuit</strong> qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.
+            </p>
+
+            {/* CTAs */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
+                onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
+                Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
+              </Link>
+              <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
+                Voir la démo
+              </a>
+            </div>
+
+            {/* Social proof */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
+                  <div key={i} style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
+                    border: '2px solid #000',
+                    marginLeft: i === 0 ? 0 : -8,
+                    zIndex: 4 - i,
+                    position: 'relative',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, fontWeight: 700, color: '#fff',
+                  }}>
+                    {['J','M','A','T'][i]}
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 2 }}>
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} style={{ width: 12, height: 12, fill: GOLD, color: GOLD }} />
+                ))}
+              </div>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.01em' }}>
+                <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>3 847</span> utilisateurs actifs
+              </span>
+            </div>
+
+            {/* Demo hint */}
             <button
               onClick={loginAsDemo}
               disabled={demoLoading}
@@ -2441,7 +2443,7 @@ export function LandingClient() {
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '8px 16px', borderRadius: 20, cursor: demoLoading ? 'wait' : 'pointer',
                 background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.20)',
-                transition: 'all 0.2s', fontFamily: 'inherit',
+                transition: 'all 0.2s', fontFamily: 'inherit', marginBottom: 40,
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.13)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.07)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)' }}
@@ -2451,27 +2453,28 @@ export function LandingClient() {
                 {demoLoading ? 'Connexion en cours…' : 'Accéder au compte démo'}
               </span>
             </button>
+
+            {/* Stats row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              {[{ v: '18', l: 'Simulateurs' }, { v: '15', l: 'Pages' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Pub' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
+                <div key={s.l} style={{ textAlign: 'left' }}>
+                  <span style={{
+                    display: 'block', fontSize: '1.7rem', fontWeight: 800, letterSpacing: '-0.03em',
+                    background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
+                    WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+                  }}>{s.v}</span>
+                  <span style={{ display: 'block', fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 1 }}>{s.l}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-
-          {/* Stats */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap', marginTop: 48 }}>
-            {[{ v: '18', l: 'Simulateurs' }, { v: '15', l: 'Pages de gestion' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Publicités' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
-              <div key={s.l} style={{ textAlign: 'center' }}>
-                <span style={{
-                  display: 'block', fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.03em',
-                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
-                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                }}>{s.v}</span>
-                <span style={{ display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 2 }}>{s.l}</span>
-              </div>
-            ))}
+          {/* ── RIGHT: dashboard mock ── */}
+          <div style={{ position: 'relative', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(24px) scale(0.97)', transition: 'all 1s ease 0.25s' }}>
+            {/* Glow behind mock */}
+            <div style={{ position: 'absolute', inset: -40, background: `radial-gradient(ellipse at 50% 50%, ${GOLD}12 0%, transparent 65%)`, pointerEvents: 'none', borderRadius: '50%' }} />
+            <ProductShowcase />
           </div>
-        </div>
-
-        {/* Product showcase */}
-        <div style={{ width: '100%', marginTop: 72, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(30px)', transition: 'all 1s ease 0.3s' }}>
-          <ProductShowcase />
         </div>
 
         {/* Scroll indicator */}

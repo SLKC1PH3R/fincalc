@@ -11,6 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/client": "5.22.0",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -26,19 +27,18 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.14",
     "lucide-react": "^0.460.0",
     "next": "^15.0.3",
     "next-auth": "^4.24.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-simple-maps": "^1.0.0",
     "recharts": "^2.13.3",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8",
-    "@next-auth/prisma-adapter": "^1.0.7",
-    "react-simple-maps": "^3.0.0",
-    "gsap": "^3.12.5",
-    "lenis": "^1.1.14"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

@@ -801,7 +801,7 @@ function ProductShowcase() {
           </div>
 
           {/* Main content — animated phases */}
-          <div style={{ flex: 1, padding: '20px 24px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ flex: 1, padding: '22px 28px', overflow: 'hidden', position: 'relative' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
@@ -890,34 +890,43 @@ function ProductShowcase() {
             </div>
 
             {/* Phase 2 — PDF export */}
-            <div style={{ opacity: phase === 2 ? 1 : 0, position: phase === 2 ? 'relative' : 'absolute', top: phase === 2 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 2 ? 'all' : 'none' }}>
+            <div style={{ opacity: phase === 2 ? 1 : 0, position: phase === 2 ? 'relative' : 'absolute', top: phase === 2 ? 'auto' : 56, left: 28, right: 28, transition: 'opacity 0.4s', pointerEvents: phase === 2 ? 'all' : 'none' }}>
               {/* PDF preview card */}
-              <div style={{ background: '#111', border: `1px solid ${GOLD}25`, borderRadius: 12, padding: '16px 18px', marginBottom: 12, boxShadow: `0 0 32px ${GOLD}10` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <div style={{ width: 34, height: 40, borderRadius: 4, background: '#1a0a00', border: `1px solid ${GOLD}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 8, fontWeight: 800, color: GOLD, letterSpacing: '-0.02em' }}>PDF</span>
+              <div style={{ background: 'linear-gradient(145deg, #111 0%, #0d0900 100%)', border: `1px solid ${GOLD}35`, borderRadius: 16, padding: '20px 22px', marginBottom: 10, boxShadow: `0 0 48px ${GOLD}14, inset 0 1px 0 rgba(255,255,255,0.04)` }}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 16, paddingBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  {/* File icon */}
+                  <div style={{ width: 42, height: 50, borderRadius: 8, background: `linear-gradient(145deg, #1e0c00, #2e1800)`, border: `1px solid ${GOLD}45`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, flexShrink: 0, boxShadow: `0 4px 20px ${GOLD}25` }}>
+                    <FileText style={{ width: 15, height: 15, color: GOLD }} />
+                    <span style={{ fontSize: 7, fontWeight: 800, color: GOLD, letterSpacing: '0.06em' }}>PDF</span>
                   </div>
-                  <div>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: '0 0 2px' }}>Simulation — Intérêts Composés</p>
-                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0 }}>20 mars 2026 · PatrImo</p>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', margin: '0 0 5px', letterSpacing: '-0.015em', lineHeight: 1.3 }}>Simulation — Intérêts Composés</p>
+                    <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', margin: 0, letterSpacing: '0.01em' }}>20 mars 2026 · PatrImo</p>
                   </div>
-                  <div style={{ marginLeft: 'auto', padding: '4px 10px', borderRadius: 100, background: '#34d39920', border: '1px solid #34d39940', fontSize: 9, color: '#34d399', fontWeight: 600 }}>
+                  <div style={{ padding: '5px 11px', borderRadius: 100, background: 'rgba(52,211,153,0.10)', border: '1px solid rgba(52,211,153,0.28)', fontSize: 9, color: '#34d399', fontWeight: 700, letterSpacing: '0.03em', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399' }} />
                     Prêt
                   </div>
                 </div>
-                {/* Mini preview lines */}
-                {[['Capital final', '186 420 €', GOLD], ['Total versé', '82 000 €', 'rgba(255,255,255,0.5)'], ['Gain net', '104 420 €', '#34d399']].map(([l, v, c]) => (
-                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: 11 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.35)' }}>{l}</span>
-                    <span style={{ color: c, fontWeight: 600 }}>{v}</span>
+                {/* KPI rows */}
+                {[
+                  { l: 'Capital final',  v: '186 420 €', c: GOLD,                        bold: true  },
+                  { l: 'Total versé',    v: '82 000 €',  c: 'rgba(255,255,255,0.55)',     bold: false },
+                  { l: 'Gain net',       v: '104 420 €', c: '#34d399',                   bold: true  },
+                ].map(({ l, v, c, bold }, idx, arr) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: idx < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.01em' }}>{l}</span>
+                    <span style={{ fontSize: bold ? 13 : 12, fontWeight: bold ? 700 : 600, color: c, letterSpacing: '-0.02em' }}>{v}</span>
                   </div>
                 ))}
               </div>
+              {/* Action buttons */}
               <div style={{ display: 'flex', gap: 8 }}>
-                <div style={{ flex: 1, padding: '10px 14px', borderRadius: 9, background: GOLD, color: '#000', fontSize: 11, fontWeight: 700, textAlign: 'center', boxShadow: `0 8px 24px ${GOLD}40` }}>
+                <div style={{ flex: 1, padding: '11px 14px', borderRadius: 10, background: `linear-gradient(135deg, ${GOLD} 0%, #c8922a 100%)`, color: '#000', fontSize: 11.5, fontWeight: 700, textAlign: 'center', boxShadow: `0 8px 28px ${GOLD}45`, letterSpacing: '-0.01em' }}>
                   Télécharger le PDF
                 </div>
-                <div style={{ padding: '10px 14px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                <div style={{ padding: '11px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', fontSize: 11, color: 'rgba(255,255,255,0.42)', fontWeight: 500 }}>
                   Partager
                 </div>
               </div>

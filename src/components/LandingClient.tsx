@@ -2025,7 +2025,10 @@ function ToolsTicker() {
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
   const router = useRouter()
-  const [introComplete, setIntroComplete] = useState(false)
+  const [introComplete, setIntroComplete] = useState(() => {
+    if (typeof window !== 'undefined') return !!sessionStorage.getItem('patrimo_intro')
+    return false
+  })
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -2060,7 +2063,7 @@ export function LandingClient() {
 
   return (
     <div className="grid-bg" style={{ background: '#000', color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
-      {!introComplete && <FIntroAnimation onDone={() => setIntroComplete(true)} />}
+      {!introComplete && <FIntroAnimation onDone={() => { sessionStorage.setItem('patrimo_intro', '1'); setIntroComplete(true) }} />}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{
@@ -2365,10 +2368,8 @@ export function LandingClient() {
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
 
         {/* Two-column hero */}
-        <div style={{
+        <div className="hero-two-col" style={{
           position: 'relative', maxWidth: 1400, width: '100%',
-          display: 'grid', gridTemplateColumns: '0.72fr 1fr', gap: 40,
-          alignItems: 'center',
           opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(20px)',
           transition: 'all 0.8s ease',
         }}>
@@ -2465,7 +2466,7 @@ export function LandingClient() {
 
             {/* Stats row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              {[{ v: '18', l: 'Simulateurs' }, { v: '15', l: 'Pages' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Pub' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
+              {[{ v: '18', l: 'Simulateurs' }, { v: '0', l: 'Donnée bancaire' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Pub' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
                 <div key={s.l} style={{ textAlign: 'left' }}>
                   <span style={{
                     display: 'block', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em',
@@ -2876,28 +2877,33 @@ export function LandingClient() {
               {[
                 {
                   text: "J'ai enfin compris ma tranche marginale d'imposition grâce au simulateur IR. J'économise maintenant 1 200 €/an en optimisant mes revenus.",
-                  name: 'Thomas M.', role: 'Développeur, 31 ans', stars: 5,
+                  name: 'Thomas M.', role: 'Développeur · Lyon, 31 ans', stars: 5, initials: 'TM', color: '#34d399',
                 },
                 {
-                  text: "Le comparateur PEA vs CTO m'a convaincu en 5 minutes de transférer mon CTO. La différence fiscale sur 20 ans est énorme.",
-                  name: 'Léa R.', role: 'Ingénieure, 28 ans', stars: 5,
+                  text: "Le comparateur PEA vs CTO m'a convaincu en 5 minutes de transférer mon CTO. La différence fiscale sur 20 ans est spectaculaire.",
+                  name: 'Léa R.', role: 'Ingénieure · Paris, 28 ans', stars: 5, initials: 'LR', color: '#f472b6',
                 },
                 {
                   text: "Le calculateur FI/RE m'a montré que je pouvais partir à 52 ans au lieu de 62 en épargnant 200 €/mois de plus. Game changer.",
-                  name: 'Marc D.', role: 'Cadre, 44 ans', stars: 5,
+                  name: 'Marc D.', role: 'Cadre, propriétaire de 2 biens · 44 ans', stars: 4, initials: 'MD', color: '#818cf8',
                 },
-              ].map(({ text, name, role, stars }) => (
-                <div key={name} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column' as const, gap: 16 }}>
-                  <div style={{ display: 'flex', gap: 3 }}>
-                    {Array.from({ length: stars }).map((_, i) => (
-                      <span key={i} style={{ color: GOLD, fontSize: 13 }}>★</span>
+              ].map(({ text, name, role, stars, initials, color }) => (
+                <div key={name} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, ${color}cc, ${color}55)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 700, color: '#fff' }}>
+                      {initials}
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0 }}>{name}</p>
+                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{role}</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 2 }}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i} style={{ color: i < stars ? GOLD : 'rgba(255,255,255,0.12)', fontSize: 13 }}>★</span>
                     ))}
                   </div>
                   <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, flex: 1 }}>&ldquo;{text}&rdquo;</p>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{name}</p>
-                    <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{role}</p>
-                  </div>
                 </div>
               ))}
             </div>
@@ -2997,6 +3003,22 @@ export function LandingClient() {
                   q: 'Les calculs sont-ils fiables ?',
                   a: 'Les simulateurs utilisent les formules financières standards (intérêts composés, amortissement, TMI 2026, PFU) et sont mis à jour chaque année. Ils sont indicatifs et ne remplacent pas un conseil financier personnalisé.',
                 },
+                {
+                  q: 'PatrImo est-il adapté aux débutants ?',
+                  a: 'Absolument. Les simulateurs sont conçus pour être compris sans formation financière. Chaque paramètre est accompagné d\'une explication, et les résultats sont présentés visuellement avec graphiques et synthèses claires.',
+                },
+                {
+                  q: 'Puis-je utiliser PatrImo sur mobile ?',
+                  a: 'Oui, PatrImo est entièrement responsive. L\'interface s\'adapte aux smartphones et tablettes. Une application native iOS & Android est également prévue sur la roadmap.',
+                },
+                {
+                  q: 'Les calculs reflètent-ils la fiscalité 2026 ?',
+                  a: 'Oui. Les barèmes IR, le PFU 30 %, les plafonds PEA, LDDS, LEP, les abattements successoraux et les taux de cotisations sont mis à jour chaque début d\'année pour refléter la loi de finances en vigueur.',
+                },
+                {
+                  q: 'Comment fonctionne le compte démo ?',
+                  a: 'Le compte démo donne un accès immédiat à toutes les fonctionnalités de PatrImo avec des données pré-remplies. Il suffit de cliquer sur "Accéder au compte démo" sur la page d\'accueil — aucune inscription requise. Vos propres simulations ne sont pas affectées.',
+                },
               ].map(({ q, a }, i) => (
                 <FaqItem key={i} q={q} a={a} gold={GOLD} goldBorder={GOLD_BORDER} />
               ))}
@@ -3046,11 +3068,8 @@ export function LandingClient() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: 40, marginBottom: 48 }}>
             {/* Brand */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #c8922a, #f1c086)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <TrendingUp style={{ width: 13, height: 13, color: '#0a0a0a' }} />
-                </div>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>PatrImo</span>
+              <div style={{ marginBottom: 12 }}>
+                <PatrimoLogo width={110} uid="footer" />
               </div>
               <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', lineHeight: 1.7 }}>
                 Outils de finance personnelle pour investisseurs français.

@@ -436,3 +436,20 @@ html { scroll-behavior: smooth; }
 }
 .breadcrumb a:hover { color: var(--text-em); }
 .breadcrumb-sep { opacity: 0.4; }
+
+/* ── Hero two-column responsive grid ─────────────────────────────────────── */
+.hero-two-col {
+  display: grid;
+  grid-template-columns: 0.72fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hero-two-col {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .hero-two-col > *:last-child {
+    display: none;
+  }
+}

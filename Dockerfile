@@ -4,7 +4,7 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json ./
 COPY prisma ./prisma/
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # ─── Stage 2: builder ────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder

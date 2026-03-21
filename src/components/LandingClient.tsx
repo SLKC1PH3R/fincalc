@@ -801,7 +801,7 @@ function ProductShowcase() {
           </div>
 
           {/* Main content — animated phases */}
-          <div style={{ flex: 1, padding: '22px 28px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ flex: 1, padding: '18px 20px', overflow: 'hidden', position: 'relative' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
@@ -823,8 +823,8 @@ function ProductShowcase() {
             </div>
 
             {/* Phase 0 — inputs */}
-            <div style={{ opacity: phase === 0 ? 1 : 0, position: phase === 0 ? 'relative' : 'absolute', top: phase === 0 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 0 ? 'all' : 'none' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div style={{ opacity: phase === 0 ? 1 : 0, position: phase === 0 ? 'relative' : 'absolute', top: phase === 0 ? 'auto' : 0, left: 0, right: 0, transition: 'opacity 0.4s', pointerEvents: phase === 0 ? 'all' : 'none' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 {[
                   { label: 'Capital initial', value: '10 000 €', accent: true },
                   { label: 'Versement mensuel', value: '300 €', accent: false },
@@ -837,7 +837,7 @@ function ProductShowcase() {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 14, background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ marginTop: 8, background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, position: 'relative' }}>
                   <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: '65%', background: `linear-gradient(to right, #34d399, ${GOLD})`, borderRadius: 2 }} />
                   <div style={{ position: 'absolute', left: '65%', top: '50%', transform: 'translate(-50%,-50%)', width: 12, height: 12, borderRadius: '50%', background: '#fff', border: `2px solid ${GOLD}`, boxShadow: `0 0 10px ${GOLD}60` }} />
@@ -847,8 +847,8 @@ function ProductShowcase() {
             </div>
 
             {/* Phase 1 — results */}
-            <div style={{ opacity: phase === 1 ? 1 : 0, position: phase === 1 ? 'relative' : 'absolute', top: phase === 1 ? 'auto' : 56, left: 24, right: 24, transition: 'opacity 0.4s', pointerEvents: phase === 1 ? 'all' : 'none' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
+            <div style={{ opacity: phase === 1 ? 1 : 0, position: phase === 1 ? 'relative' : 'absolute', top: phase === 1 ? 'auto' : 0, left: 0, right: 0, transition: 'opacity 0.4s', pointerEvents: phase === 1 ? 'all' : 'none' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 8 }}>
                 {[
                   { label: 'Capital final', value: '186 420 €', color: GOLD, big: true },
                   { label: 'Total versé', value: '82 000 €', color: '#fff' },
@@ -890,7 +890,7 @@ function ProductShowcase() {
             </div>
 
             {/* Phase 2 — PDF export */}
-            <div style={{ opacity: phase === 2 ? 1 : 0, position: phase === 2 ? 'relative' : 'absolute', top: phase === 2 ? 'auto' : 56, left: 28, right: 28, transition: 'opacity 0.4s', pointerEvents: phase === 2 ? 'all' : 'none' }}>
+            <div style={{ opacity: phase === 2 ? 1 : 0, position: phase === 2 ? 'relative' : 'absolute', top: phase === 2 ? 'auto' : 0, left: 0, right: 0, transition: 'opacity 0.4s', pointerEvents: phase === 2 ? 'all' : 'none' }}>
               {/* PDF preview card */}
               <div style={{ background: 'linear-gradient(145deg, #111 0%, #0d0900 100%)', border: `1px solid ${GOLD}35`, borderRadius: 16, padding: '20px 22px', marginBottom: 10, boxShadow: `0 0 48px ${GOLD}14, inset 0 1px 0 rgba(255,255,255,0.04)` }}>
                 {/* Header */}

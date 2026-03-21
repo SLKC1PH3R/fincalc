@@ -9,7 +9,7 @@ export function useScrollAnimations(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return
 
-    let ctx: import('gsap').Context | null = null
+    let ctx: { revert: () => void } | null = null
 
     async function init() {
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([

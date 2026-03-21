@@ -86,9 +86,9 @@ const WHY = [
 ]
 
 const HOW = [
-  { step: '01', title: 'Créez un compte', desc: 'En 30 secondes avec votre email ou votre compte Google. Aucune carte bancaire.' },
-  { step: '02', title: 'Lancez une simulation', desc: 'Choisissez parmi 18 simulateurs et renseignez vos paramètres en quelques clics.' },
-  { step: '03', title: 'Visualisez votre avenir', desc: 'Graphiques interactifs, synthèses détaillées et recommandations personnalisées.' },
+  { step: '01', icon: Users, iconColor: '#34d399', title: 'Créez un compte', desc: 'En 30 secondes avec votre email ou votre compte Google. Aucune carte bancaire, aucune donnée bancaire.' },
+  { step: '02', icon: Calculator, iconColor: '#818cf8', title: 'Lancez une simulation', desc: 'Choisissez parmi 18 simulateurs et renseignez vos paramètres en quelques clics. Résultats instantanés.' },
+  { step: '03', icon: TrendingUp, iconColor: GOLD, title: 'Visualisez votre avenir', desc: 'Graphiques interactifs, synthèses détaillées et scénarios comparatifs pour prendre les meilleures décisions.' },
 ]
 
 const ROADMAP = [
@@ -1722,24 +1722,24 @@ function RoadmapFlipCard({ item, barColor, phaseId }: { item: { label: string; d
 
 // ─── Competitor Comparison Table ──────────────────────────────────────────
 type FeatureVal = true | false | null
-const COMPETITOR_FEATURES: { label: string; fincalc: FeatureVal; finary: FeatureVal; bank: FeatureVal }[] = [
-  { label: '100 % gratuit',                  fincalc: true,  finary: null,  bank: false },
-  { label: 'Intérêts composés',              fincalc: true,  finary: null,  bank: false },
-  { label: 'Simulateur FI/RE',               fincalc: true,  finary: false, bank: false },
-  { label: 'Simulateur retraite',            fincalc: true,  finary: null,  bank: false },
-  { label: 'Calcul impôts IR / TMI',         fincalc: true,  finary: false, bank: false },
-  { label: 'DCA / Investissement régulier',  fincalc: true,  finary: null,  bank: false },
-  { label: 'Acheter vs Louer',               fincalc: true,  finary: false, bank: false },
-  { label: 'Fiscalité française 2026',       fincalc: true,  finary: null,  bank: false },
-  { label: 'Sans données bancaires',         fincalc: true,  finary: false, bank: false },
-  { label: 'Zéro publicité',                 fincalc: true,  finary: null,  bank: false },
+const COMPETITOR_FEATURES: { label: string; fincalc: FeatureVal; simulator: FeatureVal; sheets: FeatureVal }[] = [
+  { label: '100 % gratuit',                  fincalc: true,  simulator: false, sheets: true  },
+  { label: 'Intérêts composés',              fincalc: true,  simulator: null,  sheets: null  },
+  { label: 'Simulateur FI/RE',               fincalc: true,  simulator: false, sheets: null  },
+  { label: 'Simulateur retraite',            fincalc: true,  simulator: null,  sheets: null  },
+  { label: 'Calcul impôts IR / TMI',         fincalc: true,  simulator: false, sheets: null  },
+  { label: 'DCA / Investissement régulier',  fincalc: true,  simulator: false, sheets: null  },
+  { label: 'Acheter vs Louer',               fincalc: true,  simulator: false, sheets: null  },
+  { label: 'Fiscalité française 2026',       fincalc: true,  simulator: false, sheets: false },
+  { label: 'Sans données bancaires',         fincalc: true,  simulator: false, sheets: true  },
+  { label: 'Zéro publicité',                 fincalc: true,  simulator: false, sheets: true  },
 ]
 
 function CompetitorTable() {
   const cols = [
     { name: 'PatrImo', key: 'fincalc' as const, highlight: true, color: GOLD },
-    { name: 'Finary', key: 'finary' as const, highlight: false, color: 'rgba(255,255,255,0.45)' },
-    { name: 'Votre banque', key: 'bank' as const, highlight: false, color: 'rgba(255,255,255,0.32)' },
+    { name: 'Simulateur banque', key: 'simulator' as const, highlight: false, color: 'rgba(255,255,255,0.45)' },
+    { name: 'Google Sheets', key: 'sheets' as const, highlight: false, color: 'rgba(255,255,255,0.32)' },
   ]
   return (
     <section id="comparatif" style={{ padding: '80px 20px 60px' }}>
@@ -2384,8 +2384,8 @@ export function LandingClient() {
             , dès maintenant
           </h1>
 
-          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 36px' }}>
-            Simulez vos investissements, optimisez votre fiscalité et planifiez votre retraite avec des outils conçus pour le marché français.
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 36px' }}>
+            Le seul outil <strong style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>100&nbsp;% gratuit</strong> qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.
           </p>
 
           {/* CTAs */}
@@ -2395,11 +2395,41 @@ export function LandingClient() {
               onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
               Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
-            <a href="#modules" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
+            <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
-              Voir les modules
+              Voir la démo
             </a>
+          </div>
+
+          {/* Social proof mini-bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+            {/* Avatar stack */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
+                <div key={i} style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
+                  border: '2px solid #000',
+                  marginLeft: i === 0 ? 0 : -8,
+                  zIndex: 4 - i,
+                  position: 'relative',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 10, fontWeight: 700, color: '#fff',
+                }}>
+                  {['J','M','A','T'][i]}
+                </div>
+              ))}
+            </div>
+            {/* Stars */}
+            <div style={{ display: 'flex', gap: 2 }}>
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} style={{ width: 12, height: 12, fill: GOLD, color: GOLD }} />
+              ))}
+            </div>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.01em' }}>
+              <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>3 847</span> utilisateurs actifs
+            </span>
           </div>
 
           {/* Demo hint */}
@@ -2451,12 +2481,6 @@ export function LandingClient() {
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
       <SocialProofBar />
 
-      {/* ── TOOLS TICKER ──────────────────────────────────────────────── */}
-      <ToolsTicker />
-
-      {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
-      <RatesWidget />
-
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
       <section id="demo" style={{ padding: '60px 20px 100px' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto' }}>
@@ -2497,6 +2521,12 @@ export function LandingClient() {
           </div>
         </div>
       </section>
+
+      {/* ── TOOLS TICKER ──────────────────────────────────────────────── */}
+      <ToolsTicker />
+
+      {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
+      <RatesWidget />
 
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>
@@ -2661,11 +2691,18 @@ export function LandingClient() {
             {HOW.map((step, i) => (
               <RevealSection key={i} delay={i * 120} style={{ height: '100%' }}>
                 <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden', height: '100%', boxSizing: 'border-box' }}>
+                  {/* Ghost step number */}
                   <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
                     {step.step}
                   </div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 10, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, marginBottom: 20 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: GOLD }}>{step.step}</span>
+                  {/* Icon + step badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52, borderRadius: 14, background: `${step.iconColor}18`, border: `1px solid ${step.iconColor}30` }}>
+                      <step.icon style={{ width: 24, height: 24, color: step.iconColor }} />
+                    </div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 7, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}` }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: GOLD }}>{step.step}</span>
+                    </div>
                   </div>
                   <h3 style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>{step.title}</h3>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>{step.desc}</p>

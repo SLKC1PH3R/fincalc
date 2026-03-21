@@ -36,7 +36,9 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
     "@next-auth/prisma-adapter": "^1.0.7",
-    "react-simple-maps": "^3.0.0"
+    "react-simple-maps": "^3.0.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.14"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

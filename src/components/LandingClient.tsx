@@ -40,6 +40,8 @@ import {
   Landmark,
 } from 'lucide-react'
 import { PatrimoLogo } from '@/components/PatrimoLogo'
+import { useSmoothScroll } from '@/hooks/useSmoothScroll'
+import { useScrollAnimations } from '@/hooks/useScrollAnimations'
 
 // ─── Constants ────────────────────────────────────────────────────────────
 const GOLD = '#f1c086'
@@ -2017,6 +2019,10 @@ export function LandingClient() {
   const [introComplete, setIntroComplete] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  // ── Smooth scroll (Lenis) + ScrollTrigger animations ──────────────────────
+  useSmoothScroll()
+  useScrollAnimations(introComplete)
   const [heroVisible, setHeroVisible] = useState(false)
   const [demoLoading, setDemoLoading] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)

@@ -34,7 +34,13 @@
       "Bash(ls c:/Users/jerem/Downloads/fincalc/public/*.png c:/Users/jerem/Downloads/fincalc/public/*.jpg)",
       "Bash(grep -n \"TrendingUp\\\\|import.*lucide\" c:/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)",
       "Bash(grep -rn \"NEXTAUTH_URL\\\\|fire\\\\.digitalstack\" c:/Users/jerem/Downloads/fincalc/.env* c:/Users/jerem/Downloads/fincalc/docker-compose.yml)",
-      "Bash(ls c:/Users/jerem/Downloads/fincalc/.env*)"
+      "Bash(ls c:/Users/jerem/Downloads/fincalc/.env*)",
+      "Bash(npm install:*)",
+      "Read(//c/Program Files/**)",
+      "Bash(cmd.exe /c \"where npm\")",
+      "Bash(cmd.exe /c \"npm install lenis gsap --save 2>&1\")",
+      "Bash(cmd.exe /c \"cd c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install lenis gsap --save\")",
+      "Bash(cmd.exe /c \"cd /d c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install lenis gsap --save && echo DONE\")"
     ]
   }
 }

@@ -32,7 +32,9 @@
       "Read(//c/Users/jerem/Downloads/fincalc/**)",
       "Bash(cd c:/Users/jerem/Downloads/fincalc grep -n \"digitalstack\\\\|PatrImo\" src/components/LandingClient.tsx)",
       "Bash(ls c:/Users/jerem/Downloads/fincalc/public/*.png c:/Users/jerem/Downloads/fincalc/public/*.jpg)",
-      "Bash(grep -n \"TrendingUp\\\\|import.*lucide\" c:/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)"
+      "Bash(grep -n \"TrendingUp\\\\|import.*lucide\" c:/Users/jerem/Downloads/fincalc/src/app/share/[token]/page.tsx)",
+      "Bash(grep -rn \"NEXTAUTH_URL\\\\|fire\\\\.digitalstack\" c:/Users/jerem/Downloads/fincalc/.env* c:/Users/jerem/Downloads/fincalc/docker-compose.yml)",
+      "Bash(ls c:/Users/jerem/Downloads/fincalc/.env*)"
     ]
   }
 }

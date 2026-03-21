@@ -43,7 +43,7 @@ function useCycle(len: number, ms: number, initial = 0) {
   useEffect(() => {
     const iv = setInterval(() => {
       setVisible(false)
-      setTimeout(() => { setIdx(i => (i + 1) % len); setVisible(true) }, 480)
+      setTimeout(() => { setIdx(i => (i + 1) % len); setVisible(true) }, 300)
     }, ms)
     return () => clearInterval(iv)
   }, [len, ms])
@@ -51,8 +51,8 @@ function useCycle(len: number, ms: number, initial = 0) {
 }
 
 function DashboardPreview() {
-  const desktop = useCycle(DESKTOP_IMGS.length, 3800)
-  const mobile  = useCycle(MOBILE_IMGS.length,  3200, 1)
+  const desktop = useCycle(DESKTOP_IMGS.length, 2000)
+  const mobile  = useCycle(MOBILE_IMGS.length,  1700, 1)
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 16 }}>
@@ -85,7 +85,7 @@ function DashboardPreview() {
               fontSize: 9, fontWeight: 700, color: GOLD,
               letterSpacing: '0.06em', textTransform: 'uppercase',
               whiteSpace: 'nowrap',
-              transition: 'opacity 0.45s ease',
+              transition: 'opacity 0.28s ease',
               opacity: desktop.visible ? 1 : 0,
             }}>
               {SCREEN_LABELS[desktop.idx]}
@@ -98,7 +98,7 @@ function DashboardPreview() {
               src={DESKTOP_IMGS[desktop.idx]}
               alt={`PatrImo — ${SCREEN_LABELS[desktop.idx]}`}
               width={1200} height={750}
-              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.48s ease', opacity: desktop.visible ? 1 : 0 }}
+              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.28s ease', opacity: desktop.visible ? 1 : 0 }}
               priority={desktop.idx === 0}
             />
             {/* Bottom fade */}
@@ -139,7 +139,7 @@ function DashboardPreview() {
               src={MOBILE_IMGS[mobile.idx]}
               alt="PatrImo mobile"
               width={390} height={844}
-              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.48s ease', opacity: mobile.visible ? 1 : 0 }}
+              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.28s ease', opacity: mobile.visible ? 1 : 0 }}
             />
           </div>
 
@@ -416,7 +416,9 @@ function AuthForm() {
         <div className="relative flex flex-col flex-1 px-8 py-10 md:px-12">
           {/* Logo */}
           <div className="mb-auto pb-8">
-            <PatrimoLogo width={136} uid="login" />
+            <Link href="/" style={{ display: 'inline-flex', textDecoration: 'none' }}>
+              <PatrimoLogo width={136} uid="login" />
+            </Link>
           </div>
 
           {/* Form area */}

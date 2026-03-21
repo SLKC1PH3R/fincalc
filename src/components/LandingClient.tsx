@@ -2322,7 +2322,7 @@ export function LandingClient() {
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 80, paddingBottom: 60, paddingLeft: 20, paddingRight: 20, overflow: 'hidden' }}>
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 68, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden' }}>
 
         {/* Animated orbs */}
         <div className="animate-orb-drift" style={{ position: 'absolute', width: 700, height: 700, top: -250, left: -250, background: `radial-gradient(circle, ${GOLD}0d 0%, transparent 65%)`, borderRadius: '50%', pointerEvents: 'none' }} />
@@ -2357,8 +2357,8 @@ export function LandingClient() {
 
         {/* Two-column hero */}
         <div style={{
-          position: 'relative', maxWidth: 1320, width: '100%',
-          display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: 56,
+          position: 'relative', maxWidth: 1400, width: '100%',
+          display: 'grid', gridTemplateColumns: '0.72fr 1fr', gap: 40,
           alignItems: 'center',
           opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(20px)',
           transition: 'all 0.8s ease',
@@ -2367,13 +2367,13 @@ export function LandingClient() {
           {/* ── LEFT: text content ── */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, marginBottom: 28 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 11, fontWeight: 600, marginBottom: 16 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
               18 simulateurs · 15 pages · Fiscalité 2026
             </div>
 
             {/* Headline */}
-            <h1 style={{ fontSize: 'clamp(2.6rem,4.5vw,5rem)', fontWeight: 800, lineHeight: 1.06, letterSpacing: '-0.045em', color: '#fff', marginBottom: 22, textAlign: 'left' }}>
+            <h1 style={{ fontSize: 'clamp(1.9rem,2.8vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.04em', color: '#fff', marginBottom: 14, textAlign: 'left' }}>
               Prenez le contrôle de votre{' '}
               <span style={{
                 fontWeight: 700,
@@ -2389,18 +2389,18 @@ export function LandingClient() {
               , dès maintenant
             </h1>
 
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.58)', lineHeight: 1.75, maxWidth: 500, marginBottom: 32 }}>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.58)', lineHeight: 1.65, maxWidth: 440, marginBottom: 20 }}>
               Le seul outil <strong style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>100&nbsp;% gratuit</strong> qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.
             </p>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
-              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 24px', borderRadius: 100, fontSize: 13, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
                 onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
                 Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
               </Link>
-              <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', borderRadius: 100, fontSize: 14, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
+              <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 100, fontSize: 13, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
                 Voir la démo
@@ -2408,7 +2408,7 @@ export function LandingClient() {
             </div>
 
             {/* Social proof */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
                   <div key={i} style={{
@@ -2443,7 +2443,7 @@ export function LandingClient() {
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '8px 16px', borderRadius: 20, cursor: demoLoading ? 'wait' : 'pointer',
                 background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.20)',
-                transition: 'all 0.2s', fontFamily: 'inherit', marginBottom: 40,
+                transition: 'all 0.2s', fontFamily: 'inherit', marginBottom: 20,
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.13)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.07)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)' }}
@@ -2455,15 +2455,15 @@ export function LandingClient() {
             </button>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               {[{ v: '18', l: 'Simulateurs' }, { v: '15', l: 'Pages' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Pub' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
                 <div key={s.l} style={{ textAlign: 'left' }}>
                   <span style={{
-                    display: 'block', fontSize: '1.7rem', fontWeight: 800, letterSpacing: '-0.03em',
+                    display: 'block', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em',
                     background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
                     WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
                   }}>{s.v}</span>
-                  <span style={{ display: 'block', fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 1 }}>{s.l}</span>
+                  <span style={{ display: 'block', fontSize: 9.5, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 1 }}>{s.l}</span>
                 </div>
               ))}
             </div>

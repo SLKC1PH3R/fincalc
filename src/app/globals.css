@@ -260,19 +260,46 @@
   }
 }
 
-/* Professional grid background — z-index: -1 so content always on top */
-.grid-bg { position: relative; }
+/* ── RefractWeb-style grid + left gradient atmosphere ─────────────────────── */
+.grid-bg {
+  position: relative;
+  /* Subtle navy-to-black base — adds blue depth to pure black */
+  background: radial-gradient(ellipse 80% 50% at -5% 0%, #050d1a 0%, #000 55%);
+}
+
+/* Grid overlay — gold-tinted lines, visible top-left, fades toward bottom-right */
 .grid-bg::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.038) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.038) 1px, transparent 1px);
-  background-size: 80px 80px;
+    linear-gradient(rgba(241,192,134,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241,192,134,0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+  background-position: -1px -1px;
+  /* Radial mask: grid is strongest in the upper-left hero area, fades out below */
+  -webkit-mask-image: radial-gradient(ellipse 100% 70% at 15% 0%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.1) 65%, transparent 85%);
+  mask-image: radial-gradient(ellipse 100% 70% at 15% 0%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.1) 65%, transparent 85%);
   pointer-events: none;
   z-index: 0;
 }
+
+/* Left-side ambient glow — the "gradient signature" of the page */
+.grid-bg::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    /* Gold bloom — upper left quadrant */
+    radial-gradient(ellipse 55% 60% at -8% 10%, rgba(241,192,134,0.13) 0%, transparent 65%),
+    /* Deep blue bloom — mid-left */
+    radial-gradient(ellipse 40% 50% at -5% 55%, rgba(30,58,138,0.14) 0%, transparent 60%),
+    /* Thin gold haze along top edge */
+    radial-gradient(ellipse 60% 20% at 25% -5%, rgba(241,192,134,0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* All direct children must be above the grid */
 .grid-bg > * { position: relative; z-index: 1; }
 
@@ -456,4 +483,19 @@ html { scroll-behavior: smooth; }
   .hero-two-col > *:last-child {
     display: none;
   }
+}
+
+/* ── RefractWeb atmosphere — section dividers glow subtly ─────────────────── */
+/* Horizontal section separators inherit the gold-left atmosphere */
+.landing-section-border {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(241,192,134,0.18) 0%, rgba(255,255,255,0.05) 40%, transparent 100%);
+  border: none;
+  margin: 0;
+}
+
+/* Navbar — slight left gold reflection when scrolled */
+.nav-scrolled {
+  border-bottom-color: rgba(241,192,134,0.08) !important;
+  box-shadow: 0 1px 0 rgba(241,192,134,0.04);
 }

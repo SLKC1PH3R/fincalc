@@ -2261,7 +2261,7 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div className="grid-bg" style={{ background: '#000', color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div className="grid-bg" style={{ color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
       {!introComplete && <FIntroAnimation onDone={() => { sessionStorage.setItem('patrimo_intro', '1'); setIntroComplete(true) }} />}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
@@ -2535,36 +2535,63 @@ export function LandingClient() {
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 68, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden' }}>
 
-        {/* Animated orbs */}
-        <div className="animate-orb-drift" style={{ position: 'absolute', width: 700, height: 700, top: -250, left: -250, background: `radial-gradient(circle, ${GOLD}0d 0%, transparent 65%)`, borderRadius: '50%', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 500, height: 500, top: -100, right: -180, background: 'radial-gradient(circle, rgba(52,211,153,0.07) 0%, transparent 65%)', borderRadius: '50%', pointerEvents: 'none', animation: 'orb-drift 15s ease-in-out infinite reverse' }} />
-        <div style={{ position: 'absolute', width: 400, height: 400, bottom: -50, left: '40%', background: 'radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 65%)', borderRadius: '50%', pointerEvents: 'none', animation: 'orb-drift 18s ease-in-out infinite 2s' }} />
+        {/* ── RefractWeb-style left gradient signature ── */}
 
-        {/* Floating icons */}
+        {/* 1. Vertical light bar — left edge (gold → blue → transparent) */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: 2, zIndex: 2,
+          background: `linear-gradient(to bottom, ${GOLD}90 0%, rgba(59,130,246,0.55) 45%, transparent 85%)`,
+          pointerEvents: 'none',
+        }} />
+
+        {/* 2. Large gold bloom — upper left */}
+        <div style={{
+          position: 'absolute', top: -180, left: -220, width: 860, height: 860,
+          background: `radial-gradient(ellipse at top left, ${GOLD}1a 0%, rgba(30,58,138,0.08) 45%, transparent 68%)`,
+          pointerEvents: 'none', filter: 'blur(32px)',
+        }} />
+
+        {/* 3. Blue depth bloom — mid left */}
+        <div style={{
+          position: 'absolute', top: '25%', left: -160, width: 640, height: 640,
+          background: `radial-gradient(ellipse at left center, rgba(37,99,235,0.10) 0%, rgba(30,58,138,0.04) 50%, transparent 70%)`,
+          pointerEvents: 'none', filter: 'blur(48px)',
+        }} />
+
+        {/* 4. Subtle top-center haze */}
+        <div style={{
+          position: 'absolute', top: -100, left: '15%', right: '25%', height: 320,
+          background: `radial-gradient(ellipse at 30% top, ${GOLD}0b 0%, transparent 65%)`,
+          pointerEvents: 'none',
+        }} />
+
+        {/* 5. Right edge — very faint blue counter-balance */}
+        <div style={{
+          position: 'absolute', top: -80, right: -120, width: 500, height: 500,
+          background: `radial-gradient(ellipse at top right, rgba(59,130,246,0.06) 0%, transparent 65%)`,
+          pointerEvents: 'none',
+        }} />
+
+        {/* Floating icons — reduced opacity to not fight the gradients */}
         {FLOAT_ICONS.map((f, i) => (
           <div key={i} style={{
             position: 'absolute',
-            left: `${f.x}%`,
-            top: `${f.y}%`,
-            opacity: f.opacity,
+            left: `${f.x}%`, top: `${f.y}%`,
+            opacity: f.opacity * 0.7,
             pointerEvents: 'none',
             animation: `float-slow ${f.dur}s ease-in-out infinite ${f.delay}s`,
-            width: f.size + 18,
-            height: f.size + 18,
+            width: f.size + 18, height: f.size + 18,
             borderRadius: '50%',
-            background: f.color + '18',
-            border: `1px solid ${f.color}28`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(2px)',
+            background: f.color + '12',
+            border: `1px solid ${f.color}1e`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <f.Icon style={{ width: Math.round(f.size * 0.52), height: Math.round(f.size * 0.52), color: f.color }} />
           </div>
         ))}
 
-        {/* Grain */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
+        {/* Fine grain overlay */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.022, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
 
         {/* Two-column hero */}
         <div className="hero-two-col" style={{
@@ -2689,6 +2716,9 @@ export function LandingClient() {
         {/* Scroll indicator */}
         <HeroScrollIndicator />
       </section>
+
+      {/* Gold-left section divider */}
+      <hr className="landing-section-border" />
 
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
       <SocialProofBar />

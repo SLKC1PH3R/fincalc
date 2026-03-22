@@ -21,7 +21,6 @@ import {
   EyeOff,
   Check,
   X,
-  Menu,
   Star,
   Clock,
   Layers,
@@ -191,56 +190,6 @@ function useInView(threshold = 0.15) {
     return () => obs.disconnect()
   }, [threshold])
   return { ref, visible }
-}
-
-// ─── Module Card ─────────────────────────────────────────────────────────
-function ModuleCard({ mod, index }: { mod: typeof MODULES[0]; index: number }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <Link href="/login" style={{ textDecoration: 'none', display: 'block' }}>
-      <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          background: hovered ? '#111' : '#0c0c0c',
-          border: `1px solid ${hovered ? mod.color + '50' : 'rgba(255,255,255,0.06)'}`,
-          borderRadius: 16,
-          padding: '22px',
-          transition: 'all 0.2s',
-          transform: hovered ? 'translateY(-3px)' : '',
-          position: 'relative',
-          overflow: 'hidden',
-          animationDelay: `${index * 60}ms`,
-        }}
-      >
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: `radial-gradient(circle at 0% 0%, ${mod.color}12, transparent 55%)`,
-          opacity: hovered ? 1 : 0,
-          transition: 'opacity 0.3s',
-        }} />
-        <div style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 12,
-              background: mod.color + '18',
-              border: `1px solid ${mod.color}30`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <mod.icon style={{ width: 18, height: 18, color: mod.color }} />
-            </div>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>{mod.tag}</span>
-          </div>
-          <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 6 }}>{mod.label}</h3>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.32)', lineHeight: 1.65, marginBottom: 16 }}>{mod.desc}</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: hovered ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)', transition: 'color 0.2s' }}>
-            <span>Ouvrir</span>
-            <ArrowRight style={{ width: 11, height: 11 }} />
-          </div>
-        </div>
-      </div>
-    </Link>
-  )
 }
 
 // ─── Mini chart previews for bento cards ─────────────────────────────────
@@ -2022,6 +1971,256 @@ function ToolsTicker() {
   )
 }
 
+// ─── Testimonials Marquee ─────────────────────────────────────────────────
+const TESTIMONIALS = [
+  { text: "Le simulateur FI/RE m'a donné une date concrète : liberté financière à 47 ans. Je n'y croyais pas avant de voir les chiffres.", name: 'Lucas B.', role: 'Ingénieur logiciel, 32 ans', stars: 5, initials: 'LB', color: '#34d399' },
+  { text: "J'ai comparé PEA et CTO pour mes dividendes — différence sur 20 ans : 24 000 €. J'ai transféré en 2 semaines.", name: 'Nathalie F.', role: 'Comptable, 41 ans', stars: 5, initials: 'NF', color: '#f472b6' },
+  { text: "L'outil Acheter vs Louer m'a convaincu d'attendre encore 2 ans avant d'acheter. Économie potentielle : 12 000 €.", name: 'Romain T.', role: 'Commercial, 29 ans', stars: 4, initials: 'RT', color: '#818cf8' },
+  { text: "Le simulateur retraite m'a aidé à comprendre l'impact de mon PER. J'aurais voulu découvrir ça 10 ans plus tôt.", name: 'Isabelle C.', role: 'Médecin, 48 ans', stars: 5, initials: 'IC', color: '#fbbf24' },
+  { text: "Le taux d'épargne m'a révélé 400 €/mois économisables sans changer de train de vie. Juste en réorganisant mes dépenses.", name: 'Mehdi A.', role: 'Consultant, 34 ans', stars: 5, initials: 'MA', color: '#38bdf8' },
+  { text: "Première fois que j'ai une vraie vision globale de mon patrimoine. Le tableau de bord est vraiment bien fait.", name: 'Clara P.', role: 'Architecte, 37 ans', stars: 4, initials: 'CP', color: '#fb923c' },
+  { text: "Le simulateur IR m'a économisé 900 €/an grâce aux frais réels. Je ne savais même pas que c'était possible.", name: 'Antoine G.', role: 'Commercial terrain, 27 ans', stars: 5, initials: 'AG', color: '#34d399' },
+  { text: "Enfin un outil gratuit qui calcule la rentabilité locative avec la vraie fiscalité française. Impressionnant.", name: 'Sylvie M.', role: 'Propriétaire de 3 biens, 52 ans', stars: 5, initials: 'SM', color: '#f472b6' },
+  { text: "Le DCA m'a montré qu'investir 200 €/mois régulièrement bat ma stratégie lump sum. Simple, mais les chiffres sont là.", name: 'Kevin R.', role: 'Dev fullstack, 26 ans', stars: 4, initials: 'KR', color: '#c084fc' },
+  { text: "Flat Tax vs Barème — 5 minutes pour comprendre que je payais 1 400 € de trop par an. J'ai changé immédiatement.", name: 'Hélène V.', role: 'Cadre RH, 43 ans', stars: 5, initials: 'HV', color: '#f1c086' },
+  { text: "Le score patrimonial m'a donné un plan clair : rembourser le crédit conso d'abord, ouvrir un PEA ensuite.", name: 'Pierre D.', role: 'Technicien, 38 ans', stars: 3, initials: 'PD', color: '#818cf8' },
+  { text: "Interface très claire et intuitive. J'avais essayé d'autres outils mais PatrImo est dans une autre catégorie.", name: 'Anaïs B.', role: 'UX Designer, 30 ans', stars: 5, initials: 'AB', color: '#34d399' },
+  { text: "Le simulateur succession : j'ai anticipé une donation à mes enfants, économie de 45 000 € de droits.", name: 'Bernard L.', role: "Chef d'entreprise, 61 ans", stars: 5, initials: 'BL', color: '#f1c086' },
+  { text: "Utile et gratuit. Enfin un outil sans pub ni abonnement caché. Je recommande à tous mes collègues.", name: 'Fatima O.', role: 'Infirmière, 33 ans', stars: 4, initials: 'FO', color: '#38bdf8' },
+  { text: "PEA vs CTO vs AV avec ma vraie TMI : j'ai trouvé en 10 minutes la meilleure enveloppe pour mon profil.", name: 'Thomas H.', role: 'Freelance développeur, 31 ans', stars: 5, initials: 'TH', color: '#fb923c' },
+  { text: "J'ai utilisé le simulateur crédit immo pour négocier avec ma banque. Résultat : −0,3 % sur mon TAEG.", name: 'Sophie N.', role: 'Directrice marketing, 39 ans', stars: 5, initials: 'SN', color: '#f472b6' },
+  { text: "Parfait pour débuter. J'ai commencé par le budget 50/30/20, maintenant j'utilise presque tous les modules.", name: 'Enzo M.', role: 'Étudiant en master, 23 ans', stars: 4, initials: 'EM', color: '#c084fc' },
+  { text: "Le portefeuille temps réel via Finnhub change tout. Mes plus-values calculées à la seconde, sans Excel.", name: 'Jean-Paul R.', role: 'Retraité actif, 63 ans', stars: 5, initials: 'JR', color: '#34d399' },
+  { text: "La connexion FIRE ↔ Patrimoine est bluffante. Mes vraies données directement dans la simulation FI/RE.", name: 'Marion T.', role: 'Ingénieure, 35 ans', stars: 5, initials: 'MT', color: '#f1c086' },
+  { text: "Bon outil dans l'ensemble. Site responsive qui fonctionne bien sur mobile, même sans appli dédiée.", name: 'Christophe A.', role: 'Commercial, 44 ans', stars: 3, initials: 'CA', color: '#818cf8' },
+]
+
+function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
+  return (
+    <div style={{ width: 290, flexShrink: 0, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '18px 20px', margin: '0 7px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, ${t.color}cc, ${t.color}55)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+          {t.initials}
+        </div>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: 0, lineHeight: 1.3 }}>{t.name}</p>
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{t.role}</p>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 8 }}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span key={i} style={{ color: i < t.stars ? GOLD : 'rgba(255,255,255,0.12)', fontSize: 11 }}>★</span>
+        ))}
+      </div>
+      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.52)', lineHeight: 1.65, margin: 0 }}>&ldquo;{t.text}&rdquo;</p>
+    </div>
+  )
+}
+
+function TestimonialsMarquee() {
+  const half = Math.ceil(TESTIMONIALS.length / 2)
+  const row1 = [...TESTIMONIALS.slice(0, half), ...TESTIMONIALS.slice(0, half)]
+  const row2 = [...TESTIMONIALS.slice(half), ...TESTIMONIALS.slice(half)]
+  return (
+    <section id="avis" style={{ padding: '80px 0' }}>
+      <div style={{ maxWidth: 1152, margin: '0 auto', paddingBottom: 48, paddingLeft: 20, paddingRight: 20, textAlign: 'center' }}>
+        <SectionTag><Star style={{ width: 11, height: 11 }} /> Ils l&apos;utilisent</SectionTag>
+        <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', lineHeight: 1.2, margin: '0 0 10px' }}>
+          Ce qu&apos;ils en disent
+        </h2>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)', maxWidth: 460, margin: '0 auto' }}>
+          Des milliers d&apos;utilisateurs ont déjà pris le contrôle de leurs finances avec PatrImo.
+        </p>
+      </div>
+      <div style={{ overflow: 'hidden', marginBottom: 10 }}>
+        <div style={{ display: 'flex', animation: 'marquee-scroll 70s linear infinite', width: 'max-content' }}>
+          {row1.map((t, i) => <TestimonialCard key={i} t={t} />)}
+        </div>
+      </div>
+      <div style={{ overflow: 'hidden' }}>
+        <div style={{ display: 'flex', animation: 'marquee-scroll-reverse 65s linear infinite', width: 'max-content' }}>
+          {row2.map((t, i) => <TestimonialCard key={i} t={t} />)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Case Studies ─────────────────────────────────────────────────────────
+interface CaseStep { tool: string; desc: string }
+interface CaseStudy {
+  emoji: string; color: string; badge: string; name: string; role: string
+  situation: string; tools: string[]; steps: CaseStep[]
+  decision: string; result: string; resultColor: string
+}
+const CASE_STUDIES: CaseStudy[] = [
+  {
+    emoji: '🌱', color: '#34d399', badge: 'Jeune actif 25–35 ans',
+    name: 'Julien, 29 ans', role: 'Développeur web · Lyon',
+    situation: 'Julien épargnait 200 €/mois sur Livret A sans vraie stratégie. Il ne connaissait ni sa TMI, ni l\'existence du PEA. Il pensait "investir, c\'est trop complexe pour moi".',
+    tools: ['Intérêts Composés', 'FI/RE', 'DCA'],
+    steps: [
+      { tool: 'Intérêts Composés', desc: 'Il simule 300 €/mois à 7 %/an pendant 25 ans → 233 000 € au lieu de 90 000 € versés. Il comprend l\'effet boule de neige pour la première fois.' },
+      { tool: 'FI/RE', desc: 'Avec 500 €/mois d\'épargne, il peut être financièrement libre à 51 ans. Objectif : 900 000 € (règle des 4 %, 3 000 €/mois de dépenses).' },
+      { tool: 'DCA', desc: 'DCA mensuel vs achat trimestriel → il choisit l\'automatisation mensuelle pour lisser la volatilité, sans chercher à "timer" le marché.' },
+    ],
+    decision: 'Julien ouvre un PEA la semaine suivante, automatise 500 €/mois vers un ETF MSCI World et coupe les abonnements inutiles pour atteindre son objectif.',
+    result: '+18 200 € de capital accumulé en 3 ans. Objectif FIRE avancé de 4 ans.',
+    resultColor: '#34d399',
+  },
+  {
+    emoji: '🏠', color: '#f472b6', badge: 'Propriétaire',
+    name: 'Sophie, 38 ans', role: 'Directrice marketing · Bordeaux',
+    situation: 'Sophie hésite à acheter un T3 à 320 000 € ou continuer à louer à 950 €/mois. Elle envisage aussi un investissement locatif mais ne sait pas si les chiffres tiennent.',
+    tools: ['Acheter vs Louer', 'Prêt immobilier', 'Rentabilité Locative'],
+    steps: [
+      { tool: 'Acheter vs Louer', desc: 'Sur 15 ans, acheter génère 48 000 € de patrimoine supplémentaire vs louer — même en incluant charges, taxe foncière et entretien estimés.' },
+      { tool: 'Prêt immobilier', desc: 'Sur 20 ans à 3,40 % TAEG : mensualité 1 590 €, coût des intérêts 61 600 €. Elle négocie et obtient 3,15 % → −8 400 € d\'intérêts sur la durée.' },
+      { tool: 'Rentabilité Locative', desc: 'T3 loué 850 €/mois : rendement brut 3,2 %, net LMNP 2,8 %. Cashflow légèrement négatif mais capitalisation assurée sur 20 ans.' },
+    ],
+    decision: 'Sophie achète le T3, le met en location meublée (LMNP) et déduit les amortissements pour effacer la fiscalité sur 8 ans.',
+    result: 'Rendement net LMNP de 2,8 %. Patrimoine immobilier estimé à +62 000 € vs location sur 14 ans.',
+    resultColor: '#f472b6',
+  },
+  {
+    emoji: '📈', color: '#818cf8', badge: 'Investisseur',
+    name: 'Alexis, 35 ans', role: 'Ingénieur financier · Paris',
+    situation: 'Alexis a 45 000 € d\'actions et ETF en CTO. Il touche 2 400 €/an de dividendes et ignore s\'il optimise sa fiscalité. Sa TMI est à 41 %. Son score indique une forte concentration sur la tech US.',
+    tools: ['Flat Tax vs Barème', 'PEA vs CTO vs AV', 'Score Patrimonial'],
+    steps: [
+      { tool: 'Flat Tax vs Barème', desc: 'Sur ses dividendes : PFU 30 % = 720 €, barème 41 % = 984 €. Le PFU est optimal. Il confirme et économise 264 €/an sans rien changer.' },
+      { tool: 'PEA vs CTO vs AV', desc: 'Simulation sur 20 ans de 45 000 € : PEA net = 218 000 €, CTO net = 194 000 €, AV net = 201 000 €. Avantage PEA vs CTO : +24 000 € après impôts.' },
+      { tool: 'Score Patrimonial', desc: 'Score 68/100 — pilier "diversification" faible : 92 % en tech US. Recommandation : ajouter REIT + obligations pour dépasser 75/100.' },
+    ],
+    decision: 'Alexis transfère progressivement ses ETF vers un PEA et diversifie avec 15 % de REIT dans son CTO.',
+    result: '−1 840 €/an de fiscalité optimisée. Score patrimonial : 68 → 79/100 en 8 mois.',
+    resultColor: '#818cf8',
+  },
+  {
+    emoji: '🔥', color: '#f1c086', badge: 'Futur retraité',
+    name: 'Christine, 54 ans', role: 'Cadre supérieur · Strasbourg',
+    situation: 'Christine veut partir à 60 ans au lieu de 65. Elle a 180 000 € d\'épargne, une résidence principale remboursée et un PER à 45 000 €. Elle doute : "Est-ce vraiment possible avec 6 ans de moins ?"',
+    tools: ['Simulateur Retraite', 'FI/RE', 'Score Patrimonial'],
+    steps: [
+      { tool: 'Simulateur Retraite', desc: 'Retraite légale à 65 ans : 2 150 €/mois. À 60 ans avec décote : 1 680 €/mois. Déficit de 470 €/mois → complément de 141 000 € de capital nécessaire.' },
+      { tool: 'FI/RE', desc: 'Avec 225 000 € actuels + 2 500 €/mois à 6 %/an : elle accumule 712 000 € à 60 ans → 2 848 €/mois passifs (règle des 4 %). Objectif largement atteint.' },
+      { tool: 'Score Patrimonial', desc: 'Score 74/100. Recommandation clé : maxer le PER avant 60 ans. À TMI 41 %, chaque euro versé coûte 0,59 € net → déduction fiscale immédiate.' },
+    ],
+    decision: 'Christine verse 8 000 €/an dans son PER (économie IR de 3 280 €/an) et cible une retraite à 60 ans avec 3 sources de revenus.',
+    result: '712 000 € projetés à 60 ans. Revenus : retraite + PER + dividendes = 3 500 €/mois. Objectif atteint.',
+    resultColor: '#f1c086',
+  },
+]
+
+function CaseStudiesSection() {
+  const [active, setActive] = useState(0)
+  const cs = CASE_STUDIES[active]
+  return (
+    <section style={{ padding: '80px 20px 100px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <RevealSection>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <SectionTag><Users style={{ width: 11, height: 11 }} /> Cas concrets</SectionTag>
+            <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+              Ils ont transformé leur{' '}
+              <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>situation financière</span>
+            </h2>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
+              Chiffres réels, décisions réelles. Comment PatrImo a aidé des utilisateurs à passer à l&apos;action.
+            </p>
+          </div>
+        </RevealSection>
+
+        {/* Profile tabs */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
+          {CASE_STUDIES.map((c, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 100,
+                background: i === active ? c.color + '18' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${i === active ? c.color + '40' : 'rgba(255,255,255,0.09)'}`,
+                color: i === active ? c.color : 'rgba(255,255,255,0.45)',
+                fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+                fontFamily: 'inherit', whiteSpace: 'nowrap' as const,
+              }}
+            >
+              <span>{c.emoji}</span>
+              <span>{c.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Case study card */}
+        <div style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${cs.color}25`, borderRadius: 24, overflow: 'hidden', transition: 'border-color 0.3s' }}>
+          {/* Header */}
+          <div style={{ background: `linear-gradient(135deg, ${cs.color}10, transparent)`, padding: '28px 32px', borderBottom: `1px solid ${cs.color}12` }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap' as const }}>
+              <div style={{ width: 60, height: 60, borderRadius: 16, background: `${cs.color}18`, border: `1px solid ${cs.color}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flexShrink: 0 }}>
+                {cs.emoji}
+              </div>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 10px', borderRadius: 100, background: `${cs.color}12`, border: `1px solid ${cs.color}28`, marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: cs.color, letterSpacing: '0.05em' }}>{cs.badge}</span>
+                </div>
+                <h3 style={{ fontSize: 21, fontWeight: 800, color: '#fff', letterSpacing: '-0.025em', margin: '0 0 3px' }}>{cs.name}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: 0 }}>{cs.role}</p>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' as const, alignSelf: 'flex-start' }}>
+                {cs.tools.map(t => (
+                  <span key={t} style={{ fontSize: 11, fontWeight: 600, color: cs.color, background: `${cs.color}12`, border: `1px solid ${cs.color}28`, borderRadius: 6, padding: '3px 9px' }}>{t}</span>
+                ))}
+              </div>
+            </div>
+            <div style={{ marginTop: 18, padding: '14px 18px', background: 'rgba(0,0,0,0.22)', borderRadius: 12, borderLeft: `3px solid ${cs.color}55` }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.52)', lineHeight: 1.75, margin: 0, fontStyle: 'italic' }}>&ldquo;{cs.situation}&rdquo;</p>
+            </div>
+          </div>
+
+          {/* Steps */}
+          <div style={{ padding: '24px 32px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' as const, letterSpacing: '0.12em', marginBottom: 18 }}>Ce qu&apos;il a simulé avec PatrImo</p>
+            <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+              {cs.steps.map((step, i) => (
+                <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: `${cs.color}15`, border: `1px solid ${cs.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: cs.color }}>{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: cs.color, margin: '0 0 4px', letterSpacing: '0.02em' }}>{step.tool}</p>
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: 0 }}>{step.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Decision + Result */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', padding: '22px 32px', gap: 20 }}>
+            <div>
+              <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' as const, letterSpacing: '0.12em', marginBottom: 10 }}>Sa décision</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, margin: 0 }}>{cs.decision}</p>
+            </div>
+            <div style={{ background: `${cs.resultColor}08`, border: `1px solid ${cs.resultColor}28`, borderRadius: 14, padding: '18px 20px' }}>
+              <p style={{ fontSize: 10, fontWeight: 700, color: cs.resultColor, textTransform: 'uppercase' as const, letterSpacing: '0.12em', marginBottom: 10 }}>Résultat concret</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.65, margin: 0 }}>{cs.result}</p>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontSize: 13, fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${GOLD}50` }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+            Commencer ma propre analyse <ArrowRight style={{ width: 14, height: 14 }} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ─── Main Landing ─────────────────────────────────────────────────────────
 export function LandingClient() {
   const router = useRouter()
@@ -2863,53 +3062,11 @@ export function LandingClient() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ──────────────────────────────────────────────── */}
-      <section id="avis" style={{ padding: '80px 20px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <SectionTag><Star style={{ width: 11, height: 11 }} /> Ils l&apos;utilisent</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', lineHeight: 1.2 }}>
-                Ce qu&apos;ils en disent
-              </h2>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-              {[
-                {
-                  text: "J'ai enfin compris ma tranche marginale d'imposition grâce au simulateur IR. J'économise maintenant 1 200 €/an en optimisant mes revenus.",
-                  name: 'Thomas M.', role: 'Développeur · Lyon, 31 ans', stars: 5, initials: 'TM', color: '#34d399',
-                },
-                {
-                  text: "Le comparateur PEA vs CTO m'a convaincu en 5 minutes de transférer mon CTO. La différence fiscale sur 20 ans est spectaculaire.",
-                  name: 'Léa R.', role: 'Ingénieure · Paris, 28 ans', stars: 5, initials: 'LR', color: '#f472b6',
-                },
-                {
-                  text: "Le calculateur FI/RE m'a montré que je pouvais partir à 52 ans au lieu de 62 en épargnant 200 €/mois de plus. Game changer.",
-                  name: 'Marc D.', role: 'Cadre, propriétaire de 2 biens · 44 ans', stars: 4, initials: 'MD', color: '#818cf8',
-                },
-              ].map(({ text, name, role, stars, initials, color }) => (
-                <div key={name} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, ${color}cc, ${color}55)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 12, fontWeight: 700, color: '#fff' }}>
-                      {initials}
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: 0 }}>{name}</p>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{role}</p>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 2 }}>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} style={{ color: i < stars ? GOLD : 'rgba(255,255,255,0.12)', fontSize: 13 }}>★</span>
-                    ))}
-                  </div>
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.62)', lineHeight: 1.75, flex: 1 }}>&ldquo;{text}&rdquo;</p>
-                </div>
-              ))}
-            </div>
-          </RevealSection>
-        </div>
-      </section>
+      {/* ── TESTIMONIALS MARQUEE ──────────────────────────────────────── */}
+      <TestimonialsMarquee />
+
+      {/* ── CASE STUDIES ──────────────────────────────────────────────── */}
+      <CaseStudiesSection />
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
       <section id="roadmap" style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(251,191,36,0.03), transparent)' }}>

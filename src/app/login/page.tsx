@@ -404,7 +404,7 @@ function AuthForm() {
   )
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#050505' }}>
+    <div className="min-h-screen flex grid-bg">
 
       {/* ── LEFT: Form ── */}
       <div className="flex flex-col w-full lg:w-1/2 flex-shrink-0 relative z-10" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
@@ -527,7 +527,7 @@ function AuthForm() {
       </div>
 
       {/* ── RIGHT: Dashboard Preview ── */}
-      <div className="hidden lg:flex flex-1 flex-col relative overflow-hidden" style={{ background: '#050505' }}>
+      <div className="hidden lg:flex flex-1 flex-col relative overflow-hidden">
         <div className="absolute pointer-events-none" style={{ top: '-15%', right: '-15%', width: '70%', height: '70%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.08) 0%, transparent 65%)', filter: 'blur(60px)' }} />
         <div className="absolute pointer-events-none" style={{ bottom: '10%', left: '-10%', width: '40%', height: '40%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.04) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: '25%', background: 'linear-gradient(to top, #050505, transparent)' }} />

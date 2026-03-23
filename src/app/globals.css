@@ -37,7 +37,7 @@
     --blue: 217 91% 60%;
 
     /* Content area — dark defaults */
-    --content-bg: #070910;
+    --content-bg: transparent;
     --card-dark: rgba(255,255,255,0.04);
     --card-dark-border: rgba(255,255,255,0.07);
     --mini-card-bg: rgba(255,255,255,0.03);
@@ -58,7 +58,7 @@
     --chart-fill-3: hsl(0 0% 30%);
 
     /* Sidebar — dark gold theme */
-    --sb-bg: #070910;
+    --sb-bg: rgba(5,7,14,0.97);
     --sb-border: rgba(255,255,255,0.05);
     --sb-profile-bg: rgba(255,255,255,0.04);
     --sb-mini-card: rgba(255,255,255,0.03);
@@ -303,6 +303,9 @@
 /* All direct children must be above the grid */
 .grid-bg > * { position: relative; z-index: 1; }
 
+/* Dashboard main content area — always above grid overlays (z-index:0) */
+.dashboard-main { position: relative; z-index: 1; }
+
 /* Mobile responsive fixes */
 @media (max-width: 768px) {
   .dashboard-content { padding: 16px; }
@@ -310,6 +313,11 @@
 
 /* Smooth scroll */
 html { scroll-behavior: smooth; }
+
+/* Light mode: suppress dark grid + glow everywhere */
+.light .grid-bg { background: none !important; }
+.light .grid-bg::before,
+.light .grid-bg::after { display: none !important; }
 
 /* Light mode — outside @layer so it takes precedence over layered :root vars */
 .light {

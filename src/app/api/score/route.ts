@@ -2,100 +2,168 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import type { PatrimoineEnvelope, PortfolioPosition } from '@prisma/client'
+import type { FinancialProfile } from '@/lib/profile-types'
 
-// ── Pilier calculators ────────────────────────────────────────────────────────
+// ── Value helpers ─────────────────────────────────────────────────────────────
 
-function scoreSavingsRate(rate: number): { score: number; label: string } {
-  if (rate >= 30) return { score: 20, label: 'Excellent' }
-  if (rate >= 20) return { score: Math.round(15 + (rate - 20) / 10 * 3), label: 'Très bien' }
-  if (rate >= 10) return { score: Math.round(10 + (rate - 10) / 10 * 5), label: 'Bien' }
-  if (rate >= 5)  return { score: Math.round(5 + (rate - 5) / 5 * 5), label: 'Moyen' }
-  return { score: Math.round(rate / 5 * 5), label: 'À améliorer' }
+type EnvelopeWithPositions = PatrimoineEnvelope & { positions: PortfolioPosition[] }
+
+function getLiquidValue(e: EnvelopeWithPositions): number {
+  const meta = e.metadata as Record<string, unknown>
+  return Number(meta?.balance ?? meta?.currentValue ?? 0)
 }
 
-function scoreEmergency(months: number): { score: number; label: string } {
-  if (months >= 6) return { score: 15, label: 'Excellent' }
-  if (months >= 3) return { score: Math.round(9 + (months - 3) / 3 * 3), label: 'Bien' }
-  if (months >= 1) return { score: Math.round(4 + (months - 1) / 2 * 4), label: 'Insuffisant' }
-  return { score: Math.round(months * 4), label: 'Critique' }
+function getInvestValue(e: EnvelopeWithPositions): number {
+  const posVal = e.positions.reduce((s, p) => s + p.pru * p.quantity, 0)
+  const meta = e.metadata as Record<string, unknown>
+  return posVal > 0 ? posVal : Number(meta?.currentValue ?? meta?.balance ?? 0)
 }
 
-function scoreDiversification(envelopeTypes: string[], cryptoRatio: number): { score: number; label: string } {
-  const unique = new Set(envelopeTypes).size
-  let base = 0
-  if (unique >= 3) base = 15
-  else if (unique === 2) base = 10
-  else if (unique === 1) base = 5
-  // Bonus geographic diversity (non-LIVRET, non-CASH, non-IMMOBILIER)
-  const hasInvestment = envelopeTypes.some(t => ['PEA', 'CTO', 'AV', 'CRYPTO'].includes(t))
-  if (hasInvestment && unique >= 2) base += 3
-  // Crypto ratio bonus/penalty
-  if (cryptoRatio > 0 && cryptoRatio <= 0.10) base += 2
-  if (cryptoRatio > 0.30) base -= 5
-  const score = Math.max(0, Math.min(20, base))
-  const label = score >= 17 ? 'Excellent' : score >= 11 ? 'Bien' : score >= 6 ? 'Moyen' : 'À améliorer'
-  return { score, label }
+function getEnvelopeValue(e: EnvelopeWithPositions): number {
+  if (e.type === 'LIVRET' || e.type === 'CASH') return getLiquidValue(e)
+  if (e.type === 'IMMOBILIER') return Number((e.metadata as Record<string, unknown>)?.currentValue ?? 0)
+  return getInvestValue(e)
 }
 
-function scoreRetirement(hasSim: boolean, gap: number, hasPER: boolean): { score: number; label: string } {
-  if (!hasSim) return { score: 0, label: 'Non renseigné' }
-  let score = 3  // has sim = 3 base pts
-  if (hasPER) score += 3
-  if (gap < 2000) score += 7
-  if (gap < 500) score += 4
-  if (gap <= 0) score += 3  // FIRE / objectif atteint
-  score = Math.min(20, score)
-  const label = score >= 17 ? 'Sur track' : score >= 10 ? 'En progression' : score >= 4 ? 'À compléter' : 'Non renseigné'
-  return { score, label }
+// ── Pyramide niveau 1 — Sécurité de base (25 pts) ────────────────────────────
+// Épargne de précaution (LIVRET + CASH)
+
+function scoreSecurity(
+  liquidBalance: number,
+  monthlyExpenses: number | null,
+): { score: number; label: string; months: number | null } {
+  if (monthlyExpenses && monthlyExpenses > 0) {
+    const months = Math.round((liquidBalance / monthlyExpenses) * 10) / 10
+    if (months >= 6) return { score: 25, label: `Optimal — ${months.toFixed(1)} mois`, months }
+    if (months >= 3) return { score: Math.round(15 + ((months - 3) / 3) * 10), label: `Bien — ${months.toFixed(1)} mois`, months }
+    if (months >= 1) return { score: Math.round(7 + ((months - 1) / 2) * 8), label: `Insuffisant — ${months.toFixed(1)} mois`, months }
+    if (liquidBalance > 0) return { score: 4, label: 'Critique — moins d\'1 mois', months }
+    return { score: 0, label: 'Aucune épargne de précaution', months: 0 }
+  }
+  // Sans dépenses connues : score sur valeur absolue
+  if (liquidBalance >= 15000) return { score: 22, label: 'Solide', months: null }
+  if (liquidBalance >= 5000)  return { score: 15, label: 'Correct', months: null }
+  if (liquidBalance >= 1000)  return { score: 9,  label: 'Insuffisant', months: null }
+  if (liquidBalance > 0)      return { score: 4,  label: 'Très faible', months: null }
+  return { score: 0, label: 'Aucune épargne de précaution', months: null }
 }
 
-function scoreFiscal(hasTaxSim: boolean, hasPEA: boolean, hasPER: boolean, usedOptimalRegime: boolean): { score: number; label: string } {
+// ── Pyramide niveau 2 — Immobilier (20 pts) ───────────────────────────────────
+// Résidence principale / locatif + LTV
+
+function scoreRealEstate(
+  realEstateValue: number,
+  creditRemaining: number,
+  housingStatus: string | null | undefined,
+): { score: number; label: string; ltv: number | null } {
+  if (realEstateValue <= 0) {
+    if (housingStatus === 'tenant') return { score: 10, label: 'Locataire — choix valide', ltv: null }
+    return { score: 8, label: 'Pas d\'immobilier déclaré', ltv: null }
+  }
+  const ltv = creditRemaining > 0 ? creditRemaining / realEstateValue : 0
+  if (ltv >= 0.90) return { score: 5,  label: `LTV ${Math.round(ltv * 100)}% — très endetté`,    ltv }
+  if (ltv >= 0.70) return { score: 10, label: `LTV ${Math.round(ltv * 100)}% — endetté`,          ltv }
+  if (ltv >= 0.40) return { score: 14, label: `LTV ${Math.round(ltv * 100)}% — bien financé`,     ltv }
+  if (ltv >= 0.10) return { score: 18, label: `LTV ${Math.round(ltv * 100)}% — peu endetté`,      ltv }
+  return { score: 20, label: 'Libre de crédit', ltv }
+}
+
+// ── Pyramide niveau 3 — Enveloppes long terme (25 pts) ───────────────────────
+// AV (10pts) + PEA (8pts) + PER (7pts)
+
+function scoreLongTerm(
+  hasAV: boolean, avValue: number,
+  hasPEA: boolean, peaValue: number,
+  hasPER: boolean, perValue: number,
+): { score: number; label: string; hasAV: boolean; hasPEA: boolean; hasPER: boolean } {
   let score = 0
-  if (hasTaxSim) score += 3
-  if (hasPEA) score += 4
-  if (usedOptimalRegime) score += 4
-  if (hasPER) score += 4
-  score = Math.min(15, score)
-  const label = score >= 13 ? 'Optimisé' : score >= 7 ? 'Bien' : score >= 3 ? 'À améliorer' : 'Non renseigné'
+  if (hasAV)  score += avValue  > 0 ? 10 : 4
+  if (hasPEA) score += peaValue > 0 ? 8  : 3
+  if (hasPER) score += perValue > 0 ? 7  : 3
+  score = Math.min(25, score)
+  const label = score >= 22 ? 'Complet' : score >= 14 ? 'Bien' : score >= 7 ? 'En construction' : 'À construire'
+  return { score, label, hasAV, hasPEA, hasPER }
+}
+
+// ── Pyramide niveau 4 — Diversification (20 pts) ─────────────────────────────
+// Nombre et variété des enveloppes investissements
+
+function scoreDiversification(types: string[]): { score: number; label: string } {
+  const unique = new Set(types).size
+  const investTypes = new Set(types.filter(t => ['PEA', 'CTO', 'AV', 'PER', 'IMMOBILIER', 'CRYPTO'].includes(t)))
+
+  let score = 0
+  // Variété globale (enveloppes totales)
+  if (unique >= 5) score += 7
+  else if (unique >= 3) score += 4
+  else if (unique >= 2) score += 2
+  else if (unique === 1) score += 1
+
+  // Variété des investissements
+  if (investTypes.size >= 4) score += 9
+  else if (investTypes.size >= 3) score += 7
+  else if (investTypes.size >= 2) score += 4
+  else if (investTypes.size === 1) score += 2
+
+  // Bonus : immobilier ET financier
+  const hasImmo = types.includes('IMMOBILIER')
+  const hasFinancial = types.some(t => ['PEA', 'CTO', 'AV'].includes(t))
+  if (hasImmo && hasFinancial) score += 4
+
+  score = Math.min(20, score)
+  const label = score >= 16 ? 'Excellent' : score >= 10 ? 'Bien diversifié' : score >= 5 ? 'Partiel' : 'Peu diversifié'
   return { score, label }
 }
 
-function scoreDebt(ratio: number | null): { score: number; label: string } {
-  if (ratio === null) return { score: 0, label: 'Données inconnues' }
-  if (ratio > 0.40) return { score: Math.round((1 - ratio) * 10), label: 'Élevé' }
-  if (ratio > 0.30) return { score: Math.round(4 + (0.40 - ratio) / 0.10 * 3), label: 'Moyen' }
-  return { score: Math.round(7 + (0.30 - ratio) / 0.30 * 3), label: 'Sain' }
+// ── Pyramide niveau 5 — Maîtrise du risque (10 pts) ──────────────────────────
+// Ratio crypto / patrimoine total
+
+function scoreRisk(
+  cryptoValue: number,
+  totalValue: number,
+): { score: number; label: string; cryptoRatio: number } {
+  if (totalValue <= 0) return { score: 5, label: 'Patrimoine non renseigné', cryptoRatio: 0 }
+  const r = cryptoValue / totalValue
+  if (r === 0)    return { score: 10, label: 'Aucune exposition crypto',       cryptoRatio: 0 }
+  if (r <= 0.05)  return { score: 9,  label: `Crypto maîtrisée (${Math.round(r*100)}%)`,   cryptoRatio: r }
+  if (r <= 0.10)  return { score: 7,  label: `Crypto acceptable (${Math.round(r*100)}%)`,  cryptoRatio: r }
+  if (r <= 0.20)  return { score: 4,  label: `Crypto élevée (${Math.round(r*100)}%)`,      cryptoRatio: r }
+  if (r <= 0.30)  return { score: 2,  label: `Crypto très élevée (${Math.round(r*100)}%)`, cryptoRatio: r }
+  return { score: 0, label: `Exposition excessive (${Math.round(r*100)}% crypto)`, cryptoRatio: r }
 }
 
-// ── Quick actions generator ───────────────────────────────────────────────────
+// ── Quick actions ─────────────────────────────────────────────────────────────
+
+interface ScoreDetails {
+  security:        { score: number; max: number; months: number | null; label: string }
+  realestate:      { score: number; max: number; ltv: number | null; label: string }
+  longterm:        { score: number; max: number; hasAV: boolean; hasPEA: boolean; hasPER: boolean; label: string }
+  diversification: { score: number; max: number; types: string[]; label: string }
+  risk:            { score: number; max: number; cryptoRatio: number; label: string }
+}
 
 function getQuickActions(details: ScoreDetails): { label: string; href: string; pts: number }[] {
   const actions: { label: string; href: string; pts: number }[] = []
-  if (details.fiscal.score < 8 && !details.fiscal.hasTaxSim) {
-    actions.push({ label: 'Lance la simulation Impôts IR', href: '/dashboard/tax', pts: 3 })
-  }
-  if (details.fiscal.score < 12 && !details.fiscal.hasPEA) {
-    actions.push({ label: 'Déclare ton PEA dans le patrimoine', href: '/dashboard/patrimoine', pts: 4 })
-  }
-  if (!details.retirement.hasSim) {
-    actions.push({ label: 'Lance la simulation Retraite', href: '/dashboard/retirement', pts: 3 })
-  }
-  if (details.savings.score < 10) {
-    actions.push({ label: "Analyse ton taux d'épargne", href: '/dashboard/savings-rate', pts: 4 })
-  }
-  if (details.emergency.months === null) {
-    actions.push({ label: 'Ajoute un Livret ou une Trésorerie', href: '/dashboard/patrimoine', pts: 5 })
-  }
-  return actions.slice(0, 3)
-}
+  const gap = (max: number, score: number) => Math.max(0, max - score)
 
-interface ScoreDetails {
-  savings: { score: number; max: number; rate: number; label: string }
-  emergency: { score: number; max: number; months: number | null; label: string }
-  diversification: { score: number; max: number; types: string[]; label: string }
-  retirement: { score: number; max: number; hasSim: boolean; gap: number; label: string }
-  fiscal: { score: number; max: number; hasTaxSim: boolean; hasPEA: boolean; hasPER: boolean; label: string }
-  debt: { score: number; max: number; ratio: number | null; label: string }
+  if (details.security.score < 15)
+    actions.push({ label: 'Alimenter votre épargne de précaution (livrets)', href: '/dashboard/patrimoine/livrets', pts: gap(25, details.security.score) })
+
+  if (!details.longterm.hasAV)
+    actions.push({ label: 'Déclarer une Assurance-vie dans votre patrimoine', href: '/dashboard/patrimoine', pts: 10 })
+  else if (!details.longterm.hasPEA)
+    actions.push({ label: 'Déclarer un PEA dans votre patrimoine', href: '/dashboard/patrimoine/actions', pts: 8 })
+  else if (!details.longterm.hasPER)
+    actions.push({ label: 'Déclarer un PER dans votre patrimoine', href: '/dashboard/patrimoine', pts: 7 })
+
+  if (details.diversification.score < 10)
+    actions.push({ label: 'Diversifier vos enveloppes patrimoniales', href: '/dashboard/patrimoine', pts: 5 })
+
+  if (details.risk.cryptoRatio > 0.20)
+    actions.push({ label: 'Réduire l\'exposition crypto (objectif <10%)', href: '/dashboard/patrimoine', pts: 7 })
+
+  return actions.slice(0, 3)
 }
 
 // ── GET handler ───────────────────────────────────────────────────────────────
@@ -105,95 +173,75 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   const userId = session.user.id
 
-  // Fetch all simulations + envelopes in parallel
-  const [allSims, envelopes] = await Promise.all([
-    prisma.simulation.findMany({ where: { userId }, orderBy: { updatedAt: 'desc' } }),
+  // Fetch envelopes + user financial profile in parallel
+  const [envelopes, user] = await Promise.all([
     prisma.patrimoineEnvelope.findMany({
       where: { portfolio: { userId } },
       include: { positions: true },
     }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { financialProfile: true },
+    }),
   ])
 
-  // Get latest sim per type
-  const latestByType: Record<string, { inputs: any; results: any }> = {}
-  for (const sim of allSims) {
-    if (!latestByType[sim.type]) {
-      latestByType[sim.type] = { inputs: sim.inputs as any, results: sim.results as any }
-    }
-  }
+  const fp = (user?.financialProfile ?? null) as FinancialProfile | null
+  const monthlyExpenses = fp?.monthlyExpenses ?? null
+  const housingStatus = fp?.housingStatus ?? null
 
-  // ── 1. Taux d'épargne (20 pts)
-  const budgetSim = latestByType['budget'] || latestByType['savings-rate']
-  const savingsRate = budgetSim?.results?.savingsRate ?? 0
-  const savingsResult = scoreSavingsRate(savingsRate)
+  const types = envelopes.map(e => e.type)
 
-  // ── 2. Épargne d'urgence (15 pts)
-  const cashEnvelopes = envelopes.filter(e => e.type === 'CASH' || e.type === 'LIVRET')
-  const cashBalance = cashEnvelopes.reduce((sum, e) => {
-    const meta = e.metadata as any
-    return sum + (meta?.balance ?? meta?.currentValue ?? 0)
-  }, 0)
-  const monthlyExpenses = budgetSim?.results?.expenses
-    ? (budgetSim.results as any).expenses / 12
-    : (budgetSim?.inputs as any)?.expenses
-      ? (budgetSim.inputs as any).expenses / 12
-      : null
-  const emergencyMonths = (cashBalance > 0 && monthlyExpenses)
-    ? Math.round((cashBalance / monthlyExpenses) * 10) / 10
-    : cashBalance > 0 ? null : null
-  const emergencyResult = emergencyMonths !== null
-    ? scoreEmergency(emergencyMonths)
-    : { score: 0, label: 'Données inconnues' }
+  // ── Pilier 1: Sécurité ─────────────────────────────────────────────────────
+  const liquidBalance = envelopes
+    .filter(e => e.type === 'LIVRET' || e.type === 'CASH')
+    .reduce((s, e) => s + getLiquidValue(e), 0)
+  const securityResult = scoreSecurity(liquidBalance, monthlyExpenses ?? null)
 
-  // ── 3. Diversification (20 pts)
-  const envelopeTypes = envelopes.map(e => e.type)
-  const totalValue = envelopes.reduce((sum, e) => {
-    const meta = e.metadata as any
-    return sum + (meta?.balance ?? meta?.currentValue ?? 0)
-  }, 0)
-  const cryptoValue = envelopes
-    .filter(e => e.type === 'CRYPTO')
-    .reduce((sum, e) => {
-      const meta = e.metadata as any
-      return sum + (meta?.balance ?? meta?.currentValue ?? 0)
-    }, 0)
-  const cryptoRatio = totalValue > 0 ? cryptoValue / totalValue : 0
-  const diversResult = scoreDiversification(envelopeTypes, cryptoRatio)
+  // ── Pilier 2: Immobilier ───────────────────────────────────────────────────
+  const realEstateValue = envelopes
+    .filter(e => e.type === 'IMMOBILIER')
+    .reduce((s, e) => s + Number((e.metadata as Record<string, unknown>)?.currentValue ?? 0), 0)
+  const creditRemaining = envelopes
+    .filter(e => e.type === 'IMMOBILIER')
+    .reduce((s, e) => s + Number((e.metadata as Record<string, unknown>)?.creditRemaining ?? 0), 0)
+  const realEstateResult = scoreRealEstate(realEstateValue, creditRemaining, housingStatus)
 
-  // ── 4. Préparation retraite (20 pts)
-  const retSim = latestByType['retirement']
-  const hasPER = envelopes.some(e => e.type === 'PER')
-  const retGap = (retSim?.results as any)?.gap ?? 9999
-  const retResult = scoreRetirement(!!retSim, retGap, hasPER)
+  // ── Pilier 3: Long terme ───────────────────────────────────────────────────
+  const avEnvs   = envelopes.filter(e => e.type === 'AV')
+  const peaEnvs  = envelopes.filter(e => e.type === 'PEA')
+  const perEnvs  = envelopes.filter(e => e.type === 'PER')
+  const avValue  = avEnvs.reduce((s, e) => s + getInvestValue(e), 0)
+  const peaValue = peaEnvs.reduce((s, e) => s + getInvestValue(e), 0)
+  const perValue = perEnvs.reduce((s, e) => s + getInvestValue(e), 0)
+  const longtermResult = scoreLongTerm(
+    avEnvs.length > 0, avValue,
+    peaEnvs.length > 0, peaValue,
+    perEnvs.length > 0, perValue,
+  )
 
-  // ── 5. Optimisation fiscale (15 pts)
-  const taxSim = latestByType['tax']
-  const hasPEA = envelopes.some(e => e.type === 'PEA')
-  const usedOptimal = !!(taxSim?.results as any)?.optimalRegime
-  const fiscalResult = scoreFiscal(!!taxSim, hasPEA, hasPER, usedOptimal)
+  // ── Pilier 4: Diversification ──────────────────────────────────────────────
+  const diversResult = scoreDiversification(types)
 
-  // ── 6. Endettement sain (10 pts)
-  const mortSim = latestByType['mortgage']
-  const debtRatio = mortSim ? ((mortSim.results as any)?.ratio ?? null) : null
-  const debtResult = scoreDebt(debtRatio)
+  // ── Pilier 5: Risque ───────────────────────────────────────────────────────
+  const cryptoValue  = envelopes.filter(e => e.type === 'CRYPTO').reduce((s, e) => s + getInvestValue(e), 0)
+  const totalValue   = envelopes.reduce((s, e) => s + getEnvelopeValue(e), 0)
+  const riskResult   = scoreRisk(cryptoValue, totalValue)
 
-  // ── Total
-  const total = savingsResult.score + emergencyResult.score + diversResult.score +
-    retResult.score + fiscalResult.score + debtResult.score
+  // ── Total ──────────────────────────────────────────────────────────────────
+  const total = securityResult.score + realEstateResult.score + longtermResult.score + diversResult.score + riskResult.score
 
   const details: ScoreDetails = {
-    savings:         { score: savingsResult.score, max: 20, rate: savingsRate, label: savingsResult.label },
-    emergency:       { score: emergencyResult.score, max: 15, months: emergencyMonths, label: emergencyResult.label },
-    diversification: { score: diversResult.score, max: 20, types: envelopeTypes, label: diversResult.label },
-    retirement:      { score: retResult.score, max: 20, hasSim: !!retSim, gap: retGap, label: retResult.label },
-    fiscal:          { score: fiscalResult.score, max: 15, hasTaxSim: !!taxSim, hasPEA, hasPER, label: fiscalResult.label },
-    debt:            { score: debtResult.score, max: 10, ratio: debtRatio, label: debtResult.label },
+    security:        { score: securityResult.score, max: 25, months: securityResult.months, label: securityResult.label },
+    realestate:      { score: realEstateResult.score, max: 20, ltv: realEstateResult.ltv, label: realEstateResult.label },
+    longterm:        { score: longtermResult.score, max: 25, hasAV: longtermResult.hasAV, hasPEA: longtermResult.hasPEA, hasPER: longtermResult.hasPER, label: longtermResult.label },
+    diversification: { score: diversResult.score, max: 20, types, label: diversResult.label },
+    risk:            { score: riskResult.score, max: 10, cryptoRatio: riskResult.cryptoRatio, label: riskResult.label },
   }
 
   // Store score
   await prisma.patrimoineScore.create({ data: { userId, score: total, details: details as object } })
 
-  // History (last 12 entries)
+  // History (last 12)
   const history = await prisma.patrimoineScore.findMany({
     where: { userId },
     orderBy: { createdAt: 'desc' },

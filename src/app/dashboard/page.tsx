@@ -11,7 +11,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, Wallet,
   PiggyBank, RefreshCw, Calculator, ArrowUpRight, Sparkles,
   BarChart3, ChevronRight, ChevronDown, Percent, LayoutGrid,
-  Bitcoin, Shield, Landmark, ArrowRight,
+  Bitcoin, Shield, Landmark, ArrowRight, Check,
 } from 'lucide-react'
 
 interface Simulation {
@@ -142,6 +142,8 @@ export default function HomePage() {
   const [indices, setIndices] = useState<MarketIndex[]>([])
   const [indicesLoadedAt, setIndicesLoadedAt] = useState(0)
   const [onboardingDismissed, setOnboardingDismissed] = useState(true) // default true to avoid flash
+  const [profileFilled, setProfileFilled] = useState(false)
+  const [hasGoals, setHasGoals] = useState(false)
 
   // Load simulations + envelopes
   useEffect(() => {
@@ -169,6 +171,26 @@ export default function HomePage() {
   // Onboarding dismissed state
   useEffect(() => {
     setOnboardingDismissed(localStorage.getItem('onboarding_dismissed') === '1')
+  }, [])
+
+  // Load profile + goals for progress bar
+  useEffect(() => {
+    fetch('/api/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.financialProfile) {
+          const fp = d.financialProfile as Record<string, unknown>
+          const filled = Object.values(fp).some(v => v !== undefined && v !== null && v !== '')
+          setProfileFilled(filled)
+        }
+      })
+      .catch(() => {})
+    fetch('/api/goals')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (Array.isArray(d) && d.length > 0) setHasGoals(true) })
+      .catch(() => {})
+    window.addEventListener('profile-updated', () => setProfileFilled(true))
+    return () => { window.removeEventListener('profile-updated', () => setProfileFilled(true)) }
   }, [])
 
   // Load market indices
@@ -502,38 +524,55 @@ export default function HomePage() {
         {/* RIGHT: Enveloppes + Accès rapides */}
         <div className="p-5 xl:p-6 space-y-6">
 
-          {/* Onboarding guide */}
-          {loaded && totalSims === 0 && nbEnvelopes === 0 && !onboardingDismissed && (
-            <div style={{ background: `linear-gradient(135deg, ${GOLD}0a, rgba(129,140,248,0.06))`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 16, padding: '20px 22px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, marginBottom: 4 }}>Bienvenue sur PatrImo</p>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-                    Commencez par 3 étapes simples pour tirer le meilleur de l&apos;app.
-                  </p>
-                </div>
-                <button
-                  onClick={() => { localStorage.setItem('onboarding_dismissed', '1'); setOnboardingDismissed(true) }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 4, flexShrink: 0 }}
-                >×</button>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { step: 1, label: 'Ajouter votre premier livret ou PEA', href: '/dashboard/patrimoine', cta: 'Gérer le patrimoine', color: '#34d399' },
-                  { step: 2, label: 'Lancer une simulation FI/RE ou intérêts composés', href: '/dashboard/simulateurs', cta: 'Voir les simulateurs', color: '#818cf8' },
-                  { step: 3, label: 'Calculer votre score patrimonial', href: '/dashboard/score', cta: 'Voir le score', color: GOLD },
-                ].map(({ step, label, href, cta, color }) => (
-                  <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: color + '22', border: `1px solid ${color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color }}>{step}</span>
-                    </div>
-                    <span style={{ flex: 1, fontSize: 12, color: 'var(--text-muted-c)' }}>{label}</span>
-                    <a href={href} style={{ fontSize: 11, fontWeight: 600, color, textDecoration: 'none', whiteSpace: 'nowrap', background: color + '15', border: `1px solid ${color}30`, borderRadius: 6, padding: '3px 8px' }}>{cta}</a>
+          {/* ── Prise en main progress bar ── */}
+          {loaded && !onboardingDismissed && (() => {
+            const steps = [
+              { done: true,          label: 'Créer un compte',                  href: null,                       cta: null },
+              { done: profileFilled, label: 'Renseigner votre profil financier', href: '/dashboard/profil',        cta: 'Compléter' },
+              { done: totalSims > 0, label: 'Lancer votre première simulation',  href: '/dashboard/simulateurs',   cta: 'Commencer' },
+              { done: hasGoals,      label: 'Ajouter un objectif patrimonial',   href: '/dashboard/goals',         cta: 'Ajouter' },
+              { done: !!scoreWidget, label: 'Consulter votre Score Patrimonial', href: '/dashboard/score',         cta: 'Voir' },
+            ]
+            const completed = steps.filter(s => s.done).length
+            const allDone = completed === steps.length
+            if (allDone) return null
+            return (
+              <div style={{ background: `linear-gradient(135deg, ${GOLD}08, rgba(129,140,248,0.04))`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 16, padding: '18px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, margin: 0 }}>Prise en main PatrImo</p>
+                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>{completed}/{steps.length} étapes complétées</p>
                   </div>
-                ))}
+                  <button
+                    onClick={() => { localStorage.setItem('onboarding_dismissed', '1'); setOnboardingDismissed(true) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 4, flexShrink: 0 }}
+                  >×</button>
+                </div>
+                {/* Progress bar */}
+                <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)', marginBottom: 14, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${(completed / steps.length) * 100}%`, borderRadius: 99, background: `linear-gradient(90deg, ${GOLD}80, ${GOLD})`, transition: 'width 0.5s ease' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {steps.map((s, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10, background: s.done ? 'rgba(52,211,153,0.04)' : 'rgba(255,255,255,0.02)', border: `1px solid ${s.done ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.05)'}` }}>
+                      <div style={{ width: 20, height: 20, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: s.done ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${s.done ? 'rgba(52,211,153,0.35)' : 'rgba(255,255,255,0.08)'}` }}>
+                        {s.done
+                          ? <Check style={{ width: 11, height: 11, color: '#34d399' }} />
+                          : <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-subtle)' }}>{i + 1}</span>
+                        }
+                      </div>
+                      <span style={{ flex: 1, fontSize: 12, color: s.done ? 'var(--text-muted-c)' : 'var(--text-em)', textDecoration: s.done ? 'line-through' : 'none', opacity: s.done ? 0.5 : 1 }}>{s.label}</span>
+                      {!s.done && s.href && (
+                        <a href={s.href} style={{ fontSize: 11, fontWeight: 600, color: GOLD, textDecoration: 'none', background: `${GOLD}15`, border: `1px solid ${GOLD}30`, borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          {s.cta} →
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )
+          })()}
 
           {/* Enveloppes patrimoine */}
           {loaded && nbEnvelopes > 0 && (

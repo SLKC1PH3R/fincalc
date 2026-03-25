@@ -8,7 +8,7 @@ import {
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
-  ShieldCheck, Users, Scale, Landmark, Search, X,
+  ShieldCheck, Users, Scale, Landmark, Search, X, UserCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -650,6 +650,11 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           {/* Tableau de bord */}
           <div style={{ marginBottom: 4 }}>
             <NavItem href="/dashboard" label="Tableau de bord" icon={BarChart3} active={pathname === '/dashboard'} />
+          </div>
+
+          {/* Mon Profil */}
+          <div style={{ marginBottom: 4 }}>
+            <NavItem href="/dashboard/profil" label="Mon profil financier" icon={UserCircle} active={pathname === '/dashboard/profil'} />
           </div>
 
           {/* Score Patrimonial (collapsed or no widget) */}

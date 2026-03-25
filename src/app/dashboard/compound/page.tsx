@@ -10,28 +10,36 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcCompound, type CompoundInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, GitCompare } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, GitCompare, BookOpen, Settings2 } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
+import { FieldTooltip } from '@/components/FieldTooltip'
+import { useUserProfile } from '@/lib/use-profile'
 
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
+// Backwards-compatible alias
+const Tip = FieldTooltip
 
 function CompoundPageInner() {
   const chart = useChartTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+  const { profile } = useUserProfile()
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
+
   const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
   const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+
+  // Pre-fill from user profile when available
+  useEffect(() => {
+    if (!profile) return
+    setInputs(prev => ({
+      ...prev,
+      monthly: profile.monthlySavings ?? prev.monthly,
+      capital: profile.currentAssets ?? prev.capital,
+    }))
+  }, [profile])
   const [compareMode, setCompareMode] = useState(false)
   const [inputsB, setInputsB] = useState<CompoundInputs>({ capital: 10000, monthly: 800, rate: 9, years: 20, frequency: 12 })
   const setB = (k: keyof CompoundInputs) => (v: any) => setInputsB(p => ({ ...p, [k]: v }))
@@ -98,11 +106,100 @@ function CompoundPageInner() {
             <GitCompare className="h-3.5 w-3.5 mr-1.5" />
             Comparer
           </Button>
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm" onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => setInputs({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })}>
             Réinitialiser
           </Button>
         </div>
       </div>
+
+      {/* ── Guided mode panel ── */}
+      {guidedMode && (() => {
+        const GUIDED_STEPS = [
+          {
+            key: 'capital' as keyof CompoundInputs,
+            question: 'Combien avez-vous déjà de côté ?',
+            hint: 'Incluez votre épargne actuelle (livret A, compte, etc.). Vous pouvez mettre 0 si vous démarrez de zéro.',
+            ref: 'La moyenne française est ~8 000 € d\'épargne liquide.',
+            suffix: '€',
+          },
+          {
+            key: 'monthly' as keyof CompoundInputs,
+            question: 'Combien mettez-vous de côté chaque mois ?',
+            hint: 'Votre versement régulier — c\'est le moteur principal de votre épargne à long terme.',
+            ref: 'La moyenne française est ~300 €/mois. L\'objectif recommandé : 10-20% de votre salaire.',
+            suffix: '€',
+          },
+          {
+            key: 'rate' as keyof CompoundInputs,
+            question: 'Quel rendement annuel visez-vous ?',
+            hint: 'C\'est le taux moyen que vous espérez obtenir sur vos placements.',
+            ref: 'Livret A : 3% · Fonds euros : 2-4% · ETF World MSCI : ~7-8%/an historique sur 30 ans.',
+            suffix: '%',
+            isSlider: true, min: 0.5, max: 20, step: 0.1,
+          },
+          {
+            key: 'years' as keyof CompoundInputs,
+            question: 'Sur combien d\'années ?',
+            hint: 'Plus l\'horizon est long, plus l\'effet boule de neige est puissant.',
+            ref: 'Sur 30 ans à 7%, votre argent est multiplié par ~7. Chaque année supplémentaire compte.',
+            suffix: 'ans',
+            isSlider: true, min: 1, max: 40, step: 1,
+          },
+        ]
+        const current = GUIDED_STEPS[guidedStep]
+        const isLast = guidedStep === GUIDED_STEPS.length - 1
+        return (
+          <div style={{ background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.18)', borderRadius: 20, padding: '24px 28px', marginBottom: 28 }}>
+            {/* Step dots */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+              {GUIDED_STEPS.map((_, i) => (
+                <div key={i} style={{ width: i <= guidedStep ? 20 : 8, height: 8, borderRadius: 99, transition: 'all 0.3s', background: i < guidedStep ? '#34d399' : i === guidedStep ? 'rgba(52,211,153,0.7)' : 'rgba(255,255,255,0.10)' }} />
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: '#34d399', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 8 }}>Question {guidedStep + 1} / {GUIDED_STEPS.length}</p>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>{current.question}</h3>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 16, lineHeight: 1.5 }}>{current.hint}</p>
+            <div style={{ position: 'relative', marginBottom: 12 }}>
+              {current.isSlider ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>{current.key === 'rate' ? `${inputs[current.key]}%` : `${inputs[current.key]} ans`}</span>
+                  </div>
+                  <Slider min={current.min} max={current.max} step={current.step} value={[inputs[current.key] as number]} onValueChange={([v]) => set(current.key)(v)} />
+                </>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Input type="number" value={inputs[current.key] as number} onChange={e => set(current.key)(+e.target.value)} style={{ fontSize: 20, fontWeight: 700, height: 52, maxWidth: 200 }} />
+                  <span style={{ fontSize: 16, color: 'var(--text-muted-c)' }}>{current.suffix}</span>
+                </div>
+              )}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', marginBottom: 20 }}>
+              <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: 0 }}>💡 {current.ref}</p>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {guidedStep > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setGuidedStep(s => s - 1)} style={{ height: 38 }}>← Précédent</Button>
+              )}
+              <Button
+                variant="outline" size="sm"
+                style={{ marginLeft: 'auto', height: 38, borderColor: 'rgba(52,211,153,0.4)', color: '#34d399', background: 'rgba(52,211,153,0.08)' }}
+                onClick={() => {
+                  if (isLast) setGuidedMode(false)
+                  else setGuidedStep(s => s + 1)
+                }}
+              >
+                {isLast ? 'Voir les résultats →' : 'Suivant →'}
+              </Button>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

@@ -1,14 +1,30 @@
 'use client'
 import { useSidebar } from './SidebarContext'
 import { cn } from '@/lib/utils'
-import type { ReactNode } from 'react'
+import { type ReactNode, useState, useEffect } from 'react'
 import { PanelLeftOpen } from 'lucide-react'
 import Link from 'next/link'
 import { NotificationCenter } from './NotificationCenter'
 import { PatrimoLogo } from '@/components/PatrimoLogo'
+import dynamic from 'next/dynamic'
+
+const OnboardingWizard = dynamic(() => import('./OnboardingWizard').then(m => m.OnboardingWizard), { ssr: false })
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const { collapsed, toggle } = useSidebar()
+  const [showWizard, setShowWizard] = useState(false)
+
+  useEffect(() => {
+    // Check if onboarding is needed
+    fetch('/api/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.onboardingDone === false) {
+          setShowWizard(true)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <div className={cn(
@@ -38,6 +54,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <main className="flex-1 dashboard-main">
         {children}
       </main>
+
+      {/* First-connection onboarding wizard */}
+      {showWizard && <OnboardingWizard onClose={() => setShowWizard(false)} />}
     </div>
   )
 }

@@ -180,6 +180,14 @@
     box-sizing: border-box;
   }
 
+  /* Force dark color-scheme on all native form controls (select dropdown, date picker, etc.) */
+  select, input[type="date"], input[type="datetime-local"], input[type="time"] {
+    color-scheme: dark;
+  }
+  .light select, .light input[type="date"], .light input[type="datetime-local"], .light input[type="time"] {
+    color-scheme: light;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

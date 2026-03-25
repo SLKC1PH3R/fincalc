@@ -159,7 +159,7 @@ function GoalForm({
     border: '1px solid var(--card-dark-border)',
     background: 'rgba(255,255,255,0.04)',
     color: 'var(--text-primary)', fontSize: 13, outline: 'none',
-    boxSizing: 'border-box',
+    boxSizing: 'border-box', colorScheme: 'dark',
   }
 
   const labelStyle: React.CSSProperties = {

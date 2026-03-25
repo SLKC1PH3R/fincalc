@@ -50,14 +50,8 @@ export function FieldTooltip({ text, side = 'right', width = 240 }: FieldTooltip
       <HelpCircle
         className="h-3.5 w-3.5 cursor-pointer transition-colors"
         style={{ color: 'var(--text-subtle)' }}
-        onMouseEnter={e => {
-          setOpen(true)
-          ;(e.currentTarget as HTMLElement).style.color = 'var(--text-muted-c)'
-        }}
-        onMouseLeave={e => {
-          setOpen(false)
-          ;(e.currentTarget as HTMLElement).style.color = 'var(--text-subtle)'
-        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen(v => !v)}
       />
       {open && <span style={positionStyle}>{text}</span>}

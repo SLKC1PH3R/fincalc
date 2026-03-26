@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { calcEmergencyFund, type EmergencyFundInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { ShieldCheck, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
+import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { useChartTheme } from '@/lib/chart-theme'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
@@ -57,7 +58,13 @@ export default function EmergencyFundPage() {
 
         {/* Inputs */}
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+            <ProfileFillButton onFill={p => {
+              if (p.monthlyExpenses) setMonthlyExpenses(p.monthlyExpenses)
+              if (p.monthlySavings)  setMonthlySavings(p.monthlySavings)
+            }} />
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>Charges mensuelles fixes (€)</Label>

@@ -8,6 +8,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcBudget, type BudgetInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ArrowRight, RotateCcw } from 'lucide-react'
+import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 
@@ -159,7 +160,12 @@ function BudgetPageInner() {
 
           {/* Revenu */}
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '18px 20px' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Revenu mensuel net</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Revenu mensuel net</p>
+              <ProfileFillButton onFill={p => {
+                if (p.netMonthlySalary) set('netIncome')(p.netMonthlySalary)
+              }} />
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
                 type="number"

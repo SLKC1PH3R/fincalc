@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw } from 'lucide-react'
+import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { printReport } from '@/lib/print'
 import { CsvExport } from '@/components/CsvExport'
 
@@ -151,7 +152,14 @@ function FirePageInner() {
 
         {/* Input panel */}
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+            <ProfileFillButton onFill={p => {
+              if (p.netMonthlySalary) set('income')(p.netMonthlySalary * 12)
+              if (p.monthlyExpenses) set('expenses')(p.monthlyExpenses * 12)
+              if (p.currentAssets)   set('netWorth')(p.currentAssets)
+            }} />
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label className="flex items-center gap-1">Revenu annuel net<Tip text="Revenu annuel net après impôts. Ce qui rentre réellement sur votre compte chaque année." /></Label>

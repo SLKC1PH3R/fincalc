@@ -10,6 +10,7 @@ import { CsvExport } from '@/components/CsvExport'
 import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
 import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw } from 'lucide-react'
+import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -152,7 +153,13 @@ function RetirementPageInner() {
 
           {/* Situation actuelle */}
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Votre situation actuelle</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Votre situation actuelle</p>
+              <ProfileFillButton onFill={p => {
+                if (p.age)              set('age')(p.age)
+                if (p.netMonthlySalary) set('salary')(Math.round(p.netMonthlySalary * 12 / 0.78))
+              }} />
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

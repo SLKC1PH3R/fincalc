@@ -13,6 +13,8 @@ import {
   BarChart3, ChevronRight, ChevronDown, Percent, LayoutGrid,
   Bitcoin, Shield, Landmark, ArrowRight, Check,
 } from 'lucide-react'
+import { useCountUp } from '@/lib/use-count-up'
+import { PatrimoineHistoryChart } from '@/components/PatrimoineHistoryChart'
 
 interface Simulation {
   id: string; type: string; name: string
@@ -251,6 +253,12 @@ export default function HomePage() {
     w: i === 11 ? 'Cette sem.' : `S-${11 - i}`, n: weeks[i] || 0,
   }))
 
+  // Counter animations for KPI cards
+  const animatedPatrimoine = useCountUp(patrimoineKPI?.net ?? 0, 1400, loaded && !!patrimoineKPI)
+  const animatedEnvelopes = useCountUp(nbEnvelopes, 800, loaded)
+  const animatedThisMonth = useCountUp(thisMonth, 800, loaded)
+  const animatedTotalSims = useCountUp(totalSims, 900, loaded)
+
   const lastSimByType = sims.reduce((acc, s) => { if (!acc[s.type]) acc[s.type] = s; return acc }, {} as Record<string, Simulation>)
   const byType = sims.reduce((acc, s) => { acc[s.type] = (acc[s.type] || 0) + 1; return acc }, {} as Record<string, number>)
   const sortedModules = [...QUICK_MODULES].sort((a, b) => {
@@ -298,7 +306,7 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Patrimoine</p>
                 <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>
-                  {loaded ? (patrimoineKPI ? fmtCompact(patrimoineKPI.net) : '—') : '…'}
+                  {loaded ? (patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—') : '…'}
                 </p>
                 <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>net estimé</p>
               </div>
@@ -312,7 +320,7 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Enveloppes</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? nbEnvelopes : '…'}</p>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedEnvelopes : '…'}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>actives</p>
                 </div>
               </div>
@@ -326,7 +334,7 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Ce mois</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? thisMonth : '…'}</p>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedThisMonth : '…'}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>simulations</p>
                 </div>
               </div>
@@ -340,7 +348,7 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Simulations</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? totalSims : '…'}</p>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedTotalSims : '…'}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>au total</p>
                 </div>
               </div>
@@ -407,6 +415,13 @@ export default function HomePage() {
           )}
         </div>
       </div>
+
+      {/* ── PATRIMOINE HISTORY ── */}
+      {loaded && nbEnvelopes > 0 && (
+        <div className="px-5 xl:px-6 pt-4" style={{ borderBottom: loaded && totalSims > 0 ? undefined : '1px solid var(--section-border)' }}>
+          <PatrimoineHistoryChart />
+        </div>
+      )}
 
       {/* ── CHARTS ── (if data) */}
       {loaded && totalSims > 0 && (

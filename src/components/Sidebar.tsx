@@ -112,7 +112,6 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [simulateursExpanded, setSimulateursExpanded] = useState(() => ALL_SIM_HREFS.some(h => pathname === h))
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
-  const [search, setSearch] = useState('')
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => {
     const activeGroup = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label
     const all = new Set(SIMULATEURS_GROUPS.map(g => g.label))
@@ -599,29 +598,25 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {!collapsed && (
           <div style={{ padding: '0 10px 8px', flexShrink: 0 }}>
             <div style={{ position: 'relative' }}>
-              <Search style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', width: 12, height: 12, color: 'var(--sb-text-dim)', pointerEvents: 'none' }} />
-              <input
-                type="text"
-                placeholder="Rechercher un simulateur…"
-                value={search}
-                onChange={(e: { target: { value: string } }) => setSearch(e.target.value)}
-                aria-label="Rechercher un simulateur"
+              <button
+                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
                 style={{
-                  width: '100%', padding: '6px 28px 6px 28px', borderRadius: 8,
+                  display: 'flex', alignItems: 'center', width: '100%',
+                  padding: '6px 10px', borderRadius: 8,
                   border: '1px solid var(--sb-divider)', background: 'var(--sb-hover-bg)',
-                  color: 'var(--sb-text-strong)', fontSize: 11, outline: 'none',
-                  fontFamily: 'inherit',
+                  cursor: 'pointer', gap: 7, transition: 'background 0.15s',
                 }}
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  aria-label="Effacer la recherche"
-                  style={{ position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', padding: 2, display: 'flex' }}
-                >
-                  <X style={{ width: 11, height: 11 }} />
-                </button>
-              )}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-active-bg)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+              >
+                <Search style={{ width: 12, height: 12, color: 'var(--sb-text-dim)', flexShrink: 0 }} />
+                <span style={{ flex: 1, fontSize: 11, color: 'var(--sb-text-dim)', textAlign: 'left' as const }}>Recherche rapide…</span>
+                <span style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
+                  {['⌘', 'K'].map(k => (
+                    <kbd key={k} style={{ fontSize: 10, color: 'var(--sb-text-dim)', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '0px 4px', fontFamily: 'inherit' }}>{k}</kbd>
+                  ))}
+                </span>
+              </button>
             </div>
           </div>
         )}
@@ -726,16 +721,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     />
                     {simulateursExpanded && (
                       <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                        {/* Search results flat list */}
-                        {search.trim() ? (
-                          <div className="space-y-0.5 py-1">
-                            {SIMULATEURS_GROUPS.flatMap(g => g.items)
-                              .filter(item => item.label.toLowerCase().includes(search.toLowerCase()))
-                              .map(item => (
-                                <SubItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={pathname === item.href} />
-                              ))}
-                          </div>
-                        ) : SIMULATEURS_GROUPS.map(group => (
+                        {SIMULATEURS_GROUPS.map(group => (
                           <div key={group.label} style={{ marginBottom: 10 }}>
                             {/* group header with collapse toggle */}
                             <button

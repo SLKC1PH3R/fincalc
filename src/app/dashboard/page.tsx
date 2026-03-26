@@ -289,10 +289,26 @@ export default function HomePage() {
                 Tableau de bord
               </h1>
             </div>
-            <div className="flex items-center gap-2" style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
-              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-              {indicesLoadedAt > 0 && ` · Marchés ${timeAgo(new Date(indicesLoadedAt).toISOString()).toLowerCase()}`}
+            <div className="flex items-center gap-3 flex-wrap" style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+              <div className="flex items-center gap-2">
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
+                {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+                {indicesLoadedAt > 0 && ` · Marchés ${timeAgo(new Date(indicesLoadedAt).toISOString()).toLowerCase()}`}
+              </div>
+              <button
+                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontSize: 11, color: 'var(--text-subtle)', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--text-em)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text-subtle)' }}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Recherche rapide
+                <span style={{ display: 'flex', gap: 2 }}>
+                  {['⌘', 'K'].map(k => (
+                    <kbd key={k} style={{ fontSize: 10, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '0px 4px' }}>{k}</kbd>
+                  ))}
+                </span>
+              </button>
             </div>
           </div>
 

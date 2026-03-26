@@ -858,6 +858,29 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             padding: collapsed ? '8px 8px' : '8px 8px 10px',
           }}
         >
+          {!collapsed && (
+            <button
+              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                width: '100%', padding: '6px 10px', marginBottom: 6, borderRadius: 10,
+                border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)',
+                cursor: 'pointer', transition: 'background 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+            >
+              <span style={{ fontSize: 11, color: 'var(--sb-text-dim)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Recherche rapide
+              </span>
+              <span style={{ display: 'flex', gap: 3 }}>
+                {['⌘', 'K'].map(k => (
+                  <kbd key={k} style={{ fontSize: 10, color: 'var(--sb-text-dim)', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px' }}>{k}</kbd>
+                ))}
+              </span>
+            </button>
+          )}
           {!collapsed ? (
             <>
               {/* User card */}

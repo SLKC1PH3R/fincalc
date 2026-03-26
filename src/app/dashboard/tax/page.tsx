@@ -12,8 +12,9 @@ import { useSearchParams } from 'next/navigation'
 import { calcTax, type TaxInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Minus, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
+import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 
@@ -48,6 +49,8 @@ function TaxPageInner() {
     gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false
   })
   const set = (k: keyof TaxInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   // Restore simulation from history
   const searchParams = useSearchParams()
@@ -80,7 +83,7 @@ function TaxPageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -90,7 +93,7 @@ function TaxPageInner() {
             Estimez votre impôt IR, votre TMI et votre taux moyen d&apos;imposition selon votre situation familiale.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Impôts sur le Revenu',
             subtitle: `Barème IR France 2024 · Revenu brut ${fmt(inputs.gross)}`,
@@ -113,6 +116,12 @@ function TaxPageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="tax" name={`Impôts ${fmt(inputs.gross)}`} inputs={inputs as any} results={r as any} />
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
           <Button variant="outline" size="sm"
             onClick={() => setInputs({ gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false })}
             style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
@@ -120,6 +129,19 @@ function TaxPageInner() {
           </Button>
         </div>
       </div>
+
+      {guidedMode && (
+        <GuidedModePanel
+          steps={[
+            { question: 'Quel est votre revenu brut annuel ?', hint: 'Votre salaire brut total avant cotisations sociales et impôts. Il est indiqué sur votre fiche de paie ou votre avis d\'imposition.', ref: 'Médiane France : ~35 000 €/an brut (env. 27 000 € net). SMIC brut 2024 : ~22 000 €/an.', suffix: '€/an', value: inputs.gross, onChange: v => set('gross')(v) },
+            { type: 'choice', question: 'Quelle est votre situation familiale ?', hint: 'Le quotient familial divise votre revenu imposable — chaque part supplémentaire réduit l\'impôt.', ref: 'Chaque enfant à charge ajoute 0.5 part fiscale (1 part pour le 3ème). Impact moyen : -500 à -2 000 €/enfant.', strValue: String(inputs.parts), onChoice: v => set('parts')(+v), options: [{ value: '1', label: 'Célibataire', sub: '1 part' }, { value: '1.5', label: 'Célibataire + 1 enfant', sub: '1.5 parts' }, { value: '2', label: 'Couple sans enfant', sub: '2 parts' }, { value: '2.5', label: 'Couple + 1 enfant', sub: '2.5 parts' }, { value: '3', label: 'Couple + 2 enfants', sub: '3 parts' }, { value: '4', label: 'Couple + 3 enfants', sub: '4 parts' }] },
+            { type: 'slider', question: 'Quel est votre taux de cotisations sociales ?', hint: 'Taux des cotisations salariales prélevées sur votre brut. Visible sur votre bulletin de salaire.', ref: '~22% pour un salarié du privé. ~10-11% pour un fonctionnaire. ~45% pour un indépendant (URSSAF).', suffix: '%', value: inputs.csRate, onChange: v => set('csRate')(v), min: 0, max: 45, stepSize: 0.5 },
+          ] satisfies GuidedStep[]}
+          currentStep={guidedStep}
+          onStepChange={setGuidedStep}
+          onFinish={() => setGuidedMode(false)}
+        />
+      )}
 
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

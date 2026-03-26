@@ -81,7 +81,7 @@ function FlatTaxInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Fiscalité</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -91,7 +91,7 @@ function FlatTaxInner() {
             Comparez le Prélèvement Forfaitaire Unique (30%) au barème progressif selon votre TMI et vos revenus du capital.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Flat Tax vs Barème IR',
             subtitle: `Revenus du capital : ${fmt(amount)} — ${incomeType === 'capital_gains' ? 'Plus-values' : incomeType === 'dividends' ? 'Dividendes' : 'Intérêts'}`,

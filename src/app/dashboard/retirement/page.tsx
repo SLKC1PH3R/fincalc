@@ -9,8 +9,9 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { CsvExport } from '@/components/CsvExport'
 import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
+import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 
 function Tip({ text }: { text: string }) {
@@ -61,6 +62,8 @@ const DEFAULT_INPUTS: RetirementInputs = {
 function RetirementPageInner() {
   const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS)
   const set = (k: keyof RetirementInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
@@ -107,7 +110,7 @@ function RetirementPageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Retraite</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -117,7 +120,7 @@ function RetirementPageInner() {
             Estimez votre pension de retraite selon votre carrière, vos trimestres validés et vos revenus.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Retraite 2026',
             subtitle: `Régime général · Agirc-Arrco`,
@@ -140,11 +143,31 @@ function RetirementPageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="retirement" name={`Retraite ${inputs.departureAge} ans`} inputs={inputs as any} results={r as any} />
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)}>
             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
           </Button>
         </div>
       </div>
+
+      {guidedMode && (
+        <GuidedModePanel
+          steps={[
+            { question: 'Quel est votre âge actuel ?', hint: 'Votre âge aujourd\'hui. Il sert à calculer le nombre d\'années restantes avant votre retraite et à estimer votre progression de carrière.', ref: 'L\'âge légal de départ en retraite est 64 ans depuis la réforme 2023. L\'âge du taux plein auto varie selon votre génération.', suffix: ' ans', value: inputs.age, onChange: v => set('age')(v) },
+            { question: 'Quel est votre salaire brut annuel ?', hint: 'Votre salaire brut actuel avant cotisations. Il sert à estimer votre SAM (Salaire Annuel Moyen des 25 meilleures années).', ref: 'SMIC brut 2024 : ~22 000 €/an. Salaire médian France : ~35 000 €/an. Visible sur votre fiche de paie.', suffix: '€/an', value: inputs.salary, onChange: v => set('salary')(v) },
+            { question: 'Combien de trimestres avez-vous validés ?', hint: 'Trimestres cotisés à ce jour, tous régimes confondus. Visible sur votre relevé de carrière sur info-retraite.fr.', ref: 'Il faut 172 trimestres pour le taux plein (né·e après 1965). Chaque trimestre manquant = -1.25% de décote.', suffix: ' trimestres', value: inputs.quarters, onChange: v => set('quarters')(v) },
+            { type: 'slider', question: 'À quel âge souhaitez-vous partir ?', hint: 'Âge de départ simulé. Partir plus tôt réduit la pension (décote), partir plus tard l\'augmente (surcote).', ref: 'Chaque trimestre supplémentaire après le taux plein ajoute 1.25% de surcote. Partir à 67 ans donne le taux plein automatique.', suffix: ' ans', value: inputs.departureAge, onChange: v => set('departureAge')(v), min: 60, max: 70, stepSize: 1, displayValue: v => `${v} ans` },
+          ] satisfies GuidedStep[]}
+          currentStep={guidedStep}
+          onStepChange={setGuidedStep}
+          onFinish={() => setGuidedMode(false)}
+        />
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 

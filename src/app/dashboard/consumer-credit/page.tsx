@@ -31,7 +31,7 @@ export default function ConsumerCreditPage() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Crédit & Endettement</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -41,12 +41,14 @@ export default function ConsumerCreditPage() {
             TAEG, coût total sur la durée, et ce que le même argent aurait rapporté s&apos;il avait été placé plutôt que remboursé.
           </p>
         </div>
+        <div style={{ marginTop: 16 }}>
         <SaveSimulation
           type="consumer-credit"
           name={`Crédit ${fmt(amount)} à ${taeg}% — ${durationMonths} mois`}
           inputs={{ amount, taeg, durationMonths, alternativeRate } as unknown as Record<string, unknown>}
           results={{ monthlyPayment: res.monthlyPayment, totalPaid: res.totalPaid, totalInterest: res.totalInterest, alternativeGain: res.alternativeGain, opportunityCost: res.opportunityCost } as unknown as Record<string, unknown>}
         />
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

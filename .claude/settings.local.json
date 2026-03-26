@@ -42,7 +42,12 @@
       "Bash(cmd.exe /c \"cd c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install lenis gsap --save\")",
       "Bash(cmd.exe /c \"cd /d c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc && npm install lenis gsap --save && echo DONE\")",
       "Bash(\"/c/Program Files/nodejs/node_modules/.bin/next\" build)",
-      "Bash(node_modules/.bin/next build:*)"
+      "Bash(node_modules/.bin/next build:*)",
+      "Bash(npx next:*)",
+      "Bash(npx prisma:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(where docker:*)"
     ]
   }
 }

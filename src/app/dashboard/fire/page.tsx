@@ -9,8 +9,9 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
+import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { CsvExport } from '@/components/CsvExport'
 
@@ -30,6 +31,8 @@ function FirePageInner() {
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [importingPatrimoine, setImportingPatrimoine] = useState(false)
   const [patrimoineImported, setPatrimoineImported] = useState<number | null>(null)
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   const importFromPatrimoine = async () => {
     setImportingPatrimoine(true)
@@ -91,13 +94,13 @@ function FirePageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Indépendance financière</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Simulateur FI/RE</h1>
           <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>Calculez combien vous devez accumuler pour vivre de vos revenus passifs.</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'FI/RE',
             subtitle: 'Financial Independence, Retire Early',
@@ -121,6 +124,12 @@ function FirePageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => setInputs({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })}>
             Réinitialiser
           </Button>
@@ -146,6 +155,21 @@ function FirePageInner() {
           <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtPct(r.progressPct)}</p>
         </div>
       </div>
+
+      {guidedMode && (
+        <GuidedModePanel
+          steps={[
+            { question: 'Quel est votre revenu annuel net ?', hint: 'Total perçu chaque année après impôts et cotisations. Si vous avez un salaire mensuel, multipliez-le par 12.', ref: 'Salaire médian France net : ~28 000 €/an. Objectif FIRE : maximiser l\'écart revenu / dépenses.', suffix: '€/an', value: inputs.income, onChange: v => set('income')(v) },
+            { question: 'Combien dépensez-vous par an ?', hint: 'Total de vos dépenses annuelles. C\'est aussi le revenu passif dont vous aurez besoin à la retraite — réduire ce chiffre est le levier le plus puissant.', ref: 'Moyenne France : ~22 000 €/an. Chaque 100 €/mois économisé raccourcit votre chemin FIRE de ~3 ans.', suffix: '€/an', value: inputs.expenses, onChange: v => set('expenses')(v) },
+            { question: 'Quel est votre patrimoine actuel investi ?', hint: 'Total de vos actifs : PEA, assurance-vie, épargne, immo locatif… Tout ce qui travaille pour vous.', ref: 'Patrimoine médian France (35-44 ans) : ~120 000 €. Chaque euro investi aujourd\'hui vaut bien plus demain.', suffix: '€', value: inputs.netWorth, onChange: v => { set('netWorth')(v); setPatrimoineImported(null) } },
+            { type: 'slider', question: 'Quel rendement annuel attendez-vous ?', hint: 'Rendement moyen de votre portefeuille. Soyez conservateur — mieux vaut être agréablement surpris.', ref: 'ETF MSCI World historique : ~7-8%/an sur 30 ans. Prévoyez un scénario pessimiste à 5%.', suffix: '%', value: inputs.rate, onChange: v => set('rate')(v), min: 1, max: 15, stepSize: 0.5 },
+            { type: 'slider', question: 'Quel taux de retrait envisagez-vous ?', hint: 'Pourcentage de votre patrimoine que vous retirez chaque année à la retraite. 4% est la règle classique.', ref: 'Règle des 4% (Trinity Study) : durable sur 30 ans. 3.5% pour une longue retraite ou une sécurité maximale.', suffix: '%', value: inputs.withdrawalRate, onChange: v => set('withdrawalRate')(v), min: 2, max: 6, stepSize: 0.1 },
+          ] satisfies GuidedStep[]}
+          currentStep={guidedStep}
+          onStepChange={setGuidedStep}
+          onFinish={() => setGuidedMode(false)}
+        />
+      )}
 
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

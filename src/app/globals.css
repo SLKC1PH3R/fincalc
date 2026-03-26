@@ -312,7 +312,7 @@
 .grid-bg > * { position: relative; z-index: 1; }
 
 /* Dashboard main content area — always above grid overlays (z-index:0) */
-.dashboard-main { position: relative; z-index: 1; }
+.dashboard-main { position: relative; z-index: 1; padding-left: 16px; }
 
 /* Mobile responsive fixes */
 @media (max-width: 768px) {

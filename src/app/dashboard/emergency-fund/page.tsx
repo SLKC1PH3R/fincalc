@@ -3,11 +3,13 @@ import { useState, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { calcEmergencyFund, type EmergencyFundInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { ShieldCheck, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
+import { ShieldCheck, CheckCircle2, AlertTriangle, Clock, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
+import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { useChartTheme } from '@/lib/chart-theme'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
@@ -21,6 +23,8 @@ export default function EmergencyFundPage() {
   const [familySituation, setFamilySituation] = useState<EmergencyFundInputs['familySituation']>('single')
   const [currentSavings, setCurrentSavings] = useState(5000)
   const [monthlySavings, setMonthlySavings] = useState(300)
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   const inputs: EmergencyFundInputs = useMemo(() => ({
     monthlyExpenses, employmentType, familySituation, currentSavings, monthlySavings,
@@ -36,7 +40,7 @@ export default function EmergencyFundPage() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Gestion budgétaire</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -46,13 +50,35 @@ export default function EmergencyFundPage() {
             Calculez le montant idéal à garder en liquidités selon vos charges, votre stabilité professionnelle et votre situation familiale.
           </p>
         </div>
-        <SaveSimulation
-          type="emergency-fund"
-          name={`Précaution — ${fmt(res.targetAmount)} (${res.targetMonths} mois)`}
-          inputs={{ monthlyExpenses, employmentType, familySituation, currentSavings, monthlySavings } as unknown as Record<string, unknown>}
-          results={{ targetAmount: res.targetAmount, gap: res.gap, isReached: res.isReached, coverageRatio: res.coverageRatio, monthsToReach: res.monthsToReach, targetMonths: res.targetMonths } as unknown as Record<string, unknown>}
-        />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
+          <SaveSimulation
+            type="emergency-fund"
+            name={`Précaution — ${fmt(res.targetAmount)} (${res.targetMonths} mois)`}
+            inputs={{ monthlyExpenses, employmentType, familySituation, currentSavings, monthlySavings } as unknown as Record<string, unknown>}
+            results={{ targetAmount: res.targetAmount, gap: res.gap, isReached: res.isReached, coverageRatio: res.coverageRatio, monthsToReach: res.monthsToReach, targetMonths: res.targetMonths } as unknown as Record<string, unknown>}
+          />
+        </div>
       </div>
+
+      {guidedMode && (
+        <GuidedModePanel
+          steps={[
+            { question: 'Quelles sont vos charges mensuelles fixes ?', hint: 'Loyer ou crédit immobilier, crédits à la consommation, abonnements obligatoires, courses alimentaires… Tout ce qui sort chaque mois quoi qu\'il arrive.', ref: 'Moyenne France : ~1 800-2 000 €/mois de charges fixes. C\'est sur cette base que se calcule le nombre de mois de précaution.', suffix: '€/mois', value: monthlyExpenses, onChange: setMonthlyExpenses },
+            { type: 'choice', question: 'Quelle est votre situation professionnelle ?', hint: 'Votre stabilité d\'emploi détermine combien de mois de précaution il vous faut. Un indépendant a besoin de bien plus qu\'un fonctionnaire.', ref: 'CDI/Fonctionnaire : 3 mois suffisent. CDD/Intérim : 4-6 mois. Freelance : 6-9 mois. Sans emploi : 9-12 mois.', strValue: employmentType, onChoice: v => setEmploymentType(v as typeof employmentType), options: [{ value: 'cdi', label: 'CDI / Fonctionnaire', sub: '3 mois recommandés' }, { value: 'cdd', label: 'CDD / Intérim', sub: '4-6 mois recommandés' }, { value: 'freelance', label: 'Freelance / Indépendant', sub: '6-9 mois recommandés' }, { value: 'none', label: 'Sans emploi', sub: '9-12 mois recommandés' }] },
+            { question: 'Avez-vous déjà une épargne liquide ?', hint: 'Total de vos comptes courant, livrets (Livret A, LEP, LDDS)… uniquement les liquidités disponibles immédiatement, pas votre PEA ou assurance-vie.', ref: 'L\'idéal : tout sur Livret A (12 500 € max) + LEP (si éligible) pour maximiser les intérêts tout en restant disponible.', suffix: '€', value: currentSavings, onChange: setCurrentSavings },
+            { question: 'Combien pouvez-vous épargner chaque mois ?', hint: 'Votre capacité d\'épargne mensuelle dédiée à la précaution. Une fois l\'objectif atteint, vous redirigez ce montant vers vos investissements.', ref: 'Même 50 €/mois, c\'est 600 €/an. La régularité prime sur le montant. Augmentez progressivement.', suffix: '€/mois', value: monthlySavings, onChange: setMonthlySavings },
+          ] satisfies GuidedStep[]}
+          currentStep={guidedStep}
+          onStepChange={setGuidedStep}
+          onFinish={() => setGuidedMode(false)}
+        />
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 

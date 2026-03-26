@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info, Wallet } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
+import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
@@ -31,6 +32,8 @@ function DCAPageInner() {
   const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [loadingPatrimoine, setLoadingPatrimoine] = useState(false)
+  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   const importPatrimoine = async () => {
     setLoadingPatrimoine(true)
@@ -74,13 +77,13 @@ function DCAPageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 32 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Épargne</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>DCA — Dollar Cost Averaging</h1>
           <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>Investissez régulièrement pour lisser les fluctuations du marché.</p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'DCA — Investissement Régulier',
             subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
@@ -109,11 +112,31 @@ function DCAPageInner() {
             ],
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+            {guidedMode ? 'Mode expert' : 'Mode guidé'}
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
             Réinitialiser
           </Button>
         </div>
       </div>
+
+      {guidedMode && (
+        <GuidedModePanel
+          steps={[
+            { question: 'Combien investissez-vous chaque mois ?', hint: 'Votre versement régulier, quel que soit le prix du marché. La régularité est l\'essence du DCA — même 100 €/mois fait une vraie différence.', ref: 'Recommandé : 10-20% du salaire net. Commencez petit et augmentez progressivement.', suffix: '€/mois', value: inputs.monthly, onChange: v => set('monthly')(v) },
+            { type: 'slider', question: 'Sur quelle durée voulez-vous investir ?', hint: 'Plus l\'horizon est long, plus le DCA lisse les variations. L\'essentiel est de ne pas interrompre les versements lors des baisses.', ref: 'Sur 20 ans à 8%, 500 €/mois → ~295 000 €. Sur 30 ans → ~680 000 €. Chaque année compte.', suffix: ' ans', value: inputs.years, onChange: v => set('years')(v), min: 1, max: 40, stepSize: 1, displayValue: v => `${v} ans` },
+            { type: 'slider', question: 'Quel rendement annuel visez-vous ?', hint: 'Rendement moyen attendu. Sur un ETF World diversifié, la moyenne historique est ~8%/an — mais rien n\'est garanti.', ref: 'MSCI World : ~8 %/an depuis 1970. Soyez prudent : une hypothèse à 5-6% vous réserve de bonnes surprises.', suffix: '%', value: inputs.targetRate, onChange: v => set('targetRate')(v), min: 1, max: 15, stepSize: 0.5 },
+            { question: 'Avez-vous déjà un capital de départ ?', hint: 'Montant déjà investi ou que vous placez d\'un coup au départ. Mettez 0 si vous partez de zéro.', ref: 'Même 5 000 € de départ à 8%/an valent ~109 000 € au bout de 30 ans — sans rien ajouter.', suffix: '€', value: inputs.startingCapital ?? 0, onChange: v => set('startingCapital')(v) },
+          ] satisfies GuidedStep[]}
+          currentStep={guidedStep}
+          onStepChange={setGuidedStep}
+          onFinish={() => setGuidedMode(false)}
+        />
+      )}
 
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>

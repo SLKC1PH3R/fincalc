@@ -9,6 +9,7 @@ import { PatrimoLogo } from '@/components/PatrimoLogo'
 import dynamic from 'next/dynamic'
 
 const OnboardingWizard = dynamic(() => import('./OnboardingWizard').then(m => m.OnboardingWizard), { ssr: false })
+const CommandPalette = dynamic(() => import('./CommandPalette').then(m => m.CommandPalette), { ssr: false })
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const { collapsed, toggle } = useSidebar()
@@ -57,6 +58,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
       {/* First-connection onboarding wizard */}
       {showWizard && <OnboardingWizard onClose={() => setShowWizard(false)} />}
+      {/* Command Palette ⌘K */}
+      <CommandPalette />
     </div>
   )
 }

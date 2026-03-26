@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2 } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
@@ -34,6 +34,10 @@ function DCAPageInner() {
   const [loadingPatrimoine, setLoadingPatrimoine] = useState(false)
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
+  const [compareMode, setCompareMode] = useState(false)
+  const [inputsB, setInputsB] = useState<DCAInputs>({ monthly: 800, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
+  const setB = (k: keyof DCAInputs) => (v: number) => setInputsB(p => ({ ...p, [k]: v }))
+  const rB = useMemo(() => calcDCA(inputsB), [inputsB])
 
   const importPatrimoine = async () => {
     setLoadingPatrimoine(true)
@@ -112,6 +116,11 @@ function DCAPageInner() {
             ],
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant={compareMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setCompareMode(v => !v); if (!compareMode) setInputsB({ ...inputs, monthly: Math.round(inputs.monthly * 1.5) }) }}
+            style={compareMode ? { background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)', color: '#818cf8' } : {}}>
+            <GitCompare className="h-3.5 w-3.5 mr-1.5" />Comparer
+          </Button>
           <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
             onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
             style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
@@ -283,6 +292,82 @@ function DCAPageInner() {
 
         </div>
       </div>
+
+      {/* ── Comparateur A/B ── */}
+      {compareMode && (
+        <div style={{ marginTop: 32, borderTop: '1px solid var(--card-dark-border)', paddingTop: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <GitCompare style={{ width: 16, height: 16, color: '#818cf8' }} />
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Comparateur de scénarios</h2>
+            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Scénario A vs Scénario B côte à côte</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            {([
+              { label: 'Scénario A', color: '#f1c086', inp: inputs, setFn: set },
+              { label: 'Scénario B', color: '#818cf8', inp: inputsB, setFn: setB },
+            ] as const).map(({ label, color, inp, setFn }) => (
+              <div key={label} style={{ background: 'var(--card-dark)', border: `1px solid ${color}25`, borderRadius: 16, padding: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>{label}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+                  {([
+                    { key: 'monthly' as keyof DCAInputs, label: 'Versement mensuel (€)', type: 'input', min: 0, max: 10000, step: 100 },
+                    { key: 'years' as keyof DCAInputs, label: `Durée : ${inp.years} ans`, type: 'slider', min: 1, max: 40, step: 1 },
+                    { key: 'targetRate' as keyof DCAInputs, label: `Rendement : ${inp.targetRate}%`, type: 'slider', min: 1, max: 15, step: 0.5 },
+                    { key: 'startingCapital' as keyof DCAInputs, label: 'Capital de départ (€)', type: 'input', min: 0, max: 1000000, step: 1000 },
+                  ]).map(({ key, label: l, type: ft, min, max, step }) => (
+                    <div key={String(key)}>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6 }}>{l}</div>
+                      {ft === 'input'
+                        ? <Input type="number" value={inp[key] as number} onChange={e => setFn(key)(+e.target.value)} style={{ height: 34, fontSize: 13 }} />
+                        : <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />
+                      }
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
+            {[
+              { label: 'Valeur finale A', value: fmt(r.estimatedValue), color: '#f1c086' },
+              { label: 'Valeur finale B', value: fmt(rB.estimatedValue), color: '#818cf8' },
+              { label: 'Différence', value: fmt(Math.abs(rB.estimatedValue - r.estimatedValue)), color: rB.estimatedValue > r.estimatedValue ? '#34d399' : '#f87171' },
+              { label: 'B vs A', value: `${rB.estimatedValue >= r.estimatedValue ? '+' : ''}${((rB.estimatedValue - r.estimatedValue) / (r.estimatedValue || 1) * 100).toFixed(1)}%`, color: rB.estimatedValue > r.estimatedValue ? '#34d399' : '#f87171' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 4 }}>{kpi.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Évolution comparée</p>
+            {(() => {
+              const yearsMax = Math.max(inputs.years, inputsB.years)
+              const dataA = calcDCA({ ...inputs, years: yearsMax }).chartData
+              const dataB = calcDCA({ ...inputsB, years: yearsMax }).chartData
+              const merged = dataA.filter((_: unknown, i: number) => i % 3 === 0).map((pt: { month: number; value: number; invested: number }, i: number) => ({
+                month: pt.month,
+                'Scénario A': pt.value,
+                'Scénario B': dataB[i * 3]?.value ?? 0,
+              }))
+              return (
+                <ResponsiveContainer width="100%" height={240}>
+                  <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${Math.round(v/12)}a`} />
+                    <YAxis tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                    <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <Line type="monotone" dataKey="Scénario A" stroke="#f1c086" strokeWidth={2.5} dot={false} animationDuration={800} />
+                    <Line type="monotone" dataKey="Scénario B" stroke="#818cf8" strokeWidth={2.5} dot={false} animationDuration={800} />
+                  </LineChart>
+                </ResponsiveContainer>
+              )
+            })()}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

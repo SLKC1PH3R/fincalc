@@ -305,9 +305,10 @@ export default function HomePage() {
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(241,192,134,0.35)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Patrimoine</p>
-                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>
-                  {loaded ? (patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—') : '…'}
-                </p>
+                {loaded
+                  ? <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
+                  : <div className="skeleton" style={{ height: 32, width: 110, marginBottom: 4 }} />
+                }
                 <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>net estimé</p>
               </div>
             </Link>
@@ -320,8 +321,11 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Enveloppes</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedEnvelopes : '…'}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>actives</p>
+                  {loaded
+                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedEnvelopes}</p>
+                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
+                  }
+                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>actives</p>}
                 </div>
               </div>
             </Link>
@@ -334,8 +338,11 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Ce mois</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedThisMonth : '…'}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>simulations</p>
+                  {loaded
+                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedThisMonth}</p>
+                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
+                  }
+                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>simulations</p>}
                 </div>
               </div>
             </Link>
@@ -348,8 +355,11 @@ export default function HomePage() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
                 <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Simulations</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{loaded ? animatedTotalSims : '…'}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>au total</p>
+                  {loaded
+                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedTotalSims}</p>
+                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
+                  }
+                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>au total</p>}
                 </div>
               </div>
             </Link>

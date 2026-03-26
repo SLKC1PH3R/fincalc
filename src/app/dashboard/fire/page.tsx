@@ -9,7 +9,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2 } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2, GitCompare } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
@@ -33,6 +33,10 @@ function FirePageInner() {
   const [patrimoineImported, setPatrimoineImported] = useState<number | null>(null)
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
+  const [compareMode, setCompareMode] = useState(false)
+  const [inputsB, setInputsB] = useState<FireInputs>({ income: 60000, expenses: 30000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
+  const setB = (k: keyof FireInputs) => (v: number) => setInputsB(p => ({ ...p, [k]: v }))
+  const rB = useMemo(() => calcFire(inputsB), [inputsB])
 
   const importFromPatrimoine = async () => {
     setImportingPatrimoine(true)
@@ -124,6 +128,11 @@ function FirePageInner() {
             tips,
           })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
           <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
+          <Button variant={compareMode ? 'default' : 'outline'} size="sm"
+            onClick={() => { setCompareMode(v => !v); if (!compareMode) setInputsB({ ...inputs, expenses: Math.round(inputs.expenses * 0.85) }) }}
+            style={compareMode ? { background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)', color: '#818cf8' } : {}}>
+            <GitCompare className="h-3.5 w-3.5 mr-1.5" />Comparer
+          </Button>
           <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
             onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
             style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
@@ -311,6 +320,100 @@ function FirePageInner() {
           </div>
         </div>
       </div>
+
+      {/* ── Comparateur A/B ── */}
+      {compareMode && (
+        <div style={{ marginTop: 32, borderTop: '1px solid var(--card-dark-border)', paddingTop: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <GitCompare style={{ width: 16, height: 16, color: '#818cf8' }} />
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Comparateur de scénarios</h2>
+            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Scénario A vs Scénario B côte à côte</span>
+          </div>
+
+          {/* Two input panels */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            {([
+              { label: 'Scénario A', color: '#f1c086', inp: inputs, setFn: set },
+              { label: 'Scénario B', color: '#818cf8', inp: inputsB, setFn: setB },
+            ] as const).map(({ label, color, inp, setFn }) => (
+              <div key={label} style={{ background: 'var(--card-dark)', border: `1px solid ${color}25`, borderRadius: 16, padding: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>{label}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
+                  {([
+                    { key: 'income' as keyof FireInputs,       label: 'Revenu annuel net (€)', type: 'input', min: 0, max: 500000, step: 1000 },
+                    { key: 'expenses' as keyof FireInputs,     label: 'Dépenses annuelles (€)', type: 'input', min: 0, max: 500000, step: 1000 },
+                    { key: 'netWorth' as keyof FireInputs,     label: 'Patrimoine actuel (€)', type: 'input', min: 0, max: 2000000, step: 10000 },
+                    { key: 'rate' as keyof FireInputs,         label: `Rendement : ${inp.rate}%`, type: 'slider', min: 1, max: 15, step: 0.5 },
+                    { key: 'withdrawalRate' as keyof FireInputs, label: `Taux retrait : ${inp.withdrawalRate}%`, type: 'slider', min: 2, max: 6, step: 0.1 },
+                  ]).map(({ key, label: l, type: ft, min, max, step }) => (
+                    <div key={String(key)}>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6 }}>{l}</div>
+                      {ft === 'input'
+                        ? <Input type="number" value={inp[key] as number} onChange={e => setFn(key)(+e.target.value)} style={{ height: 34, fontSize: 13 }} />
+                        : <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />
+                      }
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison KPIs */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr) repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
+            {[
+              { label: 'FIRE A — ans restants', value: r.yearsToFire > 99 ? '+100 ans' : `${r.yearsToFire} ans`, color: '#f1c086' },
+              { label: 'FIRE B — ans restants', value: rB.yearsToFire > 99 ? '+100 ans' : `${rB.yearsToFire} ans`, color: '#818cf8' },
+              { label: 'Différence',
+                value: (() => { const d = r.yearsToFire - rB.yearsToFire; return d === 0 ? 'Identique' : `${d > 0 ? 'B gagne' : 'A gagne'} ${Math.abs(d)} ans` })(),
+                color: r.yearsToFire !== rB.yearsToFire ? '#34d399' : 'var(--text-muted-c)' },
+              { label: 'Cible B vs A',
+                value: (() => { const d = rB.target - r.target; return `${d >= 0 ? '+' : ''}${fmt(d)}` })(),
+                color: rB.target < r.target ? '#34d399' : '#fb923c' },
+            ].map(kpi => (
+              <div key={kpi.label} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 4 }}>{kpi.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison chart */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>
+              Projection patrimoniale comparée — {Math.max(r.yearsToFire, rB.yearsToFire, 1)} ans
+            </p>
+            {(() => {
+              const yearsMax = Math.min(Math.max(r.yearsToFire, rB.yearsToFire, 10), 60)
+              const data = Array.from({ length: yearsMax + 1 }, (_, y) => {
+                let nwA = inputs.netWorth
+                let nwB = inputsB.netWorth
+                for (let i = 0; i < y; i++) {
+                  nwA = nwA * (1 + inputs.rate / 100) + r.annualSavings
+                  nwB = nwB * (1 + inputsB.rate / 100) + rB.annualSavings
+                }
+                return { year: y, 'Scénario A': Math.round(Math.max(nwA, 0)), 'Scénario B': Math.round(Math.max(nwB, 0)), 'Cible A': Math.round(r.target), 'Cible B': Math.round(rB.target) }
+              })
+              const { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip: RTooltip, Legend, ResponsiveContainer: RC } = require('recharts')
+              return (
+                <RC width="100%" height={260}>
+                  <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${v}a`} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                    <RTooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <Line type="monotone" dataKey="Scénario A" stroke="#f1c086" strokeWidth={2.5} dot={false} animationDuration={800} />
+                    <Line type="monotone" dataKey="Scénario B" stroke="#818cf8" strokeWidth={2.5} dot={false} animationDuration={800} />
+                    <Line type="monotone" dataKey="Cible A" stroke="#f1c08640" strokeWidth={1.5} dot={false} strokeDasharray="5 5" animationDuration={800} />
+                    <Line type="monotone" dataKey="Cible B" stroke="#818cf840" strokeWidth={1.5} dot={false} strokeDasharray="5 5" animationDuration={800} />
+                  </LineChart>
+                </RC>
+              )
+            })()}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

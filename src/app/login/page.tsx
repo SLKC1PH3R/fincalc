@@ -501,7 +501,7 @@ function AuthForm() {
                   WebkitTransformStyle: 'preserve-3d',
                   transition: 'transform 0.65s cubic-bezier(0.45, 0, 0.15, 1)',
                   transform: isRegister ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                  minHeight: 480,
+                  minHeight: 540,
                 }}>
                   {loginFace}
                   {registerFace}

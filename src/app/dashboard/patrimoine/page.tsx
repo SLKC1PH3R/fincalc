@@ -15,7 +15,6 @@ import {
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { calcPortfolioGeo, estimatePositionIncome, type GeoAllocation } from '@/lib/etf-database'
-import { FrenchAverageWidget } from '@/components/FrenchAverageWidget'
 
 // Carte monde chargée côté client uniquement (SSR incompatible avec react-simple-maps)
 const WorldMapChart = dynamic(
@@ -411,6 +410,26 @@ export default function PatrimoinePage() {
   )
   const patrimoineNet = totalValue - dettes
 
+  // Percentile parmi les Français (INSEE 2021)
+  const pct = (() => {
+    if (patrimoineNet <= 0) return 5
+    const INSEE = [
+      { pct: 10, value: 0 },
+      { pct: 25, value: 28_000 },
+      { pct: 50, value: 183_000 },
+      { pct: 75, value: 440_000 },
+      { pct: 90, value: 810_000 },
+    ]
+    for (let i = 0; i < INSEE.length - 1; i++) {
+      if (patrimoineNet >= INSEE[i].value && patrimoineNet <= INSEE[i + 1].value) {
+        const t = (patrimoineNet - INSEE[i].value) / (INSEE[i + 1].value - INSEE[i].value)
+        return Math.round(INSEE[i].pct + t * (INSEE[i + 1].pct - INSEE[i].pct))
+      }
+    }
+    return patrimoineNet < 0 ? 5 : 95
+  })()
+  const pctColor = pct >= 75 ? '#34d399' : pct >= 50 ? '#f1c086' : pct >= 25 ? '#fb923c' : '#f87171'
+
   // Perf mensuelle par enveloppe (depuis snapshots si dispo)
   const monthlyPerfByEnv = useMemo((): Record<string, number> => {
     if (snapshots.length < 2) return {}
@@ -632,14 +651,8 @@ export default function PatrimoinePage() {
         </div>
       )}
 
-      {/* ── vs Moyenne française ── */}
-      {!loading && patrimoineNet > 0 && (
-        <FrenchAverageWidget patrimoineNet={patrimoineNet} />
-      )}
-
-      {/* ── Évolution + Milestones ── */}
+      {/* ── Graphique évolution (pleine largeur) ── */}
       {!loading && totalValue > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, alignItems: 'start' }}>
         <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
           <CardContent style={{ padding: 20 }}>
             {/* Chart header: category dropdown + time range buttons */}
@@ -767,85 +780,176 @@ export default function PatrimoinePage() {
             </div>
           </CardContent>
         </Card>
+      )}
 
-        {/* Milestones + Structure bar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', flex: 1 }}>
+      {/* ── Pyramide patrimoniale + Milestones ── */}
+      {!loading && totalValue > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+
+          {/* LEFT: Pyramide percentile */}
+          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
             <CardContent style={{ padding: '18px 20px' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Paliers patrimoniaux</div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>
+                  Pyramide patrimoniale française
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Sources : INSEE 2021 · Banque de France 2024</div>
+              </div>
+
+              {/* Percentile badge */}
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: pctColor, fontVariantNumeric: 'tabular-nums' }}>
+                  {pct}ème percentile
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>sur {fmtCompact(patrimoineNet)}</span>
+              </div>
+
+              {/* Explanation */}
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 16, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, lineHeight: 1.7, borderLeft: `2px solid ${pctColor}40` }}>
+                Le <strong style={{ color: 'var(--text-muted-c)' }}>percentile</strong> mesure votre rang parmi l'ensemble des ménages français.
+                Au <strong style={{ color: pctColor }}>{pct}ème percentile</strong>, vous avez plus de patrimoine que <strong style={{ color: 'var(--text-muted-c)' }}>{pct}% des Français</strong>.
+                La pyramide montre votre position et ce qu'il y a au-dessus de vous.
+              </div>
+
+              {/* Pyramid */}
               {(() => {
-                const mls = [
-                  { label: '50k €', val: 50_000 },
-                  { label: '100k €', val: 100_000 },
-                  { label: '250k €', val: 250_000 },
-                  { label: '500k €', val: 500_000 },
+                const PYRAMID_TIERS = [
+                  { label: 'Top 1%',            sub: '~1% des ménages',  threshold: '> 4 M€',   minPct: 99, color: '#a78bfa', w: 14 },
+                  { label: 'Top 10%',           sub: '~9% des ménages',  threshold: '> 810 k€', minPct: 90, color: '#34d399', w: 30 },
+                  { label: 'Top 25%',           sub: '~15% des ménages', threshold: '> 440 k€', minPct: 75, color: '#f1c086', w: 50 },
+                  { label: 'Au-dessus médiane', sub: '~25% des ménages', threshold: '> 183 k€', minPct: 50, color: '#fb923c', w: 67 },
+                  { label: 'Sous la médiane',   sub: '~25% des ménages', threshold: '> 28 k€',  minPct: 25, color: '#f97316', w: 83 },
+                  { label: 'Quartile inférieur',sub: '~25% des ménages', threshold: '< 28 k€',  minPct: 0,  color: '#f87171', w: 100 },
                 ]
-                const doneCount = mls.filter(m => patrimoineNet >= m.val).length
-                const nextM = mls.find(m => patrimoineNet < m.val)
+                const userTierIdx = PYRAMID_TIERS.findIndex(t => pct >= t.minPct)
                 return (
-                  <div>
-                    <div style={{ position: 'relative', paddingTop: 10, marginBottom: 8 }}>
-                      <div style={{ position: 'absolute', top: 20, left: 10, right: 10, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-                      <div style={{ position: 'absolute', top: 19, left: 10, width: `calc(${(doneCount / 4) * 100}% - 10px)`, height: 3, background: 'linear-gradient(90deg, #f1c086, rgba(241,192,134,0.5))', borderRadius: 99 }} />
-                      <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
-                        {mls.map((m, i) => {
-                          const done = patrimoineNet >= m.val
-                          return (
-                            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 2 }}>
-                              <div style={{ width: 22, height: 22, borderRadius: '50%', background: done ? '#f1c086' : 'rgba(255,255,255,0.06)', border: done ? 'none' : '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: done ? '#090c12' : 'rgba(255,255,255,0.2)' }}>
-                                {done ? '✓' : ''}
-                              </div>
-                              <span style={{ fontSize: 9, color: done ? 'var(--text-muted-c)' : 'var(--text-subtle)', textAlign: 'center', whiteSpace: 'nowrap' }}>{m.label}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
+                    {PYRAMID_TIERS.map((tier, idx) => {
+                      const isUser = idx === userTierIdx
+                      return (
+                        <div key={tier.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {/* Amount threshold label */}
+                          <div style={{ width: 58, textAlign: 'right', fontSize: 9, flexShrink: 0, fontVariantNumeric: 'tabular-nums', color: isUser ? tier.color : 'var(--text-subtle)', fontWeight: isUser ? 700 : 400 }}>
+                            {tier.threshold}
+                          </div>
+                          {/* Centered pyramid bar */}
+                          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                            <div style={{
+                              width: `${tier.w}%`,
+                              height: isUser ? 34 : 24,
+                              borderRadius: isUser ? 6 : 3,
+                              background: isUser ? tier.color : tier.color + '22',
+                              border: isUser ? `2px solid ${tier.color}` : `1px solid ${tier.color}30`,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              transition: 'all 0.2s',
+                            }}>
+                              {isUser && (
+                                <span style={{ fontSize: 10, fontWeight: 800, color: '#090c12', letterSpacing: '0.01em' }}>
+                                  ▶ Vous êtes ici
+                                </span>
+                              )}
                             </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                    {nextM ? (
-                      <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(241,192,134,0.07)', borderRadius: 9, border: '1px solid rgba(241,192,134,0.18)' }}>
-                        <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginBottom: 3 }}>Prochain palier</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#f1c086' }}>{nextM.label}</div>
-                        <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Reste {fmtCompact(nextM.val - patrimoineNet)}</div>
-                      </div>
-                    ) : (
-                      <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(52,211,153,0.07)', borderRadius: 9, border: '1px solid rgba(52,211,153,0.2)' }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>🎉 Tous les paliers atteints !</div>
-                      </div>
-                    )}
+                          </div>
+                          {/* Tier label */}
+                          <div style={{ width: 92, fontSize: isUser ? 11 : 10, color: isUser ? 'var(--text-primary)' : 'var(--text-subtle)', fontWeight: isUser ? 700 : 400, flexShrink: 0, lineHeight: 1.3 }}>
+                            {tier.label}
+                            <div style={{ fontSize: 9, color: 'var(--text-subtle)', opacity: isUser ? 0.8 : 0.5 }}>{tier.sub}</div>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 )
               })()}
+
+              {/* Insight */}
+              <div style={{ fontSize: 11, color: 'var(--text-subtle)', borderTop: '1px solid var(--card-dark-border)', paddingTop: 10 }}>
+                {pct >= 75 ? '🎯 Excellent niveau de patrimoine — vous êtes dans le quart supérieur des Français.'
+                  : pct >= 50 ? '📈 Au-dessus de la médiane nationale — continuez sur votre lancée.'
+                  : pct >= 25 ? '💡 Sous la médiane — des simulations peuvent vous aider à optimiser.'
+                  : '🚀 Fort potentiel de progression — l\'effet des intérêts composés jouera en votre faveur.'}
+              </div>
             </CardContent>
           </Card>
 
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-            <CardContent style={{ padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>Structure du patrimoine</div>
-              {totalValue > 0 ? (
-                <>
-                  <div style={{ height: 8, borderRadius: 99, overflow: 'hidden', display: 'flex', marginBottom: 8 }}>
-                    <div style={{ width: `${Math.round((patrimoineNet / totalValue) * 100)}%`, height: '100%', background: 'linear-gradient(90deg, rgba(241,192,134,0.7), #f1c086)' }} />
-                    {dettes > 0 && <div style={{ flex: 1, height: '100%', background: 'rgba(248,113,113,0.35)' }} />}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
-                    <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-                      <div style={{ width: 6, height: 6, borderRadius: 1, background: '#f1c086' }} />
-                      <span style={{ color: 'var(--text-muted-c)' }}>Net {Math.round((patrimoineNet / totalValue) * 100)}%</span>
-                    </div>
-                    {dettes > 0 && (
-                      <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
-                        <div style={{ width: 6, height: 6, borderRadius: 1, background: 'rgba(248,113,113,0.5)' }} />
-                        <span style={{ color: 'var(--text-muted-c)' }}>Dettes {Math.round((dettes / totalValue) * 100)}%</span>
+          {/* RIGHT: Milestones + Structure */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', flex: 1 }}>
+              <CardContent style={{ padding: '18px 20px' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Paliers patrimoniaux</div>
+                {(() => {
+                  const mls = [
+                    { label: '50k €', val: 50_000 },
+                    { label: '100k €', val: 100_000 },
+                    { label: '250k €', val: 250_000 },
+                    { label: '500k €', val: 500_000 },
+                  ]
+                  const doneCount = mls.filter(m => patrimoineNet >= m.val).length
+                  const nextM = mls.find(m => patrimoineNet < m.val)
+                  return (
+                    <div>
+                      <div style={{ position: 'relative', paddingTop: 10, marginBottom: 8 }}>
+                        <div style={{ position: 'absolute', top: 20, left: 10, right: 10, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                        <div style={{ position: 'absolute', top: 19, left: 10, width: `calc(${(doneCount / 4) * 100}% - 10px)`, height: 3, background: 'linear-gradient(90deg, #f1c086, rgba(241,192,134,0.5))', borderRadius: 99 }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+                          {mls.map((m, i) => {
+                            const done = patrimoineNet >= m.val
+                            return (
+                              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 2 }}>
+                                <div style={{ width: 22, height: 22, borderRadius: '50%', background: done ? '#f1c086' : 'rgba(255,255,255,0.06)', border: done ? 'none' : '2px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: done ? '#090c12' : 'rgba(255,255,255,0.2)' }}>
+                                  {done ? '✓' : ''}
+                                </div>
+                                <span style={{ fontSize: 9, color: done ? 'var(--text-muted-c)' : 'var(--text-subtle)', textAlign: 'center', whiteSpace: 'nowrap' }}>{m.label}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Patrimoine 100% net.</div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                      {nextM ? (
+                        <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(241,192,134,0.07)', borderRadius: 9, border: '1px solid rgba(241,192,134,0.18)' }}>
+                          <div style={{ fontSize: 9, color: 'var(--text-subtle)', marginBottom: 3 }}>Prochain palier</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#f1c086' }}>{nextM.label}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Reste {fmtCompact(nextM.val - patrimoineNet)}</div>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: 16, padding: '10px 12px', background: 'rgba(52,211,153,0.07)', borderRadius: 9, border: '1px solid rgba(52,211,153,0.2)' }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: '#34d399' }}>🎉 Tous les paliers atteints !</div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
+              </CardContent>
+            </Card>
+
+            <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+              <CardContent style={{ padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10 }}>Structure du patrimoine</div>
+                {totalValue > 0 ? (
+                  <>
+                    <div style={{ height: 8, borderRadius: 99, overflow: 'hidden', display: 'flex', marginBottom: 8 }}>
+                      <div style={{ width: `${Math.round((patrimoineNet / totalValue) * 100)}%`, height: '100%', background: 'linear-gradient(90deg, rgba(241,192,134,0.7), #f1c086)' }} />
+                      {dettes > 0 && <div style={{ flex: 1, height: '100%', background: 'rgba(248,113,113,0.35)' }} />}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10 }}>
+                      <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                        <div style={{ width: 6, height: 6, borderRadius: 1, background: '#f1c086' }} />
+                        <span style={{ color: 'var(--text-muted-c)' }}>Net {Math.round((patrimoineNet / totalValue) * 100)}%</span>
+                      </div>
+                      {dettes > 0 && (
+                        <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+                          <div style={{ width: 6, height: 6, borderRadius: 1, background: 'rgba(248,113,113,0.5)' }} />
+                          <span style={{ color: 'var(--text-muted-c)' }}>Dettes {Math.round((dettes / totalValue) * 100)}%</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Patrimoine 100% net.</div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       )}
 

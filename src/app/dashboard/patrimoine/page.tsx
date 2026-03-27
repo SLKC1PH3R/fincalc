@@ -1041,7 +1041,7 @@ function TabGeo({
           <div style={{ marginTop: 16, padding: '12px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 9, border: '1px solid var(--card-dark-border)' }}>
             <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginBottom: 2 }}>Astuce diversification</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-              Une exposition USD > 60% crée un risque de change. Envisagez des ETFs hedgés ou plus d'actifs en EUR.
+              Une exposition USD &gt; 60% crée un risque de change. Envisagez des ETFs hedgés ou plus d'actifs en EUR.
             </div>
           </div>
         </SectionCard>

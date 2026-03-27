@@ -47,7 +47,8 @@
       "Bash(npx prisma:*)",
       "Bash(docker compose:*)",
       "Bash(docker-compose build:*)",
-      "Bash(where docker:*)"
+      "Bash(where docker:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

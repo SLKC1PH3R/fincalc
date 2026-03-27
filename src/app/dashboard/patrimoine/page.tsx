@@ -1025,7 +1025,7 @@ function TabGeo({
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Analyse de concentration</div>
           {[
             { label: 'Exposition USA',         v: `${((geoAlloc.northAmerica ?? 0) * 100).toFixed(0)}%`, risk: (geoAlloc.northAmerica ?? 0) > 0.7 ? 'élevé' : 'moyen', c: (geoAlloc.northAmerica ?? 0) > 0.7 ? T.red : T.orange },
-            { label: 'Top classe d'actif',     v: '56%', risk: 'moyen',  c: T.orange },
+            { label: 'Top classe actif',     v: '56%', risk: 'moyen',  c: T.orange },
             { label: 'Marchés développés',     v: `${(((geoAlloc.northAmerica ?? 0) + (geoAlloc.europe ?? 0) + (geoAlloc.asiaPacific ?? 0)) * 100).toFixed(0)}%`, risk: 'faible', c: T.green },
             { label: 'Exposition USD',         v: `${((geoAlloc.northAmerica ?? 0) * 100 * 0.95).toFixed(0)}%`, risk: (geoAlloc.northAmerica ?? 0) > 0.6 ? 'élevé' : 'moyen', c: (geoAlloc.northAmerica ?? 0) > 0.6 ? T.red : T.orange },
           ].map((r, i, arr) => (

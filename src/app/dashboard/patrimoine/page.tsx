@@ -42,16 +42,22 @@ const WorldMapChart = dynamic(
 
 // ── Design tokens ─────────────────────────────────────────────
 const T = {
-  gold:   '#f1c086',
-  green:  '#34d399',
-  red:    '#f87171',
-  purple: '#a78bfa',
-  blue:   '#818cf8',
-  pink:   '#f472b6',
-  orange: '#fb923c',
-  gray:   '#94a3b8',
-  cyan:   '#38bdf8',
-  amber:  '#f59e0b',
+  bg:       "#07090f",
+  bgCard:   "#0d0f16",
+  bgCardHover: "#111420",
+  border:   "rgba(255,255,255,0.07)",
+  borderGold: "rgba(241,192,134,0.22)",
+  gold:     "#f1c086",
+  text:     "#f1f5f9",
+  muted:    "rgba(255,255,255,0.45)",
+  faint:    "rgba(255,255,255,0.2)",
+  green:    "#34d399",
+  red:      "#f87171",
+  purple:   "#a78bfa",
+  blue:     "#818cf8",
+  pink:     "#f472b6",
+  orange:   "#fb923c",
+  gray:     "#94a3b8",
 } as const
 
 const G = (o = 1) => `rgba(241,192,134,${o})`

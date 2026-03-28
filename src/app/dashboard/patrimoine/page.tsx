@@ -168,20 +168,20 @@ function ChartTip({ active, payload, label }: { active?: boolean; payload?: Arra
 
 function StatCard({ label, value, sub, color = T.gold }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-      <div style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      {sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{sub}</div>}
+    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px' }}>
+      <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 18, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      {sub && <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
 
 function SectionCard({ title, children, action }: { title?: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 14 }}>
       {title && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</div>
           {action}
         </div>
       )}
@@ -195,12 +195,12 @@ function BarProgress({ label, value, max, color, fmt: fmtFn = fmtCompact }: {
 }) {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-      <span style={{ fontSize: 11, color: 'var(--text-muted-c)', width: 100, flexShrink: 0 }}>{label}</span>
-      <div style={{ flex: 1, height: 6, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <span style={{ fontSize: 10, color: 'var(--text-muted-c)', width: 90, flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, height: 5, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 99, transition: 'width 0.4s' }} />
       </div>
-      <span style={{ fontSize: 11, fontWeight: 700, color, width: 60, textAlign: 'right' }}>{fmtFn(value)}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color, width: 52, textAlign: 'right' }}>{fmtFn(value)}</span>
     </div>
   )
 }
@@ -860,60 +860,61 @@ export default function PatrimoinePage() {
   ]
 
   return (
-    <div style={{ padding: '32px 40px', maxWidth: 1200, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
-        <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', margin: 0, marginBottom: 4 }}>Mon Patrimoine</h1>
-          <div style={{ fontSize: 13, color: 'var(--text-subtle)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '14px 32px 0' }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Mon Patrimoine</h1>
+          <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
             {envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''} · {pct}ème percentile français
-          </div>
+          </span>
         </div>
-        <Button onClick={() => setShowModal(true)} style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: T.gold, gap: 6 }}>
-          <Plus size={16} /> Ajouter une enveloppe
+        <Button onClick={() => setShowModal(true)} style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: T.gold, gap: 6, fontSize: 12, padding: '6px 12px', height: 'auto' }}>
+          <Plus size={14} /> Ajouter
         </Button>
       </div>
 
       {/* 3 KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '20px 24px' }}>
-          <div style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Patrimoine net</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(patrimoineNet)}</div>
-          <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 4 }}>{envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 10, flexShrink: 0 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine net</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(patrimoineNet)}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''}</div>
         </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '20px 24px' }}>
-          <div style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Percentile France</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: pctColor, fontVariantNumeric: 'tabular-nums' }}>{pct}ème</div>
-          <div style={{ height: 4, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden', marginTop: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Percentile France</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: pctColor, fontVariantNumeric: 'tabular-nums' }}>{pct}ème</div>
+          <div style={{ height: 3, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden', marginTop: 6 }}>
             <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${T.red}, ${T.orange}, ${T.gold}, ${T.green}, ${T.purple})`, borderRadius: 99 }} />
           </div>
         </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '20px 24px' }}>
-          <div style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>FIRE (règle 4%)</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: T.blue, fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>FIRE (règle 4%)</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: T.blue, fontVariantNumeric: 'tabular-nums' }}>
             {patrimoineNet > 0 ? `${Math.min(100, ((patrimoineNet / (36_000 * 25)) * 100)).toFixed(0)}%` : '0%'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 4 }}>Objectif : {fmtCompact(36_000 * 25)}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>Objectif : {fmtCompact(36_000 * 25)}</div>
         </div>
       </div>
 
       {/* 6 category shortcuts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8, marginBottom: 10, flexShrink: 0 }}>
         {CAT_LINKS.map(cat => {
           const catTotal = envelopes.filter(e => cat.types.includes(e.type)).reduce((s, e) => s + computeMarketValue(e), 0)
           const Icon = cat.icon
           return (
             <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12,
-                padding: '14px 12px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.15s',
+                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10,
+                padding: '8px 6px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.15s',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = cat.color)}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--card-dark-border)')}
               >
-                <Icon style={{ color: cat.color, marginBottom: 8 }} />
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{cat.label}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: cat.color, fontVariantNumeric: 'tabular-nums' }}>
+                <Icon style={{ color: cat.color, width: 16, height: 16 }} />
+                <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-primary)' }}>{cat.label}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: cat.color, fontVariantNumeric: 'tabular-nums' }}>
                   {cat.types.length > 0 && catTotal > 0 ? fmtCompact(catTotal) : cat.types.length === 0 ? 'Voir' : '—'}
                 </div>
               </div>
@@ -923,34 +924,36 @@ export default function PatrimoinePage() {
       </div>
 
       {/* Tab nav */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 24, background: 'var(--card-dark)', padding: 4, borderRadius: 12, border: '1px solid var(--card-dark-border)', width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 10, background: 'var(--card-dark)', padding: 3, borderRadius: 10, border: '1px solid var(--card-dark-border)', width: 'fit-content', flexShrink: 0 }}>
         {tabs.map(t => {
           const Icon = t.icon
           return (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
-              display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 7, fontSize: 12, fontWeight: 600,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s',
               background: tab === t.id ? 'rgba(241,192,134,0.12)' : 'transparent',
               color: tab === t.id ? T.gold : 'var(--text-muted-c)',
             }}>
-              <Icon size={14} />{t.label}
+              <Icon size={13} />{t.label}
             </button>
           )
         })}
       </div>
 
-      {/* Tab content */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-subtle)', fontSize: 14 }}>Chargement…</div>
-      ) : (
-        <>
-          {tab === 'overview' && <TabOverview envelopes={envelopes} snapshots={snapshots} router={router} />}
-          {tab === 'actifs'   && <TabActifs envelopes={envelopes} router={router} />}
-          {tab === 'revenus'  && <TabRevenus envelopes={envelopes} />}
-          {tab === 'fire'     && <TabFire envelopes={envelopes} />}
-          {tab === 'geo'      && <TabGeo envelopes={envelopes} />}
-        </>
-      )}
+      {/* Tab content — scrollable zone */}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-subtle)', fontSize: 14 }}>Chargement…</div>
+        ) : (
+          <>
+            {tab === 'overview' && <TabOverview envelopes={envelopes} snapshots={snapshots} router={router} />}
+            {tab === 'actifs'   && <TabActifs envelopes={envelopes} router={router} />}
+            {tab === 'revenus'  && <TabRevenus envelopes={envelopes} />}
+            {tab === 'fire'     && <TabFire envelopes={envelopes} />}
+            {tab === 'geo'      && <TabGeo envelopes={envelopes} />}
+          </>
+        )}
+      </div>
 
       {/* Modal */}
       {showModal && (

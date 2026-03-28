@@ -12,48 +12,47 @@ interface Simulation {
   inputs: Record<string, unknown>
 }
 
-// ── Modules ────────────────────────────────────────────────────────────────────
 const CATEGORIES = [
   {
     id: 'placements',
     label: 'Placements',
     modules: [
-      { href: '/dashboard/compound',  type: 'compound',  label: 'Intérêts composés', desc: "Visualisez l'effet boule de neige sur votre capital",               icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
-      { href: '/dashboard/dca',       type: 'dca',       label: 'DCA',               desc: 'Simulez un investissement progressif et régulier',                  icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
-      { href: '/dashboard/fire',      type: 'fire',      label: 'FI/RE',             desc: "Calculez votre date d'indépendance financière",                    icon: Flame,      color: '#fb923c', tag: 'Épargne' },
-      { href: '/dashboard/dividends', type: 'dividends', label: 'Revenus passifs',   desc: 'Modélisez vos revenus de dividendes et rentes sur le long terme',   icon: Coins,      color: '#facc15', tag: 'Épargne' },
-      { href: '/dashboard/benchmark', type: 'benchmark', label: 'Benchmarks',        desc: 'Comparez vos performances aux indices ETF et stratégies passives',  icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
+      { href: '/dashboard/compound',  type: 'compound',  label: 'Intérêts composés', desc: "Effet boule de neige sur votre capital",              icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
+      { href: '/dashboard/dca',       type: 'dca',       label: 'DCA',               desc: 'Investissement progressif et régulier',               icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
+      { href: '/dashboard/fire',      type: 'fire',      label: 'FI/RE',             desc: "Date d'indépendance financière",                      icon: Flame,      color: '#fb923c', tag: 'Épargne' },
+      { href: '/dashboard/dividends', type: 'dividends', label: 'Revenus passifs',   desc: 'Dividendes et rentes sur le long terme',             icon: Coins,      color: '#facc15', tag: 'Épargne' },
+      { href: '/dashboard/benchmark', type: 'benchmark', label: 'Benchmarks',        desc: 'Comparez performances aux indices ETF',              icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
     ],
   },
   {
     id: 'immobilier',
     label: 'Immobilier',
     modules: [
-      { href: '/dashboard/buyrent',  type: 'buyrent',  label: 'Acheter vs Louer',     desc: 'Comparez les deux stratégies résidentielles sur le long terme',     icon: Home,      color: '#a78bfa', tag: 'Immobilier' },
-      { href: '/dashboard/mortgage', type: 'mortgage', label: 'Prêt immobilier',      desc: "Mensualités, TAEG, coût total et tableau d'amortissement",          icon: Building2, color: '#f472b6', tag: 'Immobilier' },
-      { href: '/dashboard/rental',   type: 'rental',   label: 'Rentabilité locative', desc: 'Cashflow net, rendement brut/net et retour sur investissement',     icon: Wallet,    color: '#2dd4bf', tag: 'Immobilier' },
+      { href: '/dashboard/buyrent',  type: 'buyrent',  label: 'Acheter vs Louer',     desc: 'Comparez les deux stratégies résidentielles',        icon: Home,      color: '#a78bfa', tag: 'Immo' },
+      { href: '/dashboard/mortgage', type: 'mortgage', label: 'Prêt immobilier',      desc: "Mensualités, TAEG et coût total",                    icon: Building2, color: '#f472b6', tag: 'Immo' },
+      { href: '/dashboard/rental',   type: 'rental',   label: 'Rentabilité locative', desc: 'Cashflow net, rendement brut/net, ROI',              icon: Wallet,    color: '#2dd4bf', tag: 'Immo' },
     ],
   },
   {
     id: 'fiscalite',
     label: 'Fiscalité & Retraite',
     modules: [
-      { href: '/dashboard/tax',              type: 'tax',              label: 'Impôts IR',          desc: 'Calcul du barème IR 2025, TMI et optimisation fiscale',                  icon: Receipt,    color: '#fb7185', tag: 'Fiscal' },
-      { href: '/dashboard/flat-tax',         type: 'flat-tax',         label: 'Flat Tax vs Barème', desc: 'Comparez PFU 30% et barème progressif sur vos revenus mobiliers',        icon: Receipt,    color: '#f97316', tag: 'Fiscal' },
-      { href: '/dashboard/envelope-compare', type: 'envelope-compare', label: 'PEA vs CTO vs AV',  desc: 'Simulez et comparez la fiscalité de chaque enveloppe sur 20 ans',        icon: Wallet,     color: '#c084fc', tag: 'Fiscal' },
-      { href: '/dashboard/retirement',       type: 'retirement',       label: 'Retraite',           desc: 'Projetez votre pension CNAV + Agirc-Arrco et optimisez votre PER',      icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal' },
-      { href: '/dashboard/succession',       type: 'succession',       label: 'Succession & Don.',  desc: 'Calculez droits de succession, abattements et donations optimales',      icon: Users,      color: '#60a5fa', tag: 'Fiscal' },
+      { href: '/dashboard/tax',              type: 'tax',              label: 'Impôts IR',          desc: 'Barème IR 2025, TMI et optimisation fiscale',           icon: Receipt,    color: '#fb7185', tag: 'Fiscal' },
+      { href: '/dashboard/flat-tax',         type: 'flat-tax',         label: 'Flat Tax vs Barème', desc: 'PFU 30% vs barème progressif',                         icon: Receipt,    color: '#f97316', tag: 'Fiscal' },
+      { href: '/dashboard/envelope-compare', type: 'envelope-compare', label: 'PEA vs CTO vs AV',  desc: 'Fiscalité de chaque enveloppe sur 20 ans',              icon: Wallet,     color: '#c084fc', tag: 'Fiscal' },
+      { href: '/dashboard/retirement',       type: 'retirement',       label: 'Retraite',           desc: 'Projection pension CNAV + Agirc-Arrco',                icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal' },
+      { href: '/dashboard/succession',       type: 'succession',       label: 'Succession & Don.',  desc: 'Droits de succession et donations optimales',           icon: Users,      color: '#60a5fa', tag: 'Fiscal' },
     ],
   },
   {
     id: 'budget',
     label: 'Budget & Épargne',
     modules: [
-      { href: '/dashboard/savings-rate',    type: 'savings-rate',    label: "Taux d'épargne",  desc: "Analysez votre capacité d'épargne et votre trajectoire vers l'IF",   icon: Percent,    color: '#818cf8', tag: 'Budget' },
-      { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Appliquez la règle d'or pour équilibrer vos dépenses",               icon: Calculator, color: '#a3e635', tag: 'Budget' },
-      { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Calculez votre coussin de sécurité optimal selon votre situation',   icon: ShieldCheck, color: '#34d399', tag: 'Budget' },
-      { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Comparez offres de crédit, coût total et capacité de remboursement', icon: CreditCard, color: '#fb7185', tag: 'Budget' },
-      { href: '/dashboard/transactions',    type: 'transactions',    label: "Carnet d'ordres", desc: 'Gérez vos ordres boursiers, PRU et historique de transactions',       icon: History,    color: '#38bdf8', tag: 'Budget' },
+      { href: '/dashboard/savings-rate',    type: 'savings-rate',    label: "Taux d'épargne",  desc: "Capacité d'épargne et trajectoire vers l'IF",          icon: Percent,    color: '#818cf8', tag: 'Budget' },
+      { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Règle d'or pour équilibrer vos dépenses",              icon: Calculator, color: '#a3e635', tag: 'Budget' },
+      { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Coussin de sécurité optimal',                          icon: ShieldCheck, color: '#34d399', tag: 'Budget' },
+      { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Coût total et capacité de remboursement',              icon: CreditCard, color: '#fb7185', tag: 'Budget' },
+      { href: '/dashboard/transactions',    type: 'transactions',    label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU et historique',                  icon: History,    color: '#38bdf8', tag: 'Budget' },
     ],
   },
 ]
@@ -64,8 +63,8 @@ const FILTER_TABS = [
   { id: 'all',        label: 'Tous',                count: ALL_MODULES.length },
   { id: 'placements', label: 'Placements',           count: 5 },
   { id: 'immobilier', label: 'Immobilier',           count: 3 },
-  { id: 'fiscalite',  label: 'Fiscalité & Retraite', count: 5 },
-  { id: 'budget',     label: 'Budget & Épargne',     count: 5 },
+  { id: 'fiscalite',  label: 'Fiscalité',            count: 5 },
+  { id: 'budget',     label: 'Budget',               count: 5 },
 ]
 
 const GOLD = '#f1c086'
@@ -91,12 +90,10 @@ export default function SimulateursPage() {
       .finally(() => setLoaded(true))
   }, [])
 
-  // Sims by type
   const simsByType = useMemo(() =>
     sims.reduce((acc, s) => { acc[s.type] = [...(acc[s.type] || []), s]; return acc }, {} as Record<string, Simulation[]>)
   , [sims])
 
-  // Filter by search + category
   const filteredCategories = useMemo(() => {
     const q = search.toLowerCase().trim()
     return CATEGORIES
@@ -110,54 +107,47 @@ export default function SimulateursPage() {
       .filter(cat => cat.modules.length > 0)
   }, [search, activeFilter])
 
-  const totalVisible = filteredCategories.reduce((acc, c) => acc + c.modules.length, 0)
-
   return (
-    <div className="flex-1" style={{ background: 'var(--content-bg)', minHeight: '100vh' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--content-bg)' }}>
 
       {/* ── HEADER ── */}
-      <div className="relative overflow-hidden px-5 xl:px-6"
-        style={{ borderBottom: '1px solid var(--section-border)', paddingTop: 'clamp(20px,3vw,36px)', paddingBottom: 'clamp(16px,2vw,28px)' }}>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(ellipse at 80% 50%, ${GOLD}05, transparent 60%)` }} />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--section-border)', flexShrink: 0, position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse at 80% 50%, ${GOLD}05, transparent 60%)` }} />
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <p style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>
+            <p style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 3 }}>
               Outils financiers
             </p>
-            <h1 style={{ fontSize: 'clamp(1.3rem,3vw,1.75rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-              Simulateurs
-            </h1>
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginTop: 4 }}>
-              {loaded ? `${sims.length} simulation${sims.length > 1 ? 's' : ''} sauvegardée${sims.length > 1 ? 's' : ''}` : '…'} · {ALL_MODULES.length} modules disponibles
-            </p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+              <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', margin: 0 }}>
+                Simulateurs
+              </h1>
+              <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
+                {loaded ? `${sims.length} sim. sauvegardée${sims.length > 1 ? 's' : ''}` : '…'} · {ALL_MODULES.length} modules
+              </span>
+            </div>
           </div>
 
           {/* Search */}
-          <div className="relative flex-shrink-0 w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
-              style={{ color: 'var(--text-muted-c)' }} />
+          <div style={{ position: 'relative', width: 220, flexShrink: 0 }}>
+            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted-c)', width: 13, height: 13, pointerEvents: 'none' }} />
             <input
               type="text"
-              placeholder="Rechercher un simulateur…"
+              placeholder="Rechercher…"
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{
-                width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                width: '100%', paddingLeft: 30, paddingRight: 10, paddingTop: 6, paddingBottom: 6,
                 background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-                borderRadius: 10, fontSize: 13, color: 'var(--text-em)', outline: 'none',
+                borderRadius: 8, fontSize: 12, color: 'var(--text-em)', outline: 'none', boxSizing: 'border-box',
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
-              onBlur={e => (e.currentTarget.style.borderColor = 'var(--card-dark-border)')}
             />
           </div>
         </div>
       </div>
 
       {/* ── FILTER TABS ── */}
-      <div className="px-5 xl:px-6 py-3 flex items-center gap-1.5 overflow-x-auto"
-        style={{ borderBottom: '1px solid var(--section-border)' }}>
+      <div style={{ padding: '6px 24px', borderBottom: '1px solid var(--section-border)', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
         {FILTER_TABS.map(tab => {
           const isActive = activeFilter === tab.id
           return (
@@ -165,19 +155,19 @@ export default function SimulateursPage() {
               key={tab.id}
               onClick={() => setActiveFilter(tab.id)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 12px', borderRadius: 8, border: 'none',
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 10px', borderRadius: 7, border: 'none',
                 background: isActive ? 'rgba(241,192,134,0.12)' : 'transparent',
                 cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
                 color: isActive ? GOLD : 'var(--text-muted-c)',
-                fontWeight: isActive ? 600 : 400, fontSize: 13,
+                fontWeight: isActive ? 600 : 400, fontSize: 12,
               }}
               onMouseEnter={e => { if (!isActive) (e.currentTarget.style.background = 'var(--row-hover)') }}
               onMouseLeave={e => { if (!isActive) (e.currentTarget.style.background = 'transparent') }}
             >
               {tab.label}
               <span style={{
-                fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+                fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
                 background: isActive ? 'rgba(241,192,134,0.2)' : 'var(--icon-chip-bg)',
                 color: isActive ? GOLD : 'var(--text-subtle)',
               }}>
@@ -189,113 +179,81 @@ export default function SimulateursPage() {
       </div>
 
       {/* ── MODULE GRID ── */}
-      <div className="px-5 xl:px-6 py-6 space-y-8">
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 24px 16px' }}>
         {filteredCategories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <Search className="h-8 w-8" style={{ color: 'var(--text-subtle)' }} />
-            <p style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>Aucun simulateur trouvé pour « {search} »</p>
-            <button onClick={() => setSearch('')}
-              style={{ fontSize: 13, color: GOLD, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              Effacer la recherche
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10 }}>
+            <Search style={{ width: 28, height: 28, color: 'var(--text-subtle)' }} />
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Aucun simulateur pour « {search} »</p>
+            <button onClick={() => setSearch('')} style={{ fontSize: 12, color: GOLD, background: 'none', border: 'none', cursor: 'pointer' }}>
+              Effacer
             </button>
           </div>
         ) : (
-          filteredCategories.map(cat => (
-            <div key={cat.id}>
-              {/* Category header */}
-              <div className="flex items-center gap-3 mb-3">
-                <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted-c)' }}>
-                  {cat.label}
-                </span>
-                <div className="flex-1 h-px" style={{ background: 'var(--section-border)' }} />
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cat.modules.length} outil{cat.modules.length > 1 ? 's' : ''}</span>
-              </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {filteredCategories.map(cat => (
+              <div key={cat.id}>
+                {/* Category header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted-c)', flexShrink: 0 }}>
+                    {cat.label}
+                  </span>
+                  <div style={{ flex: 1, height: 1, background: 'var(--section-border)' }} />
+                  <span style={{ fontSize: 10, color: 'var(--text-subtle)', flexShrink: 0 }}>{cat.modules.length} outil{cat.modules.length > 1 ? 's' : ''}</span>
+                </div>
 
-              {/* Module cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {cat.modules.map(mod => {
-                  const typeSims = simsByType[mod.type] || []
-                  const lastSim = typeSims[0]
-                  return (
-                    <Link key={mod.href} href={mod.href}
-                      className="group block"
-                      style={{ textDecoration: 'none' }}>
-                      <div className="relative overflow-hidden rounded-xl p-4 h-full flex flex-col transition-all duration-200"
-                        style={{
-                          background: `radial-gradient(ellipse at top left, ${mod.color}14, transparent 70%)`,
-                          border: `1px solid ${mod.color}22`,
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '55'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '22'; (e.currentTarget as HTMLElement).style.transform = '' }}>
-
-                        {/* Hover glow */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                          style={{ background: `radial-gradient(circle at 0% 0%, ${mod.color}10, transparent 55%)` }} />
-
-                        <div className="relative flex flex-col flex-1">
-                          {/* Top row: icon + tag */}
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="h-9 w-9 rounded-xl flex items-center justify-center"
-                              style={{ background: mod.color + '18', border: `1px solid ${mod.color}30` }}>
-                              <mod.icon className="h-4.5 w-4.5" style={{ color: mod.color, width: 18, height: 18 }} />
-                            </div>
-                            <span style={{
-                              fontSize: 9, color: mod.color, background: mod.color + '18',
-                              padding: '2px 7px', borderRadius: 5, fontWeight: 600,
-                              textTransform: 'uppercase', letterSpacing: '0.08em',
-                            }}>
-                              {mod.tag}
-                            </span>
+                {/* Module cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 8 }}>
+                  {cat.modules.map(mod => {
+                    const typeSims = simsByType[mod.type] || []
+                    const lastSim = typeSims[0]
+                    return (
+                      <Link key={mod.href} href={mod.href} style={{ textDecoration: 'none' }}>
+                        <div
+                          style={{
+                            position: 'relative', overflow: 'hidden', borderRadius: 10, padding: '10px 12px',
+                            background: `radial-gradient(ellipse at top left, ${mod.color}12, transparent 70%)`,
+                            border: `1px solid ${mod.color}20`,
+                            transition: 'all 0.15s', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: 10,
+                          }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '50'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)' }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '20'; (e.currentTarget as HTMLElement).style.transform = '' }}
+                        >
+                          {/* Icon */}
+                          <div style={{ width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: mod.color + '18', border: `1px solid ${mod.color}28` }}>
+                            <mod.icon style={{ color: mod.color, width: 16, height: 16 }} />
                           </div>
 
-                          {/* Title + desc */}
-                          <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 4, letterSpacing: '-0.02em' }}>
-                            {mod.label}
-                          </h3>
-                          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, flex: 1 }}>
-                            {mod.desc}
-                          </p>
-
-                          {/* Footer: sim count or last sim */}
-                          <div className="mt-3 pt-3 flex items-center justify-between"
-                            style={{ borderTop: `1px solid ${mod.color}18` }}>
-                            {loaded && typeSims.length > 0 ? (
-                              <div className="flex items-center gap-1.5">
-                                <Clock className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--text-subtle)' }} />
-                                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                                  {lastSim ? timeAgo(lastSim.createdAt) : ''}
-                                </span>
-                                <span style={{
-                                  fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
-                                  background: mod.color + '18', color: mod.color,
-                                }}>
-                                  {typeSims.length} sim.
-                                </span>
+                          {/* Content */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
+                              <span style={{ fontSize: 9, color: mod.color, background: mod.color + '18', padding: '1px 5px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>{mod.tag}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                                {mod.desc}
+                              </p>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                                {loaded && typeSims.length > 0 ? (
+                                  <>
+                                    <Clock style={{ width: 10, height: 10, color: 'var(--text-subtle)' }} />
+                                    <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{lastSim ? timeAgo(lastSim.createdAt) : ''}</span>
+                                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 3, background: mod.color + '18', color: mod.color }}>{typeSims.length}</span>
+                                  </>
+                                ) : (
+                                  <ArrowUpRight style={{ width: 12, height: 12, color: 'var(--text-muted-c)' }} />
+                                )}
                               </div>
-                            ) : (
-                              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Aucune simulation</span>
-                            )}
-                            <div className="flex items-center gap-1" style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
-                              <span>Ouvrir</span>
-                              <ArrowUpRight className="h-3.5 w-3.5" />
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  )
-                })}
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-
-        {/* Footer info */}
-        {filteredCategories.length > 0 && (
-          <div className="flex items-center justify-center pt-4">
-            <p style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
-              {totalVisible} simulateur{totalVisible > 1 ? 's' : ''} · {loaded ? sims.length : '…'} simulation{sims.length > 1 ? 's' : ''} sauvegardée{sims.length > 1 ? 's' : ''}
-            </p>
+            ))}
           </div>
         )}
       </div>

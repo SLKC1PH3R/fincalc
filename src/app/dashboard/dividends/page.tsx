@@ -77,30 +77,16 @@ export default function DividendsPage() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
-          Portefeuille
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            <Coins style={{ width: 18, height: 18, color: '#34d399' }} />
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Revenus Passifs
-          </h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Coins style={{ width: 16, height: 16, color: '#34d399' }} />
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Revenus Passifs <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Dividendes · actions &amp; ETF</span></h1>
         </div>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', maxWidth: 600 }}>
-          Estimez vos dividendes annuels et mensuels à partir de vos positions actions et ETF.
-        </p>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
       {/* KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10, marginBottom: 16 }}>
         {loading ? (
           [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
         ) : (
@@ -187,12 +173,12 @@ export default function DividendsPage() {
           {/* Bar chart */}
           <div style={{
             background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-            borderRadius: 20, padding: '20px 16px', marginBottom: 24,
+            borderRadius: 12, padding: '12px 12px', marginBottom: 12,
           }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
               Top {chartData.length} — Dividendes annuels (€)
             </p>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={150}>
               <BarChart data={chartData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: chartTheme.tick }} />
                 <YAxis tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)} tick={{ fontSize: 10, fill: chartTheme.tick }} />
@@ -212,7 +198,7 @@ export default function DividendsPage() {
           {/* Table */}
           <div style={{
             background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-            borderRadius: 20, overflow: 'hidden',
+            borderRadius: 12, overflow: 'hidden',
           }}>
             {/* Header */}
             <div style={{

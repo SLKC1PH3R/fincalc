@@ -125,30 +125,16 @@ export default function BenchmarkPage() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
-          Portefeuille
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'rgba(129,140,248,0.12)', border: '1px solid rgba(129,140,248,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            <BarChart3 style={{ width: 18, height: 18, color: '#818cf8' }} />
-          </div>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Comparaison Benchmarks
-          </h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <BarChart3 style={{ width: 16, height: 16, color: '#818cf8' }} />
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Comparaison Benchmarks <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Portfolio vs indices</span></h1>
         </div>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', maxWidth: 600 }}>
-          Comparez la performance de votre portefeuille vs les grands indices sur la période choisie.
-        </p>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
       {/* Range selector */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {RANGE_OPTIONS.map(o => (
           <button
             key={o.label}
@@ -188,14 +174,14 @@ export default function BenchmarkPage() {
       {/* Chart */}
       <div style={{
         background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-        borderRadius: 20, padding: '20px 16px', marginBottom: 24,
+        borderRadius: 12, padding: '12px 12px', marginBottom: 12,
         opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s',
       }}>
-        <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
           Performance indexée (base 100)
         </p>
         {chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={150}>
             <LineChart data={chartData} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
               <XAxis
                 dataKey="date"
@@ -236,14 +222,14 @@ export default function BenchmarkPage() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
             {loading ? 'Chargement des données…' : 'Aucune donnée disponible'}
           </div>
         )}
       </div>
 
       {/* Performance cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8, marginBottom: 12 }}>
         {allLines.map(line => {
           const isPos = line.perf >= 0
           const color = isPos ? '#4ade80' : '#f87171'

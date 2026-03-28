@@ -40,17 +40,13 @@ export default function EmergencyFundPage() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Gestion budgétaire</p>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Épargne de précaution
+      <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Épargne de précaution <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>Liquidités d'urgence</span>
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-            Calculez le montant idéal à garder en liquidités selon vos charges, votre stabilité professionnelle et votre situation familiale.
-          </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
             onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
             style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
@@ -66,7 +62,7 @@ export default function EmergencyFundPage() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
       {guidedMode && (
         <GuidedModePanel
           steps={[
@@ -81,10 +77,10 @@ export default function EmergencyFundPage() {
         />
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Inputs */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {
@@ -137,10 +133,10 @@ export default function EmergencyFundPage() {
         </div>
 
         {/* Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Status banner */}
-          <div style={{ background: statusColor + '12', border: `1px solid ${statusColor}30`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ background: statusColor + '12', border: `1px solid ${statusColor}30`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <StatusIcon style={{ width: 20, height: 20, color: statusColor, flexShrink: 0 }} />
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
@@ -153,22 +149,22 @@ export default function EmergencyFundPage() {
           </div>
 
           {/* KPIs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {[
               { label: 'Objectif recommandé', value: fmt(res.targetAmount), sub: `${res.targetMonths} mois de charges`, color: GOLD },
               { label: 'Épargne actuelle', value: fmt(currentSavings), sub: `${coveragePct}% de l'objectif`, color: statusColor },
               { label: res.isReached ? 'Excédent' : 'À constituer', value: fmt(res.isReached ? currentSavings - res.targetAmount : res.gap), sub: res.monthsToReach !== null && !res.isReached ? `~${res.monthsToReach} mois à ${fmt(monthlySavings)}/mois` : res.isReached ? 'Parfait !' : 'Augmentez votre épargne', color: res.isReached ? '#4ade80' : '#f87171' },
             ].map((kpi, i) => (
-              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{kpi.label}</p>
-                <p style={{ fontSize: 20, fontWeight: 700, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>{kpi.sub}</p>
+              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 3 }}>{kpi.label}</p>
+                <p style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</p>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>{kpi.sub}</p>
               </div>
             ))}
           </div>
 
           {/* Progress bar */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '16px 20px' }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Progression vers l'objectif</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{coveragePct}%</span>
@@ -183,9 +179,9 @@ export default function EmergencyFundPage() {
           </div>
 
           {/* Chart — objectif par mois */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '16px 20px' }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 16 }}>Objectif par palier de charges</p>
-            <ResponsiveContainer width="100%" height={200}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Objectif par palier de charges</p>
+            <ResponsiveContainer width="100%" height={150}>
               <BarChart data={res.chartData} barSize={28}>
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: chartTheme.mutedColor }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: chartTheme.mutedColor }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
@@ -204,7 +200,7 @@ export default function EmergencyFundPage() {
           </div>
 
           {/* Info card */}
-          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}20`, borderRadius: 14, padding: '14px 18px' }}>
+          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}20`, borderRadius: 10, padding: '10px 14px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
               <ShieldCheck style={{ width: 16, height: 16, color: GOLD, flexShrink: 0, marginTop: 1 }} />
               <div>

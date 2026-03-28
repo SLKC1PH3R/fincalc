@@ -41,7 +41,7 @@ function CategoryCard({ title, total, totalPct, target, ok, children }: {
   title: string; total: number; totalPct: number; target: string; ok: boolean; children: React.ReactNode
 }) {
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</p>
         <span style={{ fontSize: 12, fontWeight: 600, color: ok ? '#34d399' : '#fb7185' }}>
@@ -104,17 +104,13 @@ function BudgetPageInner() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <div>
-          <p className="section-label" style={{ marginBottom: 6 }}>Budget</p>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Budget 50 / 30 / 20
+      <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Budget 50/30/20 <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>Besoins · Envies · Épargne</span>
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-            Besoins · Envies · Épargne — Règle d'or des finances personnelles
-          </p>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Budget 50/30/20',
             subtitle: `Revenu net ${fmt(inputs.netIncome)}/mois`,
@@ -141,24 +137,24 @@ function BudgetPageInner() {
             {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
             {guidedMode ? 'Mode expert' : 'Mode guidé'}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)}>
+          <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)} style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }}>
             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
           </Button>
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
       {/* KPI strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 10 }}>
         {([
           { label: 'Besoins',          sub: 'cible 50%', value: fmtPct(r.needsPct),   ok: r.needsPct <= 52 },
           { label: 'Envies',           sub: 'cible 30%', value: fmtPct(r.wantsPct),   ok: r.wantsPct <= 32 },
           { label: 'Épargne',          sub: 'cible 20%', value: fmtPct(r.savingsPct), ok: r.savingsPct >= 18 },
           { label: 'Solde non alloué', sub: 'idéal 0€',  value: fmt(r.balance),        ok: Math.abs(r.balance) < 50 },
         ] as const).map((k, i) => (
-          <div key={i} className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '16px 18px' }}>
-            <p className="section-label" style={{ marginBottom: 6 }}>{k.label} · {k.sub}</p>
-            <p className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: k.ok ? '#34d399' : '#fb7185' }}>{k.value}</p>
+          <div key={i} className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 3 }}>{k.label} · {k.sub}</p>
+            <p className="mono-amount" style={{ fontSize: 18, fontWeight: 800, color: k.ok ? '#34d399' : '#fb7185' }}>{k.value}</p>
           </div>
         ))}
       </div>
@@ -178,14 +174,14 @@ function BudgetPageInner() {
         />
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* ── Left: Inputs ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Revenu */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: '18px 20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Revenu mensuel net</p>
               <ProfileFillButton onFill={p => {
                 if (p.netMonthlySalary) set('netIncome')(p.netMonthlySalary)
@@ -226,11 +222,11 @@ function BudgetPageInner() {
         </div>
 
         {/* ── Right: Visualization ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Progress bars */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Répartition · cibles 50/30/20</p>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 4 }}>Répartition · cibles 50/30/20</p>
             {([
               { label: 'Besoins',  actual: r.needsPct,   target: 50, amount: r.needs,        targetAmt: r.needsTarget,   inverse: true },
               { label: 'Envies',   actual: r.wantsPct,   target: 30, amount: r.wants,        targetAmt: r.wantsTarget,   inverse: true },
@@ -258,8 +254,8 @@ function BudgetPageInner() {
           </div>
 
           {/* Pie chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Répartition visuelle · {fmt(inputs.netIncome)}/mois</p>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 10 }}>Répartition visuelle · {fmt(inputs.netIncome)}/mois</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
               <ResponsiveContainer width={140} height={140}>
                 <PieChart>
@@ -287,8 +283,8 @@ function BudgetPageInner() {
           </div>
 
           {/* Detail by category */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Détail par poste</p>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Détail par poste</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {r.categories.sort((a, b) => b.amount - a.amount).map((cat, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -304,12 +300,12 @@ function BudgetPageInner() {
           </div>
 
           {/* Analysis */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreBorderColor}`, borderRadius: 20, padding: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreBorderColor}`, borderRadius: 12, padding: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <ScoreIcon style={{ width: 16, height: 16, color: scoreColor, flexShrink: 0 }} />
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Analyse — Budget {scoreLabel}</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>Analyse — Budget {scoreLabel}</p>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.7, marginBottom: 16 }}>{r.analysis.message}</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 10 }}>{r.analysis.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {r.analysis.tips.map((tip, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.12)', borderRadius: 10, padding: '10px 14px' }}>
@@ -324,7 +320,7 @@ function BudgetPageInner() {
 
       {/* CTAs */}
       {r.savingsTotal > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
           <a href={`/dashboard/dca?restore=${encodeURIComponent(JSON.stringify({ monthly: Math.round(r.savingsTotal), years: 20, targetRate: 8, volatility: 15, initialPrice: 100 }))}`} style={{ textDecoration: 'none' }}>
             <div className="card-hover" style={{ padding: '16px 20px', borderRadius: 14, cursor: 'pointer', background: 'rgba(129,140,248,0.06)', border: '1px solid rgba(129,140,248,0.25)', display: 'flex', alignItems: 'center', gap: 12 }}>
               <TrendingUp style={{ width: 20, height: 20, color: '#818cf8', flexShrink: 0 }} />

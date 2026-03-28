@@ -31,17 +31,13 @@ export default function ConsumerCreditPage() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Crédit & Endettement</p>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-            Coût réel d&apos;un crédit conso
+      <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Coût réel d&apos;un crédit conso <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>TAEG · coût total · coût opportunité</span>
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-            TAEG, coût total sur la durée, et ce que le même argent aurait rapporté s&apos;il avait été placé plutôt que remboursé.
-          </p>
         </div>
-        <div style={{ marginTop: 16 }}>
+        <div>
         <SaveSimulation
           type="consumer-credit"
           name={`Crédit ${fmt(amount)} à ${taeg}% — ${durationMonths} mois`}
@@ -51,12 +47,12 @@ export default function ConsumerCreditPage() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Inputs */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)' }}>Paramètres</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>Montant emprunté (€)</Label>
@@ -83,10 +79,10 @@ export default function ConsumerCreditPage() {
         </div>
 
         {/* Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Alert banner */}
-          <div style={{ background: '#f8717112', border: '1px solid #f8717130', borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ background: '#f8717112', border: '1px solid #f8717130', borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <AlertTriangle style={{ width: 20, height: 20, color: '#f87171', flexShrink: 0 }} />
             <div>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
@@ -99,25 +95,25 @@ export default function ConsumerCreditPage() {
           </div>
 
           {/* KPIs */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
             {[
               { label: 'Mensualité', value: fmt(res.monthlyPayment), sub: `sur ${durationMonths} mois`, color: 'var(--text-em)' },
               { label: 'Total remboursé', value: fmt(res.totalPaid), sub: `dont ${interestRatio.toFixed(1)}% d'intérêts`, color: GOLD },
               { label: 'Coût des intérêts', value: fmt(res.totalInterest), sub: `${interestRatio.toFixed(1)}% du capital`, color: '#f87171' },
               { label: 'Gain placement manqué', value: fmt(res.alternativeGain), sub: `à ${alternativeRate}%/an sur la durée`, color: '#fb923c' },
             ].map((kpi, i) => (
-              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{kpi.label}</p>
-                <p style={{ fontSize: 20, fontWeight: 700, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>{kpi.sub}</p>
+              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 3 }}>{kpi.label}</p>
+                <p style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</p>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>{kpi.sub}</p>
               </div>
             ))}
           </div>
 
           {/* Amortization chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '16px 20px' }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 16 }}>Capital restant dû vs total remboursé</p>
-            <ResponsiveContainer width="100%" height={220}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Capital restant dû vs total remboursé</p>
+            <ResponsiveContainer width="100%" height={150}>
               <AreaChart data={res.amortizationData}>
                 <defs>
                   <linearGradient id="ccRemaining" x1="0" y1="0" x2="0" y2="1">
@@ -144,10 +140,10 @@ export default function ConsumerCreditPage() {
           </div>
 
           {/* Decomposition bar */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '16px 20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <TrendingDown style={{ width: 14, height: 14, color: 'var(--text-muted-c)' }} />
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Décomposition du coût réel</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)' }}>Décomposition du coût réel</p>
             </div>
             {[
               { label: 'Capital', value: amount, color: 'rgba(255,255,255,0.15)', pct: (amount / res.opportunityCost) * 100 },
@@ -167,7 +163,7 @@ export default function ConsumerCreditPage() {
           </div>
 
           {/* Info */}
-          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}20`, borderRadius: 14, padding: '14px 18px' }}>
+          <div style={{ background: `${GOLD}08`, border: `1px solid ${GOLD}20`, borderRadius: 10, padding: '10px 14px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
               <Info style={{ width: 16, height: 16, color: GOLD, flexShrink: 0, marginTop: 1 }} />
               <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65 }}>

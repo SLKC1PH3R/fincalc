@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
+      <div className="flex h-screen overflow-hidden bg-background">
         <Sidebar user={session.user} isAdmin={isAdmin} isDemo={isDemo} />
         <DashboardShell>{children}</DashboardShell>
       </div>

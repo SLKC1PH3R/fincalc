@@ -29,7 +29,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={cn(
-      'flex-1 min-h-screen flex flex-col transition-all duration-200 grid-bg',
+      'flex-1 h-full flex flex-col overflow-hidden transition-all duration-200 grid-bg',
       collapsed ? 'md:ml-16 ml-0' : 'md:ml-[290px] ml-0'
     )} style={{ background: 'var(--content-bg)' }}>
       {/* Mobile top bar */}
@@ -52,7 +52,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 dashboard-main">
+      <main className="flex-1 min-h-0 overflow-hidden dashboard-main">
         {children}
       </main>
 

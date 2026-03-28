@@ -74,10 +74,10 @@ export default function DividendsPage() {
     .map(p => ({ name: p.symbol, value: p.annualDividendEur }))
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
           Portefeuille
         </p>
@@ -98,6 +98,7 @@ export default function DividendsPage() {
         </p>
       </div>
 
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 28 }}>
         {loading ? (
@@ -269,6 +270,7 @@ export default function DividendsPage() {
           </p>
         </>
       )}
+      </div>
     </div>
   )
 }

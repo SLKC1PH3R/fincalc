@@ -122,10 +122,10 @@ export default function BenchmarkPage() {
   ]
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
           Portefeuille
         </p>
@@ -146,6 +146,7 @@ export default function BenchmarkPage() {
         </p>
       </div>
 
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
       {/* Range selector */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
         {RANGE_OPTIONS.map(o => (
@@ -194,7 +195,7 @@ export default function BenchmarkPage() {
           Performance indexée (base 100)
         </p>
         {chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
               <XAxis
                 dataKey="date"
@@ -235,7 +236,7 @@ export default function BenchmarkPage() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div style={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
             {loading ? 'Chargement des données…' : 'Aucune donnée disponible'}
           </div>
         )}
@@ -284,6 +285,7 @@ export default function BenchmarkPage() {
           Le portefeuille est calculé à partir des snapshots quotidiens du patrimoine.
           Données benchmarks via Yahoo Finance (mise en cache 1h).
         </span>
+      </div>
       </div>
     </div>
   )

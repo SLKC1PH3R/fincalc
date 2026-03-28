@@ -74,10 +74,10 @@ function CompoundPageInner() {
   if (tips.length === 0) tips.push('Stratégie solide. Maintenez la régularité et évitez de retirer avant terme.')
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Épargne</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Intérêts Composés</h1>
@@ -118,6 +118,7 @@ function CompoundPageInner() {
         </div>
       </div>
 
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
       {/* ── Guided mode panel ── */}
       {guidedMode && (() => {
         const GUIDED_STEPS = [
@@ -294,7 +295,7 @@ function CompoundPageInner() {
             <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>Évolution du capital sur {inputs.years} ans</p>
             <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 16 }}>Capital total vs capital effectivement investi</p>
             {mounted ? (
-              <ResponsiveContainer width="100%" height={280}>
+              <ResponsiveContainer width="100%" height={210}>
                 <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
@@ -305,7 +306,7 @@ function CompoundPageInner() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 280 }} />
+              <div style={{ height: 210 }} />
             )}
             <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
               <CsvExport
@@ -401,7 +402,7 @@ function CompoundPageInner() {
                 'Investi B': dataB[i]?.invested ?? 0,
               }))
               return (
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={200}>
                   <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
@@ -419,6 +420,7 @@ function CompoundPageInner() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

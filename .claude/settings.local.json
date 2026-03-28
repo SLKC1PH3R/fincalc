@@ -48,7 +48,11 @@
       "Bash(docker compose:*)",
       "Bash(docker-compose build:*)",
       "Bash(where docker:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(for f:*)",
+      "Read(//c/Users/jerem/Downloads/fincalc/src/app/dashboard/$f/**)",
+      "Bash(grep -l \"height: ''100%''.*flex\\\\|flex.*height: ''100%''\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/compound/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/mortgage/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/tax/page.tsx)",
+      "Bash(grep -c \"overflowY: ''auto''\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/compound/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/dca/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/mortgage/page.tsx)"
     ]
   }
 }

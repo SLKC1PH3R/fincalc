@@ -28,10 +28,10 @@ export default function ConsumerCreditPage() {
   const interestRatio = amount > 0 ? (res.totalInterest / amount) * 100 : 0
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Crédit & Endettement</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
@@ -51,6 +51,7 @@ export default function ConsumerCreditPage() {
         </div>
       </div>
 
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,340px) 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* Inputs */}
@@ -177,6 +178,7 @@ export default function ConsumerCreditPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

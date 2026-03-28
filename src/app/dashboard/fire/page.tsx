@@ -95,10 +95,10 @@ function FirePageInner() {
   const scoreBorderColor = score === 'excellent' || score === 'bon' ? 'rgba(52,211,153,0.35)' : score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)'
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <div>
           <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Indépendance financière</p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Simulateur FI/RE</h1>
@@ -145,6 +145,7 @@ function FirePageInner() {
         </div>
       </div>
 
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
       {/* KPI grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
@@ -396,7 +397,7 @@ function FirePageInner() {
               })
               const { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip: RTooltip, Legend, ResponsiveContainer: RC } = require('recharts')
               return (
-                <RC width="100%" height={260}>
+                <RC width="100%" height={200}>
                   <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                     <XAxis dataKey="year" tick={{ fontSize: 11, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${v}a`} />
@@ -414,6 +415,7 @@ function FirePageInner() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

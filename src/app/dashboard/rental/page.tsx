@@ -380,12 +380,11 @@ function RentalPageInner() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
-      {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
+      {/* Two-column layout — fills remaining height, each column scrolls independently */}
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, overflow: 'hidden', alignItems: 'stretch' }}>
 
         {/* Left: inputs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Apartment tabs */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -432,7 +431,7 @@ function RentalPageInner() {
           </div>
 
           {/* Acquisition panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -471,7 +470,7 @@ function RentalPageInner() {
           </div>
 
           {/* Exploitation & Fiscalité panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -521,7 +520,7 @@ function RentalPageInner() {
         </div>
 
         {/* Right: results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* KPI grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
@@ -588,7 +587,7 @@ function RentalPageInner() {
             </div>
 
             {mounted ? (
-              <ResponsiveContainer width="100%" height={480}>
+              <ResponsiveContainer width="100%" height={260}>
                 <Sankey
                   data={activeTabSankeyData}
                   nodePadding={24}
@@ -607,7 +606,7 @@ function RentalPageInner() {
                 </Sankey>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 480, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Chargement du graphique…</span>
               </div>
             )}
@@ -682,7 +681,6 @@ function RentalPageInner() {
             )}
           </div>
         </div>
-      </div>
       </div>
     </div>
   )

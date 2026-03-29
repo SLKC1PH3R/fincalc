@@ -90,49 +90,11 @@ function BuyRentPageInner() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
-      {/* KPI grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 10 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Patrimoine si achat</p>
-          <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.buyNetWorth)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital si location</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(r.rentCapital)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Avantage patrimonial</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(Math.abs(r.delta))}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Seuil de rentabilité</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{r.breakevenYears} ans</p>
-        </div>
-      </div>
-
-      {/* Verdict block */}
-      <div style={{ background: verdictBg, border: `1px solid ${verdictBorder}`, borderRadius: 16, padding: '18px 24px', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {r.buyWins
-            ? <Home style={{ width: 20, height: 20, color: verdictColor }} />
-            : <TrendingUp style={{ width: 20, height: 20, color: verdictColor }} />
-          }
-          <div>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Verdict sur {inputs.years} ans</p>
-            <p style={{ fontSize: 16, fontWeight: 700, color: verdictColor }}>{r.buyWins ? 'L\'achat est plus avantageux' : 'La location est plus avantageuse'}</p>
-          </div>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4 }}>Avantage patrimonial</p>
-          <p style={{ fontSize: 22, fontWeight: 800, color: verdictColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(Math.abs(r.delta))}</p>
-        </div>
-      </div>
-
-      {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
+      {/* Two-column layout — fills remaining height */}
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, overflow: 'hidden', alignItems: 'stretch' }}>
 
         {/* Input panel */}
+        <div style={{ overflowY: 'auto', paddingBottom: 12 }}>
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
@@ -184,9 +146,45 @@ function BuyRentPageInner() {
             <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />
           </div>
         </div>
+        </div>
 
         {/* Results panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+          {/* KPI strip */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, flexShrink: 0 }}>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Patrimoine si achat</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.buyNetWorth)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital si location</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(r.rentCapital)}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Avantage patrimonial</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: verdictColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(Math.abs(r.delta))}</p>
+            </div>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Seuil rentabilité</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{r.breakevenYears} ans</p>
+            </div>
+          </div>
+
+          {/* Compact verdict */}
+          <div style={{ background: verdictBg, border: `1px solid ${verdictBorder}`, borderRadius: 10, padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {r.buyWins
+                ? <Home style={{ width: 16, height: 16, color: verdictColor }} />
+                : <TrendingUp style={{ width: 16, height: 16, color: verdictColor }} />
+              }
+              <div>
+                <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Verdict sur {inputs.years} ans — </span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: verdictColor }}>{r.buyWins ? 'L\'achat est plus avantageux' : 'La location est plus avantageuse'}</span>
+              </div>
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 800, color: verdictColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', flexShrink: 0 }}>{fmt(Math.abs(r.delta))}</p>
+          </div>
 
           {/* Comparison breakdown */}
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
@@ -276,7 +274,6 @@ function BuyRentPageInner() {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   )

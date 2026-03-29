@@ -97,9 +97,8 @@ function MortgagePageInner() {
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
-      {/* KPI grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 10 }}>
+      {/* KPI strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10, flexShrink: 0 }}>
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
           <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Mensualité totale</p>
           <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalMonthly)}</p>
@@ -120,9 +119,10 @@ function MortgagePageInner() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
+      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, overflow: 'hidden', alignItems: 'stretch' }}>
 
         {/* Input panel */}
+        <div style={{ overflowY: 'auto', paddingBottom: 12 }}>
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
@@ -137,6 +137,18 @@ function MortgagePageInner() {
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
             </div>
             <Slider min={0.5} max={8} step={0.05} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
+            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+              {([{label:'Bas 15a', val:3.20},{label:'Moy 20a', val:3.65},{label:'Haut 25a', val:4.20}] as const).map(s => (
+                <button key={s.val} onClick={() => set('rate')(s.val)}
+                  style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                    background: inputs.rate === s.val ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
+                    border: inputs.rate === s.val ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
+                    color: inputs.rate === s.val ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
+                  {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}%</span>
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Taux moyens France — mars 2026</p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -155,16 +167,48 @@ function MortgagePageInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label className="flex items-center gap-1">Assurance (€/mois)<Tip text="Obligatoire. Couvre décès, invalidité. La délégation d'assurance peut économiser 30-50%." /></Label>
             <Input type="number" value={inputs.insurance} onChange={e => set('insurance')(+e.target.value)} />
+            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+              {([
+                {label:'Faible', rate:0.10},
+                {label:'Normale', rate:0.25},
+                {label:'Haute', rate:0.40},
+              ] as const).map(s => {
+                const suggested = Math.round(inputs.amount * s.rate / 100 / 12)
+                return (
+                  <button key={s.label} onClick={() => set('insurance')(suggested)}
+                    style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                      background: inputs.insurance === suggested ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
+                      border: inputs.insurance === suggested ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
+                      color: inputs.insurance === suggested ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
+                    {s.label}<br/><span style={{ fontWeight: 700 }}>{suggested}€</span>
+                  </button>
+                )
+              })}
+            </div>
+            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>0.10–0.40% du capital / an · délégation conseillée</p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label className="flex items-center gap-1">Frais de dossier (€)<Tip text="Facturés par la banque. Généralement 0-1500€, souvent négociables." /></Label>
             <Input type="number" value={inputs.fees} onChange={e => set('fees')(+e.target.value)} />
+            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+              {([{label:'Neuf', val:800},{label:'Ancien', val:1200},{label:'Max', val:1500}] as const).map(s => (
+                <button key={s.label} onClick={() => set('fees')(s.val)}
+                  style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                    background: inputs.fees === s.val ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
+                    border: inputs.fees === s.val ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
+                    color: inputs.fees === s.val ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
+                  {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}€</span>
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Neuf ~800€ · Ancien ~1 200€ · souvent négociables</p>
           </div>
+        </div>
         </div>
 
         {/* Results panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Amortization chart */}
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
@@ -243,7 +287,6 @@ function MortgagePageInner() {
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   )

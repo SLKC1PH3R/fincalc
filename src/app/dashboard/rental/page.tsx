@@ -334,12 +334,20 @@ function RentalPageInner() {
   })
 
   return (
-    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '20px 24px 40px' }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Rentabilité Locative <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Immobilier · cashflow · rendement</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span>
+            <span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: '#34d399', fontWeight: 600 }}>Rentabilité locative</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
+            <span style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 400 }}>Cashflow · rendement · fiscalité</span>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
@@ -380,7 +388,29 @@ function RentalPageInner() {
         </div>
       </div>
 
-      {/* Two-column layout — fills remaining height, each column scrolls independently */}
+      {/* ── KPI Strip ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {/* Cashflow — highlighted */}
+        <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}10, transparent)`, border: `1px solid ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}30`, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}14, transparent)`, pointerEvents: 'none' }} />
+          <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>Cashflow mensuel</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: globalCashflowMonthly >= 0 ? '#34d399' : '#f87171', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{fmt(globalCashflowMonthly)}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmt(globalCashflowAnnual)}/an</div>
+        </div>
+        {[
+          { label: 'Rendement brut', value: fmtPct(globalGrossYield), sub: 'loyers / investissement' },
+          { label: 'Rendement net', value: fmtPct(globalNetYield), sub: 'après charges & fiscalité' },
+          { label: 'ROI fonds propres', value: fmtPct(globalROI), sub: 'cashflow / apport' },
+        ].map((k, i) => (
+          <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+            <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>{k.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Two-column layout ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
 
         {/* Left: inputs */}
@@ -431,7 +461,7 @@ function RentalPageInner() {
           </div>
 
           {/* Acquisition panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -470,7 +500,7 @@ function RentalPageInner() {
           </div>
 
           {/* Exploitation & Fiscalité panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.18)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -522,36 +552,8 @@ function RentalPageInner() {
         {/* Right: results */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-          {/* KPI grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-            {/* Rendement brut */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Rendement brut</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalGrossYield)}</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>loyers / investissement</p>
-            </div>
-            {/* Rendement net */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Rendement net</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalNetYield)}</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>après charges &amp; fiscalité</p>
-            </div>
-            {/* Cashflow mensuel */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Cashflow mensuel</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: globalCashflowMonthly >= 0 ? '#34d399' : '#f87171', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(globalCashflowMonthly)}</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>{fmt(globalCashflowAnnual)}/an</p>
-            </div>
-            {/* ROI fonds propres */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>ROI fonds propres</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtPct(globalROI)}</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>cashflow / apport</p>
-            </div>
-          </div>
-
-          {/* Result tabs + chart container */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+            {/* Result tabs + chart container */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8, flexWrap: 'wrap' }}>
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Décomposition du cashflow annuel</p>
@@ -646,35 +648,25 @@ function RentalPageInner() {
           {/* CSV Export */}
           <CsvExport data={csvRows} filename="rentabilite-locative" />
 
-          {/* Synthèse / tips */}
-          <div style={{
-            background: globalScore === 'excellent' || globalScore === 'bon'
-              ? 'rgba(52,211,153,0.06)' : globalScore === 'moyen'
-              ? 'rgba(241,192,134,0.06)' : 'rgba(248,113,113,0.08)',
-            border: `1px solid ${globalScore === 'excellent' || globalScore === 'bon'
-              ? 'rgba(52,211,153,0.15)' : globalScore === 'moyen'
-              ? 'rgba(241,192,134,0.15)' : 'rgba(248,113,113,0.20)'}`,
-            borderRadius: 12, padding: '14px 18px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
-                Analyse globale — Cashflow {scoreConf.label}
-              </p>
+          {/* Synthèse / tips — Conseil style */}
+          <div style={{ background: `linear-gradient(135deg, ${scoreConf.color}0d, rgba(255,255,255,0.02))`, border: `1px solid ${scoreConf.color}22`, borderRadius: 14, padding: '14px 18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <scoreConf.Icon style={{ width: 14, height: 14, color: scoreConf.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: scoreConf.color }}>Analyse globale — Cashflow {scoreConf.label}</span>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, marginBottom: apartments.length === 1 && activeResult.analysis.tips.length > 0 ? 12 : 0 }}>
               {apartments.length === 1
                 ? activeResult.analysis.message
                 : `Votre portefeuille de ${apartments.length} biens génère un cashflow global de ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour un investissement total de ${fmt(globalTotalInvestment)}. Rendement brut moyen : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
             </p>
             {apartments.length === 1 && activeResult.analysis.tips.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {activeResult.analysis.tips.map((tip, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)' }}>
-                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--row-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${scoreConf.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: scoreConf.color }}>{i + 1}</span>
                     </div>
-                    <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
                   </div>
                 ))}
               </div>

@@ -15,6 +15,8 @@ import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
 
+const COLOR = '#f472b6'
+
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
   return (
@@ -55,17 +57,23 @@ function MortgagePageInner() {
   if (r.totalInsurance > r.totalInterest * 0.3) tips.push('Assurance emprunteur élevée. La délégation d\'assurance peut économiser 30-50%.')
   if (interestRatio < 30) tips.push(`Excellent crédit — vous payez seulement ${fmtPct(interestRatio)} d'intérêts sur le capital.`)
 
-  const scoreBorderColor = score === 'excellent' || score === 'bon' ? 'rgba(52,211,153,0.35)' : score === 'moyen' ? 'rgba(251,191,36,0.35)' : 'rgba(239,68,68,0.35)'
-
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 40px' }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Simulateur de prêt immobilier <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Mensualités · coût total · amortissement</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span>
+            <span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Prêt immobilier</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Simulateur de prêt</h1>
+            <span style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 400 }}>Mensualités · coût total · amortissement</span>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Prêt Immobilier',
             subtitle: `${fmt(inputs.amount)} sur ${inputs.years} ans à ${inputs.rate}%`,
@@ -97,135 +105,141 @@ function MortgagePageInner() {
         </div>
       </div>
 
-      {/* KPI strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10, flexShrink: 0 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Mensualité totale</p>
-          <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalMonthly)}</p>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>dont {fmt(r.monthlyPayment)} crédit</p>
+      {/* ── KPI Strip ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {/* Mensualité — highlighted */}
+        <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${COLOR}10, transparent)`, border: `1px solid ${COLOR}30`, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${COLOR}14, transparent)`, pointerEvents: 'none' }} />
+          <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>Mensualité totale</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: COLOR, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{fmt(r.totalMonthly)}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>dont {fmt(r.monthlyPayment)} crédit</div>
         </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Coût total du crédit</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(r.totalCost)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Total intérêts</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(r.totalInterest)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Taux effectif global</p>
-          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{r.taeg.toFixed(2)}%</p>
-        </div>
+        {/* Others */}
+        {[
+          { label: 'Coût total du crédit', value: fmt(r.totalCost), sub: null },
+          { label: 'Total intérêts', value: fmt(r.totalInterest), sub: `${fmtPct(interestRatio)} du capital` },
+          { label: 'Taux effectif global', value: `${r.taeg.toFixed(2)}%`, sub: 'TAEG' },
+        ].map((k, i) => (
+          <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+            <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>{k.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: k.sub ? 4 : 0 }}>{k.value}</div>
+            {k.sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>}
+          </div>
+        ))}
       </div>
 
-      {/* Two-column layout */}
+      {/* ── Two-column layout ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
 
         {/* Input panel */}
         <div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté = Prix + frais notaire - apport. Base de calcul des mensualités." /></Label>
-            <Input type="number" value={inputs.amount} onChange={e => set('amount')(+e.target.value)} />
-          </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté = Prix + frais notaire - apport. Base de calcul des mensualités." /></Label>
+              <Input type="number" value={inputs.amount} onChange={e => set('amount')(+e.target.value)} />
+            </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Taux annuel<Tip text="Taux nominal hors assurance. En France 2024 : 3-4.5% selon la durée. Ne pas confondre avec le TAEG." /></Label>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
-            </div>
-            <Slider min={0.5} max={8} step={0.05} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
-            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-              {([{label:'Bas 15a', val:3.20},{label:'Moy 20a', val:3.65},{label:'Haut 25a', val:4.20}] as const).map(s => (
-                <button key={s.val} onClick={() => set('rate')(s.val)}
-                  style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
-                    background: inputs.rate === s.val ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
-                    border: inputs.rate === s.val ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
-                    color: inputs.rate === s.val ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
-                  {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}%</span>
-                </button>
-              ))}
-            </div>
-            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Taux moyens France — mars 2026</p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Durée<Tip text="Plus la durée est longue : mensualités basses mais coût total élevé." /></Label>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
-            </div>
-            <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted-c)' }}>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(15)}>15 ans</button>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(20)}>20 ans</button>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(25)}>25 ans</button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Assurance (€/mois)<Tip text="Obligatoire. Couvre décès, invalidité. La délégation d'assurance peut économiser 30-50%." /></Label>
-            <Input type="number" value={inputs.insurance} onChange={e => set('insurance')(+e.target.value)} />
-            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-              {([
-                {label:'Faible', rate:0.10},
-                {label:'Normale', rate:0.25},
-                {label:'Haute', rate:0.40},
-              ] as const).map(s => {
-                const suggested = Math.round(inputs.amount * s.rate / 100 / 12)
-                return (
-                  <button key={s.label} onClick={() => set('insurance')(suggested)}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Label className="flex items-center gap-1">Taux annuel<Tip text="Taux nominal hors assurance. En France 2024 : 3-4.5% selon la durée. Ne pas confondre avec le TAEG." /></Label>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
+              </div>
+              <Slider min={0.5} max={8} step={0.05} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
+              <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+                {([{label:'Bas 15a', val:3.20},{label:'Moy 20a', val:3.65},{label:'Haut 25a', val:4.20}] as const).map(s => (
+                  <button key={s.val} onClick={() => set('rate')(s.val)}
                     style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
-                      background: inputs.insurance === suggested ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
-                      border: inputs.insurance === suggested ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
-                      color: inputs.insurance === suggested ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
-                    {s.label}<br/><span style={{ fontWeight: 700 }}>{suggested}€</span>
+                      background: inputs.rate === s.val ? `${COLOR}18` : 'rgba(255,255,255,0.04)',
+                      border: inputs.rate === s.val ? `1px solid ${COLOR}35` : '1px solid var(--card-dark-border)',
+                      color: inputs.rate === s.val ? COLOR : 'var(--text-muted-c)' }}>
+                    {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}%</span>
                   </button>
-                )
-              })}
+                ))}
+              </div>
+              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Taux moyens France — mars 2026</p>
             </div>
-            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>0.10–0.40% du capital / an · délégation conseillée</p>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Frais de dossier (€)<Tip text="Facturés par la banque. Généralement 0-1500€, souvent négociables." /></Label>
-            <Input type="number" value={inputs.fees} onChange={e => set('fees')(+e.target.value)} />
-            <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-              {([{label:'Neuf', val:800},{label:'Ancien', val:1200},{label:'Max', val:1500}] as const).map(s => (
-                <button key={s.label} onClick={() => set('fees')(s.val)}
-                  style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
-                    background: inputs.fees === s.val ? 'rgba(241,192,134,0.14)' : 'rgba(255,255,255,0.04)',
-                    border: inputs.fees === s.val ? '1px solid rgba(241,192,134,0.25)' : '1px solid var(--card-dark-border)',
-                    color: inputs.fees === s.val ? 'var(--sb-text-strong)' : 'var(--text-muted-c)' }}>
-                  {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}€</span>
-                </button>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Label className="flex items-center gap-1">Durée<Tip text="Plus la durée est longue : mensualités basses mais coût total élevé." /></Label>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
+              </div>
+              <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(15)}>15 ans</button>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(20)}>20 ans</button>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('years')(25)}>25 ans</button>
+              </div>
             </div>
-            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Neuf ~800€ · Ancien ~1 200€ · souvent négociables</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Assurance (€/mois)<Tip text="Obligatoire. Couvre décès, invalidité. La délégation d'assurance peut économiser 30-50%." /></Label>
+              <Input type="number" value={inputs.insurance} onChange={e => set('insurance')(+e.target.value)} />
+              <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+                {([
+                  {label:'Faible', rate:0.10},
+                  {label:'Normale', rate:0.25},
+                  {label:'Haute', rate:0.40},
+                ] as const).map(s => {
+                  const suggested = Math.round(inputs.amount * s.rate / 100 / 12)
+                  return (
+                    <button key={s.label} onClick={() => set('insurance')(suggested)}
+                      style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                        background: inputs.insurance === suggested ? `${COLOR}18` : 'rgba(255,255,255,0.04)',
+                        border: inputs.insurance === suggested ? `1px solid ${COLOR}35` : '1px solid var(--card-dark-border)',
+                        color: inputs.insurance === suggested ? COLOR : 'var(--text-muted-c)' }}>
+                      {s.label}<br/><span style={{ fontWeight: 700 }}>{suggested}€</span>
+                    </button>
+                  )
+                })}
+              </div>
+              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>0.10–0.40% du capital / an · délégation conseillée</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Label className="flex items-center gap-1">Frais de dossier (€)<Tip text="Facturés par la banque. Généralement 0-1500€, souvent négociables." /></Label>
+              <Input type="number" value={inputs.fees} onChange={e => set('fees')(+e.target.value)} />
+              <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
+                {([{label:'Neuf', val:800},{label:'Ancien', val:1200},{label:'Max', val:1500}] as const).map(s => (
+                  <button key={s.label} onClick={() => set('fees')(s.val)}
+                    style={{ flex: 1, padding: '3px 0', borderRadius: 6, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                      background: inputs.fees === s.val ? `${COLOR}18` : 'rgba(255,255,255,0.04)',
+                      border: inputs.fees === s.val ? `1px solid ${COLOR}35` : '1px solid var(--card-dark-border)',
+                      color: inputs.fees === s.val ? COLOR : 'var(--text-muted-c)' }}>
+                    {s.label}<br/><span style={{ fontWeight: 700 }}>{s.val}€</span>
+                  </button>
+                ))}
+              </div>
+              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 1 }}>Neuf ~800€ · Ancien ~1 200€ · souvent négociables</p>
+            </div>
           </div>
-        </div>
         </div>
 
         {/* Results panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Amortization chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Tableau d&apos;amortissement — {inputs.years} ans</p>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Tableau d&apos;amortissement — {inputs.years} ans</div>
             <ResponsiveContainer width="100%" height={160}>
               <AreaChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="mortgageGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={COLOR} stopOpacity={0.18} />
+                    <stop offset="100%" stopColor={COLOR} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
-                <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                <Area type="monotone" dataKey="capitalRepaid" name="Remboursé" stroke={chart.lineMain} fill={chart.lineMain} fillOpacity={0.1} strokeWidth={1.5} />
-                <Area type="monotone" dataKey="remaining" name="Restant dû" stroke={chart.lineDim} fill={chart.lineDim} fillOpacity={0.05} strokeWidth={1.5} />
+                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${Math.round(v/1000)}k`} axisLine={false} tickLine={false} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}55`, borderRadius: 8, fontSize: 12 }} itemStyle={{ color: 'var(--text-primary)' }} labelStyle={{ color: COLOR }} />
+                <Area type="monotone" dataKey="capitalRepaid" name="Remboursé" stroke={COLOR} fill="url(#mortgageGrad)" strokeWidth={2} />
+                <Area type="monotone" dataKey="remaining" name="Restant dû" stroke={chart.lineDim} fill={chart.lineDim} fillOpacity={0.04} strokeWidth={1.5} />
               </AreaChart>
             </ResponsiveContainer>
-
-            {/* CSV export */}
-            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ marginTop: 10, display: 'flex', justifyContent: 'flex-end' }}>
               <CsvExport
                 data={r.chartData.map((d: { year: number; capitalRepaid: number; remaining: number }) => ({ 'Année': d.year, 'Capital remboursé': d.capitalRepaid.toFixed(0), 'Capital restant': d.remaining.toFixed(0), 'Intérêts payés': (r.totalInterest / inputs.years * d.year).toFixed(0) }))}
                 filename="tableau-amortissement.csv"
@@ -233,8 +247,11 @@ function MortgagePageInner() {
             </div>
           </div>
 
-          {/* Cost breakdown table */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, overflow: 'hidden' }}>
+          {/* Cost breakdown */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Décomposition du coût</span>
+            </div>
             <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
               <tbody>
                 {[
@@ -244,47 +261,44 @@ function MortgagePageInner() {
                   { label: 'Frais dossier', value: fmt(inputs.fees), pct: null },
                 ].map((row, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
-                    <td style={{ padding: '12px 18px', color: 'var(--text-muted-c)' }}>{row.label}</td>
-                    <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</td>
-                    <td style={{ padding: '12px 18px', textAlign: 'right', fontSize: 11, color: 'var(--text-muted-c)' }}>{row.pct ?? ''}</td>
+                    <td style={{ padding: '10px 16px', color: 'var(--text-muted-c)' }}>{row.label}</td>
+                    <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</td>
+                    <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 11, color: 'var(--text-muted-c)' }}>{row.pct ?? ''}</td>
                   </tr>
                 ))}
                 <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-                  <td style={{ padding: '12px 18px', fontWeight: 600, color: 'var(--text-primary)' }}>Total déboursé</td>
-                  <td style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: 'var(--text-primary)' }}>{fmt(inputs.amount + r.totalCost)}</td>
-                  <td style={{ padding: '12px 18px' }} />
+                  <td style={{ padding: '10px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>Total déboursé</td>
+                  <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: 'var(--text-primary)' }}>{fmt(inputs.amount + r.totalCost)}</td>
+                  <td style={{ padding: '10px 16px' }} />
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {/* Analysis / tips */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreBorderColor}`, borderRadius: 16, padding: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color }} />
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                Analyse — Ratio intérêts {scoreConf.label} ({fmtPct(interestRatio)})
-              </p>
+          {/* Analyse — Conseil style */}
+          <div style={{ background: `linear-gradient(135deg, ${COLOR}0d, rgba(255,255,255,0.02))`, border: `1px solid ${COLOR}22`, borderRadius: 14, padding: '14px 18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <scoreConf.Icon style={{ width: 14, height: 14, color: scoreConf.color, flexShrink: 0 }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: COLOR }}>Analyse — Ratio intérêts {scoreConf.label} ({fmtPct(interestRatio)})</span>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 12 }}>
-              Pour {fmt(inputs.amount)} emprunté sur {inputs.years} ans à {inputs.rate}%
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>
-              Vous paierez {fmt(r.totalInterest)} d&apos;intérêts, soit {fmtPct(interestRatio)} du capital.
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, marginBottom: tips.length ? 12 : 0 }}>
+              Vous paierez {fmt(r.totalInterest)} d&apos;intérêts sur {fmt(inputs.amount)} emprunté ({inputs.years} ans à {inputs.rate}%).
               {interestRatio < 30 && ' Excellent ratio — crédit bien optimisé.'}
               {interestRatio >= 30 && interestRatio < 50 && ' Ratio acceptable — cherchez à négocier le taux ou raccourcir la durée.'}
               {interestRatio >= 50 && ' Ratio élevé — envisagez de raccourcir la durée ou augmenter l\'apport.'}
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {tips.map((tip, i) => (
-                <div key={i} style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', gap: 12 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700 }}>{i + 1}</span>
+            {tips.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {tips.map((tip, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: COLOR }}>{i + 1}</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
                   </div>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

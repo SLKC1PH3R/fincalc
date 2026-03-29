@@ -354,20 +354,19 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   )
 
   return (
-    <div className="space-y-6" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
+    <div style={{ height: '100%', overflowY: 'auto', maxWidth: 1200, margin: '0 auto', padding: '12px 24px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div>
-          <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 4 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>
             <Link href="/dashboard/patrimoine" style={{ color: 'var(--text-subtle)', textDecoration: 'none' }}>
               Mon Patrimoine
             </Link>
             {' › '}
             <span style={{ color: 'var(--text-muted-c)' }}>{catCfg.label}</span>
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{catCfg.label}</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-subtle)', margin: '4px 0 0' }}>{catCfg.description}</p>
+          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{catCfg.label} <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 4 }}>{catCfg.description}</span></h1>
         </div>
         <Button onClick={openModal} size="sm" style={{ gap: 6 }}>
           <Plus className="h-4 w-4" />
@@ -377,41 +376,41 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* KPI bar */}
       {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, flexShrink: 0 }}>
           {/* Valeur totale */}
-          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px', borderLeft: `3px solid ${catCfg.color}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '8px 14px', borderLeft: `3px solid ${catCfg.color}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
               <span className="section-label">Valeur totale</span>
               {pricesLoading && (
-                <span style={{ fontSize: 9, color: catCfg.color, background: catCfg.color + '18', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>…</span>
+                <span style={{ fontSize: 9, color: catCfg.color, background: catCfg.color + '18', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>…</span>
               )}
               {!pricesLoading && Object.keys(livePrices).length > 0 && (
-                <span style={{ fontSize: 9, color: '#34d399', background: '#34d39918', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>LIVE</span>
+                <span style={{ fontSize: 9, color: '#34d399', background: '#34d39918', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>LIVE</span>
               )}
             </div>
-            <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalValue)}</div>
+            <div className="mono-amount" style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalValue)}</div>
           </div>
 
           {/* Capital investi */}
-          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px', borderLeft: '3px solid rgba(255,255,255,0.12)' }}>
-            <div className="section-label" style={{ marginBottom: 6 }}>Capital investi</div>
-            <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalInvested)}</div>
+          <div className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '8px 14px', borderLeft: '3px solid rgba(255,255,255,0.12)' }}>
+            <div className="section-label" style={{ marginBottom: 3 }}>Capital investi</div>
+            <div className="mono-amount" style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalInvested)}</div>
           </div>
 
           {/* Plus/Moins-value */}
-          <div className={`card-hover ${hasPLData ? (pl >= 0 ? 'border-gain' : 'border-loss') : ''}`} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 18px' }}>
-            <div className="section-label" style={{ marginBottom: 6 }}>
+          <div className={`card-hover ${hasPLData ? (pl >= 0 ? 'border-gain' : 'border-loss') : ''}`} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '8px 14px' }}>
+            <div className="section-label" style={{ marginBottom: 3 }}>
               {hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance'}
             </div>
             {hasPLData ? (
-              <>
-                <div className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <div className="mono-amount" style={{ fontSize: 16, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171' }}>
                   {pl >= 0 ? '+' : ''}{fmtCompact(pl)}
                 </div>
-                <div style={{ fontSize: 12, color: pl >= 0 ? '#34d399' : '#f87171', opacity: 0.8, marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: pl >= 0 ? '#34d399' : '#f87171', opacity: 0.8 }}>
                   {pl >= 0 ? '+' : ''}{plPct.toFixed(1)} %
                 </div>
-              </>
+              </div>
             ) : (
               <div style={{ fontSize: 13, color: 'var(--text-subtle)' }}>—</div>
             )}
@@ -421,21 +420,21 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* Evolution chart */}
       {!loading && envelopes.length > 0 && mounted && totalValue > 0 && (
-        <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}30`, borderRadius: 16, padding: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Évolution du portefeuille</div>
-              <div style={{ fontSize: 12, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', marginTop: 2 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}30`, borderRadius: 12, padding: '10px 14px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>Évolution du portefeuille</div>
+              <div style={{ fontSize: 11, color: evolChange.abs >= 0 ? '#34d399' : '#f87171' }}>
                 {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)} ({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)} %)
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 4 }}>
+            <div style={{ display: 'flex', gap: 3 }}>
               {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
                 <button
                   key={r}
                   onClick={() => setTimeRange(r)}
                   style={{
-                    padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600,
+                    padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 600,
                     border: 'none', cursor: 'pointer',
                     background: timeRange === r ? catCfg.color : 'transparent',
                     color: timeRange === r ? '#fff' : 'var(--text-subtle)',
@@ -447,7 +446,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               ))}
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={130}>
             <AreaChart data={evolutionData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="evolGradCat" x1="0" y1="0" x2="0" y2="1">
@@ -482,8 +481,8 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* Envelopes grid */}
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
-          Mes enveloppes ({envelopes.length})
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted-c)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Enveloppes ({envelopes.length})
         </div>
 
         {loading && <div style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Chargement…</div>}
@@ -520,73 +519,60 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               return (
                 <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none', display: 'flex' }}>
                   <div
-                    style={{ padding: 18, borderRadius: 14, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s', width: '100%' }}
+                    style={{ padding: 12, borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s', width: '100%' }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '60'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 36, height: 36, borderRadius: 10, background: envColor + '18', border: `1px solid ${envColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Icon style={{ width: 16, height: 16, color: envColor }} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: envColor + '18', border: `1px solid ${envColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Icon style={{ width: 13, height: 13, color: envColor }} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{env.name}</div>
-                          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.label}</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{env.name}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{cfg.label}</div>
                         </div>
                       </div>
-                      <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', flexShrink: 0, marginTop: 4 }} />
+                      <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 1 }}>
+                      <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
                         {isImmo ? 'Valeur du bien' : 'Valeur actuelle'}
                       </span>
                       {!isImmo && MARKET_BASED_TYPES.includes(env.type) && env.positions.length > 0 && (
                         hasPrices
-                          ? <span style={{ fontSize: 9, color: '#34d399', background: '#34d39915', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>LIVE</span>
-                          : <span style={{ fontSize: 9, color: 'var(--text-subtle)', background: 'var(--section-border)', padding: '1px 5px', borderRadius: 3 }}>PRU×qty</span>
+                          ? <span style={{ fontSize: 8, color: '#34d399', background: '#34d39915', padding: '1px 4px', borderRadius: 3, fontWeight: 600 }}>LIVE</span>
+                          : <span style={{ fontSize: 8, color: 'var(--text-subtle)', background: 'var(--section-border)', padding: '1px 4px', borderRadius: 3 }}>PRU×qty</span>
                       )}
                     </div>
-                    <div style={{ fontSize: isImmo ? 17 : 20, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums', marginBottom: hasPL || cap ? 8 : 0 }}>
-                      {value > 0 ? (isImmo ? fmt(value) : fmtCompact(value)) : <span style={{ color: 'var(--text-subtle)', fontSize: 14 }}>Données à saisir</span>}
-                    </div>
-
-                    {hasPL && invested > 0 && (
-                      isImmo ? (
-                        <div style={{ marginTop: 4 }}>
-                          <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
-                            Plus-value latente
-                          </div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
-                            {plEnv >= 0 ? '+' : ''}{fmt(plEnv)}
-                          </div>
-                          <div style={{ fontSize: 11, color: plEnv >= 0 ? '#34d399' : '#f87171', opacity: 0.8 }}>
-                            {plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %
-                          </div>
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: 12, fontWeight: 600, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: cap ? 6 : 0 }}>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+                        {value > 0 ? (isImmo ? fmt(value) : fmtCompact(value)) : <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Données à saisir</span>}
+                      </div>
+                      {hasPL && invested > 0 && (
+                        <div style={{ fontSize: 11, fontWeight: 600, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
                           {plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)} ({plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)} %)
                         </div>
-                      )
-                    )}
+                      )}
+                    </div>
 
                     {cap && (
-                      <div style={{ marginTop: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{env.type === 'PEA' ? 'Versements' : 'Solde'} / plafond</span>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{env.type === 'PEA' ? 'Versements' : 'Solde'} / plafond</span>
+                          <span style={{ fontSize: 10, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
                             {fmtCompact(cap.current)} / {fmtCompact(cap.max)}
                           </span>
                         </div>
-                        <div style={{ height: 4, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
+                        <div style={{ height: 3, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${Math.min(100, (cap.current / cap.max) * 100).toFixed(1)}%`, background: envColor, borderRadius: 999 }} />
                         </div>
                       </div>
                     )}
 
                     {env.positionCount > 0 && (
-                      <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-subtle)' }}>
+                      <div style={{ marginTop: 5, fontSize: 10, color: 'var(--text-subtle)' }}>
                         {env.positionCount} position{env.positionCount > 1 ? 's' : ''}
                       </div>
                     )}
@@ -600,65 +586,33 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* Insights */}
       {!loading && envelopes.length > 0 && (
-        <div style={{
-          background: 'var(--card-dark)',
-          border: `1px solid ${catCfg.color}20`,
-          borderRadius: 14,
-          padding: '20px 24px',
-        }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: catCfg.color, marginBottom: 16 }}>
-            📊 Insights
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
-            {/* Meilleur performer */}
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}20`, borderRadius: 12, padding: '10px 14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
             {bestEnv && (
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                  🏆 Meilleur performer
-                </div>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
-                  <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>
-                    {bestEnv.name}
-                  </span>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 3 }}>🏆 Meilleur performer</div>
+                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, margin: 0 }}>
+                  <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>
                   {' '}
                   {(() => {
                     const inv = computeInvested(bestEnv)
-                    const val = bestEnv.type === 'IMMOBILIER'
-                      ? Number(bestEnv.metadata.currentValue ?? 0)
-                      : computeMarketValue(bestEnv, livePrices)
+                    const val = bestEnv.type === 'IMMOBILIER' ? Number(bestEnv.metadata.currentValue ?? 0) : computeMarketValue(bestEnv, livePrices)
                     const hp = bestEnv.positions.some(p => livePrices[p.symbol])
-                    if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) {
-                      const pct = (val - inv) / inv * 100
-                      return `avec +${pct.toFixed(1)}% de performance`
-                    }
-                    return `avec ${fmtCompact(val)} de valeur actuelle`
+                    if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) return `+${((val - inv) / inv * 100).toFixed(1)}%`
+                    return fmtCompact(val)
                   })()}
                 </p>
               </div>
             )}
-
-            {/* Tendance */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                📈 Tendance
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
-                {pl > 100
-                  ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
-                  : pl < -100
-                  ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez les allocations.`
-                  : 'Vos actifs sont stables, sans variation significative.'}
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 3 }}>📈 Tendance</div>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, margin: 0 }}>
+                {pl > 100 ? `+${fmtCompact(pl)} (+${plPct.toFixed(1)}%)` : pl < -100 ? `${fmtCompact(pl)} (${plPct.toFixed(1)}%)` : 'Actifs stables'}
               </p>
             </div>
-
-            {/* Conseil */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                💡 Conseil
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
-                {CATEGORY_TIPS[category]}
-              </p>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 3 }}>💡 Conseil</div>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
             </div>
           </div>
         </div>

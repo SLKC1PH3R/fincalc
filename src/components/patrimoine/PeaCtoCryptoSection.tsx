@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { useChartTheme } from '@/lib/chart-theme'
 import { PositionsTable } from '@/components/patrimoine/PositionsTable'
-import { GeoMapSection } from '@/components/patrimoine/GeoMapSection'
 import { EtfOptimizerSection } from '@/components/patrimoine/EtfOptimizerSection'
 import {
   type Envelope, type Position, type PriceData,
@@ -132,11 +131,6 @@ export function PeaCtoCryptoSection({
         onReload={onReload}
         cacheAge={cacheAge}
       />
-
-      {/* Carte géographique */}
-      {!isCrypto && (
-        <GeoMapSection positions={positions} prices={prices} />
-      )}
 
       {/* Optimisation ETF */}
       {!isCrypto && positions.filter(p => p.assetType === 'ETF').length > 0 && (

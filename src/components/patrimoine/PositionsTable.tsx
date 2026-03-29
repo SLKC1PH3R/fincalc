@@ -192,10 +192,10 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
             <button
               onClick={onRefreshPrices}
               disabled={pricesLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--text-subtle)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'none', cursor: pricesLoading ? 'default' : 'pointer', fontSize: 12, color: pricesLoading ? 'var(--text-subtle)' : 'var(--text-primary)', opacity: pricesLoading ? 0.5 : 1, transition: 'color 0.15s, opacity 0.15s' }}
             >
               <RefreshCw style={{ width: 12, height: 12, animation: pricesLoading ? 'spin 1s linear infinite' : 'none' }} />
-              Actualiser
+              {pricesLoading ? 'Actualisation…' : 'Actualiser'}
             </button>
             <button
               onClick={() => setShowAddPos(v => !v)}

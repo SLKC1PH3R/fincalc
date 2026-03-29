@@ -332,7 +332,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', overflowY: 'auto', maxWidth: 1200, margin: '0 auto', padding: '12px 24px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>

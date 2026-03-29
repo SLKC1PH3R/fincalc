@@ -334,7 +334,7 @@ function RentalPageInner() {
   })
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1400, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '20px 24px 40px' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
@@ -381,10 +381,10 @@ function RentalPageInner() {
       </div>
 
       {/* Two-column layout — fills remaining height, each column scrolls independently */}
-      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, overflow: 'hidden', alignItems: 'stretch' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
 
         {/* Left: inputs */}
-        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Apartment tabs */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -520,7 +520,7 @@ function RentalPageInner() {
         </div>
 
         {/* Right: results */}
-        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* KPI grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>

@@ -59,7 +59,7 @@ function BuyRentPageInner() {
   const verdictColor = r.buyWins ? '#34d399' : '#f87171'
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 40px' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
@@ -91,10 +91,10 @@ function BuyRentPageInner() {
       </div>
 
       {/* Two-column layout — fills remaining height */}
-      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, overflow: 'hidden', alignItems: 'stretch' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
 
         {/* Input panel */}
-        <div style={{ overflowY: 'auto', paddingBottom: 12 }}>
+        <div>
         <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
@@ -149,7 +149,7 @@ function BuyRentPageInner() {
         </div>
 
         {/* Results panel */}
-        <div style={{ overflowY: 'auto', paddingBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* KPI strip */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, flexShrink: 0 }}>

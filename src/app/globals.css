@@ -289,6 +289,12 @@
 /* Mobile responsive fixes */
 @media (max-width: 768px) {
   .dashboard-content { padding: 16px; }
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .hero-grid > div:last-child {
+    display: none;
+  }
 }
 
 /* Smooth scroll */

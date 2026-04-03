@@ -2367,11 +2367,13 @@ export function LandingClient() {
         {/* Two-column hero */}
         <div style={{
           position: 'relative', maxWidth: 1400, width: '100%',
-          display: 'grid', gridTemplateColumns: '0.72fr 1fr', gap: 40,
+          display: 'grid', gridTemplateColumns: 'clamp(300px, 0.72fr, 560px) 1fr', gap: 40,
           alignItems: 'center',
           opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(20px)',
           transition: 'all 0.8s ease',
-        }}>
+        }}
+        className="hero-grid"
+        >
 
           {/* ── LEFT: text content ── */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -2414,6 +2416,20 @@ export function LandingClient() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
                 Voir la démo
               </a>
+            </div>
+
+            {/* Trust micro-copy */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18, flexWrap: 'wrap' }}>
+              {[
+                { icon: '🔒', text: 'Aucune carte bancaire' },
+                { icon: '🇪🇺', text: 'RGPD · Données en Europe' },
+                { icon: '✓', text: '100 % gratuit, pour toujours' },
+              ].map(({ icon, text }) => (
+                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'rgba(255,255,255,0.38)', letterSpacing: '-0.01em' }}>
+                  <span style={{ fontSize: 11 }}>{icon}</span>
+                  <span>{text}</span>
+                </div>
+              ))}
             </div>
 
             {/* Social proof */}
@@ -2983,19 +2999,35 @@ export function LandingClient() {
               {[
                 {
                   q: 'Est-ce vraiment gratuit, pour toujours ?',
-                  a: 'Oui, PatrImo est 100 % gratuit. Aucune fonctionnalité premium cachée, aucune limitation dans le temps, aucune carte bancaire requise. Jamais.',
+                  a: 'Oui, PatrImo est 100 % gratuit. Aucune fonctionnalité premium cachée, aucune limitation dans le temps, aucune carte bancaire requise. Jamais. Le modèle économique est simple : zéro publicité, zéro revente de données.',
                 },
                 {
                   q: 'Faut-il connecter mon compte bancaire ?',
-                  a: 'Non. PatrImo fonctionne sans aucun accès à vos comptes bancaires. Vous saisissez vous-même vos données — vous gardez le contrôle total.',
+                  a: 'Non. PatrImo fonctionne sans aucun accès à vos comptes bancaires. Vous saisissez vous-même vos données — vous gardez le contrôle total. Aucun RIB, aucun open banking, zéro risque.',
+                },
+                {
+                  q: 'Quelle est la différence avec Finary ou Bankin\' ?',
+                  a: 'Finary est un agrégateur bancaire payant (abonnement mensuel). PatrImo ne se connecte jamais à vos banques — vous renseignez vos données manuellement — et reste 100 % gratuit, avec des simulateurs avancés (FIRE, flat tax, succession) qu\'aucun agrégateur ne propose.',
                 },
                 {
                   q: 'Où sont stockées mes données ?',
-                  a: 'Vos données sont hébergées sur des serveurs sécurisés en Europe, conformément au RGPD. Elles ne sont jamais revendues, partagées, ni utilisées à des fins publicitaires.',
+                  a: 'Vos données sont hébergées sur des serveurs sécurisés en Europe, conformément au RGPD. Elles ne sont jamais revendues, partagées ou utilisées à des fins publicitaires. Vous pouvez supprimer votre compte à tout moment.',
                 },
                 {
-                  q: 'Les calculs sont-ils fiables ?',
-                  a: 'Les simulateurs utilisent les formules financières standards (intérêts composés, amortissement, TMI 2026, PFU) et sont mis à jour chaque année. Ils sont indicatifs et ne remplacent pas un conseil financier personnalisé.',
+                  q: 'Les calculs sont-ils fiables pour la fiscalité 2026 ?',
+                  a: 'Les simulateurs utilisent les formules financières standards (intérêts composés, amortissement PMT, TMI 2026, PFU 30%, abattements succession) et sont mis à jour chaque année en fonction des barèmes officiels. Ils sont indicatifs et ne remplacent pas un conseil financier personnalisé.',
+                },
+                {
+                  q: 'PatrImo propose-t-il un simulateur FIRE ?',
+                  a: 'Oui. Le simulateur FI/RE calcule votre objectif de capital (règle des 4%), votre date de liberté financière selon vos dépenses actuelles, votre taux d\'épargne et le rendement de vos placements. Il se synchronise directement avec votre patrimoine réel saisi dans PatrImo.',
+                },
+                {
+                  q: 'Puis-je partager mes simulations ?',
+                  a: 'Oui. Chaque simulation peut être partagée via un lien public en lecture seule — sans que votre correspondant ait besoin d\'un compte. Pratique pour montrer un scénario à votre conseiller ou à un proche.',
+                },
+                {
+                  q: 'Y a-t-il une application mobile ?',
+                  a: 'PatrImo est entièrement responsive et fonctionne sur mobile et tablette. Une application native iOS/Android est prévue sur la roadmap pour 2027. En attendant, vous pouvez l\'ajouter à votre écran d\'accueil via votre navigateur mobile.',
                 },
               ].map(({ q, a }, i) => (
                 <FaqItem key={i} q={q} a={a} gold={GOLD} goldBorder={GOLD_BORDER} />

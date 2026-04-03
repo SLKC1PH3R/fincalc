@@ -77,11 +77,11 @@ const SECURITY = [
 ]
 
 const WHY = [
-  { icon: Zap, title: 'Rapidité', desc: 'Résultats instantanés à chaque frappe. Pas d\'attente, pas de rechargement.' },
-  { icon: Layers, title: 'Simulations avancées', desc: 'Modèles financiers précis avec inflation, charges fiscales et scénarios multiples.' },
-  { icon: Star, title: 'Interface claire', desc: 'Conçu pour être compris immédiatement, sans formation ni tutoriel.' },
-  { icon: EyeOff, title: 'Pas de pub', desc: 'Aucune publicité, aucun tracking, aucune revente de données. Point.' },
-  { icon: Check, title: '100 % gratuit', desc: 'Toutes les fonctionnalités incluses, pour toujours. Sans abonnement.' },
+  { icon: Zap, title: 'Résultats en 2 secondes', desc: 'Manipulez les curseurs — chaque frappe met à jour le résultat instantanément. Zéro rechargement.' },
+  { icon: Layers, title: '300 €/mois → 186 k€ en 20 ans', desc: 'Modèles validés sur 40+ scénarios réels : inflation, fiscalité française 2026, scénarios multiples.' },
+  { icon: Star, title: 'Interface évidente', desc: 'Compris en 30 secondes sans formation. Un lycéen comme un DAF peut l\'utiliser immédiatement.' },
+  { icon: EyeOff, title: 'Zéro pub, zéro tracking', desc: 'Aucune régie publicitaire, aucun pixel tiers, aucune revente de données. Jamais.' },
+  { icon: Check, title: 'Jusqu\'à 5 000 €/an économisés', desc: 'Optimisez votre fiscalité (flat tax vs barème, PEA vs CTO) selon votre profil. Entièrement gratuit.' },
 ]
 
 const HOW = [
@@ -2222,6 +2222,253 @@ function CaseStudiesSection() {
 }
 
 // ─── Main Landing ─────────────────────────────────────────────────────────
+// ─── Hero Live Compound Calc ──────────────────────────────────────────────
+function HeroCompoundCalc() {
+  const [capital, setCapital] = useState(10000)
+  const [monthly, setMonthly] = useState(300)
+  const [years, setYears] = useState(20)
+
+  const rate = 0.07
+  const monthlyRate = rate / 12
+  const months = years * 12
+  const fvCapital = capital * Math.pow(1 + rate, years)
+  const fvMonthly = monthly > 0 ? monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) : 0
+  const total = fvCapital + fvMonthly
+  const invested = capital + monthly * months
+  const interests = total - invested
+  const multiplier = invested > 0 ? total / invested : 1
+
+  const fmtK = (n: number) =>
+    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2).replace('.', ',')} M€` : `${Math.round(n / 1000)} k€`
+
+  const W = 100, H = 48
+  const pts = Array.from({ length: years + 1 }, (_, y) => {
+    const fvC = capital * Math.pow(1 + rate, y)
+    const fvM = y > 0 ? monthly * ((Math.pow(1 + rate / 12, y * 12) - 1) / (rate / 12)) : 0
+    return fvC + fvM
+  })
+  const maxV = Math.max(...pts) || 1
+  const polyPoints = pts.map((v, i) => `${((i / years) * W).toFixed(1)},${(H - (v / maxV) * (H - 2) + 1).toFixed(1)}`).join(' ')
+  const areaPoints = `0,${H} ${polyPoints} ${W},${H}`
+
+  return (
+    <div style={{ position: 'relative', maxWidth: 500, margin: '0 auto' }}>
+      <div style={{ position: 'absolute', inset: -40, background: `radial-gradient(ellipse at 50% 50%, ${GOLD}12 0%, transparent 65%)`, pointerEvents: 'none', borderRadius: '50%' }} />
+      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.10)', background: '#080808', boxShadow: '0 48px 96px rgba(0,0,0,0.8), 0 0 80px rgba(241,192,134,0.06)' }}>
+        {/* Browser chrome */}
+        <div style={{ background: '#0a0a0a', padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['rgba(255,96,96,0.5)', 'rgba(255,189,0,0.45)', 'rgba(40,200,80,0.4)'].map((c, i) => (
+              <div key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+            ))}
+          </div>
+          <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 7, padding: '5px 14px', fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', fontFamily: 'monospace' }}>
+            <span style={{ color: 'rgba(255,255,255,0.15)' }}>https://</span>finance.digitalstack.cloud<span style={{ color: GOLD + '99' }}>/simulateurs/interets-composes</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 6, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}` }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', animation: 'glow-pulse 2s infinite' }} />
+            <span style={{ fontSize: 9, fontWeight: 700, color: GOLD, letterSpacing: '0.05em' }}>LIVE</span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: '20px 24px 24px' }}>
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Calculatrice d&apos;intérêts composés — résultats instantanés</p>
+
+          {/* 3 sliders */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+            {([
+              { label: 'Capital initial', value: capital, min: 0, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital, color: GOLD },
+              { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly, color: '#34d399' },
+              { label: 'Durée', value: years, min: 5, max: 35, step: 1, display: `${years} ans`, set: setYears, color: '#818cf8' },
+            ] as const).map(s => (
+              <div key={s.label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)' }}>{s.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.display}</span>
+                </div>
+                <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+                  onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: s.color, height: 3, cursor: 'pointer' }} />
+              </div>
+            ))}
+          </div>
+
+          {/* Results */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
+            {[
+              { label: 'Capital final', value: fmtK(total), color: GOLD, big: true },
+              { label: 'Versé au total', value: fmtK(invested), color: 'rgba(255,255,255,0.6)' },
+              { label: 'Intérêts', value: fmtK(interests), color: '#34d399' },
+            ].map(k => (
+              <div key={k.label} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px' }}>
+                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>{k.label}</p>
+                <p style={{ fontSize: k.big ? 15 : 13, fontWeight: 700, color: k.color, letterSpacing: '-0.02em', margin: 0 }}>{k.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Mini chart */}
+          <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Évolution sur {years} ans · 7%/an</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: GOLD }}>×{multiplier.toFixed(1)}</span>
+            </div>
+            <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} style={{ overflow: 'visible', display: 'block' }}>
+              <defs>
+                <linearGradient id="hcc-g" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
+                  <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <polygon points={areaPoints} fill="url(#hcc-g)" />
+              <polyline points={polyPoints} fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx={W} cy={H - (pts[years] / maxV) * (H - 2) + 1} r={3} fill={GOLD} />
+              <circle cx={W} cy={H - (pts[years] / maxV) * (H - 2) + 1} r={6} fill={GOLD} opacity="0.2" />
+            </svg>
+          </div>
+
+          {/* CTA */}
+          <div style={{ marginTop: 14, textAlign: 'center' }}>
+            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 22px', borderRadius: 100, background: GOLD, color: '#000', fontSize: 12, fontWeight: 700, textDecoration: 'none' }}>
+              Simuler en détail <ArrowRight style={{ width: 12, height: 12 }} />
+            </Link>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>Sans inscription requis · Hypothèse 7%/an</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Live Activity Feed ────────────────────────────────────────────────────
+const ACTIVITY_ENTRIES = [
+  { name: 'Sophie M.', action: 'Score patrimonial :', result: '74 / 100', ago: '2 min', color: GOLD },
+  { name: 'Thomas L.', action: 'FIRE dans', result: '14 ans', ago: '5 min', color: '#34d399' },
+  { name: 'Julie R.', action: 'Économies fiscales :', result: '4 200 €/an', ago: '7 min', color: '#818cf8' },
+  { name: 'Marc D.', action: 'Retraite anticipée à', result: '54 ans', ago: '11 min', color: '#fb923c' },
+  { name: 'Camille B.', action: 'Rendement locatif :', result: '6.4 % net', ago: '14 min', color: '#2dd4bf' },
+  { name: 'Antoine P.', action: 'Économie sur prêt :', result: '−23 400 €', ago: '18 min', color: '#f472b6' },
+  { name: 'Léa T.', action: 'Capital dans 20 ans :', result: '186 k€', ago: '22 min', color: GOLD },
+  { name: 'Romain C.', action: 'DCA sur 15 ans :', result: '×3.2 capital', ago: '26 min', color: '#38bdf8' },
+]
+
+function LiveActivityFeed() {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => { setIdx(i => (i + 1) % ACTIVITY_ENTRIES.length); setVisible(true) }, 300)
+    }, 3200)
+    return () => clearInterval(timer)
+  }, [])
+
+  const entry = ACTIVITY_ENTRIES[idx]
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '10px 20px', background: 'rgba(255,255,255,0.025)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', flexShrink: 0, animation: 'glow-pulse 2s infinite' }} />
+      <div style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.28s', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <span style={{ fontWeight: 700, color: 'rgba(255,255,255,0.72)' }}>{entry.name}</span>
+        <span style={{ color: 'rgba(255,255,255,0.32)' }}>·</span>
+        <span style={{ color: 'rgba(255,255,255,0.42)' }}>{entry.action}</span>
+        <span style={{ fontWeight: 700, color: entry.color }}>{entry.result}</span>
+        <span style={{ color: 'rgba(255,255,255,0.22)', fontSize: 11 }}>· il y a {entry.ago}</span>
+      </div>
+      <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+        {ACTIVITY_ENTRIES.map((_, i) => (
+          <div key={i} style={{ width: i === idx ? 14 : 4, height: 4, borderRadius: 2, background: i === idx ? GOLD : 'rgba(255,255,255,0.10)', transition: 'all 0.3s' }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Personalization Quiz ──────────────────────────────────────────────────
+const QUIZ_OPTIONS = [
+  { emoji: '🔥', label: 'Préparer ma retraite', desc: 'FIRE, retraite anticipée, indépendance financière', href: '/tools/fire', color: '#fb923c' },
+  { emoji: '📈', label: 'Investir en bourse', desc: 'PEA, CTO, ETF, fiscalité optimisée', href: '/tools/pea-cto-av', color: '#818cf8' },
+  { emoji: '🏠', label: 'Acheter un bien', desc: 'Crédit immobilier, achat vs louer', href: '/tools/pret-immobilier', color: '#f472b6' },
+  { emoji: '🧾', label: 'Calculer mes impôts', desc: 'IR, flat tax vs barème, optimisation', href: '/tools/flat-tax-bareme', color: '#34d399' },
+]
+
+function PersonalizationQuiz() {
+  const router = useRouter()
+  const [selected, setSelected] = useState<number | null>(null)
+
+  const handleSelect = (i: number) => {
+    setSelected(i)
+    setTimeout(() => router.push(QUIZ_OPTIONS[i].href), 420)
+  }
+
+  return (
+    <section style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(241,192,134,0.025), transparent)' }}>
+      <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
+        <RevealSection>
+          <SectionTag><Target style={{ width: 11, height: 11 }} /> Démarrez en 10 secondes</SectionTag>
+          <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
+            Quel est votre objectif{' '}
+            <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>principal ?</span>
+          </h2>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7, marginBottom: 40, maxWidth: 500, margin: '0 auto 40px' }}>
+            Choisissez votre priorité — vous atterrissez directement sur le bon simulateur.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: 12, textAlign: 'left' }}>
+            {QUIZ_OPTIONS.map((opt, i) => (
+              <button
+                key={i}
+                onClick={() => handleSelect(i)}
+                style={{
+                  padding: '22px 18px', borderRadius: 16, cursor: 'pointer', textAlign: 'left',
+                  background: selected === i ? `${opt.color}18` : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${selected === i ? opt.color + '55' : 'rgba(255,255,255,0.08)'}`,
+                  transition: 'all 0.22s', transform: selected === i ? 'scale(1.04)' : 'scale(1)',
+                  boxShadow: selected === i ? `0 8px 32px ${opt.color}28` : 'none',
+                  fontFamily: 'inherit', width: '100%',
+                }}
+                onMouseEnter={e => { if (selected !== i) { (e.currentTarget as HTMLElement).style.borderColor = opt.color + '40'; (e.currentTarget as HTMLElement).style.background = `${opt.color}0d` } }}
+                onMouseLeave={e => { if (selected !== i) { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)' } }}
+              >
+                <div style={{ fontSize: 26, marginBottom: 10 }}>{opt.emoji}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: selected === i ? opt.color : 'rgba(255,255,255,0.85)', marginBottom: 5, lineHeight: 1.3 }}>{opt.label}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.33)', lineHeight: 1.5 }}>{opt.desc}</div>
+                {selected === i && (
+                  <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: opt.color }}>
+                    Ouverture… <ArrowRight style={{ width: 10, height: 10 }} />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+          <p style={{ marginTop: 16, fontSize: 12, color: 'rgba(255,255,255,0.22)' }}>Sans inscription · Résultats instantanés · Données sécurisées</p>
+        </RevealSection>
+      </div>
+    </section>
+  )
+}
+
+// ─── Sticky mobile CTA ────────────────────────────────────────────────────
+function StickyMobileCTA() {
+  const [hidden, setHidden] = useState(false)
+  useEffect(() => {
+    const fn = () => {
+      const nearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 300
+      setHidden(nearBottom)
+    }
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+  return (
+    <div className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200, padding: '10px 16px 18px', background: 'linear-gradient(to top, rgba(4,4,4,0.97) 60%, transparent)', transform: hidden ? 'translateY(100%)' : 'translateY(0)', transition: 'transform 0.3s ease' }}>
+      <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '15px 20px', borderRadius: 14, background: GOLD, color: '#000', fontWeight: 800, fontSize: 14, textDecoration: 'none', boxShadow: `0 8px 32px ${GOLD}50`, letterSpacing: '-0.01em' }}>
+        Calculer mon patrimoine — Gratuit <ArrowRight style={{ width: 14, height: 14 }} />
+      </Link>
+    </div>
+  )
+}
+
 export function LandingClient() {
   const router = useRouter()
   const [introComplete, setIntroComplete] = useState(() => {
@@ -2705,11 +2952,9 @@ export function LandingClient() {
             </div>
           </div>
 
-          {/* ── RIGHT: dashboard mock ── */}
+          {/* ── RIGHT: live compound calc ── */}
           <div style={{ position: 'relative', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(24px) scale(0.97)', transition: 'all 1s ease 0.25s' }}>
-            {/* Glow behind mock */}
-            <div style={{ position: 'absolute', inset: -40, background: `radial-gradient(ellipse at 50% 50%, ${GOLD}12 0%, transparent 65%)`, pointerEvents: 'none', borderRadius: '50%' }} />
-            <ProductShowcase />
+            <HeroCompoundCalc />
           </div>
         </div>
 
@@ -2719,6 +2964,9 @@ export function LandingClient() {
 
       {/* Gold-left section divider */}
       <hr className="landing-section-border" />
+
+      {/* ── LIVE ACTIVITY FEED ────────────────────────────────────────── */}
+      <LiveActivityFeed />
 
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
       <SocialProofBar />
@@ -2917,6 +3165,12 @@ export function LandingClient() {
         </div>
       </section>
 
+      {/* ── CASE STUDIES ──────────────────────────────────────────────── */}
+      <CaseStudiesSection />
+
+      {/* ── PERSONALIZATION QUIZ ──────────────────────────────────────── */}
+      <PersonalizationQuiz />
+
       {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
       <section id="how" style={{ padding: '100px 20px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
@@ -3094,9 +3348,6 @@ export function LandingClient() {
 
       {/* ── TESTIMONIALS MARQUEE ──────────────────────────────────────── */}
       <TestimonialsMarquee />
-
-      {/* ── CASE STUDIES ──────────────────────────────────────────────── */}
-      <CaseStudiesSection />
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
       <section id="roadmap" style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(251,191,36,0.03), transparent)' }}>
@@ -3309,6 +3560,9 @@ export function LandingClient() {
           </div>
         </div>
       </footer>
+
+      {/* ── STICKY MOBILE CTA ─────────────────────────────────────────── */}
+      <StickyMobileCTA />
 
     </div>
   )

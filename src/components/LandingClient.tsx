@@ -2239,101 +2239,219 @@ function HeroCompoundCalc() {
   const multiplier = invested > 0 ? total / invested : 1
 
   const fmtK = (n: number) =>
-    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2).replace('.', ',')} M€` : `${Math.round(n / 1000)} k€`
+    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2).replace('.', ',')} M€`
+    : n >= 1000 ? `${Math.round(n / 1000)} k€`
+    : `${Math.round(n)} €`
 
-  const W = 100, H = 48
-  const pts = Array.from({ length: years + 1 }, (_, y) => {
+  // Chart data — one point per year
+  const CW = 340, CH = 190
+  const PAD = { top: 12, right: 8, bottom: 28, left: 0 }
+  const gW = CW - PAD.left - PAD.right
+  const gH = CH - PAD.top - PAD.bottom
+
+  const totalPts = Array.from({ length: years + 1 }, (_, y) => {
     const fvC = capital * Math.pow(1 + rate, y)
     const fvM = y > 0 ? monthly * ((Math.pow(1 + rate / 12, y * 12) - 1) / (rate / 12)) : 0
     return fvC + fvM
   })
-  const maxV = Math.max(...pts) || 1
-  const polyPoints = pts.map((v, i) => `${((i / years) * W).toFixed(1)},${(H - (v / maxV) * (H - 2) + 1).toFixed(1)}`).join(' ')
-  const areaPoints = `0,${H} ${polyPoints} ${W},${H}`
+  const investedPts = Array.from({ length: years + 1 }, (_, y) => capital + monthly * 12 * y)
+
+  const maxV = Math.max(...totalPts) || 1
+  const toX = (i: number) => PAD.left + (i / years) * gW
+  const toY = (v: number) => PAD.top + gH - (v / maxV) * gH
+
+  const totalCoords = totalPts.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+  const investedCoords = investedPts.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+  const areaTotal = `${PAD.left},${PAD.top + gH} ${totalCoords} ${toX(years).toFixed(1)},${(PAD.top + gH).toFixed(1)}`
+  // Interests shaded zone (between invested and total)
+  const areaInterest = `${totalCoords} ${investedPts.slice().reverse().map((v, i) => `${toX(years - i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')}`
+
+  // Y axis ticks
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(p => ({ v: p * maxV, y: PAD.top + gH - p * gH }))
+  // X axis ticks every 5 years
+  const xTicks = Array.from({ length: Math.floor(years / 5) + 1 }, (_, i) => i * 5).filter(y => y <= years)
+
+  const lastX = toX(years)
+  const lastTotalY = toY(totalPts[years])
+  const lastInvY = toY(investedPts[years])
+
+  const SLIDERS = [
+    { label: 'Capital initial', value: capital, min: 0, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital, color: GOLD },
+    { label: 'Versement / mois', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €`, set: setMonthly, color: '#34d399' },
+    { label: 'Durée', value: years, min: 5, max: 35, step: 1, display: `${years} ans`, set: setYears, color: '#818cf8' },
+  ] as const
 
   return (
-    <div style={{ position: 'relative', maxWidth: 500, margin: '0 auto' }}>
-      <div style={{ position: 'absolute', inset: -40, background: `radial-gradient(ellipse at 50% 50%, ${GOLD}12 0%, transparent 65%)`, pointerEvents: 'none', borderRadius: '50%' }} />
-      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.10)', background: '#080808', boxShadow: '0 48px 96px rgba(0,0,0,0.8), 0 0 80px rgba(241,192,134,0.06)' }}>
+    <div style={{ position: 'relative' }}>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', top: '20%', left: '40%', width: 400, height: 400, background: `radial-gradient(ellipse, ${GOLD}0e 0%, transparent 70%)`, pointerEvents: 'none', filter: 'blur(30px)' }} />
+
+      {/* Main card */}
+      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.10)', background: '#07070a', boxShadow: '0 40px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)' }}>
+
         {/* Browser chrome */}
-        <div style={{ background: '#0a0a0a', padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ background: '#0a0a0a', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', gap: 6 }}>
             {['rgba(255,96,96,0.5)', 'rgba(255,189,0,0.45)', 'rgba(40,200,80,0.4)'].map((c, i) => (
-              <div key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
             ))}
           </div>
-          <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 7, padding: '5px 14px', fontSize: 11, color: 'rgba(255,255,255,0.3)', textAlign: 'center', fontFamily: 'monospace' }}>
-            <span style={{ color: 'rgba(255,255,255,0.15)' }}>https://</span>finance.digitalstack.cloud<span style={{ color: GOLD + '99' }}>/simulateurs/interets-composes</span>
+          <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 6, padding: '4px 12px', fontSize: 10.5, color: 'rgba(255,255,255,0.25)', textAlign: 'center', fontFamily: 'monospace' }}>
+            <span style={{ color: 'rgba(255,255,255,0.12)' }}>https://</span>finance.digitalstack.cloud<span style={{ color: GOLD + '88' }}>/simulateurs/interets-composes</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 6, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}` }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', animation: 'glow-pulse 2s infinite' }} />
-            <span style={{ fontSize: 9, fontWeight: 700, color: GOLD, letterSpacing: '0.05em' }}>LIVE</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 6, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)' }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399', animation: 'glow-pulse 2s infinite' }} />
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#34d399', letterSpacing: '0.08em' }}>LIVE</span>
           </div>
         </div>
 
-        {/* Content */}
-        <div style={{ padding: '20px 24px 24px' }}>
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Calculatrice d&apos;intérêts composés — résultats instantanés</p>
+        {/* Two-column body */}
+        <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr' }}>
 
-          {/* 3 sliders */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
-            {([
-              { label: 'Capital initial', value: capital, min: 0, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital, color: GOLD },
-              { label: 'Versement mensuel', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €/mois`, set: setMonthly, color: '#34d399' },
-              { label: 'Durée', value: years, min: 5, max: 35, step: 1, display: `${years} ans`, set: setYears, color: '#818cf8' },
-            ] as const).map(s => (
-              <div key={s.label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)' }}>{s.label}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.display}</span>
+          {/* ── LEFT: sliders + KPIs ── */}
+          <div style={{ padding: '20px 18px', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: 0, background: '#050508' }}>
+
+            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20 }}>Intérêts composés</p>
+
+            {/* Sliders */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginBottom: 24 }}>
+              {SLIDERS.map(s => (
+                <div key={s.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)' }}>{s.label}</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: s.color, letterSpacing: '-0.03em' }}>{s.display}</span>
+                  </div>
+                  <div style={{ position: 'relative', height: 4, borderRadius: 2 }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }} />
+                    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${((s.value - s.min) / (s.max - s.min)) * 100}%`, borderRadius: 2, background: `linear-gradient(to right, ${s.color}88, ${s.color})` }} />
+                  </div>
+                  <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+                    onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
+                    style={{ width: '100%', opacity: 0, height: 20, cursor: 'pointer', marginTop: -12, position: 'relative', zIndex: 1 }} />
                 </div>
-                <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
-                  onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: s.color, height: 3, cursor: 'pointer' }} />
-              </div>
-            ))}
-          </div>
-
-          {/* Results */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
-            {[
-              { label: 'Capital final', value: fmtK(total), color: GOLD, big: true },
-              { label: 'Versé au total', value: fmtK(invested), color: 'rgba(255,255,255,0.6)' },
-              { label: 'Intérêts', value: fmtK(interests), color: '#34d399' },
-            ].map(k => (
-              <div key={k.label} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px' }}>
-                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>{k.label}</p>
-                <p style={{ fontSize: k.big ? 15 : 13, fontWeight: 700, color: k.color, letterSpacing: '-0.02em', margin: 0 }}>{k.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Mini chart */}
-          <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Évolution sur {years} ans · 7%/an</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: GOLD }}>×{multiplier.toFixed(1)}</span>
+              ))}
             </div>
-            <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} style={{ overflow: 'visible', display: 'block' }}>
-              <defs>
-                <linearGradient id="hcc-g" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={GOLD} stopOpacity="0.28" />
-                  <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <polygon points={areaPoints} fill="url(#hcc-g)" />
-              <polyline points={polyPoints} fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx={W} cy={H - (pts[years] / maxV) * (H - 2) + 1} r={3} fill={GOLD} />
-              <circle cx={W} cy={H - (pts[years] / maxV) * (H - 2) + 1} r={6} fill={GOLD} opacity="0.2" />
-            </svg>
-          </div>
 
-          {/* CTA */}
-          <div style={{ marginTop: 14, textAlign: 'center' }}>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 22px', borderRadius: 100, background: GOLD, color: '#000', fontSize: 12, fontWeight: 700, textDecoration: 'none' }}>
+            {/* KPI stack */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 'auto' }}>
+              <div style={{ background: `linear-gradient(135deg, ${GOLD}12, transparent)`, border: `1px solid ${GOLD}28`, borderRadius: 10, padding: '11px 13px' }}>
+                <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Capital final</p>
+                <p style={{ fontSize: 22, fontWeight: 800, color: GOLD, letterSpacing: '-0.04em', lineHeight: 1 }}>{fmtK(total)}</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 4 }}>×{multiplier.toFixed(1)} votre mise</p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                {[
+                  { label: 'Investi', value: fmtK(invested), color: 'rgba(255,255,255,0.55)' },
+                  { label: 'Intérêts', value: fmtK(interests), color: '#34d399' },
+                ].map(k => (
+                  <div key={k.label} style={{ background: '#0d0d12', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '8px 10px' }}>
+                    <p style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{k.label}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: k.color, letterSpacing: '-0.02em' }}>{k.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA */}
+            <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 10, background: GOLD, color: '#000', fontSize: 12, fontWeight: 700, textDecoration: 'none', marginTop: 14 }}>
               Simuler en détail <ArrowRight style={{ width: 12, height: 12 }} />
             </Link>
-            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>Sans inscription requis · Hypothèse 7%/an</p>
+          </div>
+
+          {/* ── RIGHT: large chart ── */}
+          <div style={{ padding: '20px 20px 16px', background: '#07070a', display: 'flex', flexDirection: 'column' }}>
+
+            {/* Chart header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: 2 }}>Évolution du capital sur {years} ans</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)' }}>Rendement 7%/an · mise à jour en temps réel</p>
+              </div>
+              <div style={{ display: 'flex', gap: 14 }}>
+                {[
+                  { color: GOLD, label: 'Capital total' },
+                  { color: '#34d399', label: 'Épargne investie', dashed: true },
+                ].map(l => (
+                  <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <svg width={20} height={8}>
+                      <line x1={0} y1={4} x2={20} y2={4} stroke={l.color} strokeWidth={l.dashed ? 1.5 : 2} strokeDasharray={l.dashed ? '4,2' : undefined} />
+                    </svg>
+                    <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.3)' }}>{l.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SVG chart */}
+            <div style={{ flex: 1, position: 'relative' }}>
+              <svg width="100%" height={CH} viewBox={`0 0 ${CW} ${CH}`} style={{ overflow: 'visible', display: 'block' }}>
+                <defs>
+                  <linearGradient id="hcc-total" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={GOLD} stopOpacity="0.22" />
+                    <stop offset="100%" stopColor={GOLD} stopOpacity="0.01" />
+                  </linearGradient>
+                  <linearGradient id="hcc-interest" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#34d399" stopOpacity="0.12" />
+                    <stop offset="100%" stopColor="#34d399" stopOpacity="0.02" />
+                  </linearGradient>
+                  <clipPath id="hcc-clip">
+                    <rect x={PAD.left} y={PAD.top} width={gW} height={gH} />
+                  </clipPath>
+                </defs>
+
+                {/* Horizontal grid lines */}
+                {yTicks.map((t, i) => (
+                  <g key={i}>
+                    <line x1={PAD.left} y1={t.y} x2={PAD.left + gW} y2={t.y} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
+                    {i > 0 && (
+                      <text x={PAD.left + gW + 5} y={t.y + 4} fontSize={8.5} fill="rgba(255,255,255,0.22)" textAnchor="start">
+                        {fmtK(t.v)}
+                      </text>
+                    )}
+                  </g>
+                ))}
+
+                {/* X axis ticks */}
+                {xTicks.map(y => (
+                  <g key={y}>
+                    <line x1={toX(y)} y1={PAD.top + gH} x2={toX(y)} y2={PAD.top + gH + 4} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+                    <text x={toX(y)} y={PAD.top + gH + 16} fontSize={9} fill="rgba(255,255,255,0.25)" textAnchor="middle">{y}a</text>
+                  </g>
+                ))}
+
+                {/* Clipped chart areas */}
+                <g clipPath="url(#hcc-clip)">
+                  {/* Interest zone (between invested and total) */}
+                  <polygon points={areaInterest} fill="url(#hcc-interest)" />
+                  {/* Total area */}
+                  <polygon points={areaTotal} fill="url(#hcc-total)" />
+                  {/* Invested dashed line */}
+                  <polyline points={investedCoords} fill="none" stroke="#34d399" strokeWidth={1.5} strokeDasharray="5,3" strokeLinejoin="round" opacity={0.6} />
+                  {/* Total line */}
+                  <polyline points={totalCoords} fill="none" stroke={GOLD} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+                </g>
+
+                {/* Final value callout */}
+                <line x1={lastX} y1={lastTotalY} x2={lastX} y2={PAD.top + gH} stroke={`${GOLD}30`} strokeWidth={1} strokeDasharray="3,2" />
+                {/* Dot on total */}
+                <circle cx={lastX} cy={lastTotalY} r={5} fill={GOLD} />
+                <circle cx={lastX} cy={lastTotalY} r={10} fill={GOLD} opacity={0.12} />
+                {/* Dot on invested */}
+                <circle cx={lastX} cy={lastInvY} r={3.5} fill="#34d399" opacity={0.8} />
+
+                {/* Capital final label */}
+                <rect x={lastX - 52} y={lastTotalY - 30} width={58} height={24} rx={5} fill="#0a0a0e" stroke={`${GOLD}44`} strokeWidth={1} />
+                <text x={lastX - 23} y={lastTotalY - 21} fontSize={9} fill="rgba(255,255,255,0.4)" textAnchor="middle">Capital</text>
+                <text x={lastX - 23} y={lastTotalY - 11} fontSize={10} fontWeight="700" fill={GOLD} textAnchor="middle">{fmtK(total)}</text>
+              </svg>
+            </div>
+
+            {/* Bottom bar: interests highlight */}
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.14)' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', flex: 1 }}>Intérêts générés par l&apos;effet boule de neige</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#34d399', letterSpacing: '-0.03em' }}>{fmtK(interests)}</span>
+            </div>
           </div>
         </div>
       </div>

@@ -573,23 +573,24 @@ function BentoFeaturedCard({ mod, preview }: { mod: typeof MODULES[0]; preview: 
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          background: 'rgba(255,255,255,0.03)',
+          background: hovered ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.025)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: `1px solid ${hovered ? mod.color + '45' : 'rgba(255,255,255,0.07)'}`,
+          border: `1px solid ${hovered ? mod.color + '50' : 'rgba(255,255,255,0.06)'}`,
           borderRadius: 20, overflow: 'hidden',
           transition: 'all 0.25s',
           transform: hovered ? 'translateY(-4px)' : '',
-          boxShadow: hovered ? `0 24px 60px ${mod.color}28` : 'none',
+          boxShadow: hovered ? `0 20px 56px ${mod.color}30, 0 0 0 1px ${mod.color}12` : 'none',
           height: '100%', display: 'flex', flexDirection: 'column',
+          opacity: hovered ? 1 : 0.85,
         }}
       >
-        <div style={{ padding: '16px 16px 0', background: `linear-gradient(160deg, ${mod.color}0e, transparent 55%)` }}>
+        <div style={{ padding: '16px 16px 0', background: `linear-gradient(160deg, ${hovered ? mod.color + '12' : mod.color + '08'}, transparent 55%)`, transition: 'background 0.25s' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: mod.color + '1e', border: `1px solid ${mod.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <mod.icon style={{ width: 15, height: 15, color: mod.color }} />
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: hovered ? mod.color + '28' : mod.color + '14', border: `1px solid ${hovered ? mod.color + '45' : mod.color + '22'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.25s' }}>
+              <mod.icon style={{ width: 15, height: 15, color: mod.color, opacity: hovered ? 1 : 0.7, transition: 'opacity 0.25s' }} />
             </div>
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: mod.color + 'aa' }}>{mod.tag}</span>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: hovered ? mod.color + 'cc' : mod.color + '66', transition: 'color 0.25s' }}>{mod.tag}</span>
           </div>
           {preview}
         </div>
@@ -602,6 +603,18 @@ function BentoFeaturedCard({ mod, preview }: { mod: typeof MODULES[0]; preview: 
         </div>
       </div>
     </Link>
+  )
+}
+
+// ─── Section divider ─────────────────────────────────────────────────────
+function SectionDivider({ color = 'rgba(241,192,134,0.12)' }: { color?: string }) {
+  return (
+    <div style={{
+      height: 1,
+      background: `linear-gradient(90deg, transparent, ${color} 25%, rgba(255,255,255,0.05) 50%, ${color} 75%, transparent)`,
+      margin: '0 auto',
+      maxWidth: 900,
+    }} />
   )
 }
 
@@ -1952,6 +1965,8 @@ function ToolsTicker() {
       borderTop: '1px solid rgba(255,255,255,0.06)',
       borderBottom: '1px solid rgba(255,255,255,0.06)',
       padding: '15px 0',
+      maskImage: 'linear-gradient(90deg, transparent, black 8%, black 92%, transparent)',
+      WebkitMaskImage: 'linear-gradient(90deg, transparent, black 8%, black 92%, transparent)',
     }}>
       <div style={{
         display: 'flex',
@@ -3003,6 +3018,9 @@ export function LandingClient() {
               18 simulateurs · 15 pages · Fiscalité 2026
             </div>
 
+            {/* Ambient halo behind headline */}
+            <div style={{ position: 'absolute', top: -40, left: -60, width: 600, height: 280, background: `radial-gradient(ellipse at 40% 50%, rgba(241,192,134,0.07) 0%, transparent 68%)`, pointerEvents: 'none', zIndex: -1 }} />
+
             {/* Headline */}
             <h1 style={{ fontSize: 'clamp(1.9rem,2.8vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.04em', color: '#fff', marginBottom: 14, textAlign: 'left' }}>
               Prenez le contrôle de votre{' '}
@@ -3026,7 +3044,7 @@ export function LandingClient() {
 
             {/* CTAs */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 24px', borderRadius: 100, fontSize: 13, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.02em' }}
+              <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 24px', borderRadius: 100, fontSize: 13, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'background 0.2s, box-shadow 0.2s', letterSpacing: '-0.02em' }}
                 onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
                 Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
@@ -3110,14 +3128,15 @@ export function LandingClient() {
         <HeroScrollIndicator />
       </section>
 
-      {/* Gold-left section divider */}
-      <hr className="landing-section-border" />
+      <SectionDivider />
 
       {/* ── LIVE ACTIVITY FEED ────────────────────────────────────────── */}
       <LiveActivityFeed />
 
       {/* ── SOCIAL PROOF ──────────────────────────────────────────────── */}
       <SocialProofBar />
+
+      <SectionDivider />
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
       <section id="demo" style={{ padding: '60px 20px 100px' }}>
@@ -3160,11 +3179,15 @@ export function LandingClient() {
         </div>
       </section>
 
+      <SectionDivider />
+
       {/* ── TOOLS TICKER ──────────────────────────────────────────────── */}
       <ToolsTicker />
 
       {/* ── RATES WIDGET ──────────────────────────────────────────────── */}
       <RatesWidget />
+
+      <SectionDivider />
 
       {/* ── MODULES ───────────────────────────────────────────────────── */}
       <section id="modules" style={{ padding: '80px 20px 100px' }}>

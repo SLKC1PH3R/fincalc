@@ -507,7 +507,30 @@ export default function HomePage() {
       <div className={`grid grid-cols-1 gap-0 ${loaded && totalSims > 0 ? 'xl:grid-cols-[280px_1fr]' : ''}`}
         style={{ minHeight: 'calc(100vh - 380px)' }}>
 
-        {/* LEFT: Recent simulations */}
+        {/* LEFT: Recent simulations — or empty state */}
+        {loaded && totalSims === 0 && (
+          <div className="p-5 xl:p-6" style={{ borderRight: '1px solid var(--section-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260, textAlign: 'center', gap: 16 }}>
+            {/* SVG illustration */}
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+              <rect width="72" height="72" rx="20" fill={`${GOLD}12`} />
+              <rect x="16" y="38" width="8" height="18" rx="3" fill={`${GOLD}55`} />
+              <rect x="28" y="28" width="8" height="28" rx="3" fill={`${GOLD}80`} />
+              <rect x="40" y="18" width="8" height="38" rx="3" fill={GOLD} />
+              <path d="M13 54 Q22 38 30 32 Q40 24 56 14" stroke={`${GOLD}60`} strokeWidth="1.5" strokeDasharray="3,3" fill="none" />
+              <circle cx="56" cy="14" r="3" fill={GOLD} />
+            </svg>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 6 }}>Aucune simulation</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, maxWidth: 200, margin: '0 auto 14px' }}>
+                Lancez votre premier calcul pour voir vos résultats ici.
+              </p>
+            </div>
+            <Link href="/dashboard/compound" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: `${GOLD}18`, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+              <TrendingUp className="h-3.5 w-3.5" />
+              Commencer avec les Intérêts Composés
+            </Link>
+          </div>
+        )}
         {loaded && totalSims > 0 && (
           <div className="p-5 xl:p-6" style={{ borderRight: '1px solid var(--section-border)' }}>
             <div className="flex items-center justify-between mb-4">
@@ -679,10 +702,17 @@ export default function HomePage() {
                   getSimPreview(mod.href.replace('/dashboard/', ''), lastSimByType[mod.href.replace('/dashboard/', '')]?.results)
                 return (
                   <Link key={mod.href} href={mod.href}
-                    className="group flex items-center gap-2.5 rounded-xl px-3 py-3 transition-all duration-150"
-                    style={{ background: 'var(--card-dark)', border: `1px solid ${mod.color}20`, textDecoration: 'none' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '50'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '20'; (e.currentTarget as HTMLElement).style.transform = '' }}>
+                    className="group flex items-center gap-2.5 rounded-xl px-3 py-3"
+                    style={{ background: 'var(--card-dark)', border: `1px solid ${mod.color}20`, textDecoration: 'none', transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.15s' }}
+                    onMouseMove={e => {
+                      const rect = e.currentTarget.getBoundingClientRect()
+                      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8
+                      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -8
+                      e.currentTarget.style.transform = `perspective(400px) rotateX(${y}deg) rotateY(${x}deg) translateY(-2px)`
+                      e.currentTarget.style.borderColor = mod.color + '55'
+                      e.currentTarget.style.boxShadow = `0 8px 24px ${mod.color}18`
+                    }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = mod.color + '20'; e.currentTarget.style.boxShadow = '' }}>
                     <div className="h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{ background: mod.color + '18', border: `1px solid ${mod.color}25` }}>
                       <mod.icon className="h-3.5 w-3.5" style={{ color: mod.color }} />

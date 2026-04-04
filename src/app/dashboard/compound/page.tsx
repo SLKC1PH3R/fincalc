@@ -1,5 +1,6 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
+import { useCountUp } from '@/lib/use-count-up'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -73,13 +74,22 @@ function CompoundPageInner() {
   if (inputs.years < 15) tips.push('L\'intérêt composé devient vraiment puissant sur 20-30 ans. Chaque année compte double.')
   if (tips.length === 0) tips.push('Stratégie solide. Maintenez la régularité et évitez de retirer avant terme.')
 
+  // Count-up animation for capital final
+  const animatedFinal = useCountUp(r.final, 900)
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Intérêts Composés <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Épargne · effet boule de neige</span></h1>
+          {compareMode && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#818cf8', background: 'rgba(129,140,248,0.12)', border: '1px solid rgba(129,140,248,0.30)', borderRadius: 20, padding: '3px 10px' }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#818cf8', animation: 'glow-pulse 2s infinite', display: 'inline-block' }} />
+              Mode Comparaison
+            </span>
+          )}
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
@@ -205,7 +215,7 @@ function CompoundPageInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Left — Input panel */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10, position: 'sticky', top: 16, alignSelf: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {
@@ -270,9 +280,10 @@ function CompoundPageInner() {
 
           {/* KPI 2×2 grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px', gridColumn: '1 / -1' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital final</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.final)}</p>
+            <div style={{ background: `linear-gradient(135deg, rgba(241,192,134,0.10), transparent)`, border: '1px solid rgba(241,192,134,0.22)', borderRadius: 10, padding: '10px 12px', gridColumn: '1 / -1', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -20, right: -10, width: 70, height: 70, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(241,192,134,0.10), transparent)', pointerEvents: 'none' }} />
+              <p style={{ fontSize: 10, color: 'rgba(241,192,134,0.55)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital final</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(animatedFinal)}</p>
             </div>
             <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
               <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital investi</p>
@@ -313,13 +324,12 @@ function CompoundPageInner() {
             </div>
           </div>
 
-          {/* Tips box */}
-          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 12, color: 'rgba(241,192,134,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Conseils</p>
+          {/* Tips / Insight cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {tips.map((tip, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#f1c086', background: 'rgba(241,192,134,0.15)', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
+              <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.18)', borderRadius: 12, padding: '12px 16px', animation: i === 0 ? 'glow-pulse 2.5s ease-in-out infinite' : undefined }}>
+                <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>✦</span>
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

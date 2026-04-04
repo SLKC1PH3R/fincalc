@@ -138,6 +138,10 @@
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes btn-sweep {
+    0%   { transform: translateX(-100%) skewX(-15deg); }
+    100% { transform: translateX(300%) skewX(-15deg); }
+  }
   @keyframes marquee-scroll {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
@@ -267,6 +271,23 @@
 
   .tracking-tight { letter-spacing: -0.025em; }
   .tracking-tighter { letter-spacing: -0.05em; }
+
+  /* CTA sweep shimmer */
+  .cta-primary {
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: translateX(-100%) skewX(-15deg);
+    transition: none;
+  }
+  .cta-primary:hover::after {
+    animation: btn-sweep 0.55s ease-out forwards;
+  }
 
   @keyframes fade-in {
     from { opacity: 0; transform: translateY(6px); }
@@ -514,9 +535,10 @@ html { scroll-behavior: smooth; }
 /* Horizontal section separators inherit the gold-left atmosphere */
 .landing-section-border {
   height: 1px;
-  background: linear-gradient(90deg, rgba(241,192,134,0.18) 0%, rgba(255,255,255,0.05) 40%, transparent 100%);
+  background: linear-gradient(90deg, transparent, rgba(241,192,134,0.14) 30%, rgba(255,255,255,0.06) 50%, rgba(241,192,134,0.14) 70%, transparent);
   border: none;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 1000px;
 }
 
 /* Navbar — slight left gold reflection when scrolled */

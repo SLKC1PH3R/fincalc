@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://finance.digitalstack.cloud'),
   title: 'PatrImo — Outils de Finance Personnelle',
   description: 'Le seul outil 100 % gratuit qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.',
   icons: {

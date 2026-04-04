@@ -1102,3 +1102,372 @@ export function calcSuccession(i: SuccessionInputs): SuccessionResults {
     slabs,
   }
 }
+
+// ─── Livrets réglementés ──────────────────────────────────────────────────────
+
+export interface LivretsInputs {
+  balance: number     // Montant initial
+  monthly: number     // Versement mensuel
+  duration: number    // Durée en années
+}
+
+export interface LivretsResults {
+  livrets: Array<{
+    name: string; rate: number; cap: number
+    final: number; interest: number; isCapped: boolean
+  }>
+  etfGrossFinal: number
+  etfNetFinal: number   // net de flat tax 30%
+  opportunity: number   // écart avec le meilleur livret
+  chartData: Array<{ year: number; livretA: number; lep: number; etf: number }>
+}
+
+export function calcLivrets(i: LivretsInputs): LivretsResults {
+  function fv(bal: number, mth: number, rateAnnual: number, years: number, cap: number) {
+    if (years === 0) return Math.min(bal, cap)
+    const b = Math.min(bal, cap)
+    const maxMth = Math.max(0, (cap - b) / (years * 12))
+    const m = Math.min(mth, maxMth)
+    const r = rateAnnual / 100
+    const mr = r / 12
+    const n = years * 12
+    const fvB = b * Math.pow(1 + r, years)
+    const fvM = mr > 0 ? m * ((Math.pow(1 + mr, n) - 1) / mr) : m * n
+    return Math.round(fvB + fvM)
+  }
+
+  const LIVRETS = [
+    { name: 'Livret A',  rate: 3.0, cap: 22950 },
+    { name: 'LDDS',      rate: 3.0, cap: 12000 },
+    { name: 'LEP',       rate: 4.0, cap: 10000 },
+    { name: 'CEL',       rate: 2.0, cap: 15300 },
+  ]
+
+  const livrets = LIVRETS.map(l => {
+    const final = fv(i.balance, i.monthly, l.rate, i.duration, l.cap)
+    const b = Math.min(i.balance, l.cap)
+    const maxMth = Math.max(0, (l.cap - b) / (i.duration * 12 || 1))
+    const m = Math.min(i.monthly, maxMth)
+    const invested = b + m * i.duration * 12
+    return {
+      name: l.name, rate: l.rate, cap: l.cap,
+      final, interest: Math.max(0, final - invested),
+      isCapped: i.balance > l.cap,
+    }
+  })
+
+  const mr = 0.07 / 12
+  const n = i.duration * 12
+  const etfGross = Math.round(
+    i.balance * Math.pow(1.07, i.duration) +
+    (mr > 0 ? i.monthly * ((Math.pow(1 + mr, n) - 1) / mr) : i.monthly * n)
+  )
+  const invested = i.balance + i.monthly * n
+  const gains = Math.max(0, etfGross - invested)
+  const etfNet = Math.round(invested + gains * 0.70)
+
+  const bestLivret = livrets.reduce((a, b) => a.final > b.final ? a : b)
+
+  const chartData = Array.from({ length: i.duration + 1 }, (_, y) => {
+    const etfY = (() => {
+      if (y === 0) return i.balance
+      const mry = 0.07 / 12
+      const ny = y * 12
+      const gross = Math.round(i.balance * Math.pow(1.07, y) + (mry > 0 ? i.monthly * ((Math.pow(1 + mry, ny) - 1) / mry) : i.monthly * ny))
+      const inv = i.balance + i.monthly * ny
+      return Math.round(inv + Math.max(0, gross - inv) * 0.70)
+    })()
+    return { year: y, livretA: fv(i.balance, i.monthly, 3.0, y, 22950), lep: fv(i.balance, i.monthly, 4.0, y, 10000), etf: etfY }
+  })
+
+  return { livrets, etfGrossFinal: etfGross, etfNetFinal: etfNet, opportunity: Math.max(0, etfNet - bestLivret.final), chartData }
+}
+
+// ─── Impact des frais ─────────────────────────────────────────────────────────
+
+export interface FeesImpactInputs {
+  capital: number
+  monthly: number
+  grossRate: number   // rendement brut (%)
+  feeA: number        // frais scénario A (%)
+  feeB: number        // frais scénario B (%)
+  years: number
+}
+
+export interface FeesImpactResults {
+  finalA: number
+  finalB: number
+  grossFinal: number
+  difference: number
+  pctLostA: number
+  pctLostB: number
+  chartData: Array<{ year: number; a: number; b: number; gross: number }>
+}
+
+export function calcFeesImpact(i: FeesImpactInputs): FeesImpactResults {
+  function fv(rateNet: number, years: number) {
+    if (years === 0) return i.capital
+    const r = rateNet / 100
+    const mr = r / 12
+    const n = years * 12
+    const fvC = i.capital * Math.pow(1 + r, years)
+    const fvM = mr > 0 ? i.monthly * ((Math.pow(1 + mr, n) - 1) / mr) : i.monthly * n
+    return Math.round(fvC + fvM)
+  }
+  const rateA = i.grossRate - i.feeA
+  const rateB = i.grossRate - i.feeB
+  const finalA = fv(rateA, i.years)
+  const finalB = fv(rateB, i.years)
+  const grossFinal = fv(i.grossRate, i.years)
+
+  const chartData = Array.from({ length: i.years + 1 }, (_, y) => ({
+    year: y, a: fv(rateA, y), b: fv(rateB, y), gross: fv(i.grossRate, y),
+  }))
+
+  return {
+    finalA, finalB, grossFinal,
+    difference: finalA - finalB,
+    pctLostA: grossFinal > 0 ? (grossFinal - finalA) / grossFinal * 100 : 0,
+    pctLostB: grossFinal > 0 ? (grossFinal - finalB) / grossFinal * 100 : 0,
+    chartData,
+  }
+}
+
+// ─── Inflation & pouvoir d'achat ──────────────────────────────────────────────
+
+export interface InflationInputs {
+  capital: number
+  nominalRate: number    // rendement nominal (%)
+  inflationRate: number  // taux d'inflation (%)
+  years: number
+}
+
+export interface InflationResults {
+  realRate: number
+  nominalFinal: number
+  realFinal: number
+  cashFinal: number            // valeur réelle si on garde le cash
+  purchasingPowerLoss: number  // perte de PA en gardant le cash
+  chartData: Array<{ year: number; nominal: number; real: number; cash: number }>
+}
+
+export function calcInflation(i: InflationInputs): InflationResults {
+  const n = i.nominalRate / 100
+  const inf = i.inflationRate / 100
+  const realRate = ((1 + n) / (1 + inf) - 1) * 100
+  const nominalFinal = Math.round(i.capital * Math.pow(1 + n, i.years))
+  const realFinal = Math.round(nominalFinal / Math.pow(1 + inf, i.years))
+  const cashFinal = Math.round(i.capital / Math.pow(1 + inf, i.years))
+
+  const chartData = Array.from({ length: i.years + 1 }, (_, y) => ({
+    year: y,
+    nominal: Math.round(i.capital * Math.pow(1 + n, y)),
+    real: Math.round(i.capital * Math.pow(1 + n, y) / Math.pow(1 + inf, y)),
+    cash: Math.round(i.capital / Math.pow(1 + inf, y)),
+  }))
+
+  return { realRate, nominalFinal, realFinal, cashFinal, purchasingPowerLoss: i.capital - cashFinal, chartData }
+}
+
+// ─── Plus-value immobilière ───────────────────────────────────────────────────
+
+export interface PlusValueInputs {
+  acquisitionPrice: number
+  fraisAcquisitionPct: number  // frais notaire/agence (%) par défaut 7.5
+  travaux: number
+  useForfaitTravaux: boolean   // forfait 15% (si détention > 5 ans)
+  cessionPrice: number
+  fraisCessionPct: number      // frais agence vente (%)
+  duration: number             // années de détention
+  type: 'residence_principale' | 'secondaire' | 'locatif'
+}
+
+export interface PlusValueResults {
+  prixRevientCorrige: number
+  grossPV: number
+  abatIR: number       // en %
+  abatPS: number       // en %
+  taxableIR: number
+  taxablePS: number
+  irDu: number         // 19%
+  psDu: number         // 17.2%
+  surtaxe: number
+  totalTax: number
+  netProfit: number
+  exonereIR: boolean
+  exonerePS: boolean
+  analysis: string
+}
+
+export function calcPlusValue(i: PlusValueInputs): PlusValueResults {
+  const fraisAcq = i.acquisitionPrice * i.fraisAcquisitionPct / 100
+  const travauxMontant = (i.useForfaitTravaux && i.duration >= 5)
+    ? i.acquisitionPrice * 0.15
+    : i.travaux
+  const prixRevient = i.acquisitionPrice + fraisAcq + travauxMontant
+  const fraisCess = i.cessionPrice * i.fraisCessionPct / 100
+  const grossPV = Math.max(0, i.cessionPrice - fraisCess - prixRevient)
+
+  if (i.type === 'residence_principale') {
+    return {
+      prixRevientCorrige: Math.round(prixRevient), grossPV: Math.round(grossPV),
+      abatIR: 100, abatPS: 100, taxableIR: 0, taxablePS: 0,
+      irDu: 0, psDu: 0, surtaxe: 0, totalTax: 0,
+      netProfit: Math.round(grossPV), exonereIR: true, exonerePS: true,
+      analysis: 'Résidence principale : exonération totale de plus-value.',
+    }
+  }
+
+  // Abattements IR : 6%/an de la 6e à la 21e année, 4% la 22e → 100%
+  let abatIR = 0
+  if (i.duration >= 22) abatIR = 100
+  else if (i.duration >= 6) abatIR = (i.duration - 5) * 6
+
+  // Abattements PS : 1.65%/an de 6 à 21 ans, 1.6% à 22 ans, 9%/an de 23 à 30 ans → 100%
+  let abatPS = 0
+  if (i.duration >= 30) abatPS = 100
+  else if (i.duration >= 23) abatPS = 16 * 1.65 + 1.6 + (i.duration - 22) * 9
+  else if (i.duration >= 22) abatPS = 16 * 1.65 + 1.6
+  else if (i.duration >= 6) abatPS = (i.duration - 5) * 1.65
+  abatPS = Math.min(100, abatPS)
+
+  const taxableIR = Math.round(grossPV * (1 - abatIR / 100))
+  const taxablePS = Math.round(grossPV * (1 - abatPS / 100))
+  const irDu = Math.round(taxableIR * 0.19)
+  const psDu = Math.round(taxablePS * 0.172)
+
+  let surtaxe = 0
+  if (taxableIR > 250000) surtaxe = taxableIR * 0.06
+  else if (taxableIR > 200000) surtaxe = taxableIR * 0.05
+  else if (taxableIR > 150000) surtaxe = taxableIR * 0.04
+  else if (taxableIR > 100000) surtaxe = taxableIR * 0.03
+  else if (taxableIR > 50000) surtaxe = taxableIR * 0.02
+  surtaxe = Math.round(surtaxe)
+
+  const totalTax = irDu + psDu + surtaxe
+  const netProfit = Math.round(grossPV - totalTax)
+
+  const analysis = i.duration >= 30
+    ? 'Exonération totale (IR + PS) après 30 ans de détention.'
+    : i.duration >= 22
+    ? `Exonéré d'IR. PS encore dus — exonération totale dans ${30 - i.duration} ans.`
+    : `Abattement IR : ${Math.round(abatIR)}% — Exonération IR dans ${22 - i.duration} ans, PS dans ${30 - i.duration} ans.`
+
+  return {
+    prixRevientCorrige: Math.round(prixRevient), grossPV: Math.round(grossPV),
+    abatIR: Math.round(abatIR), abatPS: Math.round(abatPS),
+    taxableIR, taxablePS, irDu, psDu, surtaxe, totalTax, netProfit,
+    exonereIR: i.duration >= 22, exonerePS: i.duration >= 30, analysis,
+  }
+}
+
+// ─── SCPI ─────────────────────────────────────────────────────────────────────
+
+export interface SCPIInputs {
+  capital: number
+  distributionRate: number   // taux de distribution (%)
+  revaluationRate: number    // revalorisation annuelle des parts (%)
+  fraisSouscription: number  // frais d'entrée (%)
+  tmi: number                // TMI (%)
+  duration: number
+}
+
+export interface SCPIResults {
+  capitalInvested: number
+  annualIncome: number
+  taxRate: number      // TMI + PS 17.2% (régime foncier)
+  netIncome: number
+  netYield: number
+  finalValue: number   // valeur des parts après revalorisation
+  totalNetIncome: number
+  totalReturn: number  // revenus nets + PV parts
+  roi: number
+  chartData: Array<{ year: number; cumRevenu: number; valeurParts: number; total: number }>
+}
+
+export function calcSCPI(i: SCPIInputs): SCPIResults {
+  const capitalInvested = Math.round(i.capital * (1 - i.fraisSouscription / 100))
+  const annualIncome = Math.round(capitalInvested * i.distributionRate / 100)
+  const taxRate = Math.min(i.tmi / 100 + 0.172, 0.672)
+  const netIncome = Math.round(annualIncome * (1 - taxRate))
+  const netYield = capitalInvested > 0 ? (netIncome / capitalInvested) * 100 : 0
+  const finalValue = Math.round(capitalInvested * Math.pow(1 + i.revaluationRate / 100, i.duration))
+  const totalNetIncome = netIncome * i.duration
+  const totalReturn = totalNetIncome + Math.max(0, finalValue - capitalInvested)
+
+  const chartData = Array.from({ length: i.duration + 1 }, (_, y) => {
+    const parts = Math.round(capitalInvested * Math.pow(1 + i.revaluationRate / 100, y))
+    const cumRev = netIncome * y
+    return { year: y, cumRevenu: cumRev, valeurParts: parts, total: cumRev + parts }
+  })
+
+  return {
+    capitalInvested, annualIncome, taxRate: taxRate * 100,
+    netIncome, netYield, finalValue, totalNetIncome, totalReturn,
+    roi: i.capital > 0 ? (totalReturn / i.capital) * 100 : 0,
+    chartData,
+  }
+}
+
+// ─── Viager ───────────────────────────────────────────────────────────────────
+
+export interface ViagerInputs {
+  valeurVenale: number
+  ageVendeur: number
+  type: 'occupe' | 'libre'
+  bouquetPct: number   // % de la valeur nette comme bouquet (0–50)
+  taux: number         // taux technique actuariel (%)
+}
+
+export interface ViagerResults {
+  bouquet: number
+  valeurNette: number
+  baseRente: number
+  renteAnnuelle: number
+  renteMensuelle: number
+  esperanceVie: number
+  seuilEquilibre: number
+  totalVersementsEsperance: number
+  coefficientUsufruit: number
+}
+
+export function calcViager(i: ViagerInputs): ViagerResults {
+  // Espérance de vie résiduelle mixte H/F (INSEE 2023 approx)
+  function ev(age: number): number {
+    const table: [number, number][] = [[50,35],[55,30],[60,26],[65,22],[70,18],[75,14],[80,10],[85,7],[90,4]]
+    const clamped = Math.max(50, Math.min(90, age))
+    for (let k = 0; k < table.length - 1; k++) {
+      const [a1,e1] = table[k], [a2,e2] = table[k+1]
+      if (clamped >= a1 && clamped <= a2) return e1 + (e2-e1)*(clamped-a1)/(a2-a1)
+    }
+    return table[table.length-1][1]
+  }
+  // Coefficient usufruit barème CGI 669
+  function usufruit(age: number): number {
+    if (age < 21) return 0.90; if (age < 31) return 0.80; if (age < 41) return 0.70
+    if (age < 51) return 0.60; if (age < 61) return 0.50; if (age < 71) return 0.40
+    if (age < 81) return 0.30; if (age < 91) return 0.20; return 0.10
+  }
+
+  const cu = usufruit(i.ageVendeur)
+  const esperanceVie = ev(i.ageVendeur)
+  const droitUsageHabitation = i.type === 'occupe' ? i.valeurVenale * cu * 0.6 : 0
+  const valeurNette = Math.round(i.valeurVenale - droitUsageHabitation)
+  const bouquet = Math.round(valeurNette * i.bouquetPct / 100)
+  const baseRente = valeurNette - bouquet
+
+  const r = i.taux / 100
+  const n = esperanceVie
+  const renteAnnuelle = r > 0
+    ? Math.round(baseRente * r / (1 - Math.pow(1+r, -n)))
+    : Math.round(baseRente / n)
+  const renteMensuelle = Math.round(renteAnnuelle / 12)
+  const seuilEquilibre = renteAnnuelle > 0 ? Math.ceil((valeurNette - bouquet) / renteAnnuelle) : 999
+
+  return {
+    bouquet, valeurNette, baseRente, renteAnnuelle, renteMensuelle,
+    esperanceVie, seuilEquilibre,
+    totalVersementsEsperance: Math.round(bouquet + renteAnnuelle * esperanceVie),
+    coefficientUsufruit: cu,
+  }
+}

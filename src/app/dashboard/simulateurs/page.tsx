@@ -5,6 +5,7 @@ import {
   TrendingUp, Flame, Receipt, Home, Building2, Wallet,
   PiggyBank, RefreshCw, Calculator, Percent, ArrowUpRight,
   Search, Clock, BarChart3, Coins, Users, ShieldCheck, CreditCard, History,
+  Banknote, TrendingDown, LineChart, MapPin,
 } from 'lucide-react'
 
 interface Simulation {
@@ -55,6 +56,18 @@ const CATEGORIES = [
       { href: '/dashboard/transactions',    type: 'transactions',    label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU et historique',                  icon: History,    color: '#38bdf8', tag: 'Budget' },
     ],
   },
+  {
+    id: 'avances',
+    label: 'Outils avancés',
+    modules: [
+      { href: '/dashboard/livrets',   type: 'livrets',   label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP, CEL vs ETF',              icon: Banknote,     color: '#34d399', tag: 'Épargne' },
+      { href: '/dashboard/frais',     type: 'frais',     label: 'Impact des frais',    desc: 'ETF 0.2% vs fonds actif 2% sur 20 ans',        icon: TrendingDown, color: '#38bdf8', tag: 'Placements' },
+      { href: '/dashboard/inflation', type: 'inflation', label: 'Inflation & PA',      desc: 'Taux réel Fisher, érosion du pouvoir d\'achat', icon: LineChart,    color: '#fb923c', tag: 'Épargne' },
+      { href: '/dashboard/plusvalue', type: 'plusvalue', label: 'Plus-value immo.',    desc: 'Abattements IR/PS, surtaxe, durée optimale',    icon: MapPin,       color: '#a78bfa', tag: 'Immo' },
+      { href: '/dashboard/scpi',      type: 'scpi',      label: 'SCPI',                desc: 'Rendement net de fiscalité foncière',           icon: Building2,    color: '#f59e0b', tag: 'Immo' },
+      { href: '/dashboard/viager',    type: 'viager',    label: 'Viager',              desc: 'Bouquet, rente et seuil d\'équilibre actuariel', icon: Users,       color: '#e879f9', tag: 'Immo' },
+    ],
+  },
 ]
 
 const ALL_MODULES = CATEGORIES.flatMap(c => c.modules)
@@ -65,6 +78,7 @@ const FILTER_TABS = [
   { id: 'immobilier', label: 'Immobilier',           count: 3 },
   { id: 'fiscalite',  label: 'Fiscalité',            count: 5 },
   { id: 'budget',     label: 'Budget',               count: 5 },
+  { id: 'avances',    label: 'Avancés',              count: 6 },
 ]
 
 const GOLD = '#f1c086'

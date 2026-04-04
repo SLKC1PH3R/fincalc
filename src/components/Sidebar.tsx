@@ -9,6 +9,7 @@ import {
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users, Scale, Landmark, Search, X, UserCircle,
+  Banknote, TrendingDown, LineChart, MapPin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -66,6 +67,17 @@ const SIMULATEURS_GROUPS = [
       { href: '/dashboard/emergency-fund',  label: 'Épargne urgence', icon: ShieldCheck },
       { href: '/dashboard/consumer-credit', label: 'Crédit conso',    icon: CreditCard },
       { href: '/dashboard/transactions',    label: "Carnet d'ordres", icon: History    },
+    ],
+  },
+  {
+    label: 'Outils avancés',
+    items: [
+      { href: '/dashboard/livrets',   label: 'Livrets réglementés',   icon: Banknote    },
+      { href: '/dashboard/frais',     label: 'Impact des frais',      icon: TrendingDown },
+      { href: '/dashboard/inflation', label: 'Inflation & PA',        icon: LineChart   },
+      { href: '/dashboard/plusvalue', label: 'Plus-value immo.',      icon: MapPin      },
+      { href: '/dashboard/scpi',      label: 'SCPI',                  icon: Building2   },
+      { href: '/dashboard/viager',    label: 'Viager',                icon: Users       },
     ],
   },
 ]

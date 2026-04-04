@@ -2244,7 +2244,7 @@ function HeroCompoundCalc() {
     : `${Math.round(n)} €`
 
   // Chart data — one point per year
-  const CW = 340, CH = 190
+  const CW = 340, CH = 250
   const PAD = { top: 12, right: 8, bottom: 28, left: 0 }
   const gW = CW - PAD.left - PAD.right
   const gH = CH - PAD.top - PAD.bottom
@@ -2314,22 +2314,52 @@ function HeroCompoundCalc() {
             <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20 }}>Intérêts composés</p>
 
             {/* Sliders */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginBottom: 24 }}>
-              {SLIDERS.map(s => (
-                <div key={s.label}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)' }}>{s.label}</span>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: s.color, letterSpacing: '-0.03em' }}>{s.display}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
+              {SLIDERS.map(s => {
+                const pct = ((s.value - s.min) / (s.max - s.min)) * 100
+                return (
+                  <div key={s.label}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)' }}>{s.label}</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: s.color, letterSpacing: '-0.03em' }}>{s.display}</span>
+                    </div>
+                    {/* Track + thumb container */}
+                    <div style={{ position: 'relative', height: 20, display: 'flex', alignItems: 'center' }}>
+                      {/* Track background */}
+                      <div style={{ position: 'absolute', left: 0, right: 0, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }} />
+                      {/* Filled track */}
+                      <div style={{ position: 'absolute', left: 0, height: 4, borderRadius: 2, width: `${pct}%`, background: `linear-gradient(to right, ${s.color}66, ${s.color})` }} />
+                      {/* Visible thumb */}
+                      <div style={{
+                        position: 'absolute',
+                        left: `calc(${pct}% - 10px)`,
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        background: `radial-gradient(circle at 38% 35%, ${s.color}ff, ${s.color}bb)`,
+                        border: `2px solid ${s.color}`,
+                        boxShadow: `0 0 0 3px ${s.color}22, 0 2px 8px ${s.color}44`,
+                        pointerEvents: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        {/* Grip lines */}
+                        <div style={{ display: 'flex', gap: 2, pointerEvents: 'none' }}>
+                          {[0, 1, 2].map(i => (
+                            <div key={i} style={{ width: 1.5, height: 6, borderRadius: 1, background: 'rgba(0,0,0,0.45)' }} />
+                          ))}
+                        </div>
+                      </div>
+                      {/* Invisible input on top */}
+                      <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
+                        onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
+                        style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, height: '100%', cursor: 'grab', zIndex: 2, margin: 0 }} />
+                    </div>
                   </div>
-                  <div style={{ position: 'relative', height: 4, borderRadius: 2 }}>
-                    <div style={{ position: 'absolute', inset: 0, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }} />
-                    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${((s.value - s.min) / (s.max - s.min)) * 100}%`, borderRadius: 2, background: `linear-gradient(to right, ${s.color}88, ${s.color})` }} />
-                  </div>
-                  <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
-                    onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
-                    style={{ width: '100%', opacity: 0, height: 20, cursor: 'pointer', marginTop: -12, position: 'relative', zIndex: 1 }} />
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             {/* KPI stack */}

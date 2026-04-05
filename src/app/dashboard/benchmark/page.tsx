@@ -75,6 +75,8 @@ function mergeChartData(
   })
 }
 
+const COLOR = '#818cf8'
+
 export default function BenchmarkPage() {
   const [days, setDays] = useState(365)
   const [benchData, setBenchData] = useState<BenchmarkData | null>(null)
@@ -126,9 +128,15 @@ export default function BenchmarkPage() {
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <BarChart3 style={{ width: 16, height: 16, color: '#818cf8' }} />
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Comparaison Benchmarks <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Portfolio vs indices</span></h1>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Benchmarks</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BarChart3 style={{ width: 16, height: 16, color: '#818cf8' }} />
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Comparaison Benchmarks <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Portfolio vs indices</span></h1>
+          </div>
         </div>
       </div>
 

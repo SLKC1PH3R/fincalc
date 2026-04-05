@@ -49,6 +49,8 @@ function fmtCompact(n: number): string {
   return fmt(n)
 }
 
+const COLOR = '#facc15'
+
 export default function DividendsPage() {
   const [data, setData] = useState<DividendData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -78,9 +80,15 @@ export default function DividendsPage() {
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Coins style={{ width: 16, height: 16, color: '#34d399' }} />
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Revenus Passifs <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Dividendes · actions &amp; ETF</span></h1>
+        <div>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Revenus passifs</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Coins style={{ width: 16, height: 16, color: '#34d399' }} />
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Revenus Passifs <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Dividendes · actions &amp; ETF</span></h1>
+          </div>
         </div>
       </div>
 

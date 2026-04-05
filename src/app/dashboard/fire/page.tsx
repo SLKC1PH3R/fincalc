@@ -26,6 +26,8 @@ function Tip({ text }: { text: string }) {
   )
 }
 
+const COLOR = '#fb923c'
+
 function FirePageInner() {
   const [inputs, setInputs] = useState<FireInputs>({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
@@ -100,7 +102,11 @@ function FirePageInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Simulateur FI/RE <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Indépendance financière · retraite anticipée</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>FI/RE</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Simulateur FI/RE <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Indépendance financière · retraite anticipée</span></h1>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
@@ -183,7 +189,7 @@ function FirePageInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Input panel */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {

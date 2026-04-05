@@ -27,6 +27,8 @@ function Tip({ text }: { text: string }) {
   )
 }
 
+const COLOR = '#38bdf8'
+
 function DCAPageInner() {
   const chart = useChartTheme()
   const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
@@ -83,7 +85,11 @@ function DCAPageInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>DCA — Dollar Cost Averaging <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Investissement régulier · lissage du marché</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>DCA</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>DCA — Dollar Cost Averaging <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Investissement régulier · lissage du marché</span></h1>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
@@ -150,7 +156,7 @@ function DCAPageInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Left — Input panel */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {

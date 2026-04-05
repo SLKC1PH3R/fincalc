@@ -9,6 +9,7 @@ import { Users, Info, RefreshCw, CheckCircle2 } from 'lucide-react'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
 const GOLD = '#f1c086'
+const COLOR = '#60a5fa'
 
 const RELATIONSHIPS: { value: SuccessionRelationship; label: string; abattement: string }[] = [
   { value: 'enfant', label: 'Enfant (ou conjoint)', abattement: '100 000 €' },
@@ -40,8 +41,11 @@ export default function SuccessionPage() {
       {/* Header */}
       <div style={{ marginBottom: 16, flexShrink: 0 }}>
         <div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Transmission de patrimoine</p>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Succession &amp; Donations</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>
             Succession &amp; Donation
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
@@ -62,7 +66,7 @@ export default function SuccessionPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Inputs */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
 
           <div style={{ display: 'flex', gap: 0, background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 3 }}>

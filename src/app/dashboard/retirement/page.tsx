@@ -59,6 +59,8 @@ const DEFAULT_INPUTS: RetirementInputs = {
   salary: 48000, salaryGrowth: 1.5, departureAge: 64,
 }
 
+const COLOR = '#fbbf24'
+
 function RetirementPageInner() {
   const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS)
   const set = (k: keyof RetirementInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
@@ -112,7 +114,11 @@ function RetirementPageInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Simulateur de retraite <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Régime général · Agirc-Arrco</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Retraite</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Simulateur de retraite <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Régime général · Agirc-Arrco</span></h1>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({

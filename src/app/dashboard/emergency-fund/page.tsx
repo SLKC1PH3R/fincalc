@@ -14,6 +14,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
 const GOLD = '#f1c086'
+const COLOR = '#34d399'
 
 export default function EmergencyFundPage() {
   const chartTheme = useChartTheme()
@@ -42,7 +43,11 @@ export default function EmergencyFundPage() {
       {/* Header */}
       <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Épargne d&apos;urgence</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>
             Épargne de précaution <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>Liquidités d'urgence</span>
           </h1>
         </div>
@@ -80,7 +85,7 @@ export default function EmergencyFundPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Inputs */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {

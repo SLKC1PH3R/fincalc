@@ -43,6 +43,8 @@ const SCORE = {
   eleve: { label: 'Élevé', icon: AlertCircle, color: '#f87171' },
 }
 
+const COLOR = '#f87171'
+
 function TaxPageInner() {
   const chart = useChartTheme()
   const [inputs, setInputs] = useState<TaxInputs>({
@@ -85,7 +87,11 @@ function TaxPageInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Calcul de l&apos;impôt sur le revenu <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>IR · TMI · taux moyen</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Impôts IR</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Calcul de l&apos;impôt sur le revenu <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>IR · TMI · taux moyen</span></h1>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({

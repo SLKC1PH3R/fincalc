@@ -54,6 +54,8 @@ function CategoryCard({ title, total, totalPct, target, ok, children }: {
   )
 }
 
+const COLOR = '#a3e635'
+
 function BudgetPageInner() {
   const chart = useChartTheme()
   const [inputs, setInputs] = useState<BudgetInputs>(DEFAULT_INPUTS)
@@ -106,7 +108,11 @@ function BudgetPageInner() {
       {/* Header */}
       <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>Budget 50/30/20</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>
             Budget 50/30/20 <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>Besoins · Envies · Épargne</span>
           </h1>
         </div>

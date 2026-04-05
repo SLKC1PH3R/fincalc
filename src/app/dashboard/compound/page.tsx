@@ -22,6 +22,8 @@ import { ProfileFillButton } from '@/components/ProfileFillButton'
 // Backwards-compatible alias
 const Tip = FieldTooltip
 
+const COLOR = '#34d399'
+
 function CompoundPageInner() {
   const chart = useChartTheme()
   const [mounted, setMounted] = useState(false)
@@ -83,7 +85,13 @@ function CompoundPageInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Intérêts Composés <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Épargne · effet boule de neige</span></h1>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+              <span style={{ color: COLOR, fontWeight: 600 }}>Intérêts composés</span>
+            </div>
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Intérêts Composés <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Épargne · effet boule de neige</span></h1>
+          </div>
           {compareMode && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#818cf8', background: 'rgba(129,140,248,0.12)', border: '1px solid rgba(129,140,248,0.30)', borderRadius: 20, padding: '3px 10px' }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#818cf8', animation: 'glow-pulse 2s infinite', display: 'inline-block' }} />
@@ -215,7 +223,7 @@ function CompoundPageInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* Left — Input panel */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10, position: 'sticky', top: 16, alignSelf: 'flex-start' }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10, position: 'sticky', top: 16, alignSelf: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             <ProfileFillButton onFill={p => {

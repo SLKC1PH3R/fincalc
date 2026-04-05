@@ -91,6 +91,8 @@ const DEFAULT_INPUTS: EnvelopeCompareInputs = {
   capital: 10000, monthly: 300, rateGross: 7, years: 20, tmi: 30, isCouple: false, peaOpenYears: 0,
 }
 
+const COLOR = '#c084fc'
+
 function EnvelopeCompareInner() {
   const params = useSearchParams()
   const chartTheme = useChartTheme()
@@ -140,7 +142,11 @@ function EnvelopeCompareInner() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>PEA vs CTO vs Assurance Vie <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Comparaison enveloppes fiscales</span></h1>
+          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
+            <span style={{ color: COLOR, fontWeight: 600 }}>PEA vs CTO vs AV</span>
+          </div>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>PEA vs CTO vs Assurance Vie <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Comparaison enveloppes fiscales</span></h1>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
@@ -173,7 +179,7 @@ function EnvelopeCompareInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* ── Inputs ── */}
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

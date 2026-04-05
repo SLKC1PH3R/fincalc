@@ -167,10 +167,10 @@ export function NotificationCenter() {
         <div style={{
           position: 'absolute', top: 'calc(100% + 8px)', right: 0,
           width: 340, maxHeight: 480,
-          background: 'var(--card-dark)',
-          border: '1px solid var(--card-dark-border)',
+          background: 'var(--popover-surface)',
+          border: '1px solid var(--popover-surface-border)',
           borderRadius: 14,
-          boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
+          boxShadow: '0 20px 56px rgba(0,0,0,0.55)',
           zIndex: 9999,
           overflow: 'hidden',
           display: 'flex', flexDirection: 'column',

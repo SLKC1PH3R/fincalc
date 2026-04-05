@@ -46,8 +46,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <NotificationCenter />
       </div>
 
-      {/* Desktop notification bell — fixed top-right */}
-      <div className="hidden md:block" style={{ position: 'fixed', top: 14, right: 18, zIndex: 50 }}>
+      {/* Desktop top bar — holds notification bell, never overlaps page content */}
+      <div className="hidden md:flex" style={{ height: 54, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 20, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <NotificationCenter />
       </div>
 

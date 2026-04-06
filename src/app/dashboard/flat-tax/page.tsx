@@ -9,24 +9,10 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFlatTax, type FlatTaxInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { HelpCircle, CheckCircle2, ArrowRight, Download } from 'lucide-react'
+import { CheckCircle2, ArrowRight, Download } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
 import { printReport } from '@/lib/print'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && (
-        <span className="absolute z-50 left-5 -top-1 w-64 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">
-          {text}
-        </span>
-      )}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const DEFAULT_INPUTS: FlatTaxInputs = {
   amount: 10000,
@@ -122,7 +108,7 @@ function FlatTaxInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               Revenus du capital (€)
-              <Tip text="Dividendes, plus-values mobilières, intérêts, coupons… Le montant brut avant toute fiscalité." />
+              <FieldTooltip text="Dividendes, plus-values mobilières, intérêts, coupons… Le montant brut avant toute fiscalité." />
             </Label>
             <Input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} min={0} step={1000} />
           </div>
@@ -130,7 +116,7 @@ function FlatTaxInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               Type de revenu
-              <Tip text="Dividendes : abattement 40% au barème. Plus-values et intérêts : pas d'abattement." />
+              <FieldTooltip text="Dividendes : abattement 40% au barème. Plus-values et intérêts : pas d'abattement." />
             </Label>
             <Select value={incomeType} onValueChange={v => setIncomeType(v as FlatTaxInputs['incomeType'])}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -145,7 +131,7 @@ function FlatTaxInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               Revenus d&apos;activité annuels (€)
-              <Tip text="Vos salaires, BIC, BNC… Permet de calculer le bon taux marginal et l'IR au barème." />
+              <FieldTooltip text="Vos salaires, BIC, BNC… Permet de calculer le bon taux marginal et l'IR au barème." />
             </Label>
             <Input type="number" value={revenuTravail} onChange={e => setRevenuTravail(Number(e.target.value))} min={0} step={5000} />
           </div>
@@ -153,7 +139,7 @@ function FlatTaxInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               TMI estimé (barème)
-              <Tip text="Taux Marginal d'Imposition. Votre tranche la plus haute dans le barème progressif (0, 11, 30, 41 ou 45%)." />
+              <FieldTooltip text="Taux Marginal d'Imposition. Votre tranche la plus haute dans le barème progressif (0, 11, 30, 41 ou 45%)." />
             </Label>
             <Select value={String(tmi)} onValueChange={v => setTmi(Number(v))}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -177,7 +163,7 @@ function FlatTaxInner() {
             <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
             <label htmlFor="couple" style={{ fontSize: 12, color: 'var(--text-em)', cursor: 'pointer' }}>
               Déclaration en couple
-              <Tip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />
+              <FieldTooltip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />
             </label>
           </div>
         </div>

@@ -9,24 +9,10 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcEnvelopeCompare, type EnvelopeCompareInputs, type EnvelopeResult } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { HelpCircle, Trophy, ArrowRight, Info, Download, RotateCcw } from 'lucide-react'
+import { Trophy, ArrowRight, Info, Download, RotateCcw } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
 import { printReport } from '@/lib/print'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && (
-        <span className="absolute z-50 left-5 -top-1 w-64 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">
-          {text}
-        </span>
-      )}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const ENVELOPE_META = {
   pea: { label: 'PEA', color: '#818cf8', desc: 'Exonération IR après 5 ans · Plafond 150 000€' },
@@ -195,7 +181,7 @@ function EnvelopeCompareInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               Rendement brut annuel (%)
-              <Tip text="Rendement espéré avant fiscalité. Un ETF monde sert historiquement 7-10% brut/an." />
+              <FieldTooltip text="Rendement espéré avant fiscalité. Un ETF monde sert historiquement 7-10% brut/an." />
             </Label>
             <Input type="number" value={rateGross} onChange={e => setRateGross(Number(e.target.value))} min={0} max={30} step={0.5} />
           </div>
@@ -208,7 +194,7 @@ function EnvelopeCompareInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               TMI (barème)
-              <Tip text="Taux Marginal d'Imposition. Utilisé pour le CTO au barème si vous l'aviez choisi." />
+              <FieldTooltip text="Taux Marginal d'Imposition. Utilisé pour le CTO au barème si vous l'aviez choisi." />
             </Label>
             <Select value={String(tmi)} onValueChange={v => setTmi(Number(v))}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -221,7 +207,7 @@ function EnvelopeCompareInner() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <Label style={{ fontSize: 12 }}>
               PEA déjà ouvert depuis (ans)
-              <Tip text="Le PEA est exonéré d'IR après 5 ans d'ouverture. Si votre PEA a 3 ans, et que vous simulez 3 ans, il sera mature à la sortie." />
+              <FieldTooltip text="Le PEA est exonéré d'IR après 5 ans d'ouverture. Si votre PEA a 3 ans, et que vous simulez 3 ans, il sera mature à la sortie." />
             </Label>
             <Select value={String(peaOpenYears)} onValueChange={v => setPeaOpenYears(Number(v))}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -235,7 +221,7 @@ function EnvelopeCompareInner() {
             <input type="checkbox" id="couple2" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
             <label htmlFor="couple2" style={{ fontSize: 12, color: 'var(--text-em)', cursor: 'pointer' }}>
               Déclaration en couple
-              <Tip text="Abattement AV de 9 200€/an au lieu de 4 600€." />
+              <FieldTooltip text="Abattement AV de 9 200€/an au lieu de 4 600€." />
             </label>
           </div>
         </div>

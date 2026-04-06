@@ -9,22 +9,12 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2, GitCompare } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2, GitCompare } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { CsvExport } from '@/components/CsvExport'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const COLOR = '#fb923c'
 
@@ -200,18 +190,18 @@ function FirePageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Revenu annuel net<Tip text="Revenu annuel net après impôts. Ce qui rentre réellement sur votre compte chaque année." /></Label>
+            <Label className="flex items-center gap-1">Revenu annuel net<FieldTooltip text="Revenu annuel net après impôts. Ce qui rentre réellement sur votre compte chaque année." /></Label>
             <Input type="number" value={inputs.income} onChange={e => set('income')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Dépenses annuelles<Tip text="Vos dépenses totales. C'est aussi le montant dont vous aurez besoin chaque année à la retraite. Réduire ce chiffre est le levier le plus puissant." /></Label>
+            <Label className="flex items-center gap-1">Dépenses annuelles<FieldTooltip text="Vos dépenses totales. C'est aussi le montant dont vous aurez besoin chaque année à la retraite. Réduire ce chiffre est le levier le plus puissant." /></Label>
             <Input type="number" value={inputs.expenses} onChange={e => set('expenses')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Patrimoine actuel<Tip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
+              <Label className="flex items-center gap-1">Patrimoine actuel<FieldTooltip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
               <button
                 onClick={importFromPatrimoine}
                 disabled={importingPatrimoine}
@@ -233,7 +223,7 @@ function FirePageInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Rendement attendu<Tip text="ETF World historique : 7-9% nominal. Soyez conservateur : 5-7%." /></Label>
+              <Label className="flex items-center gap-1">Rendement attendu<FieldTooltip text="ETF World historique : 7-9% nominal. Soyez conservateur : 5-7%." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
             </div>
             <Slider min={1} max={15} step={0.5} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
@@ -241,7 +231,7 @@ function FirePageInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Taux de retrait<Tip text="La règle des 4% (Trinity Study) : retraite durable sur 30 ans. 3.5% pour une longue retraite." /></Label>
+              <Label className="flex items-center gap-1">Taux de retrait<FieldTooltip text="La règle des 4% (Trinity Study) : retraite durable sur 30 ans. 3.5% pour une longue retraite." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.withdrawalRate}%</span>
             </div>
             <Slider min={2} max={6} step={0.1} value={[inputs.withdrawalRate]} onValueChange={([v]) => set('withdrawalRate')(v)} />

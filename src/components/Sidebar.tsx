@@ -34,11 +34,12 @@ const SIMULATEURS_GROUPS = [
   {
     label: 'Placements',
     items: [
-      { href: '/dashboard/compound',  label: 'Intérêts composés', icon: TrendingUp },
-      { href: '/dashboard/dca',       label: 'DCA',               icon: RefreshCw  },
-      { href: '/dashboard/fire',      label: 'FI/RE',             icon: Flame      },
-      { href: '/dashboard/dividends', label: 'Revenus passifs',   icon: Coins      },
-      { href: '/dashboard/benchmark', label: 'Benchmarks',        icon: BarChart3  },
+      { href: '/dashboard/compound',    label: 'Intérêts composés', icon: TrendingUp },
+      { href: '/dashboard/dca',         label: 'DCA',               icon: RefreshCw  },
+      { href: '/dashboard/fire',        label: 'FI/RE',             icon: Flame      },
+      { href: '/dashboard/dividends',   label: 'Revenus passifs',   icon: Coins      },
+      { href: '/dashboard/benchmark',   label: 'Benchmarks',        icon: BarChart3  },
+      { href: '/dashboard/transactions', label: "Carnet d'ordres",  icon: History    },
     ],
   },
   {
@@ -66,7 +67,6 @@ const SIMULATEURS_GROUPS = [
       { href: '/dashboard/budget',          label: 'Budget 50/30/20', icon: Calculator },
       { href: '/dashboard/emergency-fund',  label: 'Épargne urgence', icon: ShieldCheck },
       { href: '/dashboard/consumer-credit', label: 'Crédit conso',    icon: CreditCard },
-      { href: '/dashboard/transactions',    label: "Carnet d'ordres", icon: History    },
     ],
   },
   {

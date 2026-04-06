@@ -12,29 +12,12 @@ import { useSearchParams } from 'next/navigation'
 import { calcTax, type TaxInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2 } from 'lucide-react'
+import { Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle
-        className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}
-        onClick={() => setOpen(v => !v)}
-      />
-      {open && (
-        <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">
-          {text}
-        </span>
-      )}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const SCORE = {
   excellent: { label: 'Faible', icon: CheckCircle2, color: '#34d399' },
@@ -134,7 +117,7 @@ function TaxPageInner() {
       <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px', marginBottom: 10, flexShrink: 0, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, alignItems: 'end' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Revenu brut annuel <Tip text="Salaire brut annuel avant toute déduction." />
+            Revenu brut annuel <FieldTooltip text="Salaire brut annuel avant toute déduction." />
           </Label>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <Input type="number" value={inputs.gross} onChange={e => set('gross')(+e.target.value)} style={{ height: 30, fontSize: 12 }} />
@@ -143,7 +126,7 @@ function TaxPageInner() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Situation familiale <Tip text="Le quotient familial réduit l'impôt. Chaque enfant ajoute 0.5 part." />
+            Situation familiale <FieldTooltip text="Le quotient familial réduit l'impôt. Chaque enfant ajoute 0.5 part." />
           </Label>
           <Select value={String(inputs.parts)} onValueChange={v => set('parts')(+v)}>
             <SelectTrigger style={{ height: 30, fontSize: 12 }}><SelectValue /></SelectTrigger>
@@ -160,7 +143,7 @@ function TaxPageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-              Cotisations sociales <Tip text="~22% salarié privé, ~10% fonctionnaire." />
+              Cotisations sociales <FieldTooltip text="~22% salarié privé, ~10% fonctionnaire." />
             </Label>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.csRate}%</span>
           </div>
@@ -172,7 +155,7 @@ function TaxPageInner() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Abattement <Tip text="Forfait 10% automatique. Frais réels si vos frais professionnels dépassent le forfait." />
+            Abattement <FieldTooltip text="Forfait 10% automatique. Frais réels si vos frais professionnels dépassent le forfait." />
           </Label>
           <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--card-dark-border)', height: 30 }}>
             <button onClick={() => set('useFraisReels')(false)} style={{ flex: 1, fontSize: 11, fontWeight: 500, border: 'none', cursor: 'pointer', background: !inputs.useFraisReels ? 'var(--text-primary)' : 'transparent', color: !inputs.useFraisReels ? 'var(--card-dark)' : 'var(--text-muted-c)' }}>Forfait 10%</button>
@@ -300,7 +283,7 @@ function TaxPageInner() {
               ].map((row, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < 6 ? '1px solid var(--section-border)' : 'none' }}>
                   <span style={{ fontSize: 12, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 500 : 400 }}>
-                    {row.label}{row.help && <Tip text={row.help} />}
+                    {row.label}{row.help && <FieldTooltip text={row.help} />}
                   </span>
                   <span style={{ fontSize: row.big ? 14 : 12, fontWeight: row.bold ? 600 : 500, fontVariantNumeric: 'tabular-nums', color: row.big ? '#34d399' : row.variant === 'red' ? '#f87171' : row.variant === 'green' ? '#34d399' : 'var(--text-em)' }}>
                     {row.value}

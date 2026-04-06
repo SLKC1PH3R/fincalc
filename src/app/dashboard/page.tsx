@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useCountUp } from '@/lib/use-count-up'
 import { PatrimoineHistoryChart } from '@/components/PatrimoineHistoryChart'
+import { ScoreGauge } from '@/components/ScoreGauge'
 
 interface Simulation {
   id: string; type: string; name: string
@@ -101,23 +102,6 @@ function scoreInfo(s: number): { label: string; color: string } {
 }
 
 // ── Mini gauge (SVG arc) ───────────────────────────────────────────────────────
-function MiniGauge({ score, color }: { score: number; color: string }) {
-  const r = 28, cx = 36, cy = 36
-  const startAngle = 210, totalArc = 300
-  const filledArc = (score / 100) * totalArc
-  const toRad = (d: number) => (d * Math.PI) / 180
-  const pt = (a: number) => ({ x: cx + r * Math.cos(toRad(a)), y: cy + r * Math.sin(toRad(a)) })
-  const ts = pt(startAngle), te = pt(startAngle + totalArc), fe = pt(startAngle + filledArc)
-  return (
-    <svg width={72} height={72} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
-      <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 1 1 ${te.x} ${te.y}`} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} strokeLinecap="round" />
-      {score > 0 && (
-        <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 ${filledArc > 180 ? 1 : 0} 1 ${fe.x} ${fe.y}`} fill="none" stroke={color} strokeWidth={5} strokeLinecap="round" style={{ filter: `drop-shadow(0 0 4px ${color}80)` }} />
-      )}
-      <text x={cx} y={cy + 6} textAnchor="middle" fill={color} fontSize={15} fontWeight={700} fontFamily="system-ui">{score}</text>
-    </svg>
-  )
-}
 
 // ── Time ago ───────────────────────────────────────────────────────────────────
 function timeAgo(dateStr: string) {
@@ -182,7 +166,8 @@ export default function HomePage() {
       .then(d => {
         if (d?.financialProfile) {
           const fp = d.financialProfile as Record<string, unknown>
-          const filled = Object.values(fp).some(v => v !== undefined && v !== null && v !== '')
+          // Require at least the 3 key financial fields to consider the profile complete
+          const filled = !!(fp.netMonthlySalary || fp.monthlySavings || fp.currentAssets)
           setProfileFilled(filled)
         }
       })
@@ -207,29 +192,24 @@ export default function HomePage() {
       .catch(() => {})
   }, [])
 
-  // Compute patrimoine KPI (brut / dettes / net)
+  // Compute patrimoine KPI (brut / dettes / net) — derived from already-loaded envelopes, no extra fetch
   useEffect(() => {
-    fetch('/api/patrimoine/envelopes')
-      .then(r => r.ok ? r.json() : null)
-      .then((data: unknown[] | null) => {
-        if (!Array.isArray(data)) return
-        let brut = 0, dettes = 0
-        for (const e of data as Record<string, unknown>[]) {
-          if (e.type === 'IMMOBILIER') {
-            const meta = e.metadata as Record<string, number> | null
-            brut += Number(meta?.currentValue ?? 0)
-            dettes += Number(meta?.creditRemaining ?? 0)
-          } else {
-            const tv = e.totalValue as number | null
-            const pos = e.positions as { pru: number; quantity: number }[] | undefined
-            const val = tv !== null && tv !== undefined ? tv : (pos || []).reduce((s, p) => s + p.pru * p.quantity, 0)
-            brut += val
-          }
-        }
-        if (brut > 0) setPatrimoineKPI({ brut, dettes, net: Math.max(0, brut - dettes) })
-      })
-      .catch(() => {})
-  }, [])
+    if (envelopes.length === 0) return
+    let brut = 0, dettes = 0
+    for (const e of envelopes as unknown as Record<string, unknown>[]) {
+      if (e.type === 'IMMOBILIER') {
+        const meta = e.metadata as Record<string, number> | null
+        brut += Number(meta?.currentValue ?? 0)
+        dettes += Number(meta?.creditRemaining ?? 0)
+      } else {
+        const tv = e.totalValue as number | null
+        const pos = e.positions as { pru: number; quantity: number }[] | undefined
+        const val = tv !== null && tv !== undefined ? tv : (pos || []).reduce((s, p) => s + p.pru * p.quantity, 0)
+        brut += val
+      }
+    }
+    if (brut > 0) setPatrimoineKPI({ brut, dettes, net: Math.max(0, brut - dettes) })
+  }, [envelopes])
 
   const firstName = session?.user?.name?.split(' ')[0] || ''
   const hour = new Date().getHours()
@@ -414,7 +394,7 @@ export default function HomePage() {
               <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreWidget.color}28`, borderRadius: 16, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = scoreWidget.color + '55')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = scoreWidget.color + '28')}>
-                <MiniGauge score={scoreWidget.score} color={scoreWidget.color} />
+                <ScoreGauge score={scoreWidget.score} color={scoreWidget.color} size={72} showLabel={false} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Score Patrimonial</span>

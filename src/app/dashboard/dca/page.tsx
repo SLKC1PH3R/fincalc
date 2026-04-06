@@ -9,23 +9,13 @@ import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare } from 'lucide-react'
+import { Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const COLOR = '#38bdf8'
 
@@ -166,13 +156,13 @@ function DCAPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<Tip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<FieldTooltip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
             <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<Tip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<FieldTooltip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
             </div>
             <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
@@ -180,7 +170,7 @@ function DCAPageInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Rendement annuel moyen<Tip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Rendement annuel moyen<FieldTooltip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
             </div>
             <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
@@ -188,7 +178,7 @@ function DCAPageInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Volatilité annuelle<Tip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Volatilité annuelle<FieldTooltip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
             </div>
             <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
@@ -200,13 +190,13 @@ function DCAPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Prix initial de l'actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center' }}>Prix initial de l'actif<FieldTooltip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
             <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Capital de départ<Tip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center' }}>Capital de départ<FieldTooltip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
               <button
                 onClick={importPatrimoine}
                 disabled={loadingPatrimoine}

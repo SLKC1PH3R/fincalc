@@ -9,21 +9,11 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { CsvExport } from '@/components/CsvExport'
 import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw, BookOpen, Settings2 } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw, BookOpen, Settings2 } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-64 rounded-md border border-border bg-popover p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 function fmtEur(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -193,7 +183,7 @@ function RetirementPageInner() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
                   Trimestres
-                  <Tip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
+                  <FieldTooltip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
                 </Label>
                 <Input type="number" min={0} max={200} value={inputs.quarters} onChange={e => set('quarters')(+e.target.value)} />
               </div>
@@ -202,7 +192,7 @@ function RetirementPageInner() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
                 Points Agirc-Arrco
-                <Tip text="Total de vos points Agirc-Arrco accumulés. Visible sur votre relevé info-retraite.fr ou agirc-arrco.fr." />
+                <FieldTooltip text="Total de vos points Agirc-Arrco accumulés. Visible sur votre relevé info-retraite.fr ou agirc-arrco.fr." />
               </Label>
               <Input type="number" min={0} value={inputs.pointsArrco} onChange={e => set('pointsArrco')(+e.target.value)} />
               <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
@@ -213,7 +203,7 @@ function RetirementPageInner() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
                 Salaire brut annuel
-                <Tip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
+                <FieldTooltip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
               </Label>
               <Input type="number" min={0} value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
             </div>
@@ -222,7 +212,7 @@ function RetirementPageInner() {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
                   Progression salariale
-                  <Tip text="Augmentation annuelle estimée de votre salaire. Impact fort sur le SAM à la retraite. Inflation historique ~2%." />
+                  <FieldTooltip text="Augmentation annuelle estimée de votre salaire. Impact fort sur le SAM à la retraite. Inflation historique ~2%." />
                 </Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.salaryGrowth.toFixed(1)}%/an</span>
               </div>

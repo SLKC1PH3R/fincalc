@@ -12,20 +12,10 @@ import { CsvExport } from '@/components/CsvExport'
 import { calcRental, type RentalInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useTheme } from '@/contexts/ThemeContext'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 interface Apartment {
   id: string
@@ -465,22 +455,22 @@ function RentalPageInner() {
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Prix d&apos;achat<Tip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></Label>
+              <Label className="flex items-center gap-1">Prix d&apos;achat<FieldTooltip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></Label>
               <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Frais de notaire<Tip text="~8% dans l'ancien, ~3% dans le neuf." /></Label>
+                <Label className="flex items-center gap-1">Frais de notaire<FieldTooltip text="~8% dans l'ancien, ~3% dans le neuf." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.notaryFees}%</span>
               </div>
               <Slider min={2} max={10} step={0.5} value={[inputs.notaryFees]} onValueChange={([v]) => setApt('notaryFees')(v)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Travaux<Tip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></Label>
+              <Label className="flex items-center gap-1">Travaux<FieldTooltip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></Label>
               <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté. Laissez 0 pour un achat cash." /></Label>
+              <Label className="flex items-center gap-1">Montant emprunté<FieldTooltip text="Capital emprunté. Laissez 0 pour un achat cash." /></Label>
               <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -504,30 +494,30 @@ function RentalPageInner() {
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Loyer mensuel HC<Tip text="Loyer hors charges. Base de calcul du rendement." /></Label>
+              <Label className="flex items-center gap-1">Loyer mensuel HC<FieldTooltip text="Loyer hors charges. Base de calcul du rendement." /></Label>
               <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Charges mensuelles<Tip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></Label>
+              <Label className="flex items-center gap-1">Charges mensuelles<FieldTooltip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></Label>
               <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Taxe foncière (€/an)<Tip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></Label>
+              <Label className="flex items-center gap-1">Taxe foncière (€/an)<FieldTooltip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></Label>
               <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Assurance PNO (€/an)<Tip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></Label>
+              <Label className="flex items-center gap-1">Assurance PNO (€/an)<FieldTooltip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></Label>
               <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Taux de vacance<Tip text="Pourcentage du temps sans locataire. 4-8% est réaliste selon la localisation." /></Label>
+                <Label className="flex items-center gap-1">Taux de vacance<FieldTooltip text="Pourcentage du temps sans locataire. 4-8% est réaliste selon la localisation." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.vacancy}%</span>
               </div>
               <Slider min={0} max={20} step={0.5} value={[inputs.vacancy]} onValueChange={([v]) => setApt('vacancy')(v)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Régime fiscal<Tip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement, fiscalité quasi nulle." /></Label>
+              <Label className="flex items-center gap-1">Régime fiscal<FieldTooltip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement, fiscalité quasi nulle." /></Label>
               <Select value={inputs.regime} onValueChange={v => setApt('regime')(v as RentalInputs['regime'])}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>

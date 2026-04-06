@@ -9,21 +9,11 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcBuyRent, type BuyRentInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, Home, TrendingUp } from 'lucide-react'
+import { Download, Home, TrendingUp } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const COLOR = '#818cf8'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
 
 function BuyRentPageInner() {
   const [inputs, setInputs] = useState<BuyRentInputs>({ price: 300000, down: 60000, loanRate: 3.5, rent: 1000, years: 20, appreciation: 2, investReturn: 7 })
@@ -136,32 +126,32 @@ function BuyRentPageInner() {
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Prix du bien<Tip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." /></Label>
+              <Label className="flex items-center gap-1">Prix du bien<FieldTooltip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." /></Label>
               <Input type="number" value={inputs.price} onChange={e => set('price')(+e.target.value)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Apport<Tip text="20% est idéal pour obtenir les meilleurs taux." /></Label>
+              <Label className="flex items-center gap-1">Apport<FieldTooltip text="20% est idéal pour obtenir les meilleurs taux." /></Label>
               <Input type="number" value={inputs.down} onChange={e => set('down')(+e.target.value)} />
               <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(inputs.down / inputs.price * 100)} du prix · Emprunt {fmt(inputs.price - inputs.down)}</p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Taux du prêt<Tip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." /></Label>
+                <Label className="flex items-center gap-1">Taux du prêt<FieldTooltip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
               </div>
               <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => set('loanRate')(v)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Loyer équivalent<Tip text="Loyer pour un bien similaire. Dans le scénario location, la différence avec la mensualité est investie." /></Label>
+              <Label className="flex items-center gap-1">Loyer équivalent<FieldTooltip text="Loyer pour un bien similaire. Dans le scénario location, la différence avec la mensualité est investie." /></Label>
               <Input type="number" value={inputs.rent} onChange={e => set('rent')(+e.target.value)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Durée d&apos;analyse<Tip text="Plus la durée est longue, plus l'achat devient généralement avantageux." /></Label>
+                <Label className="flex items-center gap-1">Durée d&apos;analyse<FieldTooltip text="Plus la durée est longue, plus l'achat devient généralement avantageux." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
               </div>
               <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
@@ -169,7 +159,7 @@ function BuyRentPageInner() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Valorisation immo/an<Tip text="Appréciation annuelle estimée. France longue période : ~2-3%." /></Label>
+                <Label className="flex items-center gap-1">Valorisation immo/an<FieldTooltip text="Appréciation annuelle estimée. France longue période : ~2-3%." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.appreciation}%</span>
               </div>
               <Slider min={-2} max={8} step={0.5} value={[inputs.appreciation]} onValueChange={([v]) => set('appreciation')(v)} />
@@ -177,7 +167,7 @@ function BuyRentPageInner() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Rendement placement<Tip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." /></Label>
+                <Label className="flex items-center gap-1">Rendement placement<FieldTooltip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.investReturn}%</span>
               </div>
               <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />

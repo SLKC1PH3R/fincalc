@@ -10,23 +10,13 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcMortgage, type MortgageInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
+import { FieldTooltip } from '@/components/FieldTooltip'
 
 const COLOR = '#f472b6'
-
-function Tip({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <span className="relative inline-flex ml-1 align-middle">
-      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
-        onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onClick={() => setOpen(v => !v)} />
-      {open && <span className="absolute z-50 left-5 -top-1 w-60 rounded-md border border-border bg-popover text-popover-foreground p-3 text-xs shadow-md leading-relaxed whitespace-normal">{text}</span>}
-    </span>
-  )
-}
 
 function MortgagePageInner() {
   const chart = useChartTheme()
@@ -137,13 +127,13 @@ function MortgagePageInner() {
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Montant emprunté<Tip text="Capital emprunté = Prix + frais notaire - apport. Base de calcul des mensualités." /></Label>
+              <Label className="flex items-center gap-1">Montant emprunté<FieldTooltip text="Capital emprunté = Prix + frais notaire - apport. Base de calcul des mensualités." /></Label>
               <Input type="number" value={inputs.amount} onChange={e => set('amount')(+e.target.value)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Taux annuel<Tip text="Taux nominal hors assurance. En France 2024 : 3-4.5% selon la durée. Ne pas confondre avec le TAEG." /></Label>
+                <Label className="flex items-center gap-1">Taux annuel<FieldTooltip text="Taux nominal hors assurance. En France 2024 : 3-4.5% selon la durée. Ne pas confondre avec le TAEG." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
               </div>
               <Slider min={0.5} max={8} step={0.05} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
@@ -163,7 +153,7 @@ function MortgagePageInner() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Durée<Tip text="Plus la durée est longue : mensualités basses mais coût total élevé." /></Label>
+                <Label className="flex items-center gap-1">Durée<FieldTooltip text="Plus la durée est longue : mensualités basses mais coût total élevé." /></Label>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
               </div>
               <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
@@ -175,7 +165,7 @@ function MortgagePageInner() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Assurance (€/mois)<Tip text="Obligatoire. Couvre décès, invalidité. La délégation d'assurance peut économiser 30-50%." /></Label>
+              <Label className="flex items-center gap-1">Assurance (€/mois)<FieldTooltip text="Obligatoire. Couvre décès, invalidité. La délégation d'assurance peut économiser 30-50%." /></Label>
               <Input type="number" value={inputs.insurance} onChange={e => set('insurance')(+e.target.value)} />
               <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
                 {([
@@ -199,7 +189,7 @@ function MortgagePageInner() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Frais de dossier (€)<Tip text="Facturés par la banque. Généralement 0-1500€, souvent négociables." /></Label>
+              <Label className="flex items-center gap-1">Frais de dossier (€)<FieldTooltip text="Facturés par la banque. Généralement 0-1500€, souvent négociables." /></Label>
               <Input type="number" value={inputs.fees} onChange={e => set('fees')(+e.target.value)} />
               <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
                 {([{label:'Neuf', val:800},{label:'Ancien', val:1200},{label:'Max', val:1500}] as const).map(s => (

@@ -7,6 +7,7 @@ import {
   ArrowRight, CheckCircle2, Minus, AlertCircle,
 } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
+import { ScoreGauge } from '@/components/ScoreGauge'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -26,29 +27,6 @@ interface ScoreData {
 
 // ── Gauge SVG ────────────────────────────────────────────────────────────────
 
-function ScoreGauge({ score }: { score: number }) {
-  const r = 72, cx = 90, cy = 90
-  const startAngle = 210, totalArc = 300
-  const filledArc = (score / 100) * totalArc
-  const toRad = (d: number) => (d * Math.PI) / 180
-  const arc = (a: number) => ({ x: cx + r * Math.cos(toRad(a)), y: cy + r * Math.sin(toRad(a)) })
-  const ts = arc(startAngle), te = arc(startAngle + totalArc), fe = arc(startAngle + filledArc)
-  const color = score >= 80 ? '#34d399' : score >= 60 ? '#f1c086' : score >= 40 ? '#fb923c' : '#f87171'
-
-  return (
-    <svg width={180} height={180} viewBox="0 0 180 180">
-      <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 1 1 ${te.x} ${te.y}`}
-        fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={10} strokeLinecap="round" />
-      {score > 0 && (
-        <path d={`M ${ts.x} ${ts.y} A ${r} ${r} 0 ${filledArc > 180 ? 1 : 0} 1 ${fe.x} ${fe.y}`}
-          fill="none" stroke={color} strokeWidth={10} strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 6px ${color}80)` }} />
-      )}
-      <text x={cx} y={cy - 6} textAnchor="middle" fill={color} fontSize={32} fontWeight={700} fontFamily="system-ui">{score}</text>
-      <text x={cx} y={cy + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize={12}>/100</text>
-    </svg>
-  )
-}
 
 // ── Pyramid visual ────────────────────────────────────────────────────────────
 

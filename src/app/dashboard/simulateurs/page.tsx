@@ -18,11 +18,12 @@ const CATEGORIES = [
     id: 'placements',
     label: 'Placements',
     modules: [
-      { href: '/dashboard/compound',  type: 'compound',  label: 'Intérêts composés', desc: "Effet boule de neige sur votre capital",              icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
-      { href: '/dashboard/dca',       type: 'dca',       label: 'DCA',               desc: 'Investissement progressif et régulier',               icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
-      { href: '/dashboard/fire',      type: 'fire',      label: 'FI/RE',             desc: "Date d'indépendance financière",                      icon: Flame,      color: '#fb923c', tag: 'Épargne' },
-      { href: '/dashboard/dividends', type: 'dividends', label: 'Revenus passifs',   desc: 'Dividendes et rentes sur le long terme',             icon: Coins,      color: '#facc15', tag: 'Épargne' },
-      { href: '/dashboard/benchmark', type: 'benchmark', label: 'Benchmarks',        desc: 'Comparez performances aux indices ETF',              icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
+      { href: '/dashboard/compound',    type: 'compound',    label: 'Intérêts composés', desc: "Effet boule de neige sur votre capital",              icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
+      { href: '/dashboard/dca',         type: 'dca',         label: 'DCA',               desc: 'Investissement progressif et régulier',               icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
+      { href: '/dashboard/fire',        type: 'fire',        label: 'FI/RE',             desc: "Date d'indépendance financière",                      icon: Flame,      color: '#fb923c', tag: 'Épargne' },
+      { href: '/dashboard/dividends',   type: 'dividends',   label: 'Revenus passifs',   desc: 'Dividendes et rentes sur le long terme',             icon: Coins,      color: '#facc15', tag: 'Épargne' },
+      { href: '/dashboard/benchmark',   type: 'benchmark',   label: 'Benchmarks',        desc: 'Comparez performances aux indices ETF',              icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
+      { href: '/dashboard/transactions', type: 'transactions', label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU, dividendes et historique',    icon: History,    color: '#38bdf8', tag: 'Épargne' },
     ],
   },
   {
@@ -53,7 +54,6 @@ const CATEGORIES = [
       { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Règle d'or pour équilibrer vos dépenses",              icon: Calculator, color: '#a3e635', tag: 'Budget' },
       { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Coussin de sécurité optimal',                          icon: ShieldCheck, color: '#34d399', tag: 'Budget' },
       { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Coût total et capacité de remboursement',              icon: CreditCard, color: '#fb7185', tag: 'Budget' },
-      { href: '/dashboard/transactions',    type: 'transactions',    label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU et historique',                  icon: History,    color: '#38bdf8', tag: 'Budget' },
     ],
   },
   {
@@ -74,10 +74,10 @@ const ALL_MODULES = CATEGORIES.flatMap(c => c.modules)
 
 const FILTER_TABS = [
   { id: 'all',        label: 'Tous',                count: ALL_MODULES.length },
-  { id: 'placements', label: 'Placements',           count: 5 },
+  { id: 'placements', label: 'Placements',           count: 6 },
   { id: 'immobilier', label: 'Immobilier',           count: 3 },
   { id: 'fiscalite',  label: 'Fiscalité',            count: 5 },
-  { id: 'budget',     label: 'Budget',               count: 5 },
+  { id: 'budget',     label: 'Budget',               count: 4 },
   { id: 'avances',    label: 'Avancés',              count: 6 },
 ]
 

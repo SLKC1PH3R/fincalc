@@ -133,7 +133,7 @@ export function NotificationCenter() {
   const count = visible.length
 
   return (
-    <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
+    <div ref={ref} style={{ position: 'relative', flexShrink: 0, zIndex: 10001, isolation: 'isolate' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{
@@ -167,11 +167,12 @@ export function NotificationCenter() {
         <div style={{
           position: 'absolute', top: 'calc(100% + 8px)', right: 0,
           width: 340, maxHeight: 480,
-          background: 'var(--popover-surface)',
-          border: '1px solid var(--popover-surface-border)',
+          background: '#1a1d27',
+          border: '1px solid rgba(255,255,255,0.11)',
           borderRadius: 14,
-          boxShadow: '0 20px 56px rgba(0,0,0,0.55)',
-          zIndex: 9999,
+          boxShadow: '0 24px 64px rgba(0,0,0,0.70)',
+          zIndex: 10002,
+          isolation: 'isolate',
           overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>

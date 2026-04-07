@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { Check, User, Save } from 'lucide-react'
+import { Check, User, Save, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const PROFILES: UserProfile[] = ['beginner', 'owner', 'active', 'fire']
 
@@ -20,6 +21,7 @@ const FIELD_HINTS: Record<string, string> = {
 
 export default function ProfilPage() {
   const { profile, loading, save } = useUserProfile()
+  const { theme, setTheme } = useTheme()
   const { toast } = useToast()
   const [saving, setSaving] = useState(false)
 
@@ -181,6 +183,38 @@ export default function ProfilPage() {
               </p>
             </div>
           )}
+
+          {/* Theme preference */}
+          <div style={{ padding: '16px 20px', background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Apparence</p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {([
+                { val: 'dark' as const,  label: 'Sombre', Icon: Moon  },
+                { val: 'light' as const, label: 'Clair',  Icon: Sun   },
+              ]).map(({ val, label, Icon }) => (
+                <button
+                  key={val}
+                  onClick={() => setTheme(val)}
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    padding: '10px 14px', borderRadius: 10, cursor: 'pointer',
+                    border: `1px solid ${theme === val ? 'rgba(241,192,134,0.45)' : 'var(--card-dark-border)'}`,
+                    background: theme === val ? 'rgba(241,192,134,0.10)' : 'transparent',
+                    color: theme === val ? '#f1c086' : 'var(--text-muted-c)',
+                    fontWeight: theme === val ? 700 : 400,
+                    fontSize: 13, transition: 'all 0.15s',
+                  }}
+                >
+                  <Icon style={{ width: 14, height: 14 }} />
+                  {label}
+                  {theme === val && <Check style={{ width: 12, height: 12, marginLeft: 2 }} />}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 8 }}>
+              Cette préférence est sauvegardée sur votre compte et s&apos;applique sur tous vos appareils.
+            </p>
+          </div>
 
           {/* Save button */}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

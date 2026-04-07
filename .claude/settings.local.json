@@ -54,7 +54,9 @@
       "Bash(grep -l \"height: ''100%''.*flex\\\\|flex.*height: ''100%''\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/compound/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/mortgage/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/tax/page.tsx)",
       "Bash(grep -c \"overflowY: ''auto''\" c:/Users/jerem/Downloads/fincalc/src/app/dashboard/compound/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/dca/page.tsx c:/Users/jerem/Downloads/fincalc/src/app/dashboard/mortgage/page.tsx)",
       "Bash(grep \"border: \\\\`1px solid \\\\${COLOR}25\\\\`\" src/app/dashboard/compound/page.tsx src/app/dashboard/dca/page.tsx src/app/dashboard/fire/page.tsx src/app/dashboard/flat-tax/page.tsx src/app/dashboard/envelope-compare/page.tsx src/app/dashboard/emergency-fund/page.tsx src/app/dashboard/consumer-credit/page.tsx src/app/dashboard/succession/page.tsx)",
-      "Bash(grep -v \"^\\\\s*//\")"
+      "Bash(grep -v \"^\\\\s*//\")",
+      "Bash(ls /c/Users/jerem/Downloads/fincalc/.env*)",
+      "Bash(grep -n \"^import.*X\\\\b\\\\|{ X\\\\b\\\\|, X\\\\b\\\\|X }\" /c/Users/jerem/Downloads/fincalc/src/components/Sidebar.tsx)"
     ]
   }
 }

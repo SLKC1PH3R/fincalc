@@ -18,6 +18,7 @@ model User {
   updatedAt         DateTime             @updatedAt
   lastLoginAt       DateTime?
   onboardingDone    Boolean              @default(false)
+  preferredTheme    String               @default("dark")  // "dark" | "light"
   financialProfile  Json?               // { age, netMonthlySalary, monthlySavings, currentAssets, monthlyExpenses, housingStatus, userProfile }
   simulations       Simulation[]
   sessions          Session[]

@@ -2,30 +2,58 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'dark' | 'light'
-interface ThemeContextValue { theme: Theme; toggleTheme: () => void }
+interface ThemeContextValue { theme: Theme; toggleTheme: () => void; setTheme: (t: Theme) => void }
 
-const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', toggleTheme: () => {} })
+const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', toggleTheme: () => {}, setTheme: () => {} })
+
+function applyTheme(t: Theme) {
+  document.documentElement.classList.remove('dark', 'light')
+  document.documentElement.classList.add(t)
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setThemeState] = useState<Theme>('dark')
 
   useEffect(() => {
-    const saved = localStorage.getItem('patrimo-theme') as Theme | null
-    const initial = saved || 'dark'
-    setTheme(initial)
-    document.documentElement.classList.remove('dark', 'light')
-    document.documentElement.classList.add(initial)
+    // Apply local cache immediately to avoid flash
+    const local = localStorage.getItem('patrimo-theme') as Theme | null
+    const initial = local || 'dark'
+    setThemeState(initial)
+    applyTheme(initial)
+
+    // Then fetch server preference and reconcile (in case user changed on another device)
+    fetch('/api/profile')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const serverTheme = data?.preferredTheme as Theme | undefined
+        if (serverTheme === 'dark' || serverTheme === 'light') {
+          setThemeState(serverTheme)
+          applyTheme(serverTheme)
+          localStorage.setItem('patrimo-theme', serverTheme)
+        }
+      })
+      .catch(() => {})
   }, [])
 
-  const toggleTheme = () => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    document.documentElement.classList.remove('dark', 'light')
-    document.documentElement.classList.add(next)
+  const persistTheme = (next: Theme) => {
+    setThemeState(next)
+    applyTheme(next)
     localStorage.setItem('patrimo-theme', next)
+    // Persist to DB — fire and forget
+    fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ preferredTheme: next }),
+    }).catch(() => {})
   }
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
+  const toggleTheme = () => persistTheme(theme === 'dark' ? 'light' : 'dark')
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme: persistTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
 }
 
 export const useTheme = () => useContext(ThemeContext)

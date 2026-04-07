@@ -9,7 +9,7 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { onboardingDone: true, financialProfile: true },
+    select: { onboardingDone: true, financialProfile: true, preferredTheme: true },
   })
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
@@ -21,16 +21,17 @@ export async function PATCH(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { onboardingDone, financialProfile } = body
+  const { onboardingDone, financialProfile, preferredTheme } = body
 
   const data: Record<string, unknown> = {}
   if (typeof onboardingDone === 'boolean') data.onboardingDone = onboardingDone
   if (financialProfile !== undefined) data.financialProfile = financialProfile
+  if (preferredTheme === 'dark' || preferredTheme === 'light') data.preferredTheme = preferredTheme
 
   const user = await prisma.user.update({
     where: { id: session.user.id },
     data,
-    select: { onboardingDone: true, financialProfile: true },
+    select: { onboardingDone: true, financialProfile: true, preferredTheme: true },
   })
 
   return NextResponse.json(user)

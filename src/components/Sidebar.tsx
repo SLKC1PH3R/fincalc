@@ -8,7 +8,7 @@ import {
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
-  ShieldCheck, Users, Scale, Landmark, Search, X, UserCircle,
+  ShieldCheck, Users, Scale, Landmark, Search, UserCircle,
   Banknote, TrendingDown, LineChart, MapPin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -467,12 +467,13 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <div
                     style={{
                       padding: '12px 14px', borderRadius: 12,
-                      background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-                      border: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
+                      background: 'linear-gradient(135deg, #13161f, #0e1018)',
+                      border: '1px solid rgba(241,192,134,0.14)',
                       cursor: 'pointer', transition: 'border-color 0.15s',
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.35)',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.38)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.14)')}
                   >
                     {/* Top row: info left + sparkline right */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -481,7 +482,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                           <TrendingUp style={{ width: 9, height: 9, color: '#f1c086' }} />
                           <span style={{ color: '#f1c086', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
                         </div>
-                        <div style={{ color: 'var(--sb-text-strong)', fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                        <div style={{ color: '#ffffff', fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
                           {fmtSb(Math.max(0, patrimoineTotal - dettesTotal))}
                         </div>
                         {sparkDelta !== null && (
@@ -507,7 +508,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                             <polyline points={sparkPts} fill="none" stroke="url(#sbSparkGrad)" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
                             <circle cx={SW} cy={sparkLastCy} r={3} fill="#f1c086" />
                           </svg>
-                          <span style={{ fontSize: 9, color: dark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.35)', fontWeight: 400 }}>6 derniers mois</span>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', fontWeight: 400 }}>6 derniers mois</span>
                         </div>
                       )}
                     </div>
@@ -516,18 +517,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     {(patrimoineTotal > 0 || dettesTotal > 0) && (
                       <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
                         <div style={{
-                          flex: 1, background: 'var(--sb-mini-card)', borderRadius: 8,
+                          flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 8,
                           padding: '6px 10px',
                         }}>
-                          <div style={{ fontSize: 9, color: 'var(--sb-text-dim)', marginBottom: 2 }}>Brut</div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--sb-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
+                          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>Brut</div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.80)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
                         </div>
                         {dettesTotal > 0 && (
                           <div style={{
-                            flex: 1, background: 'var(--sb-mini-card)', borderRadius: 8,
+                            flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 8,
                             padding: '6px 10px',
                           }}>
-                            <div style={{ fontSize: 9, color: 'var(--sb-text-dim)', marginBottom: 2 }}>Dettes</div>
+                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>Dettes</div>
                             <div style={{ fontSize: 11, fontWeight: 600, color: '#f87171', fontVariantNumeric: 'tabular-nums' }}>-{fmtSb(dettesTotal)}</div>
                           </div>
                         )}
@@ -536,14 +537,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
                     {/* FIRE progress */}
                     {fireTarget > 0 && (
-                      <div style={{ borderTop: `1px solid var(--sb-divider)`, paddingTop: 10, marginTop: 10 }}>
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 10, marginTop: 10 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 9, color: dark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.45)', fontWeight: 400 }}>
-                            Vers objectif <span style={{ color: dark ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.60)' }}>{fmtSb(fireTarget)}</span>
+                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.30)', fontWeight: 400 }}>
+                            Vers objectif <span style={{ color: 'rgba(255,255,255,0.50)' }}>{fmtSb(fireTarget)}</span>
                           </span>
                           <span style={{ fontSize: 9, color: '#f1c086', fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
                         </div>
-                        <div style={{ height: 5, background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)', borderRadius: 99 }}>
+                        <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 99 }}>
                           <div style={{ width: `${fireProgress}%`, height: '100%', background: 'linear-gradient(90deg, #f1c08699, #f1c086)', borderRadius: 99, transition: 'width 0.6s ease' }} />
                         </div>
                       </div>
@@ -561,23 +562,24 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <div style={{
                     padding: '10px 14px',
                     borderRadius: 12,
-                    background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-                    border: `1px solid ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
+                    background: 'linear-gradient(135deg, #13161f, #0e1018)',
+                    border: '1px solid rgba(241,192,134,0.14)',
                     cursor: 'pointer',
                     transition: 'border-color 0.15s',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.35)',
                   }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.08)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.38)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.14)')}
                   >
                     <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: '#f1c086', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                         Score patrimonial
                       </span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--sb-text-strong)', fontVariantNumeric: 'tabular-nums' }}>
-                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>/100</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
+                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.28)' }}>/100</span>
                       </span>
                     </div>
-                    <div style={{ height: 5, borderRadius: 99, background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+                    <div style={{ height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%',
                         width: `${score}%`,

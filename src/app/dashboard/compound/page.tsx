@@ -21,6 +21,8 @@ import { ProfileFillButton } from '@/components/ProfileFillButton'
 // Backwards-compatible alias
 const Tip = FieldTooltip
 
+const COLOR = '#f1c086'
+
 function CompoundPageInner() {
   const chart = useChartTheme()
   const [mounted, setMounted] = useState(false)
@@ -76,12 +78,24 @@ function CompoundPageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Intérêts Composés <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Épargne · effet boule de neige</span></h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Intérêts Composés</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <TrendingUp style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Intérêts Composés</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Visualisez l&apos;effet boule de neige de votre épargne sur le long terme</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Intérêts Composés',
             subtitle: `Capital ${fmt(inputs.capital)} · ${fmt(inputs.monthly)}/mois · ${inputs.rate}% · ${inputs.years} ans`,
@@ -113,6 +127,7 @@ function CompoundPageInner() {
           <Button variant="ghost" size="sm" style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }} onClick={() => setInputs({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })}>
             Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
@@ -201,6 +216,31 @@ function CompoundPageInner() {
         )
       })()}
 
+      {/* Hero résultat */}
+      <div style={{ background: `linear-gradient(135deg, ${COLOR}0e, transparent)`, border: `1px solid ${COLOR}28`, borderRadius: 16, padding: '20px 24px', marginBottom: 16, flexShrink: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8, lineHeight: 1.5 }}>
+          En investissant {fmt(inputs.monthly)}/mois pendant {inputs.years} ans à {inputs.rate}% de rendement annuel...
+        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+          <span style={{ fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", letterSpacing: '-0.04em', lineHeight: 1 }}>{fmt(r.final)}</span>
+          <span style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>capital final estimé</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Capital investi</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{fmt(r.invested)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Intérêts générés</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#34d399', fontFamily: "'Geist Mono',monospace" }}>+{fmt(r.interest)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Multiplication</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: COLOR, fontFamily: "'Geist Mono',monospace" }}>×{r.multiplier.toFixed(1)}</div>
+          </div>
+        </div>
+      </div>
+
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
@@ -215,20 +255,23 @@ function CompoundPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Capital initial<Tip text="Montant placé dès le départ. Peut être 0 si vous démarrez de zéro." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Capital initial<Tip text="Montant placé dès le départ. Peut être 0 si vous démarrez de zéro." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Votre épargne de départ — peut être 0</p>
             <Input type="number" value={inputs.capital} onChange={e => set('capital')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<Tip text="Somme ajoutée chaque mois. La régularité est clé — même un petit montant produit des effets spectaculaires sur 20+ ans." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Versement mensuel<Tip text="Somme ajoutée chaque mois. La régularité est clé — même un petit montant produit des effets spectaculaires sur 20+ ans." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Ce que vous mettez de côté chaque mois</p>
             <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Taux annuel<Tip text="Livret A : 3%. Fonds euros : 2-4%. ETF World : 7-10% historique." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Taux annuel<Tip text="Livret A : 3%. Fonds euros : 2-4%. ETF World : 7-10% historique." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Livret A 2.4% · Fonds euros 3-4% · ETF World ~7%</p>
             <Slider min={0.5} max={20} step={0.1} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('rate')(3)}>Livret A 3%</button>
@@ -239,14 +282,16 @@ function CompoundPageInner() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<Tip text="Plus la durée est longue, plus l'effet boule de neige est puissant. 30 ans peut multiplier votre capital par 7 à 10." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Durée<Tip text="Plus la durée est longue, plus l'effet boule de neige est puissant. 30 ans peut multiplier votre capital par 7 à 10." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Plus c&apos;est long, plus l&apos;effet boule de neige est puissant</p>
             <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Capitalisation<Tip text="Fréquence de réinvestissement des intérêts. Mensuelle est la plus courante." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Capitalisation<Tip text="Fréquence de réinvestissement des intérêts. Mensuelle est la plus courante." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>À quelle fréquence les intérêts sont réinvestis</p>
             <Select value={String(inputs.frequency)} onValueChange={v => set('frequency')(+v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -270,21 +315,25 @@ function CompoundPageInner() {
 
           {/* KPI 2×2 grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px', gridColumn: '1 / -1' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital final</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.final)}</p>
+            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}30`, borderRadius: 12, padding: '14px 16px', gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Capital final</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 6 }}>{fmt(r.final)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Votre mise + les intérêts accumulés</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital investi</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.invested)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Capital investi</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmt(r.invested)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Ce que vous avez réellement versé</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Intérêts générés</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: r.interest > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.interest)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Intérêts générés</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: r.interest > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmt(r.interest)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>{Math.round(r.interest / r.final * 100)}% de votre capital est &apos;gratuit&apos;</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Multiplication</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>×{r.multiplier.toFixed(1)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Multiplication</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>×{r.multiplier.toFixed(1)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Votre argent a été multiplié par ce facteur</p>
             </div>
           </div>
 

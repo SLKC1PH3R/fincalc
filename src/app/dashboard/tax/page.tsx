@@ -167,8 +167,8 @@ function TaxPageInner() {
             Abattement <FieldTooltip text="Forfait 10% automatique. Frais réels si vos frais professionnels dépassent le forfait." />
           </Label>
           <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--card-dark-border)', height: 30 }}>
-            <button onClick={() => set('useFraisReels')(false)} style={{ flex: 1, fontSize: 11, fontWeight: 500, border: 'none', cursor: 'pointer', background: !inputs.useFraisReels ? 'var(--text-primary)' : 'transparent', color: !inputs.useFraisReels ? 'var(--card-dark)' : 'var(--text-muted-c)' }}>Forfait 10%</button>
-            <button onClick={() => set('useFraisReels')(true)} style={{ flex: 1, fontSize: 11, fontWeight: 500, border: 'none', borderLeft: '1px solid var(--card-dark-border)', cursor: 'pointer', background: inputs.useFraisReels ? 'var(--text-primary)' : 'transparent', color: inputs.useFraisReels ? 'var(--card-dark)' : 'var(--text-muted-c)' }}>Frais réels</button>
+            <button onClick={() => set('useFraisReels')(false)} style={{ flex: 1, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', background: !inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: !inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}>Forfait 10%</button>
+            <button onClick={() => set('useFraisReels')(true)} style={{ flex: 1, fontSize: 11, fontWeight: 600, border: 'none', borderLeft: '1px solid var(--card-dark-border)', cursor: 'pointer', background: inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}>Frais réels</button>
           </div>
           {inputs.useFraisReels
             ? <Input type="number" value={inputs.fraisReels} onChange={e => set('fraisReels')(+e.target.value)} placeholder="Montant €" style={{ height: 28, fontSize: 11, marginTop: 2 }} />

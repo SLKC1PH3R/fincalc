@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcBudget, type BudgetInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ArrowRight, RotateCcw, BookOpen, Settings2 } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ArrowRight, RotateCcw, BookOpen, Settings2, Calculator } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+
+const COLOR = '#a3e635'
 
 const DEFAULT_INPUTS: BudgetInputs = {
   netIncome: 3500,
@@ -103,14 +105,24 @@ function BudgetPageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-em)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-            Budget 50/30/20 <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>Besoins · Envies · Épargne</span>
-          </h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Budget 50/30/20</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Calculator style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Budget 50/30/20</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>La règle d&apos;or : 50% besoins · 30% envies · 20% épargne</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Budget 50/30/20',
             subtitle: `Revenu net ${fmt(inputs.netIncome)}/mois`,
@@ -140,6 +152,7 @@ function BudgetPageInner() {
           <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)} style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }}>
             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
@@ -147,14 +160,15 @@ function BudgetPageInner() {
       {/* KPI strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 10 }}>
         {([
-          { label: 'Besoins',          sub: 'cible 50%', value: fmtPct(r.needsPct),   ok: r.needsPct <= 52 },
-          { label: 'Envies',           sub: 'cible 30%', value: fmtPct(r.wantsPct),   ok: r.wantsPct <= 32 },
-          { label: 'Épargne',          sub: 'cible 20%', value: fmtPct(r.savingsPct), ok: r.savingsPct >= 18 },
-          { label: 'Solde non alloué', sub: 'idéal 0€',  value: fmt(r.balance),        ok: Math.abs(r.balance) < 50 },
+          { label: 'Revenu mensuel net', subtitle: 'Votre base de calcul',       value: fmt(inputs.netIncome),     ok: true },
+          { label: 'Épargne recommandée', subtitle: '20% de votre revenu net',   value: fmt(r.savingsTarget),      ok: r.savingsPct >= 18 },
+          { label: 'Surplus / Déficit',   subtitle: 'Différence entre objectif et réalité', value: (r.balance >= 0 ? '+' : '') + fmt(r.balance), ok: r.balance >= 0 },
+          { label: 'Taux d\'épargne réel', subtitle: 'Ce que vous épargnez vraiment', value: fmtPct(r.savingsPct), ok: r.savingsPct >= 18 },
         ] as const).map((k, i) => (
-          <div key={i} className="card-hover" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 3 }}>{k.label} · {k.sub}</p>
-            <p className="mono-amount" style={{ fontSize: 18, fontWeight: 800, color: k.ok ? '#34d399' : '#fb7185' }}>{k.value}</p>
+          <div key={i} className="card-hover" style={{ background: 'var(--card-dark)', border: i === 0 ? `1px solid ${COLOR}30` : '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+            <p className="mono-amount" style={{ fontSize: 20, fontWeight: 800, color: i === 0 ? COLOR : k.ok ? '#34d399' : '#fb7185', fontFamily: "'Geist Mono',monospace", letterSpacing: '-0.04em', marginBottom: 4 }}>{k.value}</p>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>{k.subtitle}</p>
           </div>
         ))}
       </div>
@@ -306,11 +320,12 @@ function BudgetPageInner() {
               <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>Analyse — Budget {scoreLabel}</p>
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 10 }}>{r.analysis.message}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
               {r.analysis.tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.12)', borderRadius: 10, padding: '10px 14px' }}>
-                  <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(241,192,134,0.15)', color: '#f1c086', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{i + 1}</span>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>

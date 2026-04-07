@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { calcDCA, type DCAInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare, RefreshCw } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
+
+const COLOR = '#38bdf8'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -80,12 +82,24 @@ function DCAPageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>DCA — Dollar Cost Averaging <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Investissement régulier · lissage du marché</span></h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>DCA · Investissement Régulier</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <RefreshCw style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>DCA · Investissement Régulier</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Lissez la volatilité et investissez sans stress, mois après mois</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'DCA — Investissement Régulier',
             subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
@@ -128,6 +142,7 @@ function DCAPageInner() {
           <Button variant="ghost" size="sm" style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }} onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
             Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
@@ -146,6 +161,31 @@ function DCAPageInner() {
         />
       )}
 
+      {/* Hero résultat */}
+      <div style={{ background: `linear-gradient(135deg, ${COLOR}0e, transparent)`, border: `1px solid ${COLOR}28`, borderRadius: 16, padding: '20px 24px', marginBottom: 16, flexShrink: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8, lineHeight: 1.5 }}>
+          En investissant {fmt(inputs.monthly)}/mois pendant {inputs.years} ans à {inputs.targetRate}% de rendement moyen...
+        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+          <span style={{ fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", letterSpacing: '-0.04em', lineHeight: 1 }}>{fmt(r.estimatedValue)}</span>
+          <span style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>capital final simulé</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Total investi</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{fmt(r.totalInvested)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Gain potentiel</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#34d399', fontFamily: "'Geist Mono',monospace" }}>+{fmt(r.gain)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Prix moyen</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{fmt(r.avgCostBasis)}</div>
+          </div>
+        </div>
+      </div>
+
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
@@ -160,31 +200,35 @@ function DCAPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<Tip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Versement mensuel<Tip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Montant investi chaque mois, quoi qu&apos;il arrive</p>
             <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<Tip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Durée<Tip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>La patience est votre plus grand allié</p>
             <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Rendement annuel moyen<Tip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Rendement annuel cible<Tip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>ETF World : ~7-8% historique nominal</p>
             <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Volatilité annuelle<Tip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Volatilité estimée<Tip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Fluctuation typique du marché (S&amp;P500 : ~15%)</p>
             <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
@@ -194,13 +238,13 @@ function DCAPageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Prix initial de l'actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Prix initial de l&apos;actif<Tip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
             <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Capital de départ<Tip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Capital de départ<Tip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
               <button
                 onClick={importPatrimoine}
                 disabled={loadingPatrimoine}
@@ -210,6 +254,7 @@ function DCAPageInner() {
                 {loadingPatrimoine ? 'Chargement…' : 'Importer patrimoine'}
               </button>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '2px 0 2px' }}>Optionnel — votre mise initiale avant le DCA</p>
             <Input type="number" value={inputs.startingCapital ?? 0} onChange={e => set('startingCapital')(+e.target.value)} placeholder="0" />
           </div>
 
@@ -233,28 +278,32 @@ function DCAPageInner() {
 
           {/* KPI 2×2 grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px', gridColumn: '1 / -1' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Valeur finale</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.estimatedValue)}</p>
+            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}30`, borderRadius: 12, padding: '14px 16px', gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Valeur finale</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 6 }}>{fmt(r.estimatedValue)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Valeur finale de votre portefeuille DCA</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital investi</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalInvested)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Total investi</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmt(r.totalInvested)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Vos versements cumulés sur la période</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Gain total</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: r.gain > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.gain)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Gain DCA vs achat unique</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: r.vsLumpSum >= 0 ? '#34d399' : '#fb7185', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{r.vsLumpSum >= 0 ? '+' : ''}{fmt(r.vsLumpSum)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Avantage du lissage face à la volatilité</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Rendement</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: r.gainPct > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{r.gainPct.toFixed(1)}%</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Prix moyen d&apos;achat</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmt(r.avgCostBasis)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Votre coût moyen de revient par part</p>
             </div>
           </div>
 
           {/* Chart */}
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Évolution du portefeuille — {inputs.years} ans</p>
-            <ResponsiveContainer width="100%" height={150}>
+            <ResponsiveContainer width="100%" height={240}>
               <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                 <XAxis dataKey="month" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${Math.round(v/12)}a`} />
@@ -274,16 +323,13 @@ function DCAPageInner() {
             </div>
           </div>
 
-          {/* Tips box */}
-          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
-              <p style={{ fontSize: 12, color: 'rgba(241,192,134,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Analyse DCA</p>
-            </div>
+          {/* Insight cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
             {tips.map((tip, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <Info style={{ width: 14, height: 14, color: 'var(--text-muted-c)', flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
+              <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

@@ -341,7 +341,7 @@ function CompoundPageInner() {
           <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Évolution du capital sur {inputs.years} ans</p>
             {mounted ? (
-              <ResponsiveContainer width="100%" height={150}>
+              <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                   <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} />
@@ -352,7 +352,7 @@ function CompoundPageInner() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 150 }} />
+              <div style={{ height: 240 }} />
             )}
             <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
               <CsvExport
@@ -362,13 +362,13 @@ function CompoundPageInner() {
             </div>
           </div>
 
-          {/* Tips box */}
-          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 12, color: 'rgba(241,192,134,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Conseils</p>
+          {/* Insight cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
             {tips.map((tip, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#f1c086', background: 'rgba(241,192,134,0.15)', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
+              <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

@@ -12,11 +12,13 @@ import { useSearchParams } from 'next/navigation'
 import { calcTax, type TaxInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2 } from 'lucide-react'
+import { HelpCircle, Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2, Receipt } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
+
+const COLOR = '#fb7185'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -82,12 +84,24 @@ function TaxPageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Calcul de l&apos;impôt sur le revenu <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>IR · TMI · taux moyen</span></h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Calcul Impôt sur le Revenu</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Receipt style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Calcul Impôt sur le Revenu</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Simulez votre IR 2026 : TMI, déductions, comparaison frais réels vs abattement</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Impôts sur le Revenu',
             subtitle: `Barème IR France 2024 · Revenu brut ${fmt(inputs.gross)}`,
@@ -121,6 +135,7 @@ function TaxPageInner() {
             style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
             Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
@@ -235,14 +250,12 @@ function TaxPageInner() {
               ))}
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.5, marginBottom: 10 }}>{r.analysis.message}</p>
-            <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pistes d&apos;optimisation</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
               {r.analysis.tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)' }}>
-                  <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--row-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
+                <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>
@@ -254,25 +267,38 @@ function TaxPageInner() {
 
           {/* KPI grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Impôt total</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontVariantNumeric: 'tabular-nums' }}>{fmt(r.ir)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>IR barème progressif</p>
+            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}30`, borderRadius: 12, padding: '14px 16px', gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Impôt net à payer</p>
+              <p style={{ fontSize: 28, fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 6 }}>{fmt(r.ir)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Votre impôt total après tous les abattements</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Taux moyen</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtPct(r.avgRate)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>sur revenu imposable</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>TMI</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{r.tmi}%</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Taux qui s&apos;applique à votre dernier euro</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>TMI</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{r.tmi}%</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Tranche Marginale</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Taux effectif</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmtPct(r.avgRate)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Ce que vous payez réellement en % de vos revenus</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Revenu net</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(r.netIncome)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>{fmt(r.netIncome / 12)}/mois</p>
+            {(() => {
+              const stdAbattement = Math.min(Math.max(r.netBeforeTax * 0.1, 495), 14171)
+              const fraisReelsSaving = inputs.useFraisReels && inputs.fraisReels > stdAbattement
+                ? Math.round((inputs.fraisReels - stdAbattement) * r.tmi / 100)
+                : 0
+              return (
+                <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                  <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Économie frais réels</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, color: fraisReelsSaving > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fraisReelsSaving > 0 ? `+${fmt(fraisReelsSaving)}` : 'N/A'}</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Gain vs abattement 10% si vous avez des frais réels</p>
+                </div>
+              )
+            })()}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Revenu net</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: '#34d399', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{fmt(r.netIncome)}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>{fmt(r.netIncome / 12)}/mois</p>
             </div>
           </div>
 
@@ -320,9 +346,9 @@ function TaxPageInner() {
                 ))}
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={110}>
+            <ResponsiveContainer width="100%" height={160}>
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={52} dataKey="value" paddingAngle={2}>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} dataKey="value" paddingAngle={2}>
                   {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
                 </Pie>
                 <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />

@@ -9,11 +9,13 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcFire, type FireInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2, GitCompare } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, RefreshCw, BookOpen, Settings2, GitCompare, Flame } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { CsvExport } from '@/components/CsvExport'
+
+const COLOR = '#fb923c'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -97,12 +99,24 @@ function FirePageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Simulateur FI/RE <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Indépendance financière · retraite anticipée</span></h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Indépendance Financière · FI/RE</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Flame style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Indépendance Financière · FI/RE</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Calculez quand vous pouvez arrêter de travailler — et comment y arriver plus vite</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'FI/RE',
             subtitle: 'Financial Independence, Retire Early',
@@ -140,29 +154,11 @@ function FirePageInner() {
           <Button variant="ghost" size="sm" style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }} onClick={() => setInputs({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })}>
             Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
-      {/* KPI grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 12 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine FIRE cible</p>
-          <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.target)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Années avant FIRE</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{r.yearsToFire > 99 ? '+100' : `${r.yearsToFire} ans`}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Taux d&apos;épargne</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtPct(r.savingsRate)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Progression</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtPct(r.progressPct)}</p>
-        </div>
-      </div>
 
       {guidedMode && (
         <GuidedModePanel
@@ -179,6 +175,35 @@ function FirePageInner() {
         />
       )}
 
+      {/* Hero résultat */}
+      <div style={{ background: `linear-gradient(135deg, ${COLOR}0e, transparent)`, border: `1px solid ${COLOR}28`, borderRadius: 16, padding: '20px 24px', marginBottom: 16, flexShrink: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8, lineHeight: 1.5 }}>
+          Avec {fmt(inputs.netWorth)} de patrimoine, {fmt(r.annualSavings > 0 ? r.annualSavings : 0)} épargnés/an et un rendement de {inputs.rate}%...
+        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+          <span style={{ fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", letterSpacing: '-0.04em', lineHeight: 1 }}>{r.yearsToFire > 99 ? '+100' : r.yearsToFire} ans</span>
+          <span style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>avant l&apos;indépendance financière</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Objectif FIRE</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{fmt(r.target)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Progression</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: r.progressPct >= 50 ? '#34d399' : '#fb923c', fontFamily: "'Geist Mono',monospace" }}>{Math.min(r.progressPct, 100).toFixed(0)}%</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Revenu passif/mois</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{fmt(r.monthlyPassive)}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Taux d&apos;épargne</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: scoreConf.color, fontFamily: "'Geist Mono',monospace" }}>{fmtPct(r.savingsRate)}</div>
+          </div>
+        </div>
+      </div>
+
       {/* Two-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
@@ -194,18 +219,20 @@ function FirePageInner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Revenu annuel net<Tip text="Revenu annuel net après impôts. Ce qui rentre réellement sur votre compte chaque année." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Revenu annuel net<Tip text="Revenu annuel net après impôts. Ce qui rentre réellement sur votre compte chaque année." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Ce qui rentre réellement sur votre compte/an</p>
             <Input type="number" value={inputs.income} onChange={e => set('income')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label className="flex items-center gap-1">Dépenses annuelles<Tip text="Vos dépenses totales. C'est aussi le montant dont vous aurez besoin chaque année à la retraite. Réduire ce chiffre est le levier le plus puissant." /></Label>
+            <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Dépenses annuelles<Tip text="Vos dépenses totales. C'est aussi le montant dont vous aurez besoin chaque année à la retraite. Réduire ce chiffre est le levier le plus puissant." /></Label>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Aussi ce dont vous aurez besoin à la retraite</p>
             <Input type="number" value={inputs.expenses} onChange={e => set('expenses')(+e.target.value)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Patrimoine actuel<Tip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Patrimoine actuel<Tip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." /></Label>
               <button
                 onClick={importFromPatrimoine}
                 disabled={importingPatrimoine}
@@ -222,22 +249,25 @@ function FirePageInner() {
                 {patrimoineImported ? `${(patrimoineImported / 1000).toFixed(0)} k€ importés` : 'Importer'}
               </button>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '2px 0 2px' }}>Tout ce qui travaille pour vous (PEA, AV, livrets...)</p>
             <Input type="number" value={inputs.netWorth} onChange={e => { set('netWorth')(+e.target.value); setPatrimoineImported(null) }} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Rendement attendu<Tip text="ETF World historique : 7-9% nominal. Soyez conservateur : 5-7%." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Rendement attendu<Tip text="ETF World historique : 7-9% nominal. Soyez conservateur : 5-7%." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.rate}%</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>ETF World historique : 7-8%/an sur 30 ans</p>
             <Slider min={1} max={15} step={0.5} value={[inputs.rate]} onValueChange={([v]) => set('rate')(v)} />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label className="flex items-center gap-1">Taux de retrait<Tip text="La règle des 4% (Trinity Study) : retraite durable sur 30 ans. 3.5% pour une longue retraite." /></Label>
+              <Label style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 13 }}>Taux de retrait<Tip text="La règle des 4% (Trinity Study) : retraite durable sur 30 ans. 3.5% pour une longue retraite." /></Label>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.withdrawalRate}%</span>
             </div>
+            <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>La règle des 4% est durable sur 30+ ans</p>
             <Slider min={2} max={6} step={0.1} value={[inputs.withdrawalRate]} onValueChange={([v]) => set('withdrawalRate')(v)} />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted-c)' }}>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('withdrawalRate')(3.5)}>Prudent 3.5%</button>
@@ -307,12 +337,11 @@ function FirePageInner() {
               {score === 'faible' && `Taux d'épargne insuffisant pour le FIRE. Priorité : réduire les dépenses ou augmenter les revenus.`}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
               {tips.map((tip, i) => (
-                <div key={i} style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', gap: 12 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700 }}>{i + 1}</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>

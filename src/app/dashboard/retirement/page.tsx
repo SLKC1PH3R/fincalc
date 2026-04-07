@@ -9,10 +9,12 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { CsvExport } from '@/components/CsvExport'
 import { calcRetirement, type RetirementInputs, type RetirementScenario } from '@/lib/calculators'
 import { cn } from '@/lib/utils'
-import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw, BookOpen, Settings2 } from 'lucide-react'
+import { HelpCircle, Download, CheckCircle2, TrendingUp, Minus, AlertCircle, ExternalLink, RotateCcw, BookOpen, Settings2, PiggyBank } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
+
+const COLOR = '#fbbf24'
 
 function Tip({ text }: { text: string }) {
   const [open, setOpen] = useState(false)
@@ -109,12 +111,24 @@ function RetirementPageInner() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0, flexWrap: 'wrap', gap: 8 }}>
-        <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>Simulateur de retraite <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginLeft: 6 }}>Régime général · Agirc-Arrco</span></h1>
+      {/* Breadcrumb + Header */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Simulateur Retraite</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <PiggyBank style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Simulateur Retraite</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Estimez votre pension de base et optimisez votre PER pour 2026</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Retraite 2026',
             subtitle: `Régime général · Agirc-Arrco`,
@@ -146,6 +160,7 @@ function RetirementPageInner() {
           <Button variant="outline" size="sm" onClick={() => setInputs(DEFAULT_INPUTS)}>
             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 
@@ -164,6 +179,31 @@ function RetirementPageInner() {
         />
       )}
 
+      {/* Hero résultat */}
+      <div style={{ background: `linear-gradient(135deg, ${COLOR}0e, transparent)`, border: `1px solid ${COLOR}28`, borderRadius: 16, padding: '20px 24px', marginBottom: 16, flexShrink: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8, lineHeight: 1.5 }}>
+          Avec {inputs.quarters} trimestres cotisés à {inputs.age} ans et {fmtEur(inputs.salary / 12)}/mois de salaire brut...
+        </p>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+          <span style={{ fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", letterSpacing: '-0.04em', lineHeight: 1 }}>{fmtEur(main.pensionBrute)}/mois</span>
+          <span style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>pension estimée à la retraite</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Âge de départ</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{inputs.departureAge} ans</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Trimestres manquants</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: main.trimDecote > 0 ? '#fb923c' : '#34d399', fontFamily: "'Geist Mono',monospace" }}>{main.trimDecote}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 2 }}>Taux de remplacement</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: "'Geist Mono',monospace" }}>{Math.round(main.replacementRate)}%</div>
+          </div>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
 
         {/* ── Left: Inputs ── */}
@@ -181,14 +221,16 @@ function RetirementPageInner() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <Label style={{ fontSize: 12 }}>Âge actuel</Label>
+                <Label style={{ fontSize: 12, fontWeight: 600 }}>Âge actuel</Label>
+                <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Votre âge aujourd&apos;hui</p>
                 <Input type="number" min={18} max={66} value={inputs.age} onChange={e => set('age')(+e.target.value)} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+                <Label style={{ fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
                   Trimestres
                   <Tip text="Nombre de trimestres validés à ce jour. Visible sur info-retraite.fr dans votre relevé de carrière." />
                 </Label>
+                <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Consultez info-retraite.fr</p>
                 <Input type="number" min={0} max={200} value={inputs.quarters} onChange={e => set('quarters')(+e.target.value)} />
               </div>
             </div>
@@ -205,10 +247,11 @@ function RetirementPageInner() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label style={{ fontSize: 12, display: 'flex', alignItems: 'center' }}>
+              <Label style={{ fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
                 Salaire brut annuel
                 <Tip text="Votre salaire brut actuel. Le SAM (25 meilleures années) est estimé à partir de ce salaire projeté et plafonné au PASS." />
               </Label>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '-4px 0 2px' }}>Votre salaire brut (avant cotisations sociales)</p>
               <Input type="number" min={0} value={inputs.salary} onChange={e => set('salary')(+e.target.value)} />
             </div>
 
@@ -266,25 +309,25 @@ function RetirementPageInner() {
 
           {/* KPI grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Pension mensuelle estimée</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmtEur(main.pensionBrute)}/mois</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>à {inputs.departureAge} ans · nette {fmtEur(main.pensionNette)}/mois</p>
+            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}30`, borderRadius: 12, padding: '14px 16px', gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Pension mensuelle estimée</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: COLOR, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 6 }}>{fmtEur(main.pensionBrute)}/mois</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Estimation de votre pension mensuelle brute</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Taux de remplacement</p>
-              <p style={{ fontSize: 22, fontWeight: 800, color: gaugeColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{main.replacementRate.toFixed(0)}%</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>vs {fmtEur(salNetActuel)}/mois net actuel</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Âge de départ</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{inputs.departureAge} ans</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Âge minimum pour partir à taux plein</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Base CNAV</p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtEur(main.pensionBase)}/mois</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>SAM {fmtEur(main.sam)} · taux {fmtPct(main.tauxFinal)}</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Trimestres manquants</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: main.trimDecote > 0 ? '#fb923c' : '#34d399', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{main.trimDecote}</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Pour atteindre la retraite à taux plein</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Agirc-Arrco</p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmtEur(main.pensionArrco)}/mois</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>{main.totalPoints.toFixed(0)} pts × 1,4386€</p>
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Taux de remplacement</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: gaugeColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', marginBottom: 4 }}>{main.replacementRate.toFixed(0)}%</p>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0 }}>Part de votre salaire que remplacera la pension</p>
             </div>
           </div>
 
@@ -347,12 +390,11 @@ function RetirementPageInner() {
             </div>
             <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>{r.analysis.message}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>💡 Insights personnalisés</p>
               {r.analysis.tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, borderRadius: 8, border: '1px solid var(--card-dark-border)', padding: '10px 14px' }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                <div key={i} style={{ display: 'flex', gap: 14, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', borderLeft: `3px solid ${COLOR}50`, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{(['💡', '📈', '⚡', '🎯'] as const)[i % 4]}</span>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>

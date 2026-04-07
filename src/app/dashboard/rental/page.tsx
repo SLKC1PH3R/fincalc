@@ -12,7 +12,7 @@ import { CsvExport } from '@/components/CsvExport'
 import { calcRental, type RentalInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X, Wallet } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useTheme } from '@/contexts/ThemeContext'
 import { FieldTooltip } from '@/components/FieldTooltip'
@@ -327,19 +327,23 @@ function RentalPageInner() {
     <div style={{ maxWidth: 1400, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span>
-            <span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: '#34d399', fontWeight: 600 }}>Rentabilité locative</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 400 }}>Cashflow · rendement · fiscalité</span>
-          </div>
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: '#34d399', fontWeight: 600 }}>Rentabilité Locative</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#34d39918', border: '1px solid #34d39930', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Wallet style={{ width: 20, height: 20, color: '#34d399' }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Cashflow net · Rendement brut/net · ROI</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Rentabilité Locative',
             subtitle: `${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — Investissement total : ${fmt(globalTotalInvestment)}`,
@@ -375,6 +379,7 @@ function RentalPageInner() {
           }} style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
             Réinitialiser
           </Button>
+          </div>
         </div>
       </div>
 

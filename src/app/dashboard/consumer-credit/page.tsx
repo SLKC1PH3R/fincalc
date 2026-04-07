@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { calcConsumerCredit, type ConsumerCreditInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
-import { AlertTriangle, TrendingDown, Info } from 'lucide-react'
+import { AlertTriangle, TrendingDown, Info, CreditCard } from 'lucide-react'
 import { useChartTheme } from '@/lib/chart-theme'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
@@ -32,23 +32,30 @@ export default function ConsumerCreditPage() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 12, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: COLOR, fontWeight: 600 }}>Crédit conso</span>
-          </div>
-          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>
-            Coût réel d&apos;un crédit conso <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted-c)', marginLeft: 6 }}>TAEG · coût total · coût opportunité</span>
-          </h1>
+      <div style={{ marginBottom: 12, flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Crédit à la Consommation</span>
         </div>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <CreditCard style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Crédit à la Consommation</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Coût total · TAEG · Capacité de remboursement</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
         <SaveSimulation
           type="consumer-credit"
           name={`Crédit ${fmt(amount)} à ${taeg}% — ${durationMonths} mois`}
           inputs={{ amount, taeg, durationMonths, alternativeRate } as unknown as Record<string, unknown>}
           results={{ monthlyPayment: res.monthlyPayment, totalPaid: res.totalPaid, totalInterest: res.totalInterest, alternativeGain: res.alternativeGain, opportunityCost: res.opportunityCost } as unknown as Record<string, unknown>}
         />
+          </div>
         </div>
       </div>
 

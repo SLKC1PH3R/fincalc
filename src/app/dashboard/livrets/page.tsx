@@ -11,7 +11,7 @@ import { calcLivrets, type LivretsInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
-import { Download, PiggyBank, TrendingUp } from 'lucide-react'
+import { Download, PiggyBank, TrendingUp, Banknote } from 'lucide-react'
 
 const COLOR = '#34d399'
 
@@ -33,18 +33,23 @@ function LivretsPageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: COLOR, fontWeight: 600 }}>Livrets réglementés</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Livrets réglementés</h1>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Livret A · LDDS · LEP · CEL vs ETF</span>
-          </div>
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Livrets Réglementés</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Banknote style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Livrets Réglementés</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Livret A · LDDS · LEP · CEL vs ETF</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Livrets Réglementés',
             subtitle: `${fmt(inputs.balance)} initial · ${fmt(inputs.monthly)}/mois · ${inputs.duration} ans`,
@@ -69,6 +74,7 @@ function LivretsPageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="livrets" name={`Livrets ${fmt(inputs.balance)} × ${inputs.duration}a`} inputs={inputs as any} results={r as any} />
+          </div>
         </div>
       </div>
 

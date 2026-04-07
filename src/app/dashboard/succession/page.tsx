@@ -40,25 +40,29 @@ export default function SuccessionPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: COLOR, fontWeight: 600 }}>Succession &amp; Donations</span>
-          </div>
-          <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>
-            Succession &amp; Donation
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-            Calculez les Droits de Mutation à Titre Gratuit (DMTG) selon le lien de parenté, les abattements applicables et les donations précédentes sur 15 ans.
-          </p>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Succession &amp; Donations</span>
         </div>
-        <div style={{ marginTop: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Users style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Succession &amp; Donations</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Droits de succession · Abattements · Optimisation</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
         <SaveSimulation
           type="succession"
           name={`${isDonation ? 'Donation' : 'Succession'} ${fmt(amount)} — ${relInfo.label}`}
           inputs={{ amount, relationship, donationsLast15Years, isDonation } as unknown as Record<string, unknown>}
           results={{ dmtg: res.dmtg, netTransmitted: res.netTransmitted, taxableBase: res.taxableBase, effectiveRate: res.effectiveRate } as unknown as Record<string, unknown>}
         />
+          </div>
         </div>
       </div>
 

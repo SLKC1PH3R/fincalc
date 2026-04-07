@@ -10,7 +10,7 @@ import { calcInflation, type InflationInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
-import { Download } from 'lucide-react'
+import { Download, LineChart as LineChartIcon } from 'lucide-react'
 
 const COLOR = '#fb923c'
 
@@ -32,18 +32,23 @@ function InflationPageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: COLOR, fontWeight: 600 }}>Inflation & pouvoir d&apos;achat</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Inflation & Pouvoir d&apos;achat</h1>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Valeur réelle · rendement minimal · érosion monétaire</span>
-          </div>
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Inflation &amp; Pouvoir d&apos;Achat</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <LineChartIcon style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Inflation &amp; Pouvoir d&apos;Achat</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Taux réel Fisher · Érosion monétaire</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Inflation & Pouvoir d\'achat',
             subtitle: `${fmt(inputs.capital)} · ${inputs.nominalRate}% nominal · ${inputs.inflationRate}% inflation · ${inputs.years} ans`,
@@ -64,6 +69,7 @@ function InflationPageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="inflation" name={`Inflation ${inputs.inflationRate}% · ${inputs.years}a`} inputs={inputs as any} results={r as any} />
+          </div>
         </div>
       </div>
 

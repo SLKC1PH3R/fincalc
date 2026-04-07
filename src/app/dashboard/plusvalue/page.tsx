@@ -10,7 +10,7 @@ import { calcPlusValue, type PlusValueInputs } from '@/lib/calculators'
 import { fmt } from '@/lib/utils'
 import { printReport } from '@/lib/print'
 import { useChartTheme } from '@/lib/chart-theme'
-import { Download } from 'lucide-react'
+import { Download, MapPin } from 'lucide-react'
 
 const COLOR = '#a78bfa'
 
@@ -57,18 +57,23 @@ function PlusValuePageInner() {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <span>Simulateurs</span><span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: COLOR, fontWeight: 600 }}>Plus-value immobilière</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Abattements · IR 19% · PS 17.2% · Surtaxe</span>
-          </div>
+      <div>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span>Simulateurs</span>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Plus-value Immobilière</span>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <MapPin style={{ width: 20, height: 20, color: COLOR }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Abattements IR/PS · Surtaxe · Durée optimale</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Plus-value Immobilière',
             subtitle: `${fmt(inputs.acquisitionPrice)} → ${fmt(inputs.cessionPrice)} · ${inputs.duration} ans · ${inputs.type === 'residence_principale' ? 'Résidence principale' : inputs.type === 'secondaire' ? 'Résidence secondaire' : 'Locatif'}`,
@@ -106,6 +111,7 @@ function PlusValuePageInner() {
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="plusvalue" name={`PV immo ${inputs.duration}a · ${fmt(inputs.cessionPrice)}`} inputs={inputs as any} results={r as any} />
+          </div>
         </div>
       </div>
 

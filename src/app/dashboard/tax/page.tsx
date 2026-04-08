@@ -11,8 +11,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcTax, type TaxInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { cn } from '@/lib/utils'
-import { Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2, Receipt } from 'lucide-react'
+import { Download, TrendingUp, Minus, AlertCircle, CheckCircle2, BookOpen, Settings2, Receipt, User } from 'lucide-react'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
@@ -37,7 +36,6 @@ function TaxPageInner() {
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
 
-  // Restore simulation from history
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
   useEffect(() => {
@@ -59,16 +57,23 @@ function TaxPageInner() {
   const score = SCORE[r.analysis.score]
 
   const pieData = [
-    { name: 'Net perçu', value: Math.round(r.netIncome), fill: 'hsl(160 84% 39%)' },
-    { name: 'Cotisations', value: Math.round(r.cotisations), fill: 'hsl(0 72% 51%)' },
-    { name: 'IR', value: Math.round(r.ir), fill: 'hsl(38 92% 50%)' },
+    { name: 'Net perçu', value: Math.round(r.netIncome), fill: '#34d399' },
+    { name: 'Cotisations', value: Math.round(r.cotisations), fill: '#f87171' },
+    { name: 'IR', value: Math.round(r.ir), fill: '#fbbf24' },
   ]
 
+  const scoreBg = r.analysis.score === 'excellent' || r.analysis.score === 'bon'
+    ? 'rgba(52,211,153,0.06)' : r.analysis.score === 'moyen'
+    ? 'rgba(241,192,134,0.06)' : 'rgba(248,113,113,0.08)'
+  const scoreBorder = r.analysis.score === 'excellent' || r.analysis.score === 'bon'
+    ? 'rgba(52,211,153,0.18)' : r.analysis.score === 'moyen'
+    ? 'rgba(241,192,134,0.18)' : 'rgba(248,113,113,0.22)'
+
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ padding: '20px 24px 48px' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 10, flexShrink: 0 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
@@ -85,202 +90,239 @@ function TaxPageInner() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
-          <Button variant="outline" size="sm" onClick={() => printReport({
-            title: 'Impôts sur le Revenu',
-            subtitle: `Barème IR France 2024 · Revenu brut ${fmt(inputs.gross)}`,
-            kpis: [
-              { label: 'Net après tout', value: fmt(r.netIncome), highlight: true, sub: `${fmt(r.netIncome / 12)}/mois` },
-              { label: 'Impôt sur le revenu', value: fmt(r.ir), sub: `Taux moyen ${fmtPct(r.avgRate)}` },
-              { label: 'Cotisations sociales', value: fmt(r.cotisations), sub: `${inputs.csRate}% du brut` },
-              { label: 'Pression fiscale', value: fmtPct(r.effectivePressure), sub: `TMI : ${r.tmi}%` },
-            ],
-            inputs: [
-              { label: 'Revenu brut annuel', value: fmt(inputs.gross) },
-              { label: 'Parts fiscales', value: String(inputs.parts) },
-              { label: 'Cotisations sociales', value: `${inputs.csRate}%` },
-              { label: 'Revenu imposable', value: fmt(r.imposable) },
-              { label: 'Abattement', value: fmt(r.abattement) },
-              { label: 'TMI', value: `${r.tmi}%` },
-            ],
-            tips: r.analysis.tips,
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
-          </Button>
-          <SaveSimulation type="tax" name={`Impôts ${fmt(inputs.gross)}`} inputs={inputs as any} results={r as any} />
-          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
-            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
-            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
-            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
-            {guidedMode ? 'Mode expert' : 'Mode guidé'}
-          </Button>
-          <Button variant="outline" size="sm"
-            onClick={() => setInputs({ gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false })}
-            style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
-            Réinitialiser
-          </Button>
+            <Button variant="outline" size="sm" onClick={() => printReport({
+              title: 'Impôts sur le Revenu',
+              subtitle: `Barème IR France 2024 · Revenu brut ${fmt(inputs.gross)}`,
+              kpis: [
+                { label: 'Net après tout', value: fmt(r.netIncome), highlight: true, sub: `${fmt(r.netIncome / 12)}/mois` },
+                { label: 'Impôt sur le revenu', value: fmt(r.ir), sub: `Taux moyen ${fmtPct(r.avgRate)}` },
+                { label: 'Cotisations sociales', value: fmt(r.cotisations), sub: `${inputs.csRate}% du brut` },
+                { label: 'Pression fiscale', value: fmtPct(r.effectivePressure), sub: `TMI : ${r.tmi}%` },
+              ],
+              inputs: [
+                { label: 'Revenu brut annuel', value: fmt(inputs.gross) },
+                { label: 'Parts fiscales', value: String(inputs.parts) },
+                { label: 'Cotisations sociales', value: `${inputs.csRate}%` },
+                { label: 'Revenu imposable', value: fmt(r.imposable) },
+                { label: 'Abattement', value: fmt(r.abattement) },
+                { label: 'TMI', value: `${r.tmi}%` },
+              ],
+              tips: r.analysis.tips,
+            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+            </Button>
+            <SaveSimulation type="tax" name={`Impôts ${fmt(inputs.gross)}`} inputs={inputs as any} results={r as any} />
+            <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+              onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+              style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+              {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+              {guidedMode ? 'Mode expert' : 'Mode guidé'}
+            </Button>
+            <Button variant="outline" size="sm"
+              onClick={() => setInputs({ gross: 60000, parts: 1, csRate: 22, regime: 'salarie', fraisReels: 0, useFraisReels: false })}
+              style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+              Réinitialiser
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Inputs strip — horizontal compact bar */}
-      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px', marginBottom: 10, flexShrink: 0, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, alignItems: 'end' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Revenu brut annuel <FieldTooltip text="Salaire brut annuel avant toute déduction." />
-          </Label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Input type="number" value={inputs.gross} onChange={e => set('gross')(+e.target.value)} style={{ height: 30, fontSize: 12 }} />
-            <ProfileFillButton onFill={p => { if (p.netMonthlySalary) set('gross')(Math.round(p.netMonthlySalary * 12 / 0.78)) }} />
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Situation familiale <FieldTooltip text="Le quotient familial réduit l'impôt. Chaque enfant ajoute 0.5 part." />
-          </Label>
-          <Select value={String(inputs.parts)} onValueChange={v => set('parts')(+v)}>
-            <SelectTrigger style={{ height: 30, fontSize: 12 }}><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Célibataire (1 part)</SelectItem>
-              <SelectItem value="1.5">Célibataire + 1 enfant</SelectItem>
-              <SelectItem value="2">Couple sans enfant</SelectItem>
-              <SelectItem value="2.5">Couple + 1 enfant</SelectItem>
-              <SelectItem value="3">Couple + 2 enfants</SelectItem>
-              <SelectItem value="4">Couple + 3 enfants</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-              Cotisations sociales <FieldTooltip text="~22% salarié privé, ~10% fonctionnaire." />
-            </Label>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.csRate}%</span>
-          </div>
-          <Slider min={0} max={25} step={0.5} value={[inputs.csRate]} onValueChange={([v]) => set('csRate')(v)} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--text-muted-c)' }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('csRate')(10)}>Fct. 10%</button>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('csRate')(22)}>Sal. 22%</button>
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Label style={{ fontSize: 10, color: 'var(--text-muted-c)' }} className="flex items-center gap-1">
-            Abattement <FieldTooltip text="Forfait 10% automatique. Frais réels si vos frais professionnels dépassent le forfait." />
-          </Label>
-          <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '1px solid var(--card-dark-border)', height: 30 }}>
-            <button onClick={() => set('useFraisReels')(false)} style={{ flex: 1, fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', background: !inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: !inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}>Forfait 10%</button>
-            <button onClick={() => set('useFraisReels')(true)} style={{ flex: 1, fontSize: 11, fontWeight: 600, border: 'none', borderLeft: '1px solid var(--card-dark-border)', cursor: 'pointer', background: inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}>Frais réels</button>
-          </div>
-          {inputs.useFraisReels
-            ? <Input type="number" value={inputs.fraisReels} onChange={e => set('fraisReels')(+e.target.value)} placeholder="Montant €" style={{ height: 28, fontSize: 11, marginTop: 2 }} />
-            : <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Abattem. : <span style={{ color: 'var(--text-em)' }}>{fmt(r.abattement)}</span>{r.abattement === 14171 && <span style={{ color: '#fbbf24' }}> ⚠</span>}</p>
-          }
-        </div>
-      </div>
+      {/* 3-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
-      {/* Two-column layout */}
-      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, overflow: 'hidden', paddingBottom: 12 }}>
-
-        {/* Left: brackets + analysis + tips */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%', overflowY: 'auto' }}>
-
-          {/* Tax brackets table */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)' }}>Tranches d&apos;imposition 2024</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>Barème progressif — votre tranche active est mise en évidence</p>
+        {/* ── LEFT: sticky inputs panel ── */}
+        <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Settings2 style={{ width: 12, height: 12, color: COLOR }} />
+              </div>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Paramètres</p>
             </div>
-            <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--card-dark-border)', background: 'var(--row-hover)' }}>
-                  {['Tranche', 'Taux', 'Base taxable', 'IR dû'].map((h, i) => (
-                    <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '7px 12px', fontSize: 10, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {r.brackets.map((b, i) => (
-                  <tr key={i} style={{ borderBottom: i < r.brackets.length - 1 ? '1px solid var(--section-border)' : 'none', background: b.active ? 'rgba(241,192,134,0.06)' : 'transparent' }}>
-                    <td style={{ padding: '7px 12px', color: b.active ? 'var(--text-em)' : 'var(--text-muted-c)', fontFamily: 'monospace', fontSize: 11 }}>{b.label}</td>
-                    <td style={{ padding: '7px 12px', textAlign: 'right', fontWeight: b.active ? 700 : 500, color: b.active ? '#f1c086' : 'var(--text-muted-c)' }}>{b.rate}%</td>
-                    <td style={{ padding: '7px 12px', textAlign: 'right', color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmt(b.taxable)}</td>
-                    <td style={{ padding: '7px 12px', textAlign: 'right', fontWeight: b.active ? 600 : 400, fontVariantNumeric: 'tabular-nums', color: b.active ? 'var(--text-em)' : 'var(--text-muted-c)' }}>{fmt(b.ir)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+              {/* Revenu brut */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Revenu brut annuel <FieldTooltip text="Salaire brut annuel avant toute déduction." />
+                </Label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Input
+                    type="number"
+                    value={inputs.gross}
+                    onChange={e => set('gross')(+e.target.value)}
+                    style={{ height: 36, fontSize: 13, fontWeight: 600 }}
+                  />
+                  <ProfileFillButton onFill={p => { if (p.netMonthlySalary) set('gross')(Math.round(p.netMonthlySalary * 12 / 0.78)) }} />
+                </div>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', margin: 0 }}>
+                  soit <span style={{ color: 'var(--text-em)', fontWeight: 600 }}>{fmt(inputs.gross / 12)}</span>/mois brut
+                </p>
+              </div>
+
+              {/* Séparateur */}
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Situation familiale */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Situation familiale <FieldTooltip text="Le quotient familial réduit l'impôt. Chaque enfant ajoute 0.5 part." />
+                </Label>
+                <Select value={String(inputs.parts)} onValueChange={v => set('parts')(+v)}>
+                  <SelectTrigger style={{ height: 36, fontSize: 12 }}><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Célibataire (1 part)</SelectItem>
+                    <SelectItem value="1.5">Célibataire + 1 enfant</SelectItem>
+                    <SelectItem value="2">Couple sans enfant</SelectItem>
+                    <SelectItem value="2.5">Couple + 1 enfant</SelectItem>
+                    <SelectItem value="3">Couple + 2 enfants</SelectItem>
+                    <SelectItem value="4">Couple + 3 enfants</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Séparateur */}
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Cotisations */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Cotisations sociales <FieldTooltip text="~22% salarié privé, ~10% fonctionnaire." />
+                  </Label>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>{inputs.csRate}%</span>
+                </div>
+                <Slider min={0} max={25} step={0.5} value={[inputs.csRate]} onValueChange={([v]) => set('csRate')(v)} />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <button
+                    onClick={() => set('csRate')(10)}
+                    style={{ fontSize: 10, color: inputs.csRate === 10 ? COLOR : 'var(--text-muted-c)', background: inputs.csRate === 10 ? `${COLOR}15` : 'transparent', border: `1px solid ${inputs.csRate === 10 ? COLOR + '40' : 'var(--card-dark-border)'}`, borderRadius: 5, padding: '3px 8px', cursor: 'pointer', transition: 'all 0.15s' }}
+                  >Fonctionnaire 10%</button>
+                  <button
+                    onClick={() => set('csRate')(22)}
+                    style={{ fontSize: 10, color: inputs.csRate === 22 ? COLOR : 'var(--text-muted-c)', background: inputs.csRate === 22 ? `${COLOR}15` : 'transparent', border: `1px solid ${inputs.csRate === 22 ? COLOR + '40' : 'var(--card-dark-border)'}`, borderRadius: 5, padding: '3px 8px', cursor: 'pointer', transition: 'all 0.15s' }}
+                  >Salarié 22%</button>
+                </div>
+                <div style={{ padding: '8px 10px', borderRadius: 8, background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)' }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>
+                    Cotisations : <span style={{ color: '#f87171', fontWeight: 600 }}>{fmt(r.cotisations)}</span>
+                    <span style={{ color: 'var(--text-subtle)', marginLeft: 4 }}>({fmt(r.cotisations / 12)}/mois)</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Séparateur */}
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Abattement */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Abattement <FieldTooltip text="Forfait 10% automatique. Frais réels si vos frais professionnels dépassent le forfait." />
+                </Label>
+                <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--card-dark-border)', height: 34 }}>
+                  <button
+                    onClick={() => set('useFraisReels')(false)}
+                    style={{ flex: 1, fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer', background: !inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: !inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}
+                  >Forfait 10%</button>
+                  <button
+                    onClick={() => set('useFraisReels')(true)}
+                    style={{ flex: 1, fontSize: 12, fontWeight: 600, border: 'none', borderLeft: '1px solid var(--card-dark-border)', cursor: 'pointer', background: inputs.useFraisReels ? `${COLOR}22` : 'transparent', color: inputs.useFraisReels ? COLOR : 'var(--text-muted-c)', transition: 'all 0.15s' }}
+                  >Frais réels</button>
+                </div>
+                {inputs.useFraisReels
+                  ? <Input type="number" value={inputs.fraisReels} onChange={e => set('fraisReels')(+e.target.value)} placeholder="Montant € de frais réels" style={{ height: 34, fontSize: 12 }} />
+                  : <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>
+                      Abattement forfaitaire : <span style={{ color: 'var(--text-em)', fontWeight: 600 }}>{fmt(r.abattement)}</span>
+                      {r.abattement === 14171 && <span style={{ color: '#fbbf24', marginLeft: 4 }}>⚠ plafonné</span>}
+                    </p>
+                }
+              </div>
+            </div>
           </div>
 
-          {/* Analysis */}
-          <div style={{
-            background: r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.06)' : r.analysis.score === 'moyen' ? 'rgba(241,192,134,0.06)' : 'rgba(248,113,113,0.08)',
-            border: `1px solid ${r.analysis.score === 'excellent' || r.analysis.score === 'bon' ? 'rgba(52,211,153,0.15)' : r.analysis.score === 'moyen' ? 'rgba(241,192,134,0.15)' : 'rgba(248,113,113,0.20)'}`,
-            borderRadius: 12, padding: '12px 14px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <score.icon style={{ width: 14, height: 14, color: score.color, flexShrink: 0 }} />
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Analyse — Pression fiscale {score.label}</p>
-            </div>
-            <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: 'var(--row-hover)', marginBottom: 6 }}>
-              <div style={{ background: 'hsl(160 84% 39%)', transition: 'width 0.5s', width: `${r.netIncome / inputs.gross * 100}%` }} />
-              <div style={{ background: 'hsl(0 72% 51%)', transition: 'width 0.5s', width: `${r.cotisations / inputs.gross * 100}%` }} />
-              <div style={{ background: '#fbbf24', transition: 'width 0.5s', width: `${r.ir / inputs.gross * 100}%` }} />
-            </div>
-            <div style={{ display: 'flex', gap: 14, marginBottom: 10, fontSize: 11, color: 'var(--text-muted-c)' }}>
-              {[['hsl(160 84% 39%)', `Net ${Math.round(r.netIncome / inputs.gross * 100)}%`], ['hsl(0 72% 51%)', `CS ${Math.round(r.cotisations / inputs.gross * 100)}%`], ['#fbbf24', `IR ${Math.round(r.ir / inputs.gross * 100)}%`]].map(([color, label]) => (
-                <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />{label}
-                </span>
-              ))}
-            </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.5, marginBottom: 10 }}>{r.analysis.message}</p>
-            <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Pistes d&apos;optimisation</p>
+          {/* Mini résumé */}
+          <div style={{ background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '12px 14px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: COLOR, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, margin: '0 0 8px' }}>Résumé fiscal</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {r.analysis.tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)' }}>
-                  <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--row-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted-c)' }}>{i + 1}</span>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
+              {[
+                { label: 'TMI', value: `${r.tmi}%`, color: r.tmi >= 41 ? '#f87171' : r.tmi >= 30 ? '#fbbf24' : '#34d399' },
+                { label: 'Taux moyen IR', value: fmtPct(r.avgRate), color: 'var(--text-em)' },
+                { label: 'Pression totale', value: fmtPct(r.effectivePressure), color: 'var(--text-em)' },
+                { label: 'Net mensuel', value: fmt(r.netIncome / 12), color: '#34d399' },
+              ].map(row => (
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: row.color, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: KPIs + détail + répartition */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%', overflowY: 'auto' }}>
+        {/* ── CENTER: brackets + KPIs + détail ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          {/* KPI grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Impôt total</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontVariantNumeric: 'tabular-nums' }}>{fmt(r.ir)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>IR barème progressif</p>
+          {/* KPI strip */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { label: 'Impôt total', value: fmt(r.ir), sub: `Taux moyen ${fmtPct(r.avgRate)}`, color: '#fbbf24' },
+              { label: 'Taux moyen', value: fmtPct(r.avgRate), sub: 'sur revenu imposable', color: 'var(--text-primary)' },
+              { label: 'TMI', value: `${r.tmi}%`, sub: 'Tranche marginale', color: r.tmi >= 41 ? '#f87171' : r.tmi >= 30 ? '#fbbf24' : '#34d399' },
+              { label: 'Revenu net', value: fmt(r.netIncome), sub: `${fmt(r.netIncome / 12)}/mois`, color: '#34d399' },
+            ].map((kpi, i) => (
+              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>{kpi.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', margin: '0 0 2px', letterSpacing: '-0.5px' }}>{kpi.value}</p>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', margin: 0 }}>{kpi.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tax brackets table */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Tranches d&apos;imposition 2024</p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Barème progressif · votre tranche active est mise en évidence</p>
             </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Taux moyen</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtPct(r.avgRate)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>sur revenu imposable</p>
-            </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>TMI</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{r.tmi}%</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>Tranche Marginale</p>
-            </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Revenu net</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(r.netIncome)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>{fmt(r.netIncome / 12)}/mois</p>
-            </div>
+            <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--card-dark-border)', background: 'var(--row-hover)' }}>
+                  {['Tranche', 'Taux', 'Base taxable', 'IR dû', 'Cumul'].map((h, i) => (
+                    <th key={h} style={{ textAlign: i === 0 ? 'left' : 'right', padding: '8px 14px', fontSize: 10, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {r.brackets.map((b, i) => {
+                  const cumul = r.brackets.slice(0, i + 1).reduce((s, x) => s + x.ir, 0)
+                  return (
+                    <tr key={i} style={{
+                      borderBottom: i < r.brackets.length - 1 ? '1px solid var(--section-border)' : 'none',
+                      background: b.active ? `${COLOR}0a` : 'transparent',
+                      transition: 'background 0.2s',
+                    }}>
+                      <td style={{ padding: '9px 14px', color: b.active ? 'var(--text-em)' : 'var(--text-muted-c)', fontFamily: 'monospace', fontSize: 11 }}>
+                        {b.active && <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: COLOR, marginRight: 6, verticalAlign: 'middle' }} />}
+                        {b.label}
+                      </td>
+                      <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: b.active ? 800 : 500, color: b.active ? COLOR : 'var(--text-muted-c)', fontSize: b.active ? 13 : 12 }}>{b.rate}%</td>
+                      <td style={{ padding: '9px 14px', textAlign: 'right', color: b.active ? 'var(--text-em)' : 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmt(b.taxable)}</td>
+                      <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: b.active ? 700 : 400, fontVariantNumeric: 'tabular-nums', color: b.active ? '#fbbf24' : 'var(--text-muted-c)' }}>{fmt(b.ir)}</td>
+                      <td style={{ padding: '9px 14px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: b.active ? 'var(--text-em)' : 'var(--text-subtle)' }}>{fmt(cumul)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
 
           {/* Détail du calcul */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)' }}>Détail du calcul</p>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>Décomposition étape par étape</p>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Détail du calcul</p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Décomposition étape par étape</p>
             </div>
-            <div style={{ padding: '0 14px' }}>
+            <div style={{ padding: '0 16px' }}>
               {[
                 { label: 'Revenu brut', value: fmt(inputs.gross), help: 'Point de départ' },
                 { label: `Cotisations (${inputs.csRate}%)`, value: `− ${fmt(r.cotisations)}`, variant: 'red', help: 'Charges salariales' },
@@ -290,44 +332,100 @@ function TaxPageInner() {
                 { label: `IR (${r.tmi}% TMI)`, value: `− ${fmt(r.ir)}`, variant: 'red', help: 'Barème progressif 2024' },
                 { label: 'Revenu net', value: fmt(r.netIncome), bold: true, big: true },
               ].map((row, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < 6 ? '1px solid var(--section-border)' : 'none' }}>
-                  <span style={{ fontSize: 12, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 500 : 400 }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: i < 6 ? '1px solid var(--section-border)' : 'none' }}>
+                  <span style={{ fontSize: 13, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 500 : 400, display: 'flex', alignItems: 'center', gap: 4 }}>
                     {row.label}{row.help && <FieldTooltip text={row.help} />}
                   </span>
-                  <span style={{ fontSize: row.big ? 14 : 12, fontWeight: row.bold ? 600 : 500, fontVariantNumeric: 'tabular-nums', color: row.big ? '#34d399' : row.variant === 'red' ? '#f87171' : row.variant === 'green' ? '#34d399' : 'var(--text-em)' }}>
+                  <span style={{ fontSize: row.big ? 15 : 13, fontWeight: row.bold ? 700 : 500, fontVariantNumeric: 'tabular-nums', color: row.big ? '#34d399' : row.variant === 'red' ? '#f87171' : row.variant === 'green' ? '#34d399' : 'var(--text-em)' }}>
                     {row.value}
                   </span>
                 </div>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Répartition */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'center' }}>
-            <div>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Répartition — où va chaque euro</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {pieData.map((e, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: e.fill, flexShrink: 0, display: 'inline-block' }} />
-                      <span style={{ color: 'var(--text-muted-c)' }}>{e.name}</span>
+        {/* ── RIGHT: analyse + tips + répartition ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Analyse pression fiscale */}
+          <div style={{ background: scoreBg, border: `1px solid ${scoreBorder}`, borderRadius: 14, padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 7, background: `${score.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <score.icon style={{ width: 14, height: 14, color: score.color }} />
+              </div>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Analyse fiscale</p>
+                <p style={{ fontSize: 11, color: score.color, margin: 0 }}>Pression {score.label}</p>
+              </div>
+            </div>
+
+            {/* Barre répartition */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', height: 10, borderRadius: 5, overflow: 'hidden', background: 'var(--row-hover)', marginBottom: 8 }}>
+                <div style={{ background: '#34d399', transition: 'width 0.5s', width: `${r.netIncome / inputs.gross * 100}%` }} />
+                <div style={{ background: '#f87171', transition: 'width 0.5s', width: `${r.cotisations / inputs.gross * 100}%` }} />
+                <div style={{ background: '#fbbf24', transition: 'width 0.5s', width: `${r.ir / inputs.gross * 100}%` }} />
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                {[['#34d399', `Net ${Math.round(r.netIncome / inputs.gross * 100)}%`], ['#f87171', `CS ${Math.round(r.cotisations / inputs.gross * 100)}%`], ['#fbbf24', `IR ${Math.round(r.ir / inputs.gross * 100)}%`]].map(([color, label]) => (
+                  <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--text-muted-c)' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />{label}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>{r.analysis.message}</p>
+          </div>
+
+          {/* Répartition donut */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: '0 0 12px' }}>Où va chaque euro brut</p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <ResponsiveContainer width="100%" height={130}>
+                <PieChart>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={38} outerRadius={58} dataKey="value" paddingAngle={3}>
+                    {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', marginTop: 4 }}>
+                {pieData.map((e) => (
+                  <div key={e.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: e.fill, flexShrink: 0, display: 'inline-block' }} />
+                      <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{e.name}</span>
                     </div>
-                    <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{fmt(e.value)}</span>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(e.value)}</span>
+                      <span style={{ fontSize: 10, color: 'var(--text-subtle)', marginLeft: 5 }}>{Math.round(e.value / inputs.gross * 100)}%</span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={110}>
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={32} outerRadius={52} dataKey="value" paddingAngle={2}>
-                  {pieData.map((e, i) => <Cell key={i} fill={e.fill} strokeWidth={0} />)}
-                </Pie>
-                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-              </PieChart>
-            </ResponsiveContainer>
+          </div>
+
+          {/* Pistes d'optimisation */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Pistes d&apos;optimisation</p>
+            </div>
+            <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {r.analysis.tips.map((tip, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--card-dark-border)' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: COLOR }}>{i + 1}</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   )

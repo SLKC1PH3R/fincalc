@@ -1,12 +1,12 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Sankey, Tooltip, ResponsiveContainer } from 'recharts'
+import { Sankey, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SaveSimulation } from '@/components/SaveSimulation'
 import { fmt, fmtPct } from '@/lib/utils'
-import { Download, Plus, X, TrendingUp, Minus, AlertCircle, CheckCircle2, RotateCcw, Percent } from 'lucide-react'
+import { Download, Plus, X, TrendingUp, Minus, AlertCircle, CheckCircle2, RotateCcw, Percent, Settings2, ArrowRight } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { FrenchAverageWidget } from '@/components/FrenchAverageWidget'
 
@@ -57,6 +57,8 @@ const CAT_PALETTE = [
   '#34d399', '#f472b6', '#c084fc', '#60a5fa',
   '#2dd4bf', '#facc15', '#e879f9', '#a78bfa', '#f87171',
 ]
+
+const COLOR = '#34d399'
 
 interface SankeyNode { name: string; color: string }
 
@@ -175,8 +177,6 @@ function ItemRow({ item, onChange, onRemove, placeholder }: {
   )
 }
 
-const COLOR = '#818cf8'
-
 function SavingsRatePageInner() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -252,28 +252,27 @@ function SavingsRatePageInner() {
     setDepenseCats(DEFAULT_DEPENSES)
   }
 
-  // Panel card helper
   const panelStyle = {
     background: 'var(--card-dark)',
     border: '1px solid var(--card-dark-border)',
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 14,
+    padding: 14,
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: 12,
+    gap: 10,
   }
-  const panelHeaderStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  }
+
+  const donutData = [
+    { name: 'Épargne/invest.', value: totalInvest, color: '#34d399' },
+    { name: 'Dépenses', value: totalDepense, color: '#fb923c' },
+    { name: 'Balance libre', value: Math.max(balance, 0), color: '#818cf8' },
+  ].filter(d => d.value > 0)
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1400, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ padding: '20px 24px 48px' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 10, flexShrink: 0 }}>
+      <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
@@ -290,86 +289,41 @@ function SavingsRatePageInner() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
-          <Button variant="outline" size="sm" onClick={() => printReport({
-            title: "Taux d'épargne",
-            subtitle: `Taux : ${savingsRate.toFixed(0)}% — Balance : ${fmt(balance)}/mois`,
-            kpis: [
-              { label: "Taux d'épargne", value: fmtPct(savingsRate), highlight: true, sub: `${fmt(totalInvest)} investis/mois` },
-              { label: 'Revenus', value: fmt(totalRevenu) },
-              { label: 'Investissements', value: fmt(totalInvest) },
-              { label: 'Dépenses', value: fmt(totalDepense) },
-            ],
-            sections: [],
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
-          </Button>
-          <SaveSimulation
-            type="savings-rate"
-            name={`Épargne ${savingsRate.toFixed(0)}% — ${fmt(balance)}/mois`}
-            inputs={{ revenus, investCats, depenseCats } as unknown as Record<string, unknown>}
-            results={{ savingsRate, totalRevenu, totalInvest, totalDepense, balance } as unknown as Record<string, unknown>}
-          />
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
-          </Button>
+            <Button variant="outline" size="sm" onClick={() => printReport({
+              title: "Taux d'épargne",
+              subtitle: `Taux : ${savingsRate.toFixed(0)}% — Balance : ${fmt(balance)}/mois`,
+              kpis: [
+                { label: "Taux d'épargne", value: fmtPct(savingsRate), highlight: true, sub: `${fmt(totalInvest)} investis/mois` },
+                { label: 'Revenus', value: fmt(totalRevenu) },
+                { label: 'Investissements', value: fmt(totalInvest) },
+                { label: 'Dépenses', value: fmt(totalDepense) },
+              ],
+              sections: [],
+            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+            </Button>
+            <SaveSimulation
+              type="savings-rate"
+              name={`Épargne ${savingsRate.toFixed(0)}% — ${fmt(balance)}/mois`}
+              inputs={{ revenus, investCats, depenseCats } as unknown as Record<string, unknown>}
+              results={{ savingsRate, totalRevenu, totalInvest, totalDepense, balance } as unknown as Record<string, unknown>}
+            />
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              <RotateCcw className="h-3.5 w-3.5 mr-1.5" />Réinitialiser
+            </Button>
           </div>
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
-      {/* KPI grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginBottom: 10 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Taux d&apos;épargne</p>
-          <p style={{ fontSize: 22, fontWeight: 800, color: kpiAccentColor, fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{savingsRate.toFixed(1)}%</p>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>{fmt(totalInvest)} investis/mois</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Revenus mensuels</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalRevenu)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Investissements</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: '#34d399', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalInvest)}</p>
-        </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Dépenses</p>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</p>
-        </div>
-      </div>
+      {/* 3-column grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
-      {/* Progress bar visual */}
-      {totalRevenu > 0 && (
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 18px', marginBottom: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Balance mensuelle</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: balance >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{fmt(balance)}</span>
-          </div>
-          <div style={{ height: 8, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
-            <div style={{ height: '100%', background: '#34d399', width: `${Math.min(totalInvest / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
-            <div style={{ height: '100%', background: '#fb923c', width: `${Math.min(totalDepense / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
-          </div>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-            <span style={{ fontSize: 11, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#34d399', display: 'inline-block' }} />
-              Épargne {fmtPct(totalRevenu > 0 ? totalInvest / totalRevenu * 100 : 0)}
-            </span>
-            <span style={{ fontSize: 11, color: '#fb923c', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#fb923c', display: 'inline-block' }} />
-              Dépenses {fmtPct(totalRevenu > 0 ? totalDepense / totalRevenu * 100 : 0)}
-            </span>
-          </div>
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
-
-        {/* ── Left: input panels ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* LEFT — sticky input panels */}
+        <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Revenus */}
           <div style={panelStyle}>
-            <div style={panelHeaderStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Revenus</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: INCOME_COLOR, fontVariantNumeric: 'tabular-nums' }}>{fmt(totalRevenu)}</span>
             </div>
@@ -394,7 +348,7 @@ function SavingsRatePageInner() {
 
           {/* Investissements */}
           <div style={panelStyle}>
-            <div style={panelHeaderStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Investissements</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalInvest)}</span>
             </div>
@@ -433,7 +387,7 @@ function SavingsRatePageInner() {
                     onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
                   >
-                    <Plus style={{ width: 12, height: 12 }} />Ajouter un investissement
+                    <Plus style={{ width: 12, height: 12 }} />Ajouter
                   </button>
                 </div>
               )
@@ -444,13 +398,13 @@ function SavingsRatePageInner() {
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
             >
-              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie d&apos;investissement
+              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie
             </button>
           </div>
 
           {/* Dépenses */}
           <div style={panelStyle}>
-            <div style={panelHeaderStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Dépenses</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</span>
             </div>
@@ -489,7 +443,7 @@ function SavingsRatePageInner() {
                     onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
                   >
-                    <Plus style={{ width: 12, height: 12 }} />Ajouter une dépense
+                    <Plus style={{ width: 12, height: 12 }} />Ajouter
                   </button>
                 </div>
               )
@@ -500,18 +454,57 @@ function SavingsRatePageInner() {
               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
             >
-              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie de dépense
+              <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie
             </button>
           </div>
-
         </div>
 
-        {/* ── Right: Sankey + analysis ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* CENTER — KPIs + barre + Sankey + table */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* KPI 4-grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { label: "Taux d'épargne", value: `${savingsRate.toFixed(1)}%`, sub: `${fmt(totalInvest)} investis/mois`, color: kpiAccentColor },
+              { label: 'Revenus', value: fmt(totalRevenu), sub: 'revenus mensuels', color: INCOME_COLOR },
+              { label: 'Dépenses courantes', value: fmt(totalDepense), sub: `${totalRevenu > 0 ? (totalDepense / totalRevenu * 100).toFixed(1) : 0}% des revenus`, color: '#fb923c' },
+              { label: 'Surplus / Balance', value: fmt(balance), sub: balance >= 0 ? 'épargne disponible' : 'déficit mensuel', color: balance >= 0 ? '#34d399' : '#ef4444' },
+            ].map((k, i) => (
+              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{k.value}</p>
+                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>{k.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Barre de progression */}
+          {totalRevenu > 0 && (
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Répartition mensuelle</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: balance >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{fmt(balance)} balance</span>
+              </div>
+              <div style={{ height: 10, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
+                <div style={{ height: '100%', background: '#34d399', width: `${Math.min(totalInvest / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
+                <div style={{ height: '100%', background: '#fb923c', width: `${Math.min(totalDepense / totalRevenu * 100, 100)}%`, transition: 'width 0.4s' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+                <span style={{ fontSize: 11, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#34d399', display: 'inline-block' }} />
+                  Épargne {fmtPct(totalRevenu > 0 ? totalInvest / totalRevenu * 100 : 0)}
+                </span>
+                <span style={{ fontSize: 11, color: '#fb923c', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 9999, background: '#fb923c', display: 'inline-block' }} />
+                  Dépenses {fmtPct(totalRevenu > 0 ? totalDepense / totalRevenu * 100 : 0)}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Sankey chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Flux financier mensuel</p>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 10 }}>Flux financier mensuel</p>
             {!mounted ? (
               <div style={{ height: 280 }} />
             ) : sankeyData.nodes.length > 0 ? (
@@ -540,33 +533,124 @@ function SavingsRatePageInner() {
             )}
           </div>
 
-          {/* Analysis */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 12, padding: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          {/* Table postes par catégorie */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Détail par poste</p>
+            </div>
+            {[...investCats, ...depenseCats].map((cat, ci) => {
+              const catTotal = cat.items.reduce((s, i) => s + i.value, 0)
+              if (catTotal <= 0) return null
+              return (
+                <div key={cat.id}>
+                  <div style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--section-border)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{cat.name}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(catTotal)}</span>
+                  </div>
+                  {cat.items.filter(i => i.value > 0).sort((a, b) => b.value - a.value).map((item, ii, arr) => (
+                    <div key={item.id} style={{ padding: '7px 14px 7px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: ii < arr.length - 1 ? '1px solid var(--section-border)' : ci < [...investCats, ...depenseCats].length - 1 ? '1px solid var(--card-dark-border)' : undefined }}>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{item.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(item.value)}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* RIGHT — analyse + score + donut + conseils */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Score analyse */}
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
-                Analyse — Taux d&apos;épargne {scoreConf.label}
+                Score épargne — {scoreConf.label}
               </p>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 16 }}>{scoreConf.msg}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 12 }}>{scoreConf.msg}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
               {[
-                { label: 'Balance mensuelle', value: fmt(balance), color: balance >= 0 ? '#34d399' : '#ef4444' },
-                { label: '% revenus épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'var(--text-primary)' },
-                { label: '% revenus dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'var(--text-primary)' },
+                { label: 'Balance', value: fmt(balance), color: balance >= 0 ? '#34d399' : '#ef4444' },
+                { label: '% épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'var(--text-primary)' },
+                { label: '% dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'var(--text-primary)' },
               ].map((m, i) => (
-                <div key={i} style={{ borderRadius: 10, padding: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4 }}>{m.label}</p>
-                  <p style={{ fontSize: 15, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.color }}>{m.value}</p>
+                <div key={i} style={{ borderRadius: 10, padding: '10px 8px', textAlign: 'center', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 4 }}>{m.label}</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.color }}>{m.value}</p>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Donut répartition */}
+          {donutData.length > 0 && (
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>Répartition des revenus</p>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PieChart width={130} height={130}>
+                  <Pie data={donutData} cx={61} cy={61} innerRadius={34} outerRadius={58} dataKey="value" strokeWidth={0}>
+                    {donutData.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.85} />)}
+                  </Pie>
+                </PieChart>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+                {donutData.map((d, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 9999, background: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Objectifs recommandés */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Objectifs recommandés</p>
+            {[
+              { target: 10, label: 'Minimum conseillé', color: '#fbbf24' },
+              { target: 20, label: 'Sain', color: '#60a5fa' },
+              { target: 30, label: 'Excellent (FIRE)', color: '#34d399' },
+            ].map((obj, i) => (
+              <div key={i} style={{ marginBottom: i < 2 ? 10 : 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{obj.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: obj.color }}>{obj.target}%</span>
+                </div>
+                <div style={{ height: 5, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: obj.color, width: `${Math.min(savingsRate / obj.target * 100, 100)}%`, transition: 'width 0.4s', opacity: 0.8 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* French average widget */}
           <FrenchAverageWidget tauxEpargne={savingsRate} label="Votre taux" />
 
+          {/* Conseils */}
+          <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { color: COLOR, text: 'Automatisez votre épargne dès le 1er du mois — avant les dépenses.' },
+                { color: '#60a5fa', text: 'Un taux de 20% ou plus accélère significativement votre liberté financière (FIRE).' },
+                { color: '#fbbf24', text: 'Identifiez les 3 postes de dépenses les plus élevés — souvent logement, transport, alimentation.' },
+                { color: '#f472b6', text: 'Priorisez PEA, AV et PER pour optimiser la fiscalité de votre épargne.' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   )

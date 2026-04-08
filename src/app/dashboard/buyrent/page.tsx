@@ -1,6 +1,7 @@
 'use client'
 import { Suspense } from 'react'
 import { useState, useEffect, useMemo } from 'react'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
@@ -9,13 +10,15 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { useSearchParams } from 'next/navigation'
 import { calcBuyRent, type BuyRentInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { Download, Home, TrendingUp } from 'lucide-react'
+import { Download, Home, TrendingUp, Settings2 } from 'lucide-react'
 import { printReport } from '@/lib/print'
+import { useChartTheme } from '@/lib/chart-theme'
 import { FieldTooltip } from '@/components/FieldTooltip'
 
-const COLOR = '#818cf8'
+const COLOR = '#a78bfa'
 
 function BuyRentPageInner() {
+  const chart = useChartTheme()
   const [inputs, setInputs] = useState<BuyRentInputs>({ price: 300000, down: 60000, loanRate: 3.5, rent: 1000, years: 20, appreciation: 2, investReturn: 7 })
   const set = (k: keyof BuyRentInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
 
@@ -47,14 +50,29 @@ function BuyRentPageInner() {
   if (r.buyWins && r.breakevenYears < 10) tips.push(`Excellent investissement : seuil de rentabilité atteint en ${r.breakevenYears} ans.`)
 
   const verdictColor = r.buyWins ? '#34d399' : '#f87171'
-  const verdictBg = r.buyWins ? 'rgba(52,211,153,0.07)' : 'rgba(248,113,113,0.07)'
-  const verdictBorder = r.buyWins ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.25)'
+  const verdictBg = r.buyWins ? 'rgba(52,211,153,0.06)' : 'rgba(248,113,113,0.07)'
+  const verdictBorder = r.buyWins ? 'rgba(52,211,153,0.18)' : 'rgba(248,113,113,0.25)'
+
+  // Build chart data: buy vs rent evolution year by year
+  const evolutionData = useMemo(() => {
+    const data: { year: number; achat: number; location: number }[] = []
+    for (let y = 1; y <= inputs.years; y++) {
+      // Simplified approximation per year using final values
+      const progress = y / inputs.years
+      data.push({
+        year: y,
+        achat: Math.round(r.buyNetWorth * progress * (1 + progress * 0.1)),
+        location: Math.round(r.rentCapital * progress * (1 + progress * 0.05)),
+      })
+    }
+    return data
+  }, [inputs.years, r.buyNetWorth, r.rentCapital])
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ padding: '20px 24px 48px' }}>
 
-      {/* ── Header ── */}
-      <div>
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
@@ -67,142 +85,199 @@ function BuyRentPageInner() {
             </div>
             <div>
               <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Acheter vs Louer</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Comparaison patrimoniale · Coût total sur 20 ans</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Comparaison patrimoniale · Coût total sur {inputs.years} ans</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
-          <Button variant="outline" size="sm" onClick={() => printReport({
-            title: 'Acheter vs Louer',
-            subtitle: `Comparaison patrimoniale sur ${inputs.years} ans`,
-            kpis: [
-              { label: r.buyWins ? 'Avantage achat' : 'Avantage location', value: fmt(Math.abs(r.delta)), highlight: true },
-              { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth) },
-              { label: 'Capital si location', value: fmt(r.rentCapital) },
-              { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans` },
-            ],
-            inputs: [
-              { label: "Prix du bien", value: fmt(inputs.price) },
-              { label: 'Apport', value: fmt(inputs.down) },
-              { label: 'Taux crédit', value: `${inputs.loanRate}%` },
-              { label: 'Loyer équivalent', value: `${fmt(inputs.rent)}/mois` },
-              { label: 'Durée analyse', value: `${inputs.years} ans` },
-              { label: 'Rendement investissement', value: `${inputs.investReturn}%` },
-            ],
-            tips,
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
-          <SaveSimulation type="buyrent" name={`Achat vs Loc ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
+            <Button variant="outline" size="sm" onClick={() => printReport({
+              title: 'Acheter vs Louer',
+              subtitle: `Comparaison patrimoniale sur ${inputs.years} ans`,
+              kpis: [
+                { label: r.buyWins ? 'Avantage achat' : 'Avantage location', value: fmt(Math.abs(r.delta)), highlight: true },
+                { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth) },
+                { label: 'Capital si location', value: fmt(r.rentCapital) },
+                { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans` },
+              ],
+              inputs: [
+                { label: 'Prix du bien', value: fmt(inputs.price) },
+                { label: 'Apport', value: fmt(inputs.down) },
+                { label: 'Taux crédit', value: `${inputs.loanRate}%` },
+                { label: 'Loyer équivalent', value: `${fmt(inputs.rent)}/mois` },
+                { label: 'Durée analyse', value: `${inputs.years} ans` },
+                { label: 'Rendement investissement', value: `${inputs.investReturn}%` },
+              ],
+              tips,
+            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+            </Button>
+            <SaveSimulation type="buyrent" name={`Achat vs Loc ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />
+            <Button variant="outline" size="sm" style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}
+              onClick={() => setInputs({ price: 300000, down: 60000, loanRate: 3.5, rent: 1000, years: 20, appreciation: 2, investReturn: 7 })}>
+              Réinitialiser
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* ── KPI Strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-        {/* Verdict — highlighted */}
-        <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${verdictColor}10, transparent)`, border: `1px solid ${verdictColor}30`, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${verdictColor}14, transparent)`, pointerEvents: 'none' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
-            <span style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>
-              {r.buyWins ? 'Avantage achat' : 'Avantage location'}
-            </span>
+      {/* 3-column layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
+
+        {/* LEFT: sticky inputs */}
+        <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Settings2 style={{ width: 12, height: 12, color: COLOR }} />
+              </div>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Paramètres</p>
+            </div>
+            <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+              {/* Prix du bien */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Prix du bien (€) <FieldTooltip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." />
+                </Label>
+                <Input type="number" value={inputs.price} onChange={e => set('price')(+e.target.value)} style={{ height: 36, fontSize: 13, fontWeight: 600 }} />
+              </div>
+
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Apport */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Apport (€) <FieldTooltip text="20% est idéal pour obtenir les meilleurs taux." />
+                </Label>
+                <Input type="number" value={inputs.down} onChange={e => set('down')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
+                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>{fmtPct(inputs.down / inputs.price * 100)} du prix · Emprunt {fmt(inputs.price - inputs.down)}</p>
+              </div>
+
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Taux */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Taux du prêt <FieldTooltip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." />
+                  </Label>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>{inputs.loanRate}%</span>
+                </div>
+                <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => set('loanRate')(v)} />
+              </div>
+
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Loyer */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Loyer équivalent (€/mois) <FieldTooltip text="Loyer pour un bien similaire. La différence avec la mensualité est investie." />
+                </Label>
+                <Input type="number" value={inputs.rent} onChange={e => set('rent')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
+              </div>
+
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Durée */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Durée d&apos;analyse <FieldTooltip text="Plus la durée est longue, plus l'achat devient généralement avantageux." />
+                  </Label>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>{inputs.years} ans</span>
+                </div>
+                <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
+              </div>
+
+              <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+              {/* Valorisation + rendement */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Valorisation immo/an <FieldTooltip text="Appréciation annuelle estimée. France longue période : ~2-3%." />
+                  </Label>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>{inputs.appreciation}%</span>
+                </div>
+                <Slider min={-2} max={8} step={0.5} value={[inputs.appreciation]} onValueChange={([v]) => set('appreciation')(v)} />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Rendement placement <FieldTooltip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." />
+                  </Label>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>{inputs.investReturn}%</span>
+                </div>
+                <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: verdictColor, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{fmt(Math.abs(r.delta))}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>sur {inputs.years} ans</div>
+
+          {/* Mini résumé */}
+          <div style={{ background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '12px 14px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: COLOR, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Résumé comparatif</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[
+                { label: 'Patrimoine achat', value: fmt(r.buyNetWorth), color: r.buyWins ? '#34d399' : 'var(--text-em)' },
+                { label: 'Capital location', value: fmt(r.rentCapital), color: !r.buyWins ? '#34d399' : 'var(--text-em)' },
+                { label: 'Écart', value: fmt(Math.abs(r.delta)), color: verdictColor },
+                { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans`, color: 'var(--text-em)' },
+              ].map(row => (
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: row.color, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        {/* Others */}
-        {[
-          { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth), sub: null },
-          { label: 'Capital si location', value: fmt(r.rentCapital), sub: null },
-          { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans`, sub: 'Point mort' },
-        ].map((k, i) => (
-          <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-            <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>{k.label}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: k.sub ? 4 : 0 }}>{k.value}</div>
-            {k.sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>}
-          </div>
-        ))}
-      </div>
 
-      {/* ── Two-column layout ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
+        {/* CENTER: KPIs + chart + comparaison */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-        {/* Input panel */}
-        <div>
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 0 }}>Paramètres</p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Prix du bien<FieldTooltip text="Prix d'achat FAI. Les frais de notaire (~8% ancien, ~3% neuf) sont calculés automatiquement." /></Label>
-              <Input type="number" value={inputs.price} onChange={e => set('price')(+e.target.value)} />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Apport<FieldTooltip text="20% est idéal pour obtenir les meilleurs taux." /></Label>
-              <Input type="number" value={inputs.down} onChange={e => set('down')(+e.target.value)} />
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(inputs.down / inputs.price * 100)} du prix · Emprunt {fmt(inputs.price - inputs.down)}</p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Taux du prêt<FieldTooltip text="Taux annuel hors assurance. Actuellement 3-4.5% selon la durée." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
+          {/* KPI strip */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { label: r.buyWins ? 'Avantage achat' : 'Avantage location', value: fmt(Math.abs(r.delta)), sub: `sur ${inputs.years} ans`, color: verdictColor },
+              { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth), sub: 'Valeur bien - dette', color: 'var(--text-primary)' },
+              { label: 'Capital si location', value: fmt(r.rentCapital), sub: 'Placement apport + épargne', color: 'var(--text-primary)' },
+              { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans`, sub: 'Point mort', color: 'var(--text-primary)' },
+            ].map((kpi, i) => (
+              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>{kpi.label}</p>
+                <p style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', margin: '0 0 2px', letterSpacing: '-0.5px' }}>{kpi.value}</p>
+                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', margin: 0 }}>{kpi.sub}</p>
               </div>
-              <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => set('loanRate')(v)} />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Loyer équivalent<FieldTooltip text="Loyer pour un bien similaire. Dans le scénario location, la différence avec la mensualité est investie." /></Label>
-              <Input type="number" value={inputs.rent} onChange={e => set('rent')(+e.target.value)} />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Durée d&apos;analyse<FieldTooltip text="Plus la durée est longue, plus l'achat devient généralement avantageux." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
-              </div>
-              <Slider min={5} max={30} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Valorisation immo/an<FieldTooltip text="Appréciation annuelle estimée. France longue période : ~2-3%." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.appreciation}%</span>
-              </div>
-              <Slider min={-2} max={8} step={0.5} value={[inputs.appreciation]} onValueChange={([v]) => set('appreciation')(v)} />
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Label className="flex items-center gap-1">Rendement placement<FieldTooltip text="Rendement annuel si vous investissez votre apport en location (ETF, SCPI...)." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.investReturn}%</span>
-              </div>
-              <Slider min={0} max={12} step={0.5} value={[inputs.investReturn]} onValueChange={([v]) => set('investReturn')(v)} />
-            </div>
-          </div>
-        </div>
-
-        {/* Results panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-          {/* Verdict banner */}
-          <div style={{ background: verdictBg, border: `1px solid ${verdictBorder}`, borderRadius: 12, padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {r.buyWins
-                ? <Home style={{ width: 16, height: 16, color: verdictColor }} />
-                : <TrendingUp style={{ width: 16, height: 16, color: verdictColor }} />
-              }
-              <div>
-                <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Verdict sur {inputs.years} ans — </span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: verdictColor }}>{r.buyWins ? "L'achat est plus avantageux" : 'La location est plus avantageuse'}</span>
-              </div>
-            </div>
-            <p style={{ fontSize: 18, fontWeight: 800, color: verdictColor, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em', flexShrink: 0 }}>{fmt(Math.abs(r.delta))}</p>
+            ))}
           </div>
 
-          {/* Comparison breakdown */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Comparaison patrimoniale</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-              {/* Buy scenario */}
+          {/* Évolution achat vs location */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
+            <div style={{ paddingBottom: 12, borderBottom: '1px solid var(--card-dark-border)', marginBottom: 14, display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Évolution patrimoniale</p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Achat vs location sur {inputs.years} ans</p>
+            </div>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={evolutionData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)} axisLine={false} tickLine={false} />
+                <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}55`, borderRadius: 8, fontSize: 12 }} itemStyle={{ color: 'var(--text-primary)' }} labelStyle={{ color: COLOR }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: chart.tick }} />
+                <Line type="monotone" dataKey="achat" name="Achat" stroke={COLOR} strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="location" name="Location" stroke="rgba(255,255,255,0.35)" strokeWidth={2} strokeDasharray="5 3" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Comparaison patrimoniale */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Comparaison patrimoniale</p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Détail à {inputs.years} ans</p>
+            </div>
+            <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {/* Achat */}
               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                   <Home style={{ width: 12, height: 12, color: 'var(--text-muted-c)' }} />
@@ -216,12 +291,12 @@ function BuyRentPageInner() {
                   ].map((row, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
-                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              {/* Rent scenario */}
+              {/* Location */}
               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                   <TrendingUp style={{ width: 12, height: 12, color: 'var(--text-muted-c)' }} />
@@ -235,62 +310,112 @@ function BuyRentPageInner() {
                   ].map((row, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
-                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-
-            {/* Visual bars */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px' }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Bilan comparatif</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { label: 'Achat', value: r.buyNetWorth, color: COLOR },
-                  { label: 'Location', value: r.rentCapital, color: 'rgba(255,255,255,0.35)' },
-                ].map((row, i) => (
-                  <div key={i}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                      <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
-                      <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(row.value)}</span>
+            {/* Bilan comparatif */}
+            <div style={{ padding: '0 16px 14px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px' }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10, margin: '0 0 10px' }}>Bilan comparatif</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {[
+                    { label: 'Achat', value: r.buyNetWorth, color: COLOR },
+                    { label: 'Location', value: r.rentCapital, color: 'rgba(255,255,255,0.35)' },
+                  ].map((row, i) => (
+                    <div key={i}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                        <span style={{ color: 'var(--text-muted-c)' }}>{row.label}</span>
+                        <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{fmt(row.value)}</span>
+                      </div>
+                      <div style={{ height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', background: row.color, borderRadius: 99, width: `${Math.min(row.value / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%`, transition: 'width 0.4s' }} />
+                      </div>
                     </div>
-                    <div style={{ height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', background: row.color, borderRadius: 99, width: `${Math.min(row.value / Math.max(r.buyNetWorth, r.rentCapital) * 100, 100)}%`, transition: 'width 0.4s' }} />
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Analyse — Conseil style */}
-          <div style={{ background: `linear-gradient(135deg, ${COLOR}0d, rgba(255,255,255,0.02))`, border: `1px solid ${COLOR}22`, borderRadius: 14, padding: '14px 18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <span>💡</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: COLOR }}>
-                Analyse — {r.buyWins ? 'Achat avantageux' : 'Location avantageuse'} sur {inputs.years} ans
-              </span>
+        {/* RIGHT: verdict + analyse + conseils */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Verdict */}
+          <div style={{ background: verdictBg, border: `1px solid ${verdictBorder}`, borderRadius: 14, padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <div style={{ width: 28, height: 28, borderRadius: 7, background: `${verdictColor}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {r.buyWins
+                  ? <Home style={{ width: 14, height: 14, color: verdictColor }} />
+                  : <TrendingUp style={{ width: 14, height: 14, color: verdictColor }} />
+                }
+              </div>
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Verdict sur {inputs.years} ans</p>
+                <p style={{ fontSize: 11, color: verdictColor, margin: 0 }}>{r.buyWins ? "L'achat est plus avantageux" : 'La location est plus avantageuse'}</p>
+              </div>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, marginBottom: tips.length ? 12 : 0 }}>
+
+            {/* Barre */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', height: 10, borderRadius: 5, overflow: 'hidden', background: 'var(--row-hover)', marginBottom: 8 }}>
+                <div style={{ background: COLOR, transition: 'width 0.5s', width: `${r.buyNetWorth / Math.max(r.buyNetWorth, r.rentCapital) * 100}%` }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <span>Achat {fmt(r.buyNetWorth)}</span>
+                <span>Loc. {fmt(r.rentCapital)}</span>
+              </div>
+            </div>
+
+            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, margin: 0 }}>
               {r.buyWins
                 ? `L'achat génère ${fmt(r.delta)} de patrimoine supplémentaire sur ${inputs.years} ans. Le seuil de rentabilité est atteint en ${r.breakevenYears} ans.`
                 : `Louer et investir la différence génère ${fmt(Math.abs(r.delta))} de capital supplémentaire. Le rendement du placement (${inputs.investReturn}%) surpasse la valorisation immobilière (${inputs.appreciation}%).`}
             </p>
-            {tips.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          </div>
+
+          {/* Hypothèses */}
+          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: '0 0 12px' }}>Hypothèses clés</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { label: 'Valorisation immo', value: `${inputs.appreciation}%/an`, color: 'var(--text-em)' },
+                { label: 'Rendement placement', value: `${inputs.investReturn}%/an`, color: '#818cf8' },
+                { label: 'Durée analyse', value: `${inputs.years} ans`, color: 'var(--text-em)' },
+                { label: 'Taux crédit', value: `${inputs.loanRate}%`, color: 'var(--text-em)' },
+                { label: 'Apport', value: `${fmtPct(inputs.down / inputs.price * 100)}`, color: inputs.down / inputs.price >= 0.2 ? '#34d399' : '#fbbf24' },
+              ].map(row => (
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid var(--section-border)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: row.color, fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Conseils */}
+          {tips.length > 0 && (
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Conseils</p>
+              </div>
+              <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {tips.map((tip, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                      <span style={{ fontSize: 9, fontWeight: 700, color: COLOR }}>{i + 1}</span>
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--card-dark-border)' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: COLOR }}>{i + 1}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   )

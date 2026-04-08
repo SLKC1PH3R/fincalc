@@ -1,7 +1,7 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
@@ -17,7 +17,7 @@ import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
 import { FieldTooltip } from '@/components/FieldTooltip'
 
-const COLOR = '#38bdf8'
+const COLOR = '#60a5fa'
 
 function DCAPageInner() {
   const chart = useChartTheme()
@@ -69,11 +69,34 @@ function DCAPageInner() {
     'Le DCA est surtout une stratégie psychologique : il élimine le stress du timing de marché et favorise la discipline sur le long terme.',
   ]
 
+  // Table annuelle (jalons)
+  const annualTable = useMemo(() => {
+    return r.chartData.filter((_: any, i: number) => i % 12 === 0).map((d: any) => ({
+      year: Math.round(d.month / 12),
+      invested: d.invested,
+      value: d.value,
+      gain: d.value - d.invested,
+    }))
+  }, [r])
+
+  // Donut versements vs intérêts
+  const donutData = [
+    { name: 'Capital versé', value: r.totalInvested, color: COLOR },
+    { name: 'Intérêts', value: Math.max(r.gain, 0), color: '#34d399' },
+  ]
+
+  const guidedSteps: GuidedStep[] = [
+    { question: 'Combien investissez-vous chaque mois ?', hint: 'Votre versement régulier, quel que soit le prix du marché.', ref: 'Recommandé : 10-20% du salaire net.', suffix: '€/mois', value: inputs.monthly, onChange: v => set('monthly')(v) },
+    { type: 'slider', question: 'Sur quelle durée voulez-vous investir ?', hint: 'Plus l\'horizon est long, plus le DCA lisse les variations.', ref: 'Sur 20 ans à 8%, 500 €/mois → ~295 000 €.', suffix: ' ans', value: inputs.years, onChange: v => set('years')(v), min: 1, max: 40, stepSize: 1, displayValue: v => `${v} ans` },
+    { type: 'slider', question: 'Quel rendement annuel visez-vous ?', hint: 'Rendement moyen attendu. ETF World : ~8%/an historique.', ref: 'MSCI World : ~8 %/an depuis 1970. Soyez prudent : une hypothèse à 5-6% vous réserve de bonnes surprises.', suffix: '%', value: inputs.targetRate, onChange: v => set('targetRate')(v), min: 1, max: 15, stepSize: 0.5 },
+    { question: 'Avez-vous déjà un capital de départ ?', hint: 'Montant déjà investi ou que vous placez d\'un coup au départ.', ref: 'Même 5 000 € de départ à 8%/an valent ~109 000 € au bout de 30 ans.', suffix: '€', value: inputs.startingCapital ?? 0, onChange: v => set('startingCapital')(v) },
+  ]
+
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ padding: '20px 24px 48px' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: 10, flexShrink: 0 }}>
+      <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
@@ -90,214 +113,301 @@ function DCAPageInner() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
-          <Button variant="outline" size="sm" onClick={() => printReport({
-            title: 'DCA — Investissement Régulier',
-            subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
-            kpis: [
-              { label: 'Valeur estimée', value: fmt(r.estimatedValue), highlight: true },
-              { label: 'Total investi', value: fmt(r.totalInvested) },
-              { label: 'Gain total', value: fmt(r.gain) },
-              { label: 'vs Achat unique', value: `${r.vsLumpSum >= 0 ? '+' : ''}${fmt(r.vsLumpSum)}` },
-            ],
-            inputs: [
-              { label: 'Versement mensuel', value: fmt(inputs.monthly) },
-              { label: 'Durée', value: `${inputs.years} ans` },
-              { label: 'Rendement annuel', value: `${inputs.targetRate}%` },
-              { label: 'Volatilité', value: `${inputs.volatility}%` },
-              { label: 'Prix initial unitaire', value: fmt(inputs.initialPrice) },
-            ],
-            sections: [{ title: 'Résultats détaillés', items: [
-              { label: 'Gain total', value: fmtPct(r.gainPct) },
-              { label: 'Prix moyen acquisition', value: fmt(r.avgCostBasis) },
-              { label: 'Unités accumulées', value: r.units.toFixed(2) },
-            ]}],
-            tips: [
-              'Le DCA lisse le prix moyen d\'achat en investissant régulièrement, réduisant l\'impact de la volatilité.',
-              'Sur le long terme, le DCA peut surperformer l\'achat unique en cas de forte volatilité.',
-              'La discipline est clé : évitez d\'interrompre vos versements lors des baisses de marché.',
-            ],
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}><Download className="h-3.5 w-3.5 mr-1.5" />PDF</Button>
-          <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
-          <Button variant={compareMode ? 'default' : 'outline'} size="sm"
-            onClick={() => { setCompareMode(v => !v); if (!compareMode) setInputsB({ ...inputs, monthly: Math.round(inputs.monthly * 1.5) }) }}
-            style={compareMode ? { background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)', color: '#818cf8' } : {}}>
-            <GitCompare className="h-3.5 w-3.5 mr-1.5" />Comparer
-          </Button>
-          <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
-            onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
-            style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
-            {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
-            {guidedMode ? 'Mode expert' : 'Mode guidé'}
-          </Button>
-          <Button variant="ghost" size="sm" style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }} onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
-            Réinitialiser
-          </Button>
+            <Button variant="outline" size="sm" onClick={() => printReport({
+              title: 'DCA — Investissement Régulier',
+              subtitle: `${fmt(inputs.monthly)}/mois · ${inputs.years} ans · ${inputs.targetRate}% de rendement`,
+              kpis: [
+                { label: 'Valeur estimée', value: fmt(r.estimatedValue), highlight: true },
+                { label: 'Total investi', value: fmt(r.totalInvested) },
+                { label: 'Gain total', value: fmt(r.gain) },
+                { label: 'vs Achat unique', value: `${r.vsLumpSum >= 0 ? '+' : ''}${fmt(r.vsLumpSum)}` },
+              ],
+              inputs: [
+                { label: 'Versement mensuel', value: fmt(inputs.monthly) },
+                { label: 'Durée', value: `${inputs.years} ans` },
+                { label: 'Rendement annuel', value: `${inputs.targetRate}%` },
+                { label: 'Volatilité', value: `${inputs.volatility}%` },
+                { label: 'Prix initial unitaire', value: fmt(inputs.initialPrice) },
+              ],
+              sections: [{ title: 'Résultats détaillés', items: [
+                { label: 'Gain total', value: fmtPct(r.gainPct) },
+                { label: 'Prix moyen acquisition', value: fmt(r.avgCostBasis) },
+                { label: 'Unités accumulées', value: r.units.toFixed(2) },
+              ]}],
+              tips: [
+                'Le DCA lisse le prix moyen d\'achat en investissant régulièrement, réduisant l\'impact de la volatilité.',
+                'Sur le long terme, le DCA peut surperformer l\'achat unique en cas de forte volatilité.',
+                'La discipline est clé : évitez d\'interrompre vos versements lors des baisses de marché.',
+              ],
+            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+            </Button>
+            <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />
+            <Button variant={compareMode ? 'default' : 'outline'} size="sm"
+              onClick={() => { setCompareMode(v => !v); if (!compareMode) setInputsB({ ...inputs, monthly: Math.round(inputs.monthly * 1.5) }) }}
+              style={compareMode ? { background: 'rgba(129,140,248,0.15)', border: '1px solid rgba(129,140,248,0.4)', color: '#818cf8' } : {}}>
+              <GitCompare className="h-3.5 w-3.5 mr-1.5" />Comparer
+            </Button>
+            <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
+              onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+              style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
+              {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
+              {guidedMode ? 'Mode expert' : 'Mode guidé'}
+            </Button>
+            <Button variant="ghost" size="sm" style={{ fontSize: 11, padding: '4px 10px', height: 'auto' }} onClick={() => setInputs({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })}>
+              Réinitialiser
+            </Button>
           </div>
         </div>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 12 }}>
+      {/* Guided mode */}
       {guidedMode && (
-        <GuidedModePanel
-          steps={[
-            { question: 'Combien investissez-vous chaque mois ?', hint: 'Votre versement régulier, quel que soit le prix du marché. La régularité est l\'essence du DCA — même 100 €/mois fait une vraie différence.', ref: 'Recommandé : 10-20% du salaire net. Commencez petit et augmentez progressivement.', suffix: '€/mois', value: inputs.monthly, onChange: v => set('monthly')(v) },
-            { type: 'slider', question: 'Sur quelle durée voulez-vous investir ?', hint: 'Plus l\'horizon est long, plus le DCA lisse les variations. L\'essentiel est de ne pas interrompre les versements lors des baisses.', ref: 'Sur 20 ans à 8%, 500 €/mois → ~295 000 €. Sur 30 ans → ~680 000 €. Chaque année compte.', suffix: ' ans', value: inputs.years, onChange: v => set('years')(v), min: 1, max: 40, stepSize: 1, displayValue: v => `${v} ans` },
-            { type: 'slider', question: 'Quel rendement annuel visez-vous ?', hint: 'Rendement moyen attendu. Sur un ETF World diversifié, la moyenne historique est ~8%/an — mais rien n\'est garanti.', ref: 'MSCI World : ~8 %/an depuis 1970. Soyez prudent : une hypothèse à 5-6% vous réserve de bonnes surprises.', suffix: '%', value: inputs.targetRate, onChange: v => set('targetRate')(v), min: 1, max: 15, stepSize: 0.5 },
-            { question: 'Avez-vous déjà un capital de départ ?', hint: 'Montant déjà investi ou que vous placez d\'un coup au départ. Mettez 0 si vous partez de zéro.', ref: 'Même 5 000 € de départ à 8%/an valent ~109 000 € au bout de 30 ans — sans rien ajouter.', suffix: '€', value: inputs.startingCapital ?? 0, onChange: v => set('startingCapital')(v) },
-          ] satisfies GuidedStep[]}
-          currentStep={guidedStep}
-          onStepChange={setGuidedStep}
-          onFinish={() => setGuidedMode(false)}
-        />
+        <div style={{ marginTop: 16 }}>
+          <GuidedModePanel
+            steps={guidedSteps}
+            currentStep={guidedStep}
+            onStepChange={setGuidedStep}
+            onFinish={() => setGuidedMode(false)}
+          />
+        </div>
       )}
 
-      {/* Two-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12, alignItems: 'start' }}>
+      {/* 3-column grid */}
+      {!guidedMode && (
+        <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
-        {/* Left — Input panel */}
-        <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
-            <ProfileFillButton onFill={p => {
-              if (p.monthlySavings) set('monthly')(p.monthlySavings)
-              if (p.currentAssets)  set('startingCapital')(p.currentAssets)
-            }} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Versement mensuel<FieldTooltip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." /></Label>
-            <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Durée<FieldTooltip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." /></Label>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
-            </div>
-            <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Rendement annuel moyen<FieldTooltip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." /></Label>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
-            </div>
-            <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Volatilité annuelle<FieldTooltip text="Amplitude des fluctuations de prix. ETF World : ~15%. Actions individuelles : 25-40%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." /></Label>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
-            </div>
-            <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
-              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(15)}>ETF World 15%</button>
-              <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(30)}>Actions 30%</button>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label style={{ display: 'flex', alignItems: 'center' }}>Prix initial de l'actif<FieldTooltip text="Prix unitaire au départ. Ex: 100€ pour un ETF. Influence le prix moyen de revient calculé." /></Label>
-            <Input type="number" value={inputs.initialPrice} onChange={e => set('initialPrice')(+e.target.value)} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Label style={{ display: 'flex', alignItems: 'center' }}>Capital de départ<FieldTooltip text="Montant déjà investi au lancement de la simulation. Permet de partir de votre patrimoine existant." /></Label>
-              <button
-                onClick={importPatrimoine}
-                disabled={loadingPatrimoine}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-              >
-                <Wallet style={{ width: 12, height: 12 }} />
-                {loadingPatrimoine ? 'Chargement…' : 'Importer patrimoine'}
-              </button>
-            </div>
-            <Input type="number" value={inputs.startingCapital ?? 0} onChange={e => set('startingCapital')(+e.target.value)} placeholder="0" />
-          </div>
-
-          {/* Mini stats summary */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              { label: 'Parts accumulées', value: r.units.toFixed(2) },
-              { label: 'Prix moyen de revient', value: fmt(r.avgCostBasis) },
-              { label: 'Gain total', value: `${fmt(r.gain)} (+${r.gainPct.toFixed(1)}%)` },
-            ].map((k, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{k.label}</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{k.value}</span>
+          {/* LEFT — sticky */}
+          <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Paramètres */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <RefreshCw style={{ width: 12, height: 12, color: COLOR }} />
+                  </div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Paramètres</p>
+                </div>
+                <ProfileFillButton onFill={p => {
+                  if (p.monthlySavings) set('monthly')(p.monthlySavings)
+                  if (p.currentAssets) set('startingCapital')(p.currentAssets)
+                }} />
               </div>
-            ))}
+              <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Versement mensuel<FieldTooltip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." />
+                  </label>
+                  <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
+                </div>
+
+                <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Durée<FieldTooltip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." />
+                    </label>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
+                  </div>
+                  <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
+                </div>
+
+                <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Rendement annuel<FieldTooltip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." />
+                    </label>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
+                  </div>
+                  <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
+                </div>
+
+                <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Volatilité annuelle<FieldTooltip text="Amplitude des fluctuations. ETF World : ~15%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." />
+                    </label>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
+                  </div>
+                  <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
+                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(15)}>ETF 15%</button>
+                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(30)}>Actions 30%</button>
+                  </div>
+                </div>
+
+                <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      Capital de départ<FieldTooltip text="Montant déjà investi au lancement de la simulation." />
+                    </label>
+                    <button
+                      onClick={importPatrimoine}
+                      disabled={loadingPatrimoine}
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      <Wallet style={{ width: 12, height: 12 }} />
+                      {loadingPatrimoine ? 'Chargement…' : 'Importer'}
+                    </button>
+                  </div>
+                  <Input type="number" value={inputs.startingCapital ?? 0} onChange={e => set('startingCapital')(+e.target.value)} placeholder="0" style={{ height: 36, fontSize: 13 }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Mini-résumé */}
+            <div style={{ background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '12px 14px' }}>
+              {[
+                { label: 'Parts accumulées', value: r.units.toFixed(2) },
+                { label: 'Prix moyen revient', value: fmt(r.avgCostBasis) },
+                { label: 'vs Achat unique', value: `${r.vsLumpSum >= 0 ? '+' : ''}${fmt(r.vsLumpSum)}` },
+              ].map((k, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: i < 2 ? 8 : 0 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{k.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{k.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CENTER */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* 4 KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+              {[
+                { label: 'Capital final', value: fmt(r.estimatedValue), color: COLOR },
+                { label: 'Total versé', value: fmt(r.totalInvested), color: 'var(--text-primary)' },
+                { label: 'Intérêts générés', value: fmt(r.gain), color: r.gain > 0 ? '#34d399' : 'var(--text-primary)' },
+                { label: 'Rendement total', value: `${r.gainPct.toFixed(1)}%`, color: r.gainPct > 0 ? '#34d399' : 'var(--text-primary)' },
+              ].map((kpi, i) => (
+                <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4, letterSpacing: '0.04em' }}>{kpi.label}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.5px', margin: 0 }}>{kpi.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Chart capital versé vs valeur */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 12 }}>Évolution du portefeuille — {inputs.years} ans</p>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${Math.round(v / 12)}a`} />
+                  <YAxis tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
+                  <Tooltip formatter={(v: any, name: string) => [fmt(v), name === 'value' ? 'Valeur' : 'Investi']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke={COLOR} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                </LineChart>
+              </ResponsiveContainer>
+              <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+                <CsvExport
+                  data={annualTable.map(d => ({ 'Année': d.year, 'Capital investi': d.invested.toFixed(0), 'Valeur portefeuille': d.value.toFixed(0), 'Gain': d.gain.toFixed(0) }))}
+                  filename="dca.csv"
+                />
+              </div>
+            </div>
+
+            {/* Table par an */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Tableau par année</p>
+              </div>
+              <div style={{ overflowX: 'auto', maxHeight: 220, overflowY: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                      {['Année', 'Capital versé', 'Valeur', 'Gain'].map((h, i) => (
+                        <th key={i} style={{ padding: '7px 12px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {annualTable.filter(d => d.year > 0 && d.year % 5 === 0).map(d => (
+                      <tr key={d.year} style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
+                        <td style={{ padding: '7px 12px', color: 'var(--text-em)', fontWeight: 500 }}>{d.year} ans</td>
+                        <td style={{ padding: '7px 12px', textAlign: 'right', color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.invested)}</td>
+                        <td style={{ padding: '7px 12px', textAlign: 'right', color: COLOR, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</td>
+                        <td style={{ padding: '7px 12px', textAlign: 'right', color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.gain)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Analyse */}
+            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <TrendingUp style={{ width: 15, height: 15, color: COLOR }} />
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Analyse DCA</p>
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 8 }}>
+                Sur {inputs.years} ans à {inputs.targetRate}%/an, vos {fmt(inputs.monthly)}/mois génèrent <strong style={{ color: COLOR }}>{fmt(r.estimatedValue)}</strong> — soit {r.gainPct.toFixed(0)}% de plus que votre mise initiale.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>DCA vs Achat unique</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: r.vsLumpSum >= 0 ? '#34d399' : '#f87171' }}>
+                  {r.vsLumpSum >= 0 ? '+' : ''}{fmt(r.vsLumpSum)}
+                </span>
+              </div>
+            </div>
+
+            {/* Donut versements/intérêts */}
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 10 }}>Composition du capital final</p>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PieChart width={160} height={120}>
+                  <Pie data={donutData} cx={80} cy={60} innerRadius={38} outerRadius={55} paddingAngle={3} dataKey="value">
+                    {donutData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} />
+                </PieChart>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+                {donutData.map((d, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
+                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)' }}>{fmt(d.value)}</span>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--section-border)' }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Total final</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: COLOR }}>{fmt(r.estimatedValue)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Conseils DCA */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {tips.map((tip, i) => (
+                <div key={i} style={{ background: `${COLOR}07`, border: `1px solid ${COLOR}20`, borderRadius: 10, padding: '10px 12px', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                  <Info style={{ width: 13, height: 13, color: 'var(--text-muted-c)', flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Right — Results */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-          {/* KPI 2×2 grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px', gridColumn: '1 / -1' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Valeur finale</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: '#f1c086', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.estimatedValue)}</p>
-            </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Capital investi</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.totalInvested)}</p>
-            </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Gain total</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: r.gain > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{fmt(r.gain)}</p>
-            </div>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 12px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>Rendement</p>
-              <p style={{ fontSize: 18, fontWeight: 800, color: r.gainPct > 0 ? '#34d399' : 'var(--text-primary)', fontFamily: "'Geist Mono',monospace", fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>{r.gainPct.toFixed(1)}%</p>
-            </div>
-          </div>
-
-          {/* Chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 12 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Évolution du portefeuille — {inputs.years} ans</p>
-            <ResponsiveContainer width="100%" height={150}>
-              <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${Math.round(v/12)}a`} />
-                <YAxis tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
-                <Tooltip formatter={(v: any, name: string) => [name === 'price' ? `${v}€` : fmt(v), name === 'value' ? 'Valeur' : name === 'invested' ? 'Investi' : 'Prix']}
-                  contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke={chart.lineMain} strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-              </LineChart>
-            </ResponsiveContainer>
-            <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
-              <CsvExport
-                data={r.chartData.filter((_: any, i: number) => i % 12 === 0).map((d: any) => ({ 'Année': Math.round(d.month / 12), 'Capital investi': d.invested.toFixed(0), 'Valeur portefeuille': d.value.toFixed(0), 'Gain': (d.value - d.invested).toFixed(0) }))}
-                filename="dca.csv"
-              />
-            </div>
-          </div>
-
-          {/* Tips box */}
-          <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <TrendingUp style={{ width: 14, height: 14, color: '#f1c086' }} />
-              <p style={{ fontSize: 12, color: 'rgba(241,192,134,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Analyse DCA</p>
-            </div>
-            {tips.map((tip, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <Info style={{ width: 14, height: 14, color: 'var(--text-muted-c)', flexShrink: 0, marginTop: 2 }} />
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{tip}</p>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </div>
-
-      {/* ── Comparateur A/B ── */}
-      {compareMode && (
+      {/* Comparateur A/B */}
+      {compareMode && !guidedMode && (
         <div style={{ marginTop: 32, borderTop: '1px solid var(--card-dark-border)', paddingTop: 32 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
             <GitCompare style={{ width: 16, height: 16, color: '#818cf8' }} />
@@ -322,8 +432,7 @@ function DCAPageInner() {
                       <div style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6 }}>{l}</div>
                       {ft === 'input'
                         ? <Input type="number" value={inp[key] as number} onChange={e => setFn(key)(+e.target.value)} style={{ height: 34, fontSize: 13 }} />
-                        : <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />
-                      }
+                        : <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />}
                     </div>
                   ))}
                 </div>
@@ -358,8 +467,8 @@ function DCAPageInner() {
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${Math.round(v/12)}a`} />
-                    <YAxis tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : `${Math.round(v/1000)}k`} />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${Math.round(v / 12)}a`} />
+                    <YAxis tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
                     <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                     <Line type="monotone" dataKey="Scénario A" stroke="#f1c086" strokeWidth={2.5} dot={false} animationDuration={800} />
@@ -371,7 +480,6 @@ function DCAPageInner() {
           </div>
         </div>
       )}
-      </div>
     </div>
   )
 }

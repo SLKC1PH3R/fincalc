@@ -462,27 +462,43 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               </div>
 
               {/* Patrimoine widget — V6 Gold */}
-              {patrimoineTotal !== null && (
+              {patrimoineTotal !== null && (() => {
+                const isDark = theme === 'dark'
+                const cardBg = isDark ? 'linear-gradient(135deg, #13161f, #0e1018)' : 'linear-gradient(135deg, #fffbf2, #fef3e0)'
+                const cardBorder = isDark ? 'rgba(241,192,134,0.14)' : 'rgba(184,118,10,0.22)'
+                const cardBorderHover = isDark ? 'rgba(241,192,134,0.38)' : 'rgba(184,118,10,0.48)'
+                const cardShadow = isDark ? '0 2px 12px rgba(0,0,0,0.35)' : '0 2px 12px rgba(184,118,10,0.10)'
+                const labelColor = isDark ? '#f1c086' : '#b8760a'
+                const valueColor = isDark ? '#ffffff' : '#1a1208'
+                const subColor = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.32)'
+                const miniCardBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'
+                const miniLabelColor = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.38)'
+                const miniValueColor = isDark ? 'rgba(255,255,255,0.80)' : 'rgba(0,0,0,0.75)'
+                const fireBgColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'
+                const fireBarBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
+                const fireLabelColor = isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.35)'
+                const fireTargetColor = isDark ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.55)'
+                return (
                 <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}>
                   <div
                     style={{
                       padding: '12px 14px', borderRadius: 12,
-                      background: 'linear-gradient(135deg, #13161f, #0e1018)',
-                      border: '1px solid rgba(241,192,134,0.14)',
+                      background: cardBg,
+                      border: `1px solid ${cardBorder}`,
                       cursor: 'pointer', transition: 'border-color 0.15s',
-                      boxShadow: '0 2px 12px rgba(0,0,0,0.35)',
+                      boxShadow: cardShadow,
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.38)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.14)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = cardBorderHover)}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = cardBorder)}
                   >
                     {/* Top row: info left + sparkline right */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                          <TrendingUp style={{ width: 9, height: 9, color: '#f1c086' }} />
-                          <span style={{ color: '#f1c086', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
+                          <TrendingUp style={{ width: 9, height: 9, color: labelColor }} />
+                          <span style={{ color: labelColor, fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
                         </div>
-                        <div style={{ color: '#ffffff', fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
+                        <div style={{ color: valueColor, fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
                           {fmtSb(Math.max(0, patrimoineTotal - dettesTotal))}
                         </div>
                         {sparkDelta !== null && (
@@ -501,14 +517,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                           <svg width={SW} height={SH} style={{ overflow: 'visible' }}>
                             <defs>
                               <linearGradient id="sbSparkGrad" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#f1c086" stopOpacity={0.30} />
-                                <stop offset="100%" stopColor="#f1c086" stopOpacity={1} />
+                                <stop offset="0%" stopColor={labelColor} stopOpacity={0.30} />
+                                <stop offset="100%" stopColor={labelColor} stopOpacity={1} />
                               </linearGradient>
                             </defs>
                             <polyline points={sparkPts} fill="none" stroke="url(#sbSparkGrad)" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx={SW} cy={sparkLastCy} r={3} fill="#f1c086" />
+                            <circle cx={SW} cy={sparkLastCy} r={3} fill={labelColor} />
                           </svg>
-                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', fontWeight: 400 }}>6 derniers mois</span>
+                          <span style={{ fontSize: 9, color: subColor, fontWeight: 400 }}>6 derniers mois</span>
                         </div>
                       )}
                     </div>
@@ -516,19 +532,13 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     {/* Brut / Dettes mini-cards */}
                     {(patrimoineTotal > 0 || dettesTotal > 0) && (
                       <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                        <div style={{
-                          flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 8,
-                          padding: '6px 10px',
-                        }}>
-                          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>Brut</div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.80)', fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
+                        <div style={{ flex: 1, background: miniCardBg, borderRadius: 8, padding: '6px 10px' }}>
+                          <div style={{ fontSize: 9, color: miniLabelColor, marginBottom: 2 }}>Brut</div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: miniValueColor, fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
                         </div>
                         {dettesTotal > 0 && (
-                          <div style={{
-                            flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 8,
-                            padding: '6px 10px',
-                          }}>
-                            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>Dettes</div>
+                          <div style={{ flex: 1, background: miniCardBg, borderRadius: 8, padding: '6px 10px' }}>
+                            <div style={{ fontSize: 9, color: miniLabelColor, marginBottom: 2 }}>Dettes</div>
                             <div style={{ fontSize: 11, fontWeight: 600, color: '#f87171', fontVariantNumeric: 'tabular-nums' }}>-{fmtSb(dettesTotal)}</div>
                           </div>
                         )}
@@ -537,24 +547,35 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
                     {/* FIRE progress */}
                     {fireTarget > 0 && (
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 10, marginTop: 10 }}>
+                      <div style={{ borderTop: `1px solid ${fireBgColor}`, paddingTop: 10, marginTop: 10 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.30)', fontWeight: 400 }}>
-                            Vers objectif <span style={{ color: 'rgba(255,255,255,0.50)' }}>{fmtSb(fireTarget)}</span>
+                          <span style={{ fontSize: 9, color: fireLabelColor, fontWeight: 400 }}>
+                            Vers objectif <span style={{ color: fireTargetColor }}>{fmtSb(fireTarget)}</span>
                           </span>
-                          <span style={{ fontSize: 9, color: '#f1c086', fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
+                          <span style={{ fontSize: 9, color: labelColor, fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
                         </div>
-                        <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 99 }}>
-                          <div style={{ width: `${fireProgress}%`, height: '100%', background: 'linear-gradient(90deg, #f1c08699, #f1c086)', borderRadius: 99, transition: 'width 0.6s ease' }} />
+                        <div style={{ height: 5, background: fireBarBg, borderRadius: 99 }}>
+                          <div style={{ width: `${fireProgress}%`, height: '100%', background: `linear-gradient(90deg, ${labelColor}99, ${labelColor})`, borderRadius: 99, transition: 'width 0.6s ease' }} />
                         </div>
                       </div>
                     )}
                   </div>
                 </Link>
-              )}
+                )
+              })()}
 
               {/* Score widget */}
-              {score !== null && (
+              {score !== null && (() => {
+                const isDark = theme === 'dark'
+                const cardBg = isDark ? 'linear-gradient(135deg, #13161f, #0e1018)' : 'linear-gradient(135deg, #fffbf2, #fef3e0)'
+                const cardBorder = isDark ? 'rgba(241,192,134,0.14)' : 'rgba(184,118,10,0.22)'
+                const cardBorderHover = isDark ? 'rgba(241,192,134,0.38)' : 'rgba(184,118,10,0.48)'
+                const cardShadow = isDark ? '0 2px 12px rgba(0,0,0,0.35)' : '0 2px 12px rgba(184,118,10,0.10)'
+                const labelColor = isDark ? '#f1c086' : '#b8760a'
+                const valueColor = isDark ? '#ffffff' : '#1a1208'
+                const valueMutedColor = isDark ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.32)'
+                const barBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
+                return (
                 <Link
                   href="/dashboard/score"
                   style={{ textDecoration: 'none', display: 'block', marginBottom: 12 }}
@@ -562,24 +583,24 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                   <div style={{
                     padding: '10px 14px',
                     borderRadius: 12,
-                    background: 'linear-gradient(135deg, #13161f, #0e1018)',
-                    border: '1px solid rgba(241,192,134,0.14)',
+                    background: cardBg,
+                    border: `1px solid ${cardBorder}`,
                     cursor: 'pointer',
                     transition: 'border-color 0.15s',
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.35)',
+                    boxShadow: cardShadow,
                   }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.38)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.14)')}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = cardBorderHover)}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = cardBorder)}
                   >
                     <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#f1c086', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: labelColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                         Score patrimonial
                       </span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
-                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.28)' }}>/100</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: valueColor, fontVariantNumeric: 'tabular-nums' }}>
+                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: valueMutedColor }}>/100</span>
                       </span>
                     </div>
-                    <div style={{ height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                    <div style={{ height: 5, borderRadius: 99, background: barBg, overflow: 'hidden' }}>
                       <div style={{
                         height: '100%',
                         width: `${score}%`,
@@ -594,7 +615,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                     </div>
                   </div>
                 </Link>
-              )}
+                )
+              })()}
             </div>
           ) : (
             <button

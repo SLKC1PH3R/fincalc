@@ -1,8 +1,7 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Sankey, Tooltip, ResponsiveContainer } from 'recharts'
-import { Label } from '@/components/ui/label'
+import { Sankey, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
@@ -11,8 +10,7 @@ import { SaveSimulation } from '@/components/SaveSimulation'
 import { CsvExport } from '@/components/CsvExport'
 import { calcRental, type RentalInputs } from '@/lib/calculators'
 import { fmt, fmtPct } from '@/lib/utils'
-import { cn } from '@/lib/utils'
-import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X, Wallet } from 'lucide-react'
+import { Download, CheckCircle2, TrendingUp, Minus, AlertCircle, Plus, X, Wallet, Settings2, ArrowRight } from 'lucide-react'
 import { printReport } from '@/lib/print'
 import { useTheme } from '@/contexts/ThemeContext'
 import { FieldTooltip } from '@/components/FieldTooltip'
@@ -28,6 +26,8 @@ const DEFAULT_INPUTS: RentalInputs = {
   taxeFonciere: 1200, insurance: 200, vacancy: 4, loanAmount: 160000,
   loanRate: 3.5, loanYears: 20, regime: 'nu', marginalRate: 30
 }
+
+const COLOR = '#f59e0b'
 
 // ── Sankey helpers ──────────────────────────────────────────────────────────
 const NODE_COLORS: Record<string, string> = {
@@ -323,20 +323,29 @@ function RentalPageInner() {
     }
   })
 
-  return (
-    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+  // Donut actif
+  const activeR = activeResult
+  const donutData = [
+    { name: 'Loyer net op.', value: activeR.netOperatingIncome, color: '#818cf8' },
+    { name: 'Crédit', value: activeR.monthlyLoan * 12, color: '#f87171' },
+    { name: 'Impôts', value: activeR.tax, color: '#e879f9' },
+    { name: 'Cashflow net', value: Math.max(activeR.cashflowAnnual, 0), color: '#34d399' },
+  ].filter(d => d.value > 0)
 
-      {/* ── Header ── */}
-      <div>
+  return (
+    <div style={{ padding: '20px 24px 48px' }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
-          <span style={{ color: '#34d399', fontWeight: 600 }}>Rentabilité Locative</span>
+          <span style={{ color: COLOR, fontWeight: 600 }}>Rentabilité Locative</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#34d39918', border: '1px solid #34d39930', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Wallet style={{ width: 20, height: 20, color: '#34d399' }} />
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Wallet style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
               <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
@@ -344,48 +353,47 @@ function RentalPageInner() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
-          <Button variant="outline" size="sm" onClick={() => printReport({
-            title: 'Rentabilité Locative',
-            subtitle: `${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — Investissement total : ${fmt(globalTotalInvestment)}`,
-            kpis: [
-              { label: 'Cashflow mensuel global', value: fmt(globalCashflowMonthly), highlight: true, sub: `${fmt(globalCashflowAnnual)}/an` },
-              { label: 'Rendement brut moyen', value: fmtPct(globalGrossYield) },
-              { label: 'Rendement net moyen', value: fmtPct(globalNetYield) },
-              { label: 'ROI fonds propres', value: fmtPct(globalROI) },
-            ],
-            sections: apartments.map((apt, idx) => ({
-              title: apt.name,
-              items: [
-                { label: 'Prix achat', value: fmt(apt.inputs.price) },
-                { label: 'Loyer mensuel', value: fmt(apt.inputs.rent) },
-                { label: 'Cashflow mensuel', value: fmt(results[idx].cashflowMonthly) },
-                { label: 'Rendement brut', value: fmtPct(results[idx].grossYield) },
-                { label: 'Rendement net', value: fmtPct(results[idx].netYield) },
-              ]
-            })),
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />PDF
-          </Button>
-          <SaveSimulation
-            type="rental"
-            name={`${apartments.length} appart. – ${fmt(globalCashflowMonthly)}/mois`}
-            inputs={{ apartments } as unknown as Record<string, unknown>}
-            results={{ globalCashflowMonthly, globalGrossYield, globalNetYield, globalROI } as unknown as Record<string, unknown>}
-          />
-          <Button variant="outline" size="sm" onClick={() => {
-            setApartments([{ id: '1', name: 'Appartement 1', inputs: { ...DEFAULT_INPUTS } }])
-            setActiveAptId('1')
-            setResultTab('global')
-          }} style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
-            Réinitialiser
-          </Button>
+            <Button variant="outline" size="sm" onClick={() => printReport({
+              title: 'Rentabilité Locative',
+              subtitle: `${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — Investissement total : ${fmt(globalTotalInvestment)}`,
+              kpis: [
+                { label: 'Cashflow mensuel global', value: fmt(globalCashflowMonthly), highlight: true, sub: `${fmt(globalCashflowAnnual)}/an` },
+                { label: 'Rendement brut moyen', value: fmtPct(globalGrossYield) },
+                { label: 'Rendement net moyen', value: fmtPct(globalNetYield) },
+                { label: 'ROI fonds propres', value: fmtPct(globalROI) },
+              ],
+              sections: apartments.map((apt, idx) => ({
+                title: apt.name,
+                items: [
+                  { label: 'Prix achat', value: fmt(apt.inputs.price) },
+                  { label: 'Loyer mensuel', value: fmt(apt.inputs.rent) },
+                  { label: 'Cashflow mensuel', value: fmt(results[idx].cashflowMonthly) },
+                  { label: 'Rendement brut', value: fmtPct(results[idx].grossYield) },
+                  { label: 'Rendement net', value: fmtPct(results[idx].netYield) },
+                ]
+              })),
+            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />PDF
+            </Button>
+            <SaveSimulation
+              type="rental"
+              name={`${apartments.length} appart. – ${fmt(globalCashflowMonthly)}/mois`}
+              inputs={{ apartments } as unknown as Record<string, unknown>}
+              results={{ globalCashflowMonthly, globalGrossYield, globalNetYield, globalROI } as unknown as Record<string, unknown>}
+            />
+            <Button variant="outline" size="sm" onClick={() => {
+              setApartments([{ id: '1', name: 'Appartement 1', inputs: { ...DEFAULT_INPUTS } }])
+              setActiveAptId('1')
+              setResultTab('global')
+            }} style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+              Réinitialiser
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* ── KPI Strip ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-        {/* Cashflow — highlighted */}
+      {/* KPI Strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
         <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}10, transparent)`, border: `1px solid ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}30`, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}14, transparent)`, pointerEvents: 'none' }} />
           <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>Cashflow mensuel</div>
@@ -405,11 +413,11 @@ function RentalPageInner() {
         ))}
       </div>
 
-      {/* ── Two-column layout ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 300px) 1fr', gap: 12 }}>
+      {/* 3-column grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
-        {/* Left: inputs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {/* LEFT — sticky inputs */}
+        <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
           {/* Apartment tabs */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -419,10 +427,10 @@ function RentalPageInner() {
                   onClick={() => setActiveAptId(apt.id)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6,
-                    padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 500,
+                    padding: '5px 10px', borderRadius: 8, fontSize: 12, fontWeight: 500,
                     transition: 'all 0.15s',
                     ...(activeAptId === apt.id
-                      ? { background: 'rgba(241,192,134,0.09)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                      ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
                       : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
                   }}
                 >
@@ -442,7 +450,7 @@ function RentalPageInner() {
             {apartments.length < 6 && (
               <button
                 onClick={addApartment}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 8, fontSize: 12, border: '1px dashed var(--card-dark-border)', color: 'var(--text-subtle)', background: 'transparent' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, fontSize: 12, border: '1px dashed var(--card-dark-border)', color: 'var(--text-subtle)', background: 'transparent' }}
               >
                 <Plus className="h-3 w-3" />Ajouter
               </button>
@@ -450,93 +458,121 @@ function RentalPageInner() {
           </div>
 
           {/* Apartment name */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Label>Nom</Label>
-            <Input value={activeApt.name} onChange={e => setAptName(e.target.value)} className="h-8 text-xs" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Nom du bien</label>
+            <Input value={activeApt.name} onChange={e => setAptName(e.target.value)} style={{ height: 36, fontSize: 13 }} />
           </div>
 
           {/* Acquisition panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Prix d&apos;achat<FieldTooltip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></Label>
-              <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} />
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Settings2 style={{ width: 13, height: 13, color: 'var(--text-muted-c)' }} />
+              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Frais de notaire<FieldTooltip text="~8% dans l'ancien, ~3% dans le neuf." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.notaryFees}%</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Prix d&apos;achat (€)<FieldTooltip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></label>
+              <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
+            </div>
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Frais de notaire<FieldTooltip text="~8% dans l'ancien, ~3% dans le neuf." /></label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.notaryFees}%</span>
               </div>
               <Slider min={2} max={10} step={0.5} value={[inputs.notaryFees]} onValueChange={([v]) => setApt('notaryFees')(v)} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Travaux<FieldTooltip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></Label>
-              <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} />
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Travaux (€)<FieldTooltip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></label>
+              <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Montant emprunté<FieldTooltip text="Capital emprunté. Laissez 0 pour un achat cash." /></Label>
-              <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} />
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Montant emprunté (€)<FieldTooltip text="Capital emprunté. Laissez 0 pour un achat cash." /></label>
+              <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div className="flex justify-between">
-                <Label>Taux crédit</Label>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Taux crédit</label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
               </div>
               <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => setApt('loanRate')(v)} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div className="flex justify-between">
-                <Label>Durée crédit</Label>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanYears} ans</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Durée crédit</label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanYears} ans</span>
               </div>
               <Slider min={5} max={30} step={1} value={[inputs.loanYears]} onValueChange={([v]) => setApt('loanYears')(v)} />
             </div>
           </div>
 
           {/* Exploitation & Fiscalité panel */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.18)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}18`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Loyer mensuel HC<FieldTooltip text="Loyer hors charges. Base de calcul du rendement." /></Label>
-              <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Loyer mensuel HC (€)<FieldTooltip text="Loyer hors charges. Base de calcul du rendement." /></label>
+              <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Charges mensuelles<FieldTooltip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></Label>
-              <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} />
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Charges mensuelles (€)<FieldTooltip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></label>
+              <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Taxe foncière (€/an)<FieldTooltip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></Label>
-              <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} />
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Taxe foncière (€/an)<FieldTooltip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></label>
+              <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Assurance PNO (€/an)<FieldTooltip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></Label>
-              <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} />
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Assurance PNO (€/an)<FieldTooltip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></label>
+              <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div className="flex justify-between">
-                <Label className="flex items-center gap-1">Taux de vacance<FieldTooltip text="Pourcentage du temps sans locataire. 4-8% est réaliste selon la localisation." /></Label>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.vacancy}%</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Taux de vacance<FieldTooltip text="Pourcentage du temps sans locataire. 4-8% est réaliste." /></label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.vacancy}%</span>
               </div>
               <Slider min={0} max={20} step={0.5} value={[inputs.vacancy]} onValueChange={([v]) => setApt('vacancy')(v)} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Label className="flex items-center gap-1">Régime fiscal<FieldTooltip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement, fiscalité quasi nulle." /></Label>
+
+            <div style={{ height: 1, background: 'var(--section-border)' }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Régime fiscal<FieldTooltip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement." /></label>
               <Select value={inputs.regime} onValueChange={v => setApt('regime')(v as RentalInputs['regime'])}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nu">Location nue (revenus fonciers)</SelectItem>
+                  <SelectItem value="nu">Location nue (rev. fonciers)</SelectItem>
                   <SelectItem value="meuble">Meublé micro-BIC (50% abatt.)</SelectItem>
                   <SelectItem value="lmnp">LMNP réel (amortissement)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
             {inputs.regime !== 'lmnp' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div className="flex justify-between">
-                  <Label>Votre TMI</Label>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.marginalRate}%</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Votre TMI</label>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.marginalRate}%</span>
                 </div>
                 <Slider min={0} max={45} step={1} value={[inputs.marginalRate]} onValueChange={([v]) => setApt('marginalRate')(v)} />
               </div>
@@ -544,12 +580,12 @@ function RentalPageInner() {
           </div>
         </div>
 
-        {/* Right: results */}
+        {/* CENTER — Sankey + table cashflow + per-apartment */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-            {/* Result tabs + chart container */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 14, padding: '14px 16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8, flexWrap: 'wrap' }}>
+          {/* Result tabs + Sankey */}
+          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, gap: 8, flexWrap: 'wrap' }}>
               <div>
                 <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Décomposition du cashflow annuel</p>
                 <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
@@ -564,7 +600,7 @@ function RentalPageInner() {
                   style={{
                     padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
                     ...(resultTab === 'global'
-                      ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                      ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
                       : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
                   }}
                 >Global</button>
@@ -575,7 +611,7 @@ function RentalPageInner() {
                     style={{
                       padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
                       ...(resultTab === apt.id
-                        ? { background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.17)', color: 'var(--sb-text-strong)' }
+                        ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
                         : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
                     }}
                   >{apt.name}</button>
@@ -616,7 +652,7 @@ function RentalPageInner() {
             <CashflowTable r={activeTabResult} inputs={activeTabApt.inputs} label={activeTabApt.name} />
           ) : null}
 
-          {/* Per-apartment mini KPIs when in global view */}
+          {/* Per-apartment mini KPIs when global */}
           {resultTab === 'global' && apartments.length > 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-subtle)' }}>Par appartement</p>
@@ -642,17 +678,21 @@ function RentalPageInner() {
 
           {/* CSV Export */}
           <CsvExport data={csvRows} filename="rentabilite-locative" />
+        </div>
 
-          {/* Synthèse / tips — Conseil style */}
-          <div style={{ background: `linear-gradient(135deg, ${scoreConf.color}0d, rgba(255,255,255,0.02))`, border: `1px solid ${scoreConf.color}22`, borderRadius: 14, padding: '14px 18px' }}>
+        {/* RIGHT — analyse + donut + conseils */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Score analyse */}
+          <div style={{ background: `linear-gradient(135deg, ${scoreConf.color}0d, rgba(255,255,255,0.02))`, border: `1px solid ${scoreConf.color}22`, borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
               <scoreConf.Icon style={{ width: 14, height: 14, color: scoreConf.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: scoreConf.color }}>Analyse globale — Cashflow {scoreConf.label}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: scoreConf.color }}>Analyse — Cashflow {scoreConf.label}</span>
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, marginBottom: apartments.length === 1 && activeResult.analysis.tips.length > 0 ? 12 : 0 }}>
               {apartments.length === 1
                 ? activeResult.analysis.message
-                : `Votre portefeuille de ${apartments.length} biens génère un cashflow global de ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour un investissement total de ${fmt(globalTotalInvestment)}. Rendement brut moyen : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
+                : `Votre portefeuille de ${apartments.length} biens génère ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour ${fmt(globalTotalInvestment)} investis. Rendement brut : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
             </p>
             {apartments.length === 1 && activeResult.analysis.tips.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -666,6 +706,51 @@ function RentalPageInner() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Donut revenu/charges/remboursement */}
+          {donutData.length > 0 && (
+            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>
+                Répartition annuelle — {activeApt.name}
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <PieChart width={130} height={130}>
+                  <Pie data={donutData} cx={61} cy={61} innerRadius={34} outerRadius={58} dataKey="value" strokeWidth={0}>
+                    {donutData.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.85} />)}
+                  </Pie>
+                </PieChart>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+                {donutData.map((d, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 9999, background: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Conseils investissement locatif */}
+          <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils investisseur</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { color: COLOR, text: 'Un rendement brut > 7% est nécessaire pour viser un cashflow positif avec crédit.' },
+                { color: '#818cf8', text: 'Le LMNP réel amortit le bien sur 25-30 ans, réduisant quasi à zéro la fiscalité sur les revenus locatifs.' },
+                { color: '#34d399', text: 'La vacance locative est souvent sous-estimée — prévoyez 1 mois/an minimum.' },
+                { color: '#60a5fa', text: 'Un cashflow légèrement négatif peut être acceptable si la plus-value à terme compense.' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

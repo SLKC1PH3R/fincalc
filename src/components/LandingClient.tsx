@@ -1796,16 +1796,28 @@ function HeroFireCalc() {
   const target = 900000 // 3 000 €/mois × 12 × 25 (règle des 4 %)
   const r = 0.07 / 12
   const rawMonths = epargne > 0 ? Math.log(1 + (target * r) / epargne) / Math.log(1 + r) : Infinity
-  const years = isFinite(rawMonths) ? Math.ceil(rawMonths / 12) : null
+  const years = isFinite(rawMonths) && rawMonths / 12 <= 60 ? Math.ceil(rawMonths / 12) : null
   const libertyAge = years !== null ? age + years : null
-  const fmtTarget = `${Math.round(target / 1000)} k€`
+
+  // Live mini-chart
+  const CW = 320, CH = 90
+  const maxYears = Math.min(years !== null ? years + 2 : 50, 55)
+  const pts = Array.from({ length: maxYears + 1 }, (_, y) => {
+    const val = epargne * ((Math.pow(1 + r, y * 12) - 1) / r)
+    return { x: (y / maxYears) * CW, y: CH - 6 - Math.min(val / target, 1.05) * (CH - 16) }
+  })
+  const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const areaD = `${pathD} L ${CW},${CH} L 0,${CH} Z`
+  const targetY = CH - 6 - (CH - 16) // full height = target
+  const crossX = years !== null ? (years / maxYears) * CW : null
+
   return (
     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,146,60,0.22)', borderRadius: 20, padding: '22px 26px', textAlign: 'left' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         <Flame style={{ width: 13, height: 13, color: '#fb923c' }} />
         <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Mon objectif FI/RE</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 28px', marginBottom: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 28px', marginBottom: 16 }}>
         {[
           { label: 'Épargne mensuelle', value: epargne, min: 100, max: 3000, step: 50, display: `${epargne} €/mois`, set: setEpargne },
           { label: 'Âge actuel', value: age, min: 18, max: 55, step: 1, display: `${age} ans`, set: setAge },
@@ -1821,21 +1833,49 @@ function HeroFireCalc() {
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+
+      {/* Live chart */}
+      <div style={{ marginBottom: 14, borderRadius: 10, overflow: 'hidden', background: 'rgba(0,0,0,0.18)' }}>
+        <svg width="100%" viewBox={`0 0 ${CW} ${CH}`} preserveAspectRatio="none" style={{ display: 'block', height: CH }}>
+          <defs>
+            <linearGradient id="fire-area-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fb923c" stopOpacity="0.30" />
+              <stop offset="100%" stopColor="#fb923c" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+          {/* Target line */}
+          <line x1={0} y1={targetY} x2={CW} y2={targetY} stroke="rgba(251,146,60,0.30)" strokeWidth="1" strokeDasharray="5,4" />
+          {/* Area fill */}
+          <path d={areaD} fill="url(#fire-area-g)" />
+          {/* Curve */}
+          <path d={pathD} fill="none" stroke="#fb923c" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+          {/* Intersection marker */}
+          {crossX !== null && (
+            <>
+              <line x1={crossX} y1={targetY - 2} x2={crossX} y2={CH} stroke="rgba(251,146,60,0.25)" strokeWidth="1" strokeDasharray="3,3" />
+              <circle cx={crossX} cy={targetY} r={4} fill="#fb923c" />
+            </>
+          )}
+          {/* Target label */}
+          <text x={CW - 4} y={targetY - 4} textAnchor="end" fontSize="8" fill="rgba(251,146,60,0.55)" fontWeight="700">900 k€</text>
+        </svg>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
         <div>
           {libertyAge !== null
-            ? <p style={{ fontSize: 17, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
-                Libre financièrement à <span style={{ color: '#fb923c' }}>{libertyAge} ans</span>
-                <span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.35)', marginLeft: 8 }}>dans {years} ans · cible {fmtTarget}</span>
+            ? <p style={{ fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
+                Libre à <span style={{ color: '#fb923c' }}>{libertyAge} ans</span>
+                <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.35)', marginLeft: 8 }}>dans {years} ans</span>
               </p>
-            : <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>Augmentez votre épargne pour atteindre l&apos;indépendance</p>
+            : <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>Augmentez votre épargne pour atteindre l&apos;indépendance</p>
           }
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>Hypothèse : 7%/an · dépenses 3 000 €/mois · règle des 4 %</p>
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginTop: 2 }}>7 %/an · dépenses 3 000 €/mois · règle des 4 %</p>
         </div>
-        <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 9, background: 'rgba(251,146,60,0.14)', border: '1px solid rgba(251,146,60,0.30)', color: '#fb923c', fontSize: 12, fontWeight: 600, textDecoration: 'none', flexShrink: 0, transition: 'all 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.24)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.14)' }}>
-          Simuler en détail <ArrowRight style={{ width: 12, height: 12 }} />
+        <a href="#demo" style={{ fontSize: 12, color: 'rgba(251,146,60,0.65)', textDecoration: 'none', flexShrink: 0, transition: 'color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#fb923c' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(251,146,60,0.65)' }}>
+          Détail →
         </a>
       </div>
     </div>
@@ -2225,10 +2265,10 @@ function CaseStudiesSection() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontSize: 13, fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${GOLD}50` }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-            Commencer ma propre analyse <ArrowRight style={{ width: 14, height: 14 }} />
+          <Link href="/login" style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', transition: 'color 0.15s', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)' }}>
+            Commencer ma propre analyse <ArrowRight style={{ width: 13, height: 13 }} />
           </Link>
         </div>
       </div>
@@ -3022,8 +3062,8 @@ export function LandingClient() {
             <div style={{ position: 'absolute', top: -40, left: -60, width: 600, height: 280, background: `radial-gradient(ellipse at 40% 50%, rgba(241,192,134,0.07) 0%, transparent 68%)`, pointerEvents: 'none', zIndex: -1 }} />
 
             {/* Headline */}
-            <h1 style={{ fontSize: 'clamp(1.9rem,2.8vw,3.2rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.04em', color: '#fff', marginBottom: 14, textAlign: 'left' }}>
-              Prenez le contrôle de votre{' '}
+            <h1 style={{ fontSize: 'clamp(2rem,3vw,3.4rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.04em', color: '#fff', marginBottom: 14, textAlign: 'left' }}>
+              Simulez, optimisez,{' '}
               <span style={{
                 fontWeight: 700,
                 background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
@@ -3033,88 +3073,59 @@ export function LandingClient() {
                 color: 'transparent',
                 animation: 'shimmer 4s linear infinite',
               }}>
-                avenir financier
+                décidez mieux
               </span>
-              , dès maintenant
             </h1>
 
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.58)', lineHeight: 1.65, maxWidth: 440, marginBottom: 20 }}>
-              Le seul outil <strong style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700 }}>100&nbsp;% gratuit</strong> qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, maxWidth: 400, marginBottom: 22 }}>
+              18 simulateurs financiers 100&nbsp;% gratuits — impôts, FIRE, patrimoine — sans jamais toucher à vos comptes.
             </p>
 
-            {/* CTAs */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-              <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 24px', borderRadius: 100, fontSize: 13, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'background 0.2s, box-shadow 0.2s', letterSpacing: '-0.02em' }}
+            {/* Single primary CTA */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 16 }}>
+              <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#fff', color: '#000', textDecoration: 'none', transition: 'background 0.2s, box-shadow 0.2s', letterSpacing: '-0.02em' }}
                 onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.boxShadow = '' }}>
-                Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
+                Commencer gratuitement <ArrowRight style={{ width: 15, height: 15 }} />
               </Link>
-              <a href="#demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 100, fontSize: 13, fontWeight: 500, border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'all 0.2s', letterSpacing: '-0.01em' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)' }}>
-                Voir la démo
+              <a href="#demo" style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', textDecoration: 'none', transition: 'color 0.15s', letterSpacing: '-0.01em' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.38)' }}>
+                Voir la démo ↓
               </a>
             </div>
 
-            {/* Social proof */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
+            {/* Social proof + demo link */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
                   <div key={i} style={{
-                    width: 28, height: 28, borderRadius: '50%',
+                    width: 26, height: 26, borderRadius: '50%',
                     background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
                     border: '2px solid #000',
-                    marginLeft: i === 0 ? 0 : -8,
+                    marginLeft: i === 0 ? 0 : -7,
                     zIndex: 4 - i,
                     position: 'relative',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 700, color: '#fff',
+                    fontSize: 9, fontWeight: 700, color: '#fff',
                   }}>
                     {['J','M','A','T'][i]}
                   </div>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: 2 }}>
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} style={{ width: 12, height: 12, fill: GOLD, color: GOLD }} />
-                ))}
-              </div>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.01em' }}>
-                <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>3 847</span> utilisateurs actifs
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)' }}>
+                <span style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>3 847</span> utilisateurs · 0 pub · 100 % gratuit
               </span>
-            </div>
-
-            {/* Demo hint */}
-            <button
-              onClick={loginAsDemo}
-              disabled={demoLoading}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '8px 16px', borderRadius: 20, cursor: demoLoading ? 'wait' : 'pointer',
-                background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.20)',
-                transition: 'all 0.2s', fontFamily: 'inherit', marginBottom: 20,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.13)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(241,192,134,0.07)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.20)' }}
-            >
-              <span style={{ fontSize: 13 }}>⚡</span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#f1c086' }}>
-                {demoLoading ? 'Connexion en cours…' : 'Accéder au compte démo'}
-              </span>
-            </button>
-
-            {/* Stats row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              {[{ v: '18', l: 'Simulateurs' }, { v: '0', l: 'Donnée bancaire' }, { v: '100%', l: 'Gratuit' }, { v: '0', l: 'Pub' }, { v: 'FR', l: 'Fiscalité 2026' }].map(s => (
-                <div key={s.l} style={{ textAlign: 'left' }}>
-                  <span style={{
-                    display: 'block', fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em',
-                    background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
-                    WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                  }}>{s.v}</span>
-                  <span style={{ display: 'block', fontSize: 9.5, color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 1 }}>{s.l}</span>
-                </div>
-              ))}
+              <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: 12 }}>·</span>
+              <button
+                onClick={loginAsDemo}
+                disabled={demoLoading}
+                style={{ background: 'none', border: 'none', cursor: demoLoading ? 'wait' : 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 12, color: GOLD, opacity: 0.7, transition: 'opacity 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '0.7' }}
+              >
+                {demoLoading ? 'Connexion…' : '⚡ Compte démo'}
+              </button>
             </div>
           </div>
 
@@ -3238,13 +3249,13 @@ export function LandingClient() {
 
           {/* CTA strip — after all 9 cards */}
           <RevealSection delay={100}>
-            <div style={{ textAlign: 'center', padding: '52px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)' }}>18 simulateurs · 100 % gratuit · sans carte bancaire</p>
+            <div style={{ textAlign: 'center', padding: '48px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>18 simulateurs · 100 % gratuit · sans carte bancaire</p>
               <Link href="/login"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 100, background: GOLD, color: '#000', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${GOLD}55` }}
-                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-                Commencer gratuitement <ArrowRight style={{ width: 14, height: 14 }} />
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 22px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: 13, textDecoration: 'none', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.28)'; e.currentTarget.style.color = '#fff' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}>
+                Accéder à tous les simulateurs <ArrowRight style={{ width: 13, height: 13 }} />
               </Link>
             </div>
           </RevealSection>

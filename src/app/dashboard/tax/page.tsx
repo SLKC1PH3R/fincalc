@@ -56,6 +56,58 @@ function TaxPageInner() {
   const r = useMemo(() => calcTax(inputs), [inputs])
   const score = SCORE[r.analysis.score]
 
+  const guidedSteps: GuidedStep[] = [
+    {
+      question: 'Quel est votre revenu brut annuel ?',
+      hint: 'Indiquez votre salaire brut annuel avant toute déduction. Vous le trouverez sur votre dernier bulletin de salaire ou votre contrat.',
+      ref: 'Le revenu brut est la base de calcul avant cotisations sociales et impôt sur le revenu.',
+      type: 'number',
+      suffix: '€',
+      value: inputs.gross,
+      onChange: v => set('gross')(v),
+    },
+    {
+      question: 'Quelle est votre situation familiale ?',
+      hint: 'Le quotient familial divise votre revenu par le nombre de parts pour calculer l\'impôt. Chaque enfant à charge ajoute 0,5 part.',
+      ref: 'Plus vous avez de parts, plus votre impôt est réduit via le mécanisme du quotient familial.',
+      type: 'choice',
+      strValue: String(inputs.parts),
+      onChoice: v => set('parts')(+v),
+      options: [
+        { value: '1', label: 'Célibataire', sub: '1 part' },
+        { value: '1.5', label: 'Célib. + 1 enfant', sub: '1,5 parts' },
+        { value: '2', label: 'Couple sans enfant', sub: '2 parts' },
+        { value: '2.5', label: 'Couple + 1 enfant', sub: '2,5 parts' },
+        { value: '3', label: 'Couple + 2 enfants', sub: '3 parts' },
+        { value: '4', label: 'Couple + 3 enfants', sub: '4 parts' },
+      ],
+    },
+    {
+      question: 'Quel est votre taux de cotisations sociales ?',
+      hint: 'Les cotisations salariales sont prélevées avant l\'impôt. Environ 22% pour un salarié du privé, 10% pour un fonctionnaire.',
+      ref: 'Ces cotisations financent retraite, maladie, chômage. Elles réduisent votre revenu imposable.',
+      type: 'slider',
+      min: 0,
+      max: 25,
+      stepSize: 0.5,
+      value: inputs.csRate,
+      onChange: v => set('csRate')(v),
+      displayValue: v => `${v}%`,
+    },
+    {
+      question: 'Quel abattement souhaitez-vous appliquer ?',
+      hint: 'Le forfait 10% est automatique et plafonné à 14 171 €. Les frais réels sont déductibles si supérieurs au forfait (transport, repas, outils…).',
+      ref: 'Les frais réels nécessitent une justification et une déclaration spécifique dans votre déclaration d\'impôts.',
+      type: 'choice',
+      strValue: inputs.useFraisReels ? 'reel' : 'forfait',
+      onChoice: v => set('useFraisReels')(v === 'reel'),
+      options: [
+        { value: 'forfait', label: 'Forfait 10%', sub: `Abattement auto ${fmt(r.abattement)}` },
+        { value: 'reel', label: 'Frais réels', sub: 'Si vos frais > 10% du salaire' },
+      ],
+    },
+  ]
+
   const pieData = [
     { name: 'Net perçu', value: Math.round(r.netIncome), fill: '#34d399' },
     { name: 'Cotisations', value: Math.round(r.cotisations), fill: '#f87171' },
@@ -127,8 +179,20 @@ function TaxPageInner() {
         </div>
       </div>
 
+      {/* Guided mode panel */}
+      {guidedMode && (
+        <div style={{ marginBottom: 16 }}>
+          <GuidedModePanel
+            steps={guidedSteps}
+            currentStep={guidedStep}
+            onStepChange={setGuidedStep}
+            onFinish={() => setGuidedMode(false)}
+          />
+        </div>
+      )}
+
       {/* 3-column layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
+      {!guidedMode && <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
         {/* ── LEFT: sticky inputs panel ── */}
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -426,7 +490,7 @@ function TaxPageInner() {
           </div>
         </div>
 
-      </div>
+      </div>}
     </div>
   )
 }

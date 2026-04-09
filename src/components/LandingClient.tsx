@@ -1024,6 +1024,7 @@ interface RatesData {
   oat10y: RateItem; bce: RateItem; inflation: RateItem
   immo10y?: RateItem; immo15y: RateItem; immo20y: RateItem; immo25y: RateItem; creditConso: RateItem
   live?: { oat: boolean; bce: boolean }
+  updatedAt?: string
 }
 
 function RateBigCard({ label, value, sublabel, color, cta, trend }: {
@@ -1232,6 +1233,12 @@ function RatesWidget() {
               {rates?.live?.oat || rates?.live?.bce
                 ? <span style={{ marginLeft: 10, color: '#34d399', fontSize: 12 }}>● Temps réel</span>
                 : null}
+              {rates?.updatedAt && (() => {
+                const d = new Date(rates.updatedAt!)
+                const pad = (n: number) => String(n).padStart(2, '0')
+                const stamp = `${pad(d.getDate())}/${pad(d.getMonth() + 1)} à ${pad(d.getHours())}h${pad(d.getMinutes())}`
+                return <span style={{ marginLeft: 10, fontSize: 11, color: 'rgba(255,255,255,0.18)' }}>Mis à jour le {stamp}</span>
+              })()}
             </p>
           </div>
         </RevealSection>
@@ -1708,10 +1715,11 @@ const COMPETITOR_FEATURES: { label: string; fincalc: FeatureVal; simulator: Feat
 
 function CompetitorTable() {
   const cols = [
-    { name: 'PatrImo', key: 'fincalc' as const, highlight: true, color: GOLD },
-    { name: 'Simulateur banque', key: 'simulator' as const, highlight: false, color: 'rgba(255,255,255,0.45)' },
-    { name: 'Google Sheets', key: 'sheets' as const, highlight: false, color: 'rgba(255,255,255,0.32)' },
+    { name: 'PatrImo', key: 'fincalc' as const, highlight: true, color: GOLD, isPatrimo: true },
+    { name: 'Simulateur banque', key: 'simulator' as const, highlight: false, color: 'rgba(255,255,255,0.45)', isPatrimo: false },
+    { name: 'Google Sheets', key: 'sheets' as const, highlight: false, color: 'rgba(255,255,255,0.32)', isPatrimo: false },
   ]
+  const GOLD_CELL = 'rgba(241,192,134,0.08)'
   return (
     <section id="comparatif" style={{ padding: '80px 20px 60px' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
@@ -1735,12 +1743,24 @@ function CompetitorTable() {
               <div style={{ padding: '14px 20px' }} />
               {cols.map(col => (
                 <div key={col.name} style={{
-                  padding: '14px 8px',
+                  padding: col.isPatrimo ? '8px 8px 14px' : '14px 8px',
                   textAlign: 'center',
-                  background: col.highlight ? GOLD_GLOW : 'transparent',
+                  background: col.isPatrimo ? GOLD_CELL : 'transparent',
                   borderLeft: '1px solid rgba(255,255,255,0.05)',
-                  borderTop: col.highlight ? `2px solid ${GOLD}60` : '2px solid transparent',
+                  borderTop: col.isPatrimo ? `2px solid ${GOLD}60` : '2px solid transparent',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 }}>
+                  {col.isPatrimo && (
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 3,
+                      fontSize: 9, fontWeight: 700, color: GOLD,
+                      background: `${GOLD}18`, border: `1px solid ${GOLD}40`,
+                      borderRadius: 100, padding: '2px 7px', marginBottom: 5,
+                      letterSpacing: '0.04em', textTransform: 'uppercase',
+                    }}>
+                      ★ Recommandé
+                    </span>
+                  )}
                   <span style={{ fontSize: 12, fontWeight: 700, color: col.color }}>{col.name}</span>
                 </div>
               ))}
@@ -1758,16 +1778,27 @@ function CompetitorTable() {
                   <div style={{ padding: '12px 20px', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{f.label}</div>
                   {cols.map(col => {
                     const val = f[col.key]
+                    const isFalseNonPatrimo = val === false && !col.isPatrimo
                     return (
                       <div key={col.key} style={{
                         padding: '12px 8px',
                         textAlign: 'center',
-                        background: col.highlight ? GOLD_GLOW : 'transparent',
+                        background: col.isPatrimo ? GOLD_CELL : isFalseNonPatrimo ? 'rgba(248,113,113,0.15)' : 'transparent',
                         borderLeft: '1px solid rgba(255,255,255,0.04)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
-                        {val === true && <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check style={{ width: 12, height: 12, color: '#34d399' }} /></div>}
-                        {val === false && <X style={{ width: 14, height: 14, color: 'rgba(255,255,255,0.18)' }} />}
+                        {val === true && col.isPatrimo && (
+                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Check style={{ width: 12, height: 12, color: '#4ade80' }} />
+                          </div>
+                        )}
+                        {val === true && !col.isPatrimo && (
+                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Check style={{ width: 12, height: 12, color: '#34d399' }} />
+                          </div>
+                        )}
+                        {val === false && !col.isPatrimo && <X style={{ width: 14, height: 14, color: '#f87171' }} />}
+                        {val === false && col.isPatrimo && <X style={{ width: 14, height: 14, color: 'rgba(255,255,255,0.18)' }} />}
                         {val === null && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.22)', background: 'rgba(255,255,255,0.04)', borderRadius: 100, padding: '2px 8px' }}>partiel</span>}
                       </div>
                     )
@@ -2051,12 +2082,25 @@ const TESTIMONIALS = [
 ]
 
 function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
+  const [imgError, setImgError] = useState(false)
+  const avatarUrl = `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(t.name)}&backgroundColor=${t.color.replace('#', '')}`
   return (
     <div style={{ width: 290, flexShrink: 0, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '18px 20px', margin: '0 7px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, ${t.color}cc, ${t.color}55)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-          {t.initials}
-        </div>
+        {imgError ? (
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, ${t.color}cc, ${t.color}55)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+            {t.initials}
+          </div>
+        ) : (
+          <img
+            src={avatarUrl}
+            alt={t.initials}
+            width={36}
+            height={36}
+            style={{ width: 36, height: 36, borderRadius: '50%', border: `2px solid ${t.color}40`, objectFit: 'cover', flexShrink: 0 }}
+            onError={() => setImgError(true)}
+          />
+        )}
         <div>
           <p style={{ fontSize: 12, fontWeight: 600, color: '#fff', margin: 0, lineHeight: 1.3 }}>{t.name}</p>
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{t.role}</p>
@@ -2095,6 +2139,103 @@ function TestimonialsMarquee() {
       <div style={{ overflow: 'hidden' }}>
         <div style={{ display: 'flex', animation: 'marquee-scroll-reverse 65s linear infinite', width: 'max-content' }}>
           {row2.map((t, i) => <TestimonialCard key={i} t={t} />)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── How It Works scrollytelling ─────────────────────────────────────────
+function HowStepCard({ step, i, total }: { step: typeof HOW[0]; i: number; total: number }) {
+  const { ref, visible } = useInView(0.3)
+  return (
+    <div ref={ref} style={{ position: 'relative', flex: '1 1 260px', minWidth: 0 }}>
+      {/* Connecting dotted line between steps */}
+      {i < total - 1 && (
+        <div style={{
+          position: 'absolute',
+          top: 26,
+          left: 'calc(100% - 0px)',
+          width: '100%',
+          height: 0,
+          zIndex: 0,
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            height: 1,
+            width: visible ? '100%' : '0%',
+            borderTop: `1.5px dashed ${GOLD}50`,
+            transition: 'width 0.6s ease 0.3s',
+          }} />
+        </div>
+      )}
+      {/* Card */}
+      <div style={{
+        background: '#0c0c0c',
+        border: visible ? `1px solid ${GOLD}50` : '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 20,
+        padding: 32,
+        position: 'relative',
+        overflow: 'hidden',
+        height: '100%',
+        boxSizing: 'border-box',
+        opacity: visible ? 1 : 0.25,
+        transform: visible ? 'none' : 'translateX(-12px)',
+        transition: `all 0.6s ease ${i * 0.15}s`,
+        boxShadow: visible ? `0 0 0 1px ${GOLD}20, 0 8px 32px rgba(0,0,0,0.4)` : 'none',
+      }}>
+        {/* Ghost step number */}
+        <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
+          {step.step}
+        </div>
+        {/* Icon + step badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 52, height: 52, borderRadius: 14,
+            background: `${step.iconColor}18`,
+            border: `1px solid ${step.iconColor}30`,
+            boxShadow: visible ? `0 0 16px ${step.iconColor}30` : 'none',
+            transition: `box-shadow 0.6s ease ${i * 0.15}s`,
+          }}>
+            <step.icon style={{ width: 24, height: 24, color: step.iconColor }} />
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 7, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}` }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: GOLD }}>{step.step}</span>
+          </div>
+        </div>
+        <h3 style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>{step.title}</h3>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>{step.desc}</p>
+        {i < total - 1 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+            <ArrowRight style={{ width: 16, height: 16, color: visible ? `${GOLD}90` : `${GOLD}40`, transition: `color 0.6s ease ${i * 0.15}s` }} />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function HowItWorks() {
+  return (
+    <section id="how" style={{ padding: '100px 20px' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+        <RevealSection>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <SectionTag><Clock style={{ width: 11, height: 11 }} /> En 3 étapes</SectionTag>
+            <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0' }}>
+              Comment ça marche ?
+            </h2>
+          </div>
+        </RevealSection>
+
+        <div style={{ display: 'flex', gap: 16, alignItems: 'stretch', flexWrap: 'wrap' }}>
+          {HOW.map((step, i) => (
+            <HowStepCard key={i} step={step} i={i} total={HOW.length} />
+          ))}
         </div>
       </div>
     </section>
@@ -2282,6 +2423,13 @@ function HeroCompoundCalc() {
   const [capital, setCapital] = useState(10000)
   const [monthly, setMonthly] = useState(300)
   const [years, setYears] = useState(20)
+  const [chartView, setChartView] = useState(0) // 0=growth, 1=allocation, 2=score
+
+  // Auto-cycle views
+  useEffect(() => {
+    const t = setInterval(() => setChartView(v => (v + 1) % 3), 5000)
+    return () => clearInterval(t)
+  }, [])
 
   const rate = 0.07
   const monthlyRate = rate / 12
@@ -2446,29 +2594,114 @@ function HeroCompoundCalc() {
           {/* ── RIGHT: large chart ── */}
           <div style={{ padding: '20px 20px 16px', background: '#07070a', display: 'flex', flexDirection: 'column' }}>
 
-            {/* Chart header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: 2 }}>Évolution du capital sur {years} ans</p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)' }}>Rendement 7%/an · mise à jour en temps réel</p>
-              </div>
-              <div style={{ display: 'flex', gap: 14 }}>
-                {[
-                  { color: GOLD, label: 'Capital total' },
-                  { color: '#34d399', label: 'Épargne investie', dashed: true },
-                ].map(l => (
-                  <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <svg width={20} height={8}>
-                      <line x1={0} y1={4} x2={20} y2={4} stroke={l.color} strokeWidth={l.dashed ? 1.5 : 2} strokeDasharray={l.dashed ? '4,2' : undefined} />
-                    </svg>
-                    <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.3)' }}>{l.label}</span>
-                  </div>
+            {/* View tabs */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {(['Croissance', 'Répartition', 'Score'] as const).map((label, i) => (
+                  <button key={label} onClick={() => setChartView(i)} style={{
+                    fontSize: 9.5, fontWeight: 600, padding: '3px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                    background: chartView === i ? (i === 0 ? GOLD + '22' : i === 1 ? 'rgba(139,92,246,0.18)' : 'rgba(251,146,60,0.18)') : 'transparent',
+                    color: chartView === i ? (i === 0 ? GOLD : i === 1 ? '#a78bfa' : '#fb923c') : 'rgba(255,255,255,0.22)',
+                    transition: 'all 0.2s', fontFamily: 'inherit',
+                  }}>
+                    {label}
+                  </button>
                 ))}
               </div>
+              {chartView === 0 && (
+                <div style={{ display: 'flex', gap: 12 }}>
+                  {[{ color: GOLD, label: 'Capital total' }, { color: '#34d399', label: 'Investi', dashed: true }].map(l => (
+                    <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <svg width={16} height={6}><line x1={0} y1={3} x2={16} y2={3} stroke={l.color} strokeWidth={l.dashed ? 1.5 : 2} strokeDasharray={l.dashed ? '3,2' : undefined} /></svg>
+                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* SVG chart */}
-            <div style={{ flex: 1, position: 'relative' }}>
+            {/* Chart area — switches between 3 views */}
+            <div style={{ flex: 1, position: 'relative', minHeight: CH }}>
+
+            {/* View 1: Allocation pie (chartView === 1) */}
+            <div style={{ position: 'absolute', inset: 0, opacity: chartView === 1 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 1 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+              {(() => {
+                const pctInt = Math.round((interests / total) * 100)
+                const pctInv = 100 - pctInt
+                const R = 70, cx = 80, cy = 90
+                const angle = (pctInt / 100) * 2 * Math.PI
+                const x1 = cx + R * Math.sin(0), y1 = cy - R * Math.cos(0)
+                const x2 = cx + R * Math.sin(angle), y2 = cy - R * Math.cos(angle)
+                const large = angle > Math.PI ? 1 : 0
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+                    <svg width={160} height={180} viewBox="0 0 160 180" style={{ display: 'block' }}>
+                      <circle cx={cx} cy={cy} r={R} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+                      <path d={`M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`} fill={GOLD} opacity={0.85} />
+                      <path d={`M ${cx} ${cy} L ${x2.toFixed(1)} ${y2.toFixed(1)} A ${R} ${R} 0 ${1 - large} 1 ${x1} ${y1} Z`} fill="rgba(52,211,153,0.7)" />
+                      <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="800" fill={GOLD}>{pctInt}%</text>
+                      <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.35)">intérêts</text>
+                    </svg>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {[
+                        { color: GOLD, label: 'Intérêts générés', value: fmtK(interests), pct: pctInt },
+                        { color: '#34d399', label: 'Capital investi', value: fmtK(invested), pct: pctInv },
+                      ].map(s => (
+                        <div key={s.label}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                            <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>{s.label}</span>
+                          </div>
+                          <p style={{ fontSize: 18, fontWeight: 800, color: s.color, letterSpacing: '-0.03em', margin: 0 }}>{s.value}</p>
+                          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', margin: 0 }}>{s.pct}% du total</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* View 2: Score gauge (chartView === 2) */}
+            <div style={{ position: 'absolute', inset: 0, opacity: chartView === 2 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 2 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+              {(() => {
+                const score = 74
+                const cx = 90, cy = 100, R = 68, SW = 12
+                const perim = 2 * Math.PI * R
+                const arcFrac = 0.68
+                const arcLen = arcFrac * perim
+                const filledLen = (score / 100) * arcLen
+                const rot = -90 - arcFrac * 180
+                const pillars = [{ label: 'Sécurité', pct: 0.82, color: '#38bdf8' }, { label: 'Immobilier', pct: 0.60, color: '#34d399' }, { label: 'Long terme', pct: 0.78, color: GOLD }, { label: 'Diversif.', pct: 0.55, color: '#fb923c' }, { label: 'Risque', pct: 0.90, color: '#a78bfa' }]
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+                    <svg width={180} height={200} viewBox="0 0 180 200" style={{ display: 'block' }}>
+                      <circle cx={cx} cy={cy} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={SW} strokeDasharray={`${arcLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+                      <circle cx={cx} cy={cy} r={R} fill="none" stroke="#fb923c" strokeWidth={SW} strokeLinecap="round" strokeDasharray={`${filledLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+                      <text x={cx} y={cy - 8} textAnchor="middle" fontSize="30" fontWeight="800" fill="#fb923c">{score}</text>
+                      <text x={cx} y={cy + 10} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.3)">/ 100</text>
+                      <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fontWeight="700" fill="rgba(255,255,255,0.55)">Bien</text>
+                    </svg>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {pillars.map(p => (
+                        <div key={p.label}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.38)' }}>{p.label}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: p.color }}>{Math.round(p.pct * 100)}%</span>
+                          </div>
+                          <div style={{ width: 110, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                            <div style={{ width: `${p.pct * 100}%`, height: '100%', background: p.color, borderRadius: 2 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* View 0: Growth chart (default) */}
+            <div style={{ position: chartView === 0 ? 'relative' : 'absolute', inset: chartView === 0 ? 'auto' : 0, opacity: chartView === 0 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 0 ? 'all' : 'none' }}>
               <svg width="100%" height={CH} viewBox={`0 0 ${CW} ${CH}`} style={{ overflow: 'visible', display: 'block' }}>
                 <defs>
                   <linearGradient id="hcc-total" x1="0" y1="0" x2="0" y2="1">
@@ -2529,7 +2762,8 @@ function HeroCompoundCalc() {
                 <text x={lastX - 23} y={lastTotalY - 21} fontSize={9} fill="rgba(255,255,255,0.4)" textAnchor="middle">Capital</text>
                 <text x={lastX - 23} y={lastTotalY - 11} fontSize={10} fontWeight="700" fill={GOLD} textAnchor="middle">{fmtK(total)}</text>
               </svg>
-            </div>
+            </div>{/* end view 0 */}
+            </div>{/* end chart area */}
 
             {/* Bottom bar: interests highlight */}
             <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.14)' }}>
@@ -3354,47 +3588,7 @@ export function LandingClient() {
       <PersonalizationQuiz />
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
-      <section id="how" style={{ padding: '100px 20px' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><Clock style={{ width: 11, height: 11 }} /> En 3 étapes</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0' }}>
-                Comment ça marche ?
-              </h2>
-            </div>
-          </RevealSection>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, alignItems: 'stretch' }}>
-            {HOW.map((step, i) => (
-              <RevealSection key={i} delay={i * 120} style={{ height: '100%' }}>
-                <div style={{ background: '#0c0c0c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: 32, position: 'relative', overflow: 'hidden', height: '100%', boxSizing: 'border-box' }}>
-                  {/* Ghost step number */}
-                  <div style={{ position: 'absolute', top: -10, right: 16, fontSize: 80, fontStyle: 'italic', color: 'rgba(255,255,255,0.025)', fontWeight: 400, lineHeight: 1, pointerEvents: 'none', userSelect: 'none' }}>
-                    {step.step}
-                  </div>
-                  {/* Icon + step badge */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 52, height: 52, borderRadius: 14, background: `${step.iconColor}18`, border: `1px solid ${step.iconColor}30` }}>
-                      <step.icon style={{ width: 24, height: 24, color: step.iconColor }} />
-                    </div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 7, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}` }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: GOLD }}>{step.step}</span>
-                    </div>
-                  </div>
-                  <h3 style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>{step.title}</h3>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', lineHeight: 1.7 }}>{step.desc}</p>
-                  {i < HOW.length - 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
-                      <ArrowRight style={{ width: 16, height: 16, color: `${GOLD}60` }} />
-                    </div>
-                  )}
-                </div>
-              </RevealSection>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ── POUR QUI ? ────────────────────────────────────────────────── */}
       <section id="pour-qui" style={{ padding: '80px 20px' }}>

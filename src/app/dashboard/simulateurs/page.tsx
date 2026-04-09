@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, Wallet,
@@ -94,8 +94,16 @@ function timeAgo(dateStr: string) {
 export default function SimulateursPage() {
   const [sims, setSims] = useState<Simulation[]>([])
   const [loaded, setLoaded] = useState(false)
+  const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('all')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleSearch = (val: string) => {
+    setSearchInput(val)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => setSearch(val), 150)
+  }
 
   useEffect(() => {
     fetch('/api/simulations')
@@ -148,8 +156,8 @@ export default function SimulateursPage() {
             <input
               type="text"
               placeholder="Rechercher…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={e => handleSearch(e.target.value)}
               style={{
                 width: '100%', paddingLeft: 30, paddingRight: 10, paddingTop: 6, paddingBottom: 6,
                 background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
@@ -195,12 +203,30 @@ export default function SimulateursPage() {
       {/* ── MODULE GRID ── */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 24px 16px' }}>
         {filteredCategories.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10 }}>
-            <Search style={{ width: 28, height: 28, color: 'var(--text-subtle)' }} />
-            <p style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Aucun simulateur pour « {search} »</p>
-            <button onClick={() => setSearch('')} style={{ fontSize: 12, color: GOLD, background: 'none', border: 'none', cursor: 'pointer' }}>
-              Effacer
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, textAlign: 'center' }}>
+            <div style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Search style={{ width: 22, height: 22, color: 'var(--text-subtle)' }} />
+            </div>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 4 }}>
+                Aucun résultat pour « {search} »
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 12 }}>
+                Essayez un autre terme ou parcourez par catégorie
+              </p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                {['Fiscal', 'Immobilier', 'Épargne', 'Budget'].map(s => (
+                  <button key={s} onClick={() => { handleSearch(s) }} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', color: 'var(--text-muted-c)', cursor: 'pointer', transition: 'all 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD + '50'; e.currentTarget.style.color = GOLD }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-muted-c)' }}>
+                    {s}
+                  </button>
+                ))}
+                <button onClick={() => { setSearchInput(''); setSearch(''); setActiveFilter('all') }} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: GOLD + '15', border: `1px solid ${GOLD}30`, color: GOLD, cursor: 'pointer' }}>
+                  Tout afficher
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

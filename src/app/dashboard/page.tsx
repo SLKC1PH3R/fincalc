@@ -114,7 +114,49 @@ function timeAgo(dateStr: string) {
 
 interface PatrimoineKPI { net: number; brut: number; dettes: number }
 
+interface PatrimoineSnapshot { value: number; createdAt: string }
+
 interface MarketIndex { label: string; symbol: string; price: number; changePct: number; isRate?: boolean }
+
+interface ScorePillar { score: number; max: number; label: string }
+
+interface ScoreDetails {
+  security: ScorePillar & { months: number | null }
+  realestate: ScorePillar & { ltv: number | null }
+  longterm: ScorePillar & { hasAV: boolean; hasPEA: boolean; hasPER: boolean }
+  diversification: ScorePillar & { types: string[] }
+  risk: ScorePillar & { cryptoRatio: number }
+}
+
+// ── Patrimoine sparkline ───────────────────────────────────────────────────────
+function PatrimoineSparkline({ snapshots }: { snapshots: PatrimoineSnapshot[] }) {
+  if (snapshots.length < 2) return null
+  const vals = snapshots.map(s => s.value)
+  const min = Math.min(...vals)
+  const max = Math.max(...vals)
+  const range = max - min || 1
+  const W = 80, H = 24, pad = 2
+  const points = vals.map((v, i) => {
+    const x = pad + (i / (vals.length - 1)) * (W - pad * 2)
+    const y = H - pad - ((v - min) / range) * (H - pad * 2)
+    return `${x},${y}`
+  }).join(' ')
+  const last = vals[vals.length - 1]
+  const prev = vals[vals.length - 2]
+  const up = last >= prev
+  const color = up ? '#34d399' : '#f87171'
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  )
+}
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function HomePage() {
@@ -123,8 +165,9 @@ export default function HomePage() {
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
   const [loaded, setLoaded] = useState(false)
   const [recentOpen, setRecentOpen] = useState(true)
-  const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[] } | null>(null)
+  const [scoreWidget, setScoreWidget] = useState<{ score: number; label: string; color: string; quickActions: { label: string; href: string; pts: number }[]; details: ScoreDetails | null } | null>(null)
   const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
+  const [patrimoineTimeline, setPatrimoineTimeline] = useState<PatrimoineSnapshot[]>([])
   const [indices, setIndices] = useState<MarketIndex[]>([])
   const [indicesLoadedAt, setIndicesLoadedAt] = useState(0)
   const [onboardingDismissed, setOnboardingDismissed] = useState(true) // default true to avoid flash
@@ -149,7 +192,7 @@ export default function HomePage() {
       .then(d => {
         if (!d) return
         const si = scoreInfo(d.score)
-        setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [] })
+        setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [], details: d.details ?? null })
       })
       .catch(() => {})
   }, [])
@@ -178,6 +221,14 @@ export default function HomePage() {
       .catch(() => {})
     window.addEventListener('profile-updated', () => setProfileFilled(true))
     return () => { window.removeEventListener('profile-updated', () => setProfileFilled(true)) }
+  }, [])
+
+  // Load patrimoine timeline (for sparkline + delta)
+  useEffect(() => {
+    fetch('/api/patrimoine/timeline')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (Array.isArray(d)) setPatrimoineTimeline(d) })
+      .catch(() => {})
   }, [])
 
   // Load market indices
@@ -295,19 +346,39 @@ export default function HomePage() {
           {/* KPI Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             {/* Patrimoine total */}
-            <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
-              <div className="rounded-xl p-4 transition-all duration-150"
-                style={{ background: `linear-gradient(135deg, ${GOLD}14, transparent)`, border: `1px solid ${GOLD_BORDER}` }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(241,192,134,0.35)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Patrimoine</p>
-                {loaded
-                  ? <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
-                  : <div className="skeleton" style={{ height: 32, width: 110, marginBottom: 4 }} />
-                }
-                <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>net estimé</p>
-              </div>
-            </Link>
+            {(() => {
+              const hasTimeline = patrimoineTimeline.length >= 2
+              const tLast = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 1].value : null
+              const tPrev = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 2].value : null
+              const delta = tLast != null && tPrev != null ? tLast - tPrev : null
+              const deltaPos = delta != null && delta >= 0
+              const deltaColor = deltaPos ? '#34d399' : '#f87171'
+              return (
+                <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
+                  <div className="rounded-xl p-4 transition-all duration-150"
+                    style={{ background: `linear-gradient(135deg, ${GOLD}14, transparent)`, border: `1px solid ${GOLD_BORDER}` }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(241,192,134,0.35)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 2 }}>
+                      <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Patrimoine</p>
+                      {hasTimeline && <PatrimoineSparkline snapshots={patrimoineTimeline} />}
+                    </div>
+                    {loaded
+                      ? <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
+                      : <div className="skeleton" style={{ height: 32, width: 110, marginBottom: 4 }} />
+                    }
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                      <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>net estimé</p>
+                      {delta != null && loaded && (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: deltaColor, background: deltaColor + '18', borderRadius: 5, padding: '1px 5px' }}>
+                          {deltaPos ? '+' : ''}{fmtCompact(Math.abs(delta))}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )
+            })()}
 
             {/* Enveloppes */}
             <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
@@ -391,23 +462,43 @@ export default function HomePage() {
           {/* Score Patrimonial widget */}
           {scoreWidget && (
             <Link href="/dashboard/score" style={{ textDecoration: 'none', display: 'block', marginBottom: 12 }}>
-              <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreWidget.color}28`, borderRadius: 16, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.2s' }}
+              <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreWidget.color}28`, borderRadius: 16, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16, transition: 'border-color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = scoreWidget.color + '55')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = scoreWidget.color + '28')}>
                 <ScoreGauge score={scoreWidget.score} color={scoreWidget.color} size={72} showLabel={false} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Score Patrimonial</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', border: `1px solid ${scoreWidget.color}30`, borderRadius: 6, padding: '1px 7px' }}>{scoreWidget.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', border: `1px solid ${scoreWidget.color}30`, borderRadius: 6, padding: '1px 7px' }}>{scoreWidget.score} · {scoreWidget.label}</span>
                   </div>
-                  {scoreWidget.quickActions.length > 0 ? (
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {scoreWidget.quickActions.slice(0, 2).map((qa, i) => (
-                        <span key={i} style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>
-                          <span style={{ color: '#34d399', fontWeight: 600 }}>+{qa.pts}pts</span> · {qa.label}
-                        </span>
-                      ))}
+                  {/* Pillar mini-bars */}
+                  {scoreWidget.details && (
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+                      {([
+                        { key: 'security', label: 'Sécu', color: '#38bdf8' },
+                        { key: 'realestate', label: 'Immo', color: '#34d399' },
+                        { key: 'longterm', label: 'Long', color: '#f1c086' },
+                        { key: 'diversification', label: 'Diver', color: '#fb923c' },
+                        { key: 'risk', label: 'Risque', color: '#f87171' },
+                      ] as { key: keyof ScoreDetails; label: string; color: string }[]).map(({ key, label, color }) => {
+                        const p = scoreWidget.details![key]
+                        const pct = p ? p.score / p.max : 0
+                        return (
+                          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                            <div style={{ width: 44, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                              <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 0.6s ease' }} />
+                            </div>
+                            <span style={{ fontSize: 9, color: 'var(--text-subtle)', textAlign: 'center' }}>{label}</span>
+                          </div>
+                        )
+                      })}
                     </div>
+                  )}
+                  {scoreWidget.quickActions.length > 0 ? (
+                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                      <span style={{ color: '#34d399', fontWeight: 600 }}>{scoreWidget.quickActions.length} actions</span>
+                      {' '}pour gagner <span style={{ color: '#34d399', fontWeight: 600 }}>+{scoreWidget.quickActions.reduce((s, a) => s + a.pts, 0)} pts</span>
+                    </span>
                   ) : (
                     <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Profil complet — voir le détail</span>
                   )}

@@ -44,6 +44,11 @@ function PyramidBar({
   level: number; color: string; width: string; label: string; sublabel: string; score: number; max: number
 }) {
   const pct = score / max
+  const [anim, setAnim] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setAnim(true), 50)
+    return () => clearTimeout(t)
+  }, [])
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
       <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-subtle)', width: 12, textAlign: 'right', flexShrink: 0 }}>{level}</span>
@@ -51,7 +56,7 @@ function PyramidBar({
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div style={{ width, position: 'relative', height: 28, borderRadius: 8, overflow: 'hidden', background: `${color}12`, border: `1px solid ${color}28` }}>
             {/* Fill based on score */}
-            <div style={{ position: 'absolute', inset: 0, width: `${Math.round(pct * 100)}%`, background: `linear-gradient(90deg, ${color}35, ${color}20)`, transition: 'width 0.8s ease' }} />
+            <div style={{ position: 'absolute', inset: 0, width: anim ? `${Math.round(pct * 100)}%` : '0%', background: `linear-gradient(90deg, ${color}35, ${color}20)`, transition: 'width 0.8s ease' }} />
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color }}>{label}</span>
               <span style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>{sublabel}</span>
@@ -81,6 +86,11 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
   const barColor = pct >= 0.75 ? '#34d399' : pct >= 0.50 ? '#f1c086' : '#f87171'
   const StatusIcon = pct >= 0.75 ? CheckCircle2 : pct >= 0.50 ? Minus : AlertCircle
   const Icon = meta.icon
+  const [anim, setAnim] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setAnim(true), 50)
+    return () => clearTimeout(t)
+  }, [])
 
   return (
     <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
@@ -98,7 +108,7 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
           </div>
           <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8 }}>{meta.desc}</p>
           <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${Math.round(pct * 100)}%`, background: barColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
+            <div style={{ height: '100%', width: anim ? `${Math.round(pct * 100)}%` : '0%', background: barColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>

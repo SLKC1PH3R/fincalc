@@ -62,7 +62,8 @@
       "Bash(node -e \"const {execSync} = require\\('child_process'\\); try { const out = execSync\\('npx tsc --noEmit', {encoding: 'utf8', cwd: process.cwd\\(\\)}\\); console.log\\('No TypeScript errors'\\); } catch\\(e\\) { console.log\\('ERRORS:', e.stdout?.slice\\(0, 3000\\)\\); }\")",
       "Bash(npx --yes tsc --noEmit --skipLibCheck)",
       "Bash(node ./node_modules/.bin/tsc --noEmit --skipLibCheck)",
-      "Bash(./node_modules/typescript/bin/tsc --noEmit --skipLibCheck)"
+      "Bash(./node_modules/typescript/bin/tsc --noEmit --skipLibCheck)",
+      "Bash(timeout 25 node -e ':*)"
     ]
   }
 }

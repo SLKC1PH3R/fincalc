@@ -22,6 +22,10 @@ function MortgagePageInner() {
   const chart = useChartTheme()
   const [inputs, setInputs] = useState<MortgageInputs>({ amount: 240000, rate: 3.5, years: 20, insurance: 80, fees: 5000 })
   const set = (k: keyof MortgageInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return !!localStorage.getItem('mortgage-banner-dismissed')
+  })
 
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
@@ -105,7 +109,7 @@ function MortgagePageInner() {
                 { label: 'Coût total', value: fmt(r.totalCost) },
               ]}],
               tips,
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="mortgage" name={`Prêt ${fmt(inputs.amount)} @ ${inputs.rate}%`} inputs={inputs as any} results={r as any} />
@@ -115,6 +119,20 @@ function MortgagePageInner() {
           </div>
         </div>
       </div>
+
+      {/* Bon à savoir banner */}
+      {!bannerDismissed && (
+        <div style={{ marginBottom: 16, background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 3 }}>Bon à savoir — Prêt immobilier</p>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, lineHeight: 1.5 }}>
+              Le TAEG inclut les frais de dossier, l'assurance et les frais de garantie. Pour comparer deux offres, comparez toujours le coût total, pas seulement le taux nominal.
+            </p>
+          </div>
+          <button onClick={() => { localStorage.setItem('mortgage-banner-dismissed', '1'); setBannerDismissed(true) }} style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 2 }} aria-label="Fermer">×</button>
+        </div>
+      )}
 
       {/* 3-column layout */}
       <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>

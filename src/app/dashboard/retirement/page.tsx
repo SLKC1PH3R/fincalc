@@ -22,7 +22,7 @@ function fmtEur(n: number) {
 }
 function fmtPct(n: number) { return (n * 100).toFixed(2) + ' %' }
 
-function ScenarioRow({ s, selected, onClick }: { s: RetirementScenario; selected: boolean; onClick: () => void }) {
+function ScenarioRow({ s, selected, onClick, showAllCols }: { s: RetirementScenario; selected: boolean; onClick: () => void; showAllCols: boolean }) {
   const borderColor = s.tauxPlein ? 'hsl(160 84% 39%)' : s.trimDecote > 10 ? 'hsl(0 72% 51%)' : 'hsl(38 92% 50%)'
   return (
     <tr
@@ -30,7 +30,7 @@ function ScenarioRow({ s, selected, onClick }: { s: RetirementScenario; selected
       style={{ cursor: 'pointer', background: selected ? 'rgba(255,255,255,0.04)' : 'transparent', borderBottom: '1px solid var(--card-dark-border)' }}
     >
       <td style={{ padding: '10px 12px', fontSize: 13, fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: 'var(--text-em)' }}>{s.age} ans</td>
-      <td style={{ padding: '10px 12px', fontSize: 13, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{s.trimestres}</td>
+      {showAllCols && <td style={{ padding: '10px 12px', fontSize: 13, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{s.trimestres}</td>}
       <td style={{ padding: '10px 12px' }}>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 4, padding: '2px 6px', fontSize: 11, fontWeight: 600, background: borderColor + '20', color: borderColor }}>
           {s.tauxPlein
@@ -38,10 +38,10 @@ function ScenarioRow({ s, selected, onClick }: { s: RetirementScenario; selected
             : `-${(s.decotePct * 100).toFixed(2)}% décote`}
         </span>
       </td>
-      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionBase)}</td>
-      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionArrco)}</td>
+      {showAllCols && <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionBase)}</td>}
+      {showAllCols && <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-em)' }}>{fmtEur(s.pensionArrco)}</td>}
       <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', fontWeight: 600, color: 'var(--text-primary)' }}>{fmtEur(s.pensionBrute)}</td>
-      <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-muted-c)' }}>{s.replacementRate.toFixed(0)}%</td>
+      {showAllCols && <td style={{ padding: '10px 12px', fontSize: 13, fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: 'var(--text-muted-c)' }}>{s.replacementRate.toFixed(0)}%</td>}
     </tr>
   )
 }
@@ -59,6 +59,7 @@ function RetirementPageInner() {
   const set = (k: keyof RetirementInputs) => (v: number) => setInputs(p => ({ ...p, [k]: v }))
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
+  const [showAllCols, setShowAllCols] = useState(false)
 
   const searchParams = useSearchParams()
   const restoreParam = searchParams.get('restore')
@@ -163,7 +164,7 @@ function RetirementPageInner() {
               ],
               sections: [],
               tips: r.analysis.tips,
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="retirement" name={`Retraite ${inputs.departureAge} ans`} inputs={inputs as any} results={r as any} />
@@ -320,23 +321,32 @@ function RetirementPageInner() {
 
             {/* Scénarios table */}
             <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
-              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Scénarios de départ — 62 à 70 ans</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>Cliquez sur un âge pour le sélectionner</p>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Scénarios de départ — 62 à 70 ans</p>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>Cliquez sur un âge pour le sélectionner</p>
+                </div>
+                <button onClick={() => setShowAllCols(v => !v)} style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6, padding: '3px 9px', cursor: 'pointer' }}>
+                  {showAllCols ? 'Réduire ↑' : 'Voir tout →'}
+                </button>
               </div>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      {['Départ', 'Trim.', 'Taux', 'Base CNAV', 'Agirc-Arrco', 'Total brut', 'Remplac.'].map((h, i) => (
-                        <th key={i} style={{ padding: '8px 12px', textAlign: i >= 3 ? 'right' : 'left', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>{h}</th>
-                      ))}
+                      <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Départ</th>
+                      {showAllCols && <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Trim.</th>}
+                      <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Taux</th>
+                      {showAllCols && <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Base CNAV</th>}
+                      {showAllCols && <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Agirc-Arrco</th>}
+                      <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Total brut</th>
+                      {showAllCols && <th style={{ padding: '8px 12px', textAlign: 'right', fontSize: 11, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>Remplac.</th>}
                     </tr>
                   </thead>
                   <tbody>
                     {r.scenarios.map(s => (
                       <ScenarioRow key={s.age} s={s} selected={s.age === inputs.departureAge}
-                        onClick={() => setInputs(p => ({ ...p, departureAge: s.age }))} />
+                        onClick={() => setInputs(p => ({ ...p, departureAge: s.age }))} showAllCols={showAllCols} />
                     ))}
                   </tbody>
                 </table>

@@ -107,7 +107,7 @@ function BuyRentPageInner() {
                 { label: 'Rendement investissement', value: `${inputs.investReturn}%` },
               ],
               tips,
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="buyrent" name={`Achat vs Loc ${fmt(inputs.price)}`} inputs={inputs as any} results={r as any} />

@@ -139,7 +139,7 @@ function DCAPageInner() {
                 'Sur le long terme, le DCA peut surperformer l\'achat unique en cas de forte volatilité.',
                 'La discipline est clé : évitez d\'interrompre vos versements lors des baisses de marché.',
               ],
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="dca" name={`DCA ${fmt(inputs.monthly)}/mois × ${inputs.years}ans`} inputs={inputs as any} results={r as any} />

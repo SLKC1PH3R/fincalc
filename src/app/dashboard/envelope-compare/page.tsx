@@ -157,7 +157,7 @@ function EnvelopeCompareInner() {
                 { label: 'TMI', value: `${tmi}%` },
               ],
               sections: [],
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="envelope-compare" name="PEA vs CTO vs AV" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />

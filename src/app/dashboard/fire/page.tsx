@@ -26,9 +26,16 @@ function FirePageInner() {
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [importingPatrimoine, setImportingPatrimoine] = useState(false)
   const [patrimoineImported, setPatrimoineImported] = useState<number | null>(null)
-  const [guidedMode, setGuidedMode] = useState(false)
+  const [guidedMode, setGuidedMode] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return !localStorage.getItem('fire-guided-done')
+  })
   const [guidedStep, setGuidedStep] = useState(0)
   const [compareMode, setCompareMode] = useState(false)
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return !!localStorage.getItem('fire-banner-dismissed')
+  })
   const [inputsB, setInputsB] = useState<FireInputs>({ income: 60000, expenses: 30000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
   const setB = (k: keyof FireInputs) => (v: number) => setInputsB(p => ({ ...p, [k]: v }))
   const rB = useMemo(() => calcFire(inputsB), [inputsB])
@@ -154,7 +161,7 @@ function FirePageInner() {
                 { label: 'Revenu passif mensuel cible', value: fmt(r.monthlyPassive) },
               ]}],
               tips,
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="fire" name={`FI/RE ${r.yearsToFire}ans`} inputs={inputs as any} results={r as any} />
@@ -164,7 +171,7 @@ function FirePageInner() {
               <GitCompare className="h-3.5 w-3.5 mr-1.5" />Comparer
             </Button>
             <Button variant={guidedMode ? 'default' : 'outline'} size="sm"
-              onClick={() => { setGuidedMode(v => !v); setGuidedStep(0) }}
+              onClick={() => { const next = !guidedMode; setGuidedMode(next); setGuidedStep(0); if (!next) localStorage.setItem('fire-guided-done', '1') }}
               style={guidedMode ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' } : {}}>
               {guidedMode ? <Settings2 className="h-3.5 w-3.5 mr-1.5" /> : <BookOpen className="h-3.5 w-3.5 mr-1.5" />}
               {guidedMode ? 'Mode expert' : 'Mode guidé'}
@@ -176,6 +183,20 @@ function FirePageInner() {
         </div>
       </div>
 
+      {/* Bon à savoir banner */}
+      {!bannerDismissed && !guidedMode && (
+        <div style={{ marginTop: 16, background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 3 }}>Bon à savoir — FI/RE</p>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, lineHeight: 1.5 }}>
+              La règle des 4% (Trinity Study) suggère qu'un patrimoine dure 30 ans si vous retirez 4%/an. Ajustez selon votre horizon : 3.5% pour une retraite de 40 ans+, 5% si vous avez d'autres revenus.
+            </p>
+          </div>
+          <button onClick={() => { localStorage.setItem('fire-banner-dismissed', '1'); setBannerDismissed(true) }} style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 2 }} aria-label="Fermer">×</button>
+        </div>
+      )}
+
       {/* Guided mode */}
       {guidedMode && (
         <div style={{ marginTop: 16 }}>
@@ -183,7 +204,7 @@ function FirePageInner() {
             steps={guidedSteps}
             currentStep={guidedStep}
             onStepChange={setGuidedStep}
-            onFinish={() => setGuidedMode(false)}
+            onFinish={() => { localStorage.setItem('fire-guided-done', '1'); setGuidedMode(false) }}
           />
         </div>
       )}
@@ -225,6 +246,7 @@ function FirePageInner() {
                     Dépenses annuelles<FieldTooltip text="Vos dépenses totales. C'est aussi le montant dont vous aurez besoin chaque année à la retraite." />
                   </label>
                   <Input type="number" value={inputs.expenses} onChange={e => set('expenses')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
+                  <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>Moyenne France : 22 000€/an · Médiane couple : 38 000€/an</p>
                 </div>
 
                 <div style={{ height: 1, background: 'var(--section-border)' }} />
@@ -276,6 +298,9 @@ function FirePageInner() {
                     <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('withdrawalRate')(3.5)}>Prudent 3.5%</button>
                     <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontSize: 'inherit' }} onClick={() => set('withdrawalRate')(4)}>Standard 4%</button>
                   </div>
+                  <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>
+                    → Avec {(r.target / 1000).toFixed(0)}k€ patrimoine FIRE, {inputs.withdrawalRate}% = <strong style={{ color: 'var(--text-muted-c)' }}>{fmt(r.target * inputs.withdrawalRate / 100)}/an</strong>
+                  </p>
                 </div>
               </div>
             </div>

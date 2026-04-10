@@ -142,7 +142,7 @@ function FlatTaxInner() {
                 { label: 'Flat Tax (total)', value: fmt(res.flatTax.total), sub: `Taux effectif ${res.flatTax.effectiveRate.toFixed(1)}%` },
                 { label: 'Barème (total)', value: fmt(res.bareme.total), sub: `Taux effectif ${res.bareme.effectiveRate.toFixed(1)}%` },
               ],
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />

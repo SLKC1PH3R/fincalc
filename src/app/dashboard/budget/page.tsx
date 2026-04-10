@@ -139,7 +139,7 @@ function BudgetPageInner() {
               { label: 'Total épargne',      value: fmt(r.savingsTotal) },
             ],
             tips: r.analysis.tips,
-          })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+          })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
             <Download className="h-3.5 w-3.5 mr-1.5" />PDF
           </Button>
           <SaveSimulation type="budget" name={`Budget ${fmt(inputs.netIncome)}/mois`} inputs={inputs as any} results={r as any} />

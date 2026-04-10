@@ -30,6 +30,10 @@ function CompoundPageInner() {
   const { profile } = useUserProfile()
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return !!localStorage.getItem('compound-banner-dismissed')
+  })
 
   const [inputs, setInputs] = useState<CompoundInputs>({ capital: 10000, monthly: 500, rate: 7, years: 20, frequency: 12 })
   const set = (k: keyof CompoundInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
@@ -139,7 +143,7 @@ function CompoundPageInner() {
                 { label: 'Capitalisation', value: inputs.frequency === 12 ? 'Mensuelle' : inputs.frequency === 4 ? 'Trimestrielle' : 'Annuelle' },
               ],
               tips,
-            })} style={{ background: 'rgb(210,48,48)', borderColor: 'transparent', color: '#fff' }}>
+            })} style={{ background: COLOR, borderColor: 'transparent', color: '#fff' }}>
               <Download className="h-3.5 w-3.5 mr-1.5" />PDF
             </Button>
             <SaveSimulation type="compound" name={`Composés ${fmt(inputs.capital)}€ × ${inputs.years}a`} inputs={inputs as any} results={r as any} />
@@ -157,6 +161,20 @@ function CompoundPageInner() {
           </div>
         </div>
       </div>
+
+      {/* Bon à savoir banner */}
+      {!bannerDismissed && !guidedMode && (
+        <div style={{ marginTop: 16, background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 3 }}>Bon à savoir — Intérêts composés</p>
+            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, lineHeight: 1.5 }}>
+              Même un petit versement mensuel régulier bat un gros versement unique grâce à la capitalisation. Doublez la durée, et vous pouvez tripler le capital final.
+            </p>
+          </div>
+          <button onClick={() => { localStorage.setItem('compound-banner-dismissed', '1'); setBannerDismissed(true) }} style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 2 }} aria-label="Fermer">×</button>
+        </div>
+      )}
 
       {/* Guided mode */}
       {guidedMode && (
@@ -222,6 +240,7 @@ function CompoundPageInner() {
                     <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('rate')(4)}>Fonds € 4%</button>
                     <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('rate')(8)}>ETF ~8%</button>
                   </div>
+                  <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>Réf. S&P 500 : ~10%/an sur 30 ans · MSCI World : ~8%/an (dividendes inclus)</p>
                 </div>
 
                 <div style={{ height: 1, background: 'var(--section-border)' }} />

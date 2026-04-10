@@ -13,59 +13,61 @@ interface Simulation {
   inputs: Record<string, unknown>
 }
 
+const DIFF_COLORS: Record<string, string> = { 'Facile': '#34d399', 'Intermédiaire': '#f59e0b', 'Avancé': '#f87171' }
+
 const CATEGORIES = [
   {
     id: 'placements',
     label: 'Placements',
     modules: [
-      { href: '/dashboard/compound',    type: 'compound',    label: 'Intérêts composés', desc: "Effet boule de neige sur votre capital",              icon: TrendingUp, color: '#34d399', tag: 'Épargne' },
-      { href: '/dashboard/dca',         type: 'dca',         label: 'DCA',               desc: 'Investissement progressif et régulier',               icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne' },
-      { href: '/dashboard/fire',        type: 'fire',        label: 'FI/RE',             desc: "Date d'indépendance financière",                      icon: Flame,      color: '#fb923c', tag: 'Épargne' },
-      { href: '/dashboard/dividends',   type: 'dividends',   label: 'Revenus passifs',   desc: 'Dividendes et rentes sur le long terme',             icon: Coins,      color: '#facc15', tag: 'Épargne' },
-      { href: '/dashboard/benchmark',   type: 'benchmark',   label: 'Benchmarks',        desc: 'Comparez performances aux indices ETF',              icon: BarChart3,  color: '#818cf8', tag: 'Épargne' },
-      { href: '/dashboard/transactions', type: 'transactions', label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU, dividendes et historique',    icon: History,    color: '#38bdf8', tag: 'Épargne' },
+      { href: '/dashboard/compound',    type: 'compound',    label: 'Intérêts composés', desc: "Effet boule de neige sur votre capital",              icon: TrendingUp, color: '#34d399', tag: 'Épargne',    diff: 'Facile' },
+      { href: '/dashboard/dca',         type: 'dca',         label: 'DCA',               desc: 'Investissement progressif et régulier',               icon: RefreshCw,  color: '#38bdf8', tag: 'Épargne',    diff: 'Facile' },
+      { href: '/dashboard/fire',        type: 'fire',        label: 'FI/RE',             desc: "Date d'indépendance financière",                      icon: Flame,      color: '#fb923c', tag: 'Épargne',    diff: 'Intermédiaire' },
+      { href: '/dashboard/dividends',   type: 'dividends',   label: 'Revenus passifs',   desc: 'Dividendes et rentes sur le long terme',             icon: Coins,      color: '#facc15', tag: 'Épargne',    diff: 'Intermédiaire' },
+      { href: '/dashboard/benchmark',   type: 'benchmark',   label: 'Benchmarks',        desc: 'Comparez performances aux indices ETF',              icon: BarChart3,  color: '#818cf8', tag: 'Épargne',    diff: 'Intermédiaire' },
+      { href: '/dashboard/transactions', type: 'transactions', label: "Carnet d'ordres", desc: 'Ordres boursiers, PRU, dividendes et historique',    icon: History,    color: '#38bdf8', tag: 'Épargne',    diff: 'Avancé' },
     ],
   },
   {
     id: 'immobilier',
     label: 'Immobilier',
     modules: [
-      { href: '/dashboard/buyrent',  type: 'buyrent',  label: 'Acheter vs Louer',     desc: 'Comparez les deux stratégies résidentielles',        icon: Home,      color: '#a78bfa', tag: 'Immo' },
-      { href: '/dashboard/mortgage', type: 'mortgage', label: 'Prêt immobilier',      desc: "Mensualités, TAEG et coût total",                    icon: Building2, color: '#f472b6', tag: 'Immo' },
-      { href: '/dashboard/rental',   type: 'rental',   label: 'Rentabilité locative', desc: 'Cashflow net, rendement brut/net, ROI',              icon: Wallet,    color: '#2dd4bf', tag: 'Immo' },
+      { href: '/dashboard/buyrent',  type: 'buyrent',  label: 'Acheter vs Louer',     desc: 'Comparez les deux stratégies résidentielles',        icon: Home,      color: '#a78bfa', tag: 'Immo',   diff: 'Intermédiaire' },
+      { href: '/dashboard/mortgage', type: 'mortgage', label: 'Prêt immobilier',      desc: "Mensualités, TAEG et coût total",                    icon: Building2, color: '#f472b6', tag: 'Immo',   diff: 'Facile' },
+      { href: '/dashboard/rental',   type: 'rental',   label: 'Rentabilité locative', desc: 'Cashflow net, rendement brut/net, ROI',              icon: Wallet,    color: '#2dd4bf', tag: 'Immo',   diff: 'Intermédiaire' },
     ],
   },
   {
     id: 'fiscalite',
     label: 'Fiscalité & Retraite',
     modules: [
-      { href: '/dashboard/tax',              type: 'tax',              label: 'Impôts IR',          desc: 'Barème IR 2025, TMI et optimisation fiscale',           icon: Receipt,    color: '#fb7185', tag: 'Fiscal' },
-      { href: '/dashboard/flat-tax',         type: 'flat-tax',         label: 'Flat Tax vs Barème', desc: 'PFU 30% vs barème progressif',                         icon: Receipt,    color: '#f97316', tag: 'Fiscal' },
-      { href: '/dashboard/envelope-compare', type: 'envelope-compare', label: 'PEA vs CTO vs AV',  desc: 'Fiscalité de chaque enveloppe sur 20 ans',              icon: Wallet,     color: '#c084fc', tag: 'Fiscal' },
-      { href: '/dashboard/retirement',       type: 'retirement',       label: 'Retraite',           desc: 'Projection pension CNAV + Agirc-Arrco',                icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal' },
-      { href: '/dashboard/succession',       type: 'succession',       label: 'Succession & Don.',  desc: 'Droits de succession et donations optimales',           icon: Users,      color: '#60a5fa', tag: 'Fiscal' },
+      { href: '/dashboard/tax',              type: 'tax',              label: 'Impôts IR',          desc: 'Barème IR 2025, TMI et optimisation fiscale',           icon: Receipt,    color: '#fb7185', tag: 'Fiscal', diff: 'Facile' },
+      { href: '/dashboard/flat-tax',         type: 'flat-tax',         label: 'Flat Tax vs Barème', desc: 'PFU 30% vs barème progressif',                         icon: Receipt,    color: '#f97316', tag: 'Fiscal', diff: 'Intermédiaire' },
+      { href: '/dashboard/envelope-compare', type: 'envelope-compare', label: 'PEA vs CTO vs AV',  desc: 'Fiscalité de chaque enveloppe sur 20 ans',              icon: Wallet,     color: '#c084fc', tag: 'Fiscal', diff: 'Intermédiaire' },
+      { href: '/dashboard/retirement',       type: 'retirement',       label: 'Retraite',           desc: 'Projection pension CNAV + Agirc-Arrco',                icon: PiggyBank,  color: '#fbbf24', tag: 'Fiscal', diff: 'Avancé' },
+      { href: '/dashboard/succession',       type: 'succession',       label: 'Succession & Don.',  desc: 'Droits de succession et donations optimales',           icon: Users,      color: '#60a5fa', tag: 'Fiscal', diff: 'Avancé' },
     ],
   },
   {
     id: 'budget',
     label: 'Budget & Épargne',
     modules: [
-      { href: '/dashboard/savings-rate',    type: 'savings-rate',    label: "Taux d'épargne",  desc: "Capacité d'épargne et trajectoire vers l'IF",          icon: Percent,    color: '#818cf8', tag: 'Budget' },
-      { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Règle d'or pour équilibrer vos dépenses",              icon: Calculator, color: '#a3e635', tag: 'Budget' },
-      { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Coussin de sécurité optimal',                          icon: ShieldCheck, color: '#34d399', tag: 'Budget' },
-      { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Coût total et capacité de remboursement',              icon: CreditCard, color: '#fb7185', tag: 'Budget' },
+      { href: '/dashboard/savings-rate',    type: 'savings-rate',    label: "Taux d'épargne",  desc: "Capacité d'épargne et trajectoire vers l'IF",          icon: Percent,    color: '#818cf8', tag: 'Budget', diff: 'Facile' },
+      { href: '/dashboard/budget',          type: 'budget',          label: 'Budget 50/30/20', desc: "Règle d'or pour équilibrer vos dépenses",              icon: Calculator, color: '#a3e635', tag: 'Budget', diff: 'Facile' },
+      { href: '/dashboard/emergency-fund',  type: 'emergency-fund',  label: 'Épargne urgence', desc: 'Coussin de sécurité optimal',                          icon: ShieldCheck, color: '#34d399', tag: 'Budget', diff: 'Facile' },
+      { href: '/dashboard/consumer-credit', type: 'consumer-credit', label: 'Crédit conso',    desc: 'Coût total et capacité de remboursement',              icon: CreditCard, color: '#fb7185', tag: 'Budget', diff: 'Facile' },
     ],
   },
   {
     id: 'avances',
     label: 'Outils avancés',
     modules: [
-      { href: '/dashboard/livrets',   type: 'livrets',   label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP, CEL vs ETF',              icon: Banknote,     color: '#34d399', tag: 'Épargne' },
-      { href: '/dashboard/frais',     type: 'frais',     label: 'Impact des frais',    desc: 'ETF 0.2% vs fonds actif 2% sur 20 ans',        icon: TrendingDown, color: '#38bdf8', tag: 'Placements' },
-      { href: '/dashboard/inflation', type: 'inflation', label: 'Inflation & PA',      desc: 'Taux réel Fisher, érosion du pouvoir d\'achat', icon: LineChart,    color: '#fb923c', tag: 'Épargne' },
-      { href: '/dashboard/plusvalue', type: 'plusvalue', label: 'Plus-value immo.',    desc: 'Abattements IR/PS, surtaxe, durée optimale',    icon: MapPin,       color: '#a78bfa', tag: 'Immo' },
-      { href: '/dashboard/scpi',      type: 'scpi',      label: 'SCPI',                desc: 'Rendement net de fiscalité foncière',           icon: Building2,    color: '#f59e0b', tag: 'Immo' },
-      { href: '/dashboard/viager',    type: 'viager',    label: 'Viager',              desc: 'Bouquet, rente et seuil d\'équilibre actuariel', icon: Users,       color: '#e879f9', tag: 'Immo' },
+      { href: '/dashboard/livrets',   type: 'livrets',   label: 'Livrets réglementés', desc: 'Livret A, LDDS, LEP, CEL vs ETF',              icon: Banknote,     color: '#34d399', tag: 'Épargne',    diff: 'Facile' },
+      { href: '/dashboard/frais',     type: 'frais',     label: 'Impact des frais',    desc: 'ETF 0.2% vs fonds actif 2% sur 20 ans',        icon: TrendingDown, color: '#38bdf8', tag: 'Placements', diff: 'Intermédiaire' },
+      { href: '/dashboard/inflation', type: 'inflation', label: 'Inflation & PA',      desc: 'Taux réel Fisher, érosion du pouvoir d\'achat', icon: LineChart,    color: '#fb923c', tag: 'Épargne',    diff: 'Intermédiaire' },
+      { href: '/dashboard/plusvalue', type: 'plusvalue', label: 'Plus-value immo.',    desc: 'Abattements IR/PS, surtaxe, durée optimale',    icon: MapPin,       color: '#a78bfa', tag: 'Immo',       diff: 'Avancé' },
+      { href: '/dashboard/scpi',      type: 'scpi',      label: 'SCPI',                desc: 'Rendement net de fiscalité foncière',           icon: Building2,    color: '#f59e0b', tag: 'Immo',       diff: 'Avancé' },
+      { href: '/dashboard/viager',    type: 'viager',    label: 'Viager',              desc: 'Bouquet, rente et seuil d\'équilibre actuariel', icon: Users,       color: '#e879f9', tag: 'Immo',       diff: 'Avancé' },
     ],
   },
 ]
@@ -266,9 +268,10 @@ export default function SimulateursPage() {
 
                           {/* Content */}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
                               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
                               <span style={{ fontSize: 9, color: mod.color, background: mod.color + '18', padding: '1px 5px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>{mod.tag}</span>
+                              {(() => { const dc = DIFF_COLORS[mod.diff]; return <span style={{ fontSize: 9, color: dc, background: dc + '18', padding: '1px 5px', borderRadius: 4, fontWeight: 600, flexShrink: 0 }}>{mod.diff}</span> })()}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                               <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>

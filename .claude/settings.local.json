@@ -63,7 +63,8 @@
       "Bash(npx --yes tsc --noEmit --skipLibCheck)",
       "Bash(node ./node_modules/.bin/tsc --noEmit --skipLibCheck)",
       "Bash(./node_modules/typescript/bin/tsc --noEmit --skipLibCheck)",
-      "Bash(timeout 25 node -e ':*)"
+      "Bash(timeout 25 node -e ':*)",
+      "Bash(node ./node_modules/typescript/bin/tsc --noEmit --skipLibCheck)"
     ]
   }
 }

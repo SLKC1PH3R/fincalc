@@ -195,7 +195,7 @@ function RetirementPageInner() {
 
       {/* 3-column grid */}
       {!guidedMode && (
-        <div style={{ display: 'grid', gridTemplateColumns: '270px 1fr 290px', gap: 16, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '310px 1fr 290px', gap: 16, alignItems: 'start' }}>
 
           {/* LEFT — sticky */}
           <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>

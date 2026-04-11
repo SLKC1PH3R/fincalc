@@ -332,421 +332,384 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '20px 24px 48px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--content-bg)' }}>
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
-        <div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-            <Link href="/dashboard/patrimoine" style={{ color: 'var(--text-subtle)', textDecoration: 'none' }}>Mon Patrimoine</Link>
-            <span style={{ opacity: 0.4 }}>›</span>
-            <span style={{ color: catCfg.color, fontWeight: 600 }}>{catCfg.label}</span>
-          </div>
+      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--section-border)', flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Link href="/dashboard/patrimoine" style={{ color: 'var(--text-subtle)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+          <span style={{ opacity: 0.4 }}>›</span>
+          <span style={{ color: catCfg.color, fontWeight: 600 }}>{catCfg.label}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>{catCfg.label}</h1>
             <span style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 400 }}>{catCfg.description}</span>
           </div>
+          <Button onClick={openModal} size="sm" style={{ gap: 6, flexShrink: 0 }}>
+            <Plus className="h-4 w-4" />Ajouter
+          </Button>
         </div>
-        <Button onClick={openModal} size="sm" style={{ gap: 6, flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />Ajouter
-        </Button>
       </div>
-
-      {/* ── KPI Strip ── */}
-      {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, flexShrink: 0 }}>
-          {[
-            {
-              label: 'Valeur totale',
-              value: fmtCompact(totalValue),
-              sub: `${envelopes.length} enveloppe${envelopes.length > 1 ? 's' : ''}`,
-              color: catCfg.color, highlight: true,
-              badge: pricesLoading ? '…' : Object.keys(livePrices).length > 0 ? 'LIVE' : null,
-              badgeColor: pricesLoading ? catCfg.color : '#34d399',
-            },
-            {
-              label: 'Capital investi', value: fmtCompact(totalInvested),
-              sub: 'Coût de revient', color: 'var(--text-muted-c)', highlight: false, badge: null, badgeColor: '',
-            },
-            {
-              label: hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance',
-              value: hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—',
-              sub: hasPLData ? `${pl >= 0 ? '+' : ''}${plPct.toFixed(1)}% depuis l'ouverture` : '',
-              color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--text-subtle)', highlight: hasPLData, badge: null, badgeColor: '',
-            },
-          ].map((k, i) => (
-            <div key={i} style={{
-              padding: '14px 18px', borderRadius: 12,
-              background: k.highlight ? `linear-gradient(135deg, ${k.color}10, transparent)` : 'var(--card-dark)',
-              border: `1px solid ${k.highlight ? k.color + '30' : 'var(--card-dark-border)'}`,
-              position: 'relative', overflow: 'hidden',
-            }}>
-              {k.highlight && <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${k.color}14, transparent)`, pointerEvents: 'none' }} />}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
-                <span style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>{k.label}</span>
-                {k.badge && <span style={{ fontSize: 9, color: k.badgeColor, background: k.badgeColor + '18', padding: '1px 5px', borderRadius: 3, fontWeight: 600, border: `1px solid ${k.badgeColor}30` }}>{k.badge}</span>}
-              </div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: k.highlight ? k.color : 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{k.value}</div>
-              {k.sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── Chart + Side panel ── */}
-      {!loading && envelopes.length > 0 && mounted && totalValue > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 12, flexShrink: 0 }}>
-
-          {/* Chart */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8, flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>Évolution du portefeuille</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 11, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>
-                    {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)}
-                  </span>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%) sur la période</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 2, background: 'rgba(255,255,255,0.04)', padding: 3, borderRadius: 8 }}>
-                {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
-                  <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 600, background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
-                    {r.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={140}>
-              <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="evolGradCat" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={catCfg.color} stopOpacity={0.22} />
-                    <stop offset="100%" stopColor={catCfg.color} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                <XAxis dataKey="date" tick={{ fontSize: 10, fill: chartTheme.tick }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                <YAxis domain={[evolMin, evolMax]} tickFormatter={v => fmtCompact(v as number)} tick={{ fontSize: 9, fill: chartTheme.tick }} axisLine={false} tickLine={false} width={52} />
-                <Tooltip content={({ active, payload }) => {
-                  if (!active || !payload?.length) return null
-                  return (
-                    <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}55`, borderRadius: 8, padding: '8px 14px' }}>
-                      <div style={{ color: catCfg.color, fontSize: 11, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
-                      <div style={{ color: 'var(--text-primary)', fontSize: 13, fontWeight: 700 }}>{fmtCompact(payload[0]?.value as number)}</div>
-                    </div>
-                  )
-                }} />
-                <Area type="monotone" dataKey="value" stroke={catCfg.color} strokeWidth={2.5} fill="url(#evolGradCat)" dot={false} activeDot={{ r: 4, fill: catCfg.color, strokeWidth: 0 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Right: Répartition + Conseil */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {/* Répartition */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '12px 14px', flex: 1 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Répartition</div>
-              {envelopes.map(env => {
-                const isImmo = env.type === 'IMMOBILIER'
-                const val = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
-                const pct = totalValue > 0 ? (val / totalValue) * 100 : 0
-                const envColor = envColorMap.get(env.id) ?? ENVELOPE_TYPE_CONFIG[env.type].color
-                return (
-                  <div key={env.id} style={{ marginBottom: 9 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <div style={{ width: 6, height: 6, borderRadius: 2, background: envColor, flexShrink: 0 }} />
-                        <span style={{ fontSize: 10, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 130 }}>{env.name}</span>
-                      </div>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: envColor, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{pct.toFixed(0)}%</span>
-                    </div>
-                    <div style={{ height: 3, background: 'var(--section-border)', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Conseil */}
-            <div style={{ background: `linear-gradient(135deg, ${catCfg.color}10, rgba(255,255,255,0.02))`, border: `1px solid ${catCfg.color}22`, borderRadius: 12, padding: '12px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span>💡</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: catCfg.color }}>Conseil</span>
-              </div>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Envelopes header + sort ── */}
-      {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Enveloppes</span>
-            <span style={{ fontSize: 10, padding: '1px 7px', borderRadius: 99, background: 'rgba(255,255,255,0.06)', color: 'var(--text-subtle)' }}>{envelopes.length}</span>
-          </div>
-          <div style={{ display: 'flex', gap: 5 }}>
-            {(['valeur', 'performance', 'nom'] as const).map(s => (
-              <button key={s} onClick={() => setSortBy(s)} style={{ padding: '3px 9px', borderRadius: 6, border: `1px solid ${sortBy === s ? catCfg.color + '40' : 'var(--card-dark-border)'}`, background: sortBy === s ? catCfg.color + '12' : 'transparent', color: sortBy === s ? catCfg.color : 'var(--text-subtle)', fontSize: 11, cursor: 'pointer', fontWeight: sortBy === s ? 600 : 400, transition: 'all 0.15s', textTransform: 'capitalize' }}>{s}</button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── Empty state ── */}
       {!loading && envelopes.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--card-dark)', border: '2px dashed var(--card-dark-border)', borderRadius: 16 }}>
-          <BarChart3 style={{ width: 40, height: 40, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
-            Aucune enveloppe {catCfg.label.toLowerCase()} pour l'instant
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--card-dark)', border: '2px dashed var(--card-dark-border)', borderRadius: 16, maxWidth: 420 }}>
+            <BarChart3 style={{ width: 40, height: 40, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+              Aucune enveloppe {catCfg.label.toLowerCase()} pour l'instant
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-subtle)', marginBottom: 20 }}>Ajoutez votre premier actif dans cette catégorie</div>
+            <Button onClick={openModal} size="sm"><Plus className="h-4 w-4 mr-2" />Ajouter une enveloppe</Button>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-subtle)', marginBottom: 20 }}>Ajoutez votre premier actif dans cette catégorie</div>
-          <Button onClick={openModal} size="sm"><Plus className="h-4 w-4 mr-2" />Ajouter une enveloppe</Button>
         </div>
       )}
 
-      {/* ── Envelopes grid ── */}
+      {/* ── 3-col layout ── */}
       {!loading && envelopes.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-          {sortedEnvelopes.map(env => {
-            const cfg = ENVELOPE_TYPE_CONFIG[env.type]
-            const Icon = cfg.icon
-            const envColor = envColorMap.get(env.id) ?? cfg.color
-            const isImmo = env.type === 'IMMOBILIER'
-            const value = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
-            const invested = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
-            const hasPrices = env.positions.some(p => livePrices[p.symbol])
-            const hasPL = canShowPL(env, value, invested, hasPrices) && invested > 0
-            const plEnv = value - invested
-            const cap = getCapProgress(env)
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 20px 32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr 270px', gap: 16, alignItems: 'start' }}>
 
-            return (
-              <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none', display: 'flex' }}>
-                <div
-                  style={{ padding: '14px 16px', borderRadius: 13, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.18s, background 0.18s', width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '44'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
-                >
-                  {/* Top row */}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 9, background: envColor + '18', border: `1px solid ${envColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Icon style={{ width: 14, height: 14, color: envColor }} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>{env.name}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3 }}>
-                          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{cfg.label}</span>
-                          {!isImmo && MARKET_BASED_TYPES.includes(env.type) && env.positions.length > 0 && (
-                            hasPrices
-                              ? <span style={{ fontSize: 9, color: '#34d399', background: '#34d39918', padding: '1px 5px', borderRadius: 3, fontWeight: 600, border: '1px solid #34d39930' }}>LIVE</span>
-                              : <span style={{ fontSize: 9, color: 'var(--text-subtle)', background: 'var(--section-border)', padding: '1px 5px', borderRadius: 3 }}>PRU×qty</span>
+            {/* ── LEFT: Envelopes list ── */}
+            <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Header + sort */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Enveloppes</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 99, background: catCfg.color + '18', color: catCfg.color, fontWeight: 700 }}>{envelopes.length}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 3 }}>
+                  {(['valeur', 'perf', 'nom'] as const).map(s => {
+                    const key = s === 'perf' ? 'performance' : s as 'valeur' | 'nom'
+                    return (
+                      <button key={s} onClick={() => setSortBy(key)} style={{ padding: '2px 7px', borderRadius: 5, border: `1px solid ${sortBy === key ? catCfg.color + '40' : 'var(--card-dark-border)'}`, background: sortBy === key ? catCfg.color + '12' : 'transparent', color: sortBy === key ? catCfg.color : 'var(--text-subtle)', fontSize: 10, cursor: 'pointer', fontWeight: sortBy === key ? 600 : 400 }}>{s}</button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Compact envelope cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {sortedEnvelopes.map(env => {
+                  const cfg = ENVELOPE_TYPE_CONFIG[env.type]
+                  const Icon = cfg.icon
+                  const envColor = envColorMap.get(env.id) ?? cfg.color
+                  const isImmo = env.type === 'IMMOBILIER'
+                  const value = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
+                  const invested = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
+                  const hasPrices = env.positions.some(p => livePrices[p.symbol])
+                  const hasPL = canShowPL(env, value, invested, hasPrices) && invested > 0
+                  const plEnv = value - invested
+                  const pct = totalValue > 0 ? (value / totalValue) * 100 : 0
+                  return (
+                    <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
+                      <div
+                        style={{ padding: '10px 12px', borderRadius: 11, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '55'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: envColor + '18', border: `1px solid ${envColor}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Icon style={{ width: 12, height: 12, color: envColor }} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{env.name}</div>
+                            <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{env.type}</div>
+                          </div>
+                          {mounted && <MiniSparkline color={envColor} seed={value + invested + env.id.charCodeAt(0)} />}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+                            {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                          </span>
+                          {hasPL && (
+                            <span style={{ fontSize: 10, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
+                              {plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)}%
+                            </span>
                           )}
+                          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{pct.toFixed(0)}%</span>
+                        </div>
+                        <div style={{ marginTop: 5, height: 2, borderRadius: 99, background: 'var(--section-border)', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
                         </div>
                       </div>
-                    </div>
-                    {mounted && <MiniSparkline color={envColor} seed={value + invested + env.id.charCodeAt(0)} />}
+                    </Link>
+                  )
+                })}
+
+                {/* Add card */}
+                <button onClick={openModal}
+                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--card-dark-border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s', width: '100%', textAlign: 'left' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '55'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '05' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                >
+                  <div style={{ width: 28, height: 28, borderRadius: 7, border: '1.5px dashed var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus style={{ width: 13, height: 13, color: 'var(--text-subtle)' }} />
                   </div>
+                  <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Ajouter une enveloppe</span>
+                </button>
+              </div>
+            </div>
 
-                  {/* Value + P&L */}
-                  <div>
-                    <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginBottom: 3 }}>
-                      {isImmo ? 'Valeur du bien' : 'Valeur actuelle'}
+            {/* ── CENTER: KPIs + chart + répartition + table ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+              {/* KPI strip */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {[
+                  {
+                    label: 'Valeur totale',
+                    value: fmtCompact(totalValue),
+                    sub: `${envelopes.length} enveloppe${envelopes.length > 1 ? 's' : ''}`,
+                    color: catCfg.color, highlight: true,
+                    badge: pricesLoading ? '…' : Object.keys(livePrices).length > 0 ? 'LIVE' : null,
+                    badgeColor: pricesLoading ? catCfg.color : '#34d399',
+                  },
+                  {
+                    label: 'Capital investi', value: fmtCompact(totalInvested),
+                    sub: 'Coût de revient', color: 'var(--text-muted-c)', highlight: false, badge: null, badgeColor: '',
+                  },
+                  {
+                    label: hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance',
+                    value: hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—',
+                    sub: hasPLData ? `${pl >= 0 ? '+' : ''}${plPct.toFixed(1)}% depuis l'ouverture` : '',
+                    color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--text-subtle)', highlight: hasPLData, badge: null, badgeColor: '',
+                  },
+                ].map((k, i) => (
+                  <div key={i} style={{ padding: '12px 16px', borderRadius: 12, background: k.highlight ? `linear-gradient(135deg, ${k.color}10, transparent)` : 'var(--card-dark)', border: `1px solid ${k.highlight ? k.color + '30' : 'var(--card-dark-border)'}`, position: 'relative', overflow: 'hidden' }}>
+                    {k.highlight && <div style={{ position: 'absolute', top: -20, right: -10, width: 60, height: 60, borderRadius: '50%', background: `radial-gradient(ellipse, ${k.color}14, transparent)`, pointerEvents: 'none' }} />}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>{k.label}</span>
+                      {k.badge && <span style={{ fontSize: 9, color: k.badgeColor, background: k.badgeColor + '18', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>{k.badge}</span>}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>
-                        {value > 0 ? (isImmo ? fmt(value) : fmtCompact(value)) : <span style={{ color: 'var(--text-subtle)', fontSize: 12 }}>Données à saisir</span>}
-                      </span>
-                      {hasPL && (
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 7px', borderRadius: 99, background: plEnv >= 0 ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)', border: `1px solid ${plEnv >= 0 ? 'rgba(52,211,153,0.2)' : 'rgba(248,113,113,0.2)'}` }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>{plEnv >= 0 ? '+' : ''}{fmtCompact(plEnv)}</span>
-                          <span style={{ fontSize: 10, color: plEnv >= 0 ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.7)' }}>{plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)}%</span>
-                        </div>
-                      )}
-                    </div>
+                    <div style={{ fontSize: 19, fontWeight: 800, color: k.highlight ? k.color : 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 3 }}>{k.value}</div>
+                    {k.sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>}
                   </div>
-
-                  {/* Cap bar */}
-                  {cap && (
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{env.type === 'PEA' ? 'Versements / plafond' : 'Solde / plafond'}</span>
-                        <span style={{ fontSize: 10, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(cap.current)} / {fmtCompact(cap.max)}</span>
-                      </div>
-                      <div style={{ height: 4, borderRadius: 99, background: 'var(--section-border)', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${Math.min(100, (cap.current / cap.max) * 100).toFixed(1)}%`, background: `linear-gradient(90deg, ${envColor}88, ${envColor})`, borderRadius: 99 }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3 }}>
-                        <span style={{ fontSize: 9, color: 'var(--text-subtle)' }}>{Math.round((cap.current / cap.max) * 100)}% utilisé</span>
-                        <span style={{ fontSize: 9, color: 'var(--text-subtle)' }}>Reste {fmtCompact(cap.max - cap.current)}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Footer */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid var(--section-border)' }}>
-                    <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{env.positionCount} position{env.positionCount > 1 ? 's' : ''}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: envColor, fontWeight: 600 }}>
-                      Voir le détail <span style={{ fontSize: 13 }}>→</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-
-          {/* Add card */}
-          <button onClick={openModal}
-            style={{ padding: '14px 16px', borderRadius: 13, border: '2px dashed var(--card-dark-border)', background: 'transparent', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 150, transition: 'all 0.18s' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '55'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '06' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-          >
-            <div style={{ width: 36, height: 36, borderRadius: 10, border: '2px dashed var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, color: 'var(--text-subtle)' }}>+</div>
-            <div style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 500 }}>Ajouter une enveloppe</div>
-          </button>
-        </div>
-      )}
-
-      {/* ── Comparative table ── */}
-      {!loading && envelopes.length > 1 && (
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Comparatif des enveloppes</span>
-            <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                {['Enveloppe', 'Type', 'Valeur', 'Investi', 'P&L', 'Perf.', 'Part'].map((h, i) => (
-                  <th key={i} style={{ padding: '9px 16px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</th>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {sortedEnvelopes.map(env => {
-                const envColor = envColorMap.get(env.id) ?? ENVELOPE_TYPE_CONFIG[env.type].color
-                const isImmo = env.type === 'IMMOBILIER'
-                const val = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
-                const inv = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
-                const hasPrices = env.positions.some(p => livePrices[p.symbol])
-                const hasPL = canShowPL(env, val, inv, hasPrices) && inv > 0
-                const plAbs = val - inv
-                const plPctEnv = inv > 0 ? (plAbs / inv) * 100 : 0
-                const part = totalValue > 0 ? (val / totalValue) * 100 : 0
-                return (
-                  <tr key={env.id}
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = envColor + '08'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-                    onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}
-                  >
-                    <td style={{ padding: '10px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 24, height: 24, borderRadius: 6, background: envColor + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: 2, background: envColor }} />
-                        </div>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{env.name}</span>
+              </div>
+
+              {/* Evolution chart */}
+              {mounted && totalValue > 0 && (
+                <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8, flexWrap: 'wrap' }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>Évolution du portefeuille</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 11, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>
+                          {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)}
+                        </span>
+                        <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%) sur la période</span>
                       </div>
-                    </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                      <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 99, background: envColor + '18', color: envColor, fontWeight: 600 }}>{env.type}</span>
-                    </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: plAbs >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
-                      {hasPL ? `${plAbs >= 0 ? '+' : ''}${fmtCompact(plAbs)}` : '—'}
-                    </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                      {hasPL ? (
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 7px', borderRadius: 99, background: plPctEnv >= 0 ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)', color: plPctEnv >= 0 ? '#34d399' : '#f87171', fontSize: 11, fontWeight: 700 }}>
-                          {plPctEnv >= 0 ? '↑' : '↓'} {Math.abs(plPctEnv).toFixed(1)}%
+                    </div>
+                    <div style={{ display: 'flex', gap: 2, background: 'rgba(255,255,255,0.04)', padding: 3, borderRadius: 8 }}>
+                      {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
+                        <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 600, background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+                          {r.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={140}>
+                    <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="evolGradCat" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={catCfg.color} stopOpacity={0.22} />
+                          <stop offset="100%" stopColor={catCfg.color} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                      <XAxis dataKey="date" tick={{ fontSize: 10, fill: chartTheme.tick }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                      <YAxis domain={[evolMin, evolMax]} tickFormatter={v => fmtCompact(v as number)} tick={{ fontSize: 9, fill: chartTheme.tick }} axisLine={false} tickLine={false} width={52} />
+                      <Tooltip content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null
+                        return (
+                          <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}55`, borderRadius: 8, padding: '8px 14px' }}>
+                            <div style={{ color: catCfg.color, fontSize: 11, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
+                            <div style={{ color: 'var(--text-primary)', fontSize: 13, fontWeight: 700 }}>{fmtCompact(payload[0]?.value as number)}</div>
+                          </div>
+                        )
+                      }} />
+                      <Area type="monotone" dataKey="value" stroke={catCfg.color} strokeWidth={2.5} fill="url(#evolGradCat)" dot={false} activeDot={{ r: 4, fill: catCfg.color, strokeWidth: 0 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Répartition */}
+              {envelopes.length > 1 && (
+                <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 16px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Répartition</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {envelopes.map(env => {
+                      const isImmo = env.type === 'IMMOBILIER'
+                      const val = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
+                      const pct = totalValue > 0 ? (val / totalValue) * 100 : 0
+                      const envColor = envColorMap.get(env.id) ?? ENVELOPE_TYPE_CONFIG[env.type].color
+                      return (
+                        <div key={env.id}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                              <div style={{ width: 6, height: 6, borderRadius: 2, background: envColor, flexShrink: 0 }} />
+                              <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{env.name}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmtCompact(val)}</span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: envColor, minWidth: 32, textAlign: 'right' }}>{pct.toFixed(0)}%</span>
+                            </div>
+                          </div>
+                          <div style={{ height: 3, background: 'var(--section-border)', borderRadius: 99, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
+                          </div>
                         </div>
-                      ) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
-                    </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
-                        <div style={{ width: 44, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' }}>
-                          <div style={{ width: `${part}%`, height: '100%', background: envColor, borderRadius: 99 }} />
-                        </div>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)', minWidth: 28, textAlign: 'right' }}>{part.toFixed(0)}%</span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Comparative table */}
+              {envelopes.length > 1 && (
+                <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Comparatif des enveloppes</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
+                  </div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        {['Enveloppe', 'Type', 'Valeur', 'Investi', 'P&L', 'Perf.', 'Part'].map((h, i) => (
+                          <th key={i} style={{ padding: '9px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedEnvelopes.map(env => {
+                        const envColor = envColorMap.get(env.id) ?? ENVELOPE_TYPE_CONFIG[env.type].color
+                        const isImmo = env.type === 'IMMOBILIER'
+                        const val = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
+                        const inv = isImmo ? Number(env.metadata.purchasePrice ?? 0) : computeInvested(env)
+                        const hasPrices = env.positions.some(p => livePrices[p.symbol])
+                        const hasPL = canShowPL(env, val, inv, hasPrices) && inv > 0
+                        const plAbs = val - inv
+                        const plPctEnv = inv > 0 ? (plAbs / inv) * 100 : 0
+                        const part = totalValue > 0 ? (val / totalValue) * 100 : 0
+                        return (
+                          <tr key={env.id}
+                            style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = envColor + '08'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                            onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}
+                          >
+                            <td style={{ padding: '9px 14px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                                <div style={{ width: 8, height: 8, borderRadius: 2, background: envColor, flexShrink: 0 }} />
+                                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{env.name}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 99, background: envColor + '18', color: envColor, fontWeight: 600 }}>{env.type}</span>
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: plAbs >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                              {hasPL ? `${plAbs >= 0 ? '+' : ''}${fmtCompact(plAbs)}` : '—'}
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                              {hasPL ? (
+                                <span style={{ fontSize: 11, fontWeight: 700, color: plPctEnv >= 0 ? '#34d399' : '#f87171' }}>
+                                  {plPctEnv >= 0 ? '↑' : '↓'} {Math.abs(plPctEnv).toFixed(1)}%
+                                </span>
+                              ) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                            </td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
+                                <div style={{ width: 36, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' }}>
+                                  <div style={{ width: `${part}%`, height: '100%', background: envColor, borderRadius: 99 }} />
+                                </div>
+                                <span style={{ fontSize: 10, color: 'var(--text-muted-c)', minWidth: 26, textAlign: 'right' }}>{part.toFixed(0)}%</span>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
+                        <td colSpan={2} style={{ padding: '9px 14px', fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total</td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 800, color: catCfg.color, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                          {hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—'}
+                        </td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                          {hasPLData && (
+                            <span style={{ fontSize: 11, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171' }}>
+                              {pl >= 0 ? '↑' : '↓'} {Math.abs(plPct).toFixed(1)}%
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 11, color: 'var(--text-subtle)' }}>100%</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* ── RIGHT: Insights ── */}
+            <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ background: `linear-gradient(135deg, ${catCfg.color}08, transparent)`, border: `1px solid ${catCfg.color}20`, borderRadius: 14, padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
+                  <span style={{ fontSize: 15 }}>📊</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: catCfg.color }}>Insights & Analyses</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {bestEnv && (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                        <span style={{ fontSize: 13 }}>🏆</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Meilleur performer</span>
                       </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-            <tfoot>
-              <tr style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-                <td colSpan={2} style={{ padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total</td>
-                <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 13, fontWeight: 800, color: catCfg.color, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</td>
-                <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</td>
-                <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
-                  {hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—'}
-                </td>
-                <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                  {hasPLData && (
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '3px 9px', borderRadius: 99, background: pl >= 0 ? 'rgba(52,211,153,0.12)' : 'rgba(248,113,113,0.12)', color: pl >= 0 ? '#34d399' : '#f87171', fontSize: 12, fontWeight: 800 }}>
-                      {pl >= 0 ? '↑' : '↓'} {Math.abs(plPct).toFixed(1)}%
+                      <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
+                        <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>
+                        {' '}
+                        {(() => {
+                          const inv = computeInvested(bestEnv)
+                          const val = bestEnv.type === 'IMMOBILIER' ? Number(bestEnv.metadata.currentValue ?? 0) : computeMarketValue(bestEnv, livePrices)
+                          const hp = bestEnv.positions.some(p => livePrices[p.symbol])
+                          if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) return `avec +${((val - inv) / inv * 100).toFixed(1)}% de performance`
+                          return `avec ${fmtCompact(val)} de valeur actuelle`
+                        })()}
+                      </p>
                     </div>
                   )}
-                </td>
-                <td style={{ padding: '10px 16px', textAlign: 'right', fontSize: 11, color: 'var(--text-subtle)' }}>100%</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      )}
-
-      {/* ── Insights full width ── */}
-      {!loading && envelopes.length > 0 && (
-        <div style={{ background: `linear-gradient(135deg, ${catCfg.color}08, rgba(255,255,255,0.02))`, border: `1px solid ${catCfg.color}20`, borderRadius: 14, padding: '16px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <span style={{ fontSize: 14 }}>📊</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: catCfg.color }}>Insights & Analyses</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
-            {bestEnv && (
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span style={{ fontSize: 13 }}>🏆</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Meilleur performer</span>
+                  <div style={{ height: 1, background: 'var(--section-border)' }} />
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                      <span style={{ fontSize: 13 }}>📈</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Tendance</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
+                      {pl > 100
+                        ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
+                        : pl < -100
+                        ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez les allocations.`
+                        : 'Vos actifs sont stables, sans variation significative.'}
+                    </p>
+                  </div>
+                  <div style={{ height: 1, background: 'var(--section-border)' }} />
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+                      <span style={{ fontSize: 13 }}>💡</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Conseil</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
+                  </div>
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
-                  <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>
-                  {' '}
-                  {(() => {
-                    const inv = computeInvested(bestEnv)
-                    const val = bestEnv.type === 'IMMOBILIER' ? Number(bestEnv.metadata.currentValue ?? 0) : computeMarketValue(bestEnv, livePrices)
-                    const hp = bestEnv.positions.some(p => livePrices[p.symbol])
-                    if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) return `avec +${((val - inv) / inv * 100).toFixed(1)}% de performance`
-                    return `avec ${fmtCompact(val)} de valeur actuelle`
-                  })()}
-                </p>
               </div>
-            )}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 13 }}>📈</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Tendance</span>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
-                {pl > 100
-                  ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
-                  : pl < -100
-                  ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez les allocations.`
-                  : 'Vos actifs sont stables, sans variation significative.'}
-              </p>
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontSize: 13 }}>💡</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Conseil</span>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
-            </div>
+
           </div>
         </div>
       )}

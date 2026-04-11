@@ -272,6 +272,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           textDecoration: 'none',
           background: 'none',
         }}
+        onClick={() => { if (expandable && !expanded && onToggleExpand) onToggleExpand() }}
         onMouseEnter={e => {
           if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)'
           if (collapsed) {

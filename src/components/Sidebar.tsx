@@ -421,13 +421,11 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
         {/* ── Logo / header — 65px to match topbar ── */}
         <div className={cn(
-          'flex-shrink-0 transition-all duration-200',
-          collapsed ? 'px-3 flex items-center justify-center' : 'px-4'
-        )} style={{ height: 65, borderBottom: '1px solid var(--sb-border)', display: 'flex', alignItems: 'center' }}>
+          'flex-shrink-0 flex items-center transition-all duration-200',
+          collapsed ? 'px-3 justify-center' : 'px-4'
+        )} style={{ height: 65, borderBottom: '1px solid var(--sb-border)' }}>
           {!collapsed ? (
-            <div style={{ width: '100%' }}>
-              {/* Logo row */}
-              <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full">
                 <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                   <PatrimoLogo width={126} uid="sb" />
                 </Link>
@@ -440,10 +438,24 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 >
                   <PanelLeftClose style={{ width: 16, height: 16 }} />
                 </button>
-              </div>
+            </div>
+          ) : (
+            <button
+              onClick={toggle}
+              title="Ouvrir"
+              className="flex items-center justify-center transition-transform hover:scale-105"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <PatrimoPIcon size={28} uid="sb-col" />
+            </button>
+          )}
+        </div>
 
-              {/* Patrimoine widget */}
-              {patrimoineTotal !== null && (() => {
+        {/* ── Patrimoine & Score widgets (below header, scrollable area) ── */}
+        {!collapsed && (
+          <div style={{ padding: '10px 10px 0', flexShrink: 0 }}>
+            {/* Patrimoine widget */}
+            {patrimoineTotal !== null && (() => {
                 const isDark = theme === 'dark'
                 const cardBg = isDark ? '#1e2738' : '#fffbf2'
                 const cardBorder = isDark ? 'rgba(241,192,134,0.18)' : 'rgba(184,118,10,0.22)'
@@ -598,18 +610,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 </Link>
                 )
               })()}
-            </div>
-          ) : (
-            <button
-              onClick={toggle}
-              title="Ouvrir"
-              className="flex items-center justify-center transition-transform hover:scale-105"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <PatrimoPIcon size={28} uid="sb-col" />
-            </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* ── Search bar ── */}
         {!collapsed && (

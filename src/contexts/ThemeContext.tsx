@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 type Theme = 'dark' | 'light'
 interface ThemeContextValue { theme: Theme; toggleTheme: () => void; setTheme: (t: Theme) => void }
 
-const ThemeContext = createContext<ThemeContextValue>({ theme: 'dark', toggleTheme: () => {}, setTheme: () => {} })
+const ThemeContext = createContext<ThemeContextValue>({ theme: 'light', toggleTheme: () => {}, setTheme: () => {} })
 
 function applyTheme(t: Theme) {
   document.documentElement.classList.remove('dark', 'light')
@@ -12,12 +12,12 @@ function applyTheme(t: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark')
+  const [theme, setThemeState] = useState<Theme>('light')
 
   useEffect(() => {
     // Apply local cache immediately to avoid flash
     const local = localStorage.getItem('patrimo-theme') as Theme | null
-    const initial = local || 'dark'
+    const initial = local || 'light'
     setThemeState(initial)
     applyTheme(initial)
 

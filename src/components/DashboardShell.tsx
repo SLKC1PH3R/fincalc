@@ -2,13 +2,14 @@
 import { useSidebar } from './SidebarContext'
 import { cn } from '@/lib/utils'
 import { type ReactNode, useState, useEffect } from 'react'
-import { PanelLeftOpen, Search } from 'lucide-react'
+import { PanelLeftOpen, Search, Sun, Moon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { NotificationCenter } from './NotificationCenter'
 import { PatrimoLogo } from '@/components/PatrimoLogo'
 import dynamic from 'next/dynamic'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const OnboardingWizard = dynamic(() => import('./OnboardingWizard').then(m => m.OnboardingWizard), { ssr: false })
 const CommandPalette = dynamic(() => import('./CommandPalette').then(m => m.CommandPalette), { ssr: false })
@@ -71,6 +72,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const { data: session } = useSession()
   const pathname = usePathname()
   const pageTitle = usePageTitle(pathname)
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     fetch('/api/profile')
@@ -157,6 +159,25 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                 <kbd key={k} style={{ fontSize: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 4, padding: '0 4px', fontFamily: 'inherit' }}>{k}</kbd>
               ))}
             </span>
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+            style={{
+              width: 36, height: 36,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 8, border: '1px solid var(--card-dark-border)',
+              background: 'transparent', cursor: 'pointer',
+              color: 'var(--text-muted-c)',
+              transition: 'all 0.15s',
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--row-hover)'; e.currentTarget.style.color = 'var(--text-em)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted-c)' }}
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
           {/* Notifications */}

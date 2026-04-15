@@ -535,15 +535,15 @@ export default function HomePage() {
             <ResponsiveContainer width="100%" height={80}>
               <AreaChart data={activityData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="actGold" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={GOLD} stopOpacity={0.3} />
-                    <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
+                  <linearGradient id="actBlue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3C50E0" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#3C50E0" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="w" hide /><YAxis hide />
                 <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11, color: 'hsl(var(--foreground))' }}
                   formatter={(v: unknown) => [`${v} sim.`, '']} />
-                <Area type="monotone" dataKey="n" stroke={GOLD} strokeWidth={1.5} fill="url(#actGold)" dot={false} />
+                <Area type="monotone" dataKey="n" stroke="#3C50E0" strokeWidth={2} fill="url(#actBlue)" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

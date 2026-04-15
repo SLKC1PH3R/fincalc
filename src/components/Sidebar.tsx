@@ -121,7 +121,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const [sims, setSims] = useState<SimEntry[]>([])
   const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
-  const [simulateursExpanded, setSimulateursExpanded] = useState(() => ALL_SIM_HREFS.some(h => pathname === h))
+  const [simulateursExpanded, setSimulateursExpanded] = useState(true)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => {
     const activeGroup = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label

@@ -36,34 +36,36 @@
     --amber: 38 92% 50%;
     --blue: 217 91% 60%;
 
-    /* Content area — dark defaults */
-    --content-bg: transparent;
-    --card-dark: rgba(255,255,255,0.04);
-    --card-dark-border: rgba(255,255,255,0.07);
-    --mini-card-bg: rgba(255,255,255,0.03);
-    --modal-surface: #1a1d24;
+    /* Content area — NextAdmin-style solid dark */
+    --content-bg: #1a1d24;
+    --card-dark: #222731;
+    --card-dark-border: rgba(255,255,255,0.06);
+    --mini-card-bg: #1e2230;
+    --modal-surface: #1e2230;
     --modal-surface-border: rgba(255,255,255,0.10);
-    --popover-surface: #16181f;
+    --popover-surface: #181c27;
     --popover-surface-border: rgba(255,255,255,0.09);
     --text-primary: #ffffff;
-    --text-muted-c: rgba(255,255,255,0.35);
-    --text-subtle: rgba(255,255,255,0.20);
-    --text-em: rgba(255,255,255,0.75);
-    --section-border: rgba(255,255,255,0.04);
-    --row-hover: rgba(255,255,255,0.03);
-    --icon-chip-bg: rgba(255,255,255,0.04);
-    --icon-chip-border: rgba(255,255,255,0.07);
-    --chart-grid: hsl(0 0% 14.9%);
-    --chart-tick: hsl(0 0% 63.9%);
-    --chart-line: hsl(0 0% 98%);
-    --chart-line-dim: hsl(0 0% 42%);
-    --chart-fill-1: hsl(0 0% 70%);
-    --chart-fill-2: hsl(0 0% 45%);
-    --chart-fill-3: hsl(0 0% 30%);
+    --text-muted-c: rgba(255,255,255,0.45);
+    --text-subtle: rgba(255,255,255,0.25);
+    --text-em: rgba(255,255,255,0.80);
+    --section-border: rgba(255,255,255,0.05);
+    --row-hover: rgba(255,255,255,0.035);
+    --icon-chip-bg: rgba(255,255,255,0.06);
+    --icon-chip-border: rgba(255,255,255,0.08);
+    --card-shadow: 0 2px 10px rgba(0,0,0,0.30);
+    --card-shadow-hover: 0 6px 20px rgba(0,0,0,0.40);
+    --chart-grid: rgba(255,255,255,0.06);
+    --chart-tick: rgba(255,255,255,0.35);
+    --chart-line: #f1c086;
+    --chart-line-dim: #c8922a;
+    --chart-fill-1: #f1c086;
+    --chart-fill-2: #34d399;
+    --chart-fill-3: #38bdf8;
 
-    /* Sidebar — dark gold theme */
-    --sb-bg: rgba(5,7,14,0.97);
-    --sb-border: rgba(255,255,255,0.05);
+    /* Sidebar — NextAdmin dark gold theme */
+    --sb-bg: #1c2030;
+    --sb-border: rgba(255,255,255,0.06);
     --sb-profile-bg: rgba(255,255,255,0.04);
     --sb-mini-card: rgba(255,255,255,0.03);
     --sb-text: rgba(255,255,255,0.52);
@@ -233,7 +235,22 @@
   }
 
   .finance-card {
-    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+    border-radius: 10px;
+    border: 1px solid var(--card-dark-border);
+    background: var(--card-dark);
+    box-shadow: var(--card-shadow, 0 2px 10px rgba(0,0,0,0.25));
+  }
+  /* NextAdmin-style solid card */
+  .na-card {
+    border-radius: 10px;
+    border: 1px solid var(--card-dark-border);
+    background: var(--card-dark);
+    box-shadow: var(--card-shadow, 0 2px 10px rgba(0,0,0,0.25));
+    transition: box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .na-card:hover {
+    box-shadow: var(--card-shadow-hover, 0 6px 20px rgba(0,0,0,0.38));
+    border-color: rgba(255,255,255,0.09);
   }
 
   /* Scrollbar */
@@ -302,51 +319,41 @@
   }
 }
 
-/* ── RefractWeb-style grid + left gradient atmosphere ─────────────────────── */
+/* ── NextAdmin-style clean solid background ───────────────────────────────── */
 .grid-bg {
   position: relative;
-  /* Subtle navy-to-black base — adds blue depth to pure black */
-  background: radial-gradient(ellipse 80% 50% at -5% 0%, #050d1a 0%, #000 55%);
+  background: var(--content-bg);
 }
 
-/* Grid overlay — gold-tinted lines, visible top-left, fades toward bottom-right */
+/* Very subtle dot/line texture — optional, nearly invisible */
 .grid-bg::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(241,192,134,0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(241,192,134,0.055) 1px, transparent 1px);
-  background-size: 72px 72px;
-  background-position: -1px -1px;
-  /* Radial mask: grid is strongest in the upper-left hero area, fades out below */
-  -webkit-mask-image: radial-gradient(ellipse 100% 70% at 15% 0%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.1) 65%, transparent 85%);
-  mask-image: radial-gradient(ellipse 100% 70% at 15% 0%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.1) 65%, transparent 85%);
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Left-side ambient glow — the "gradient signature" of the page */
+/* Gentle gold accent glow — top-left only, restrained */
 .grid-bg::after {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    /* Gold bloom — upper left quadrant */
-    radial-gradient(ellipse 55% 60% at -8% 10%, rgba(241,192,134,0.13) 0%, transparent 65%),
-    /* Deep blue bloom — mid-left */
-    radial-gradient(ellipse 40% 50% at -5% 55%, rgba(30,58,138,0.14) 0%, transparent 60%),
-    /* Thin gold haze along top edge */
-    radial-gradient(ellipse 60% 20% at 25% -5%, rgba(241,192,134,0.07) 0%, transparent 70%);
+    radial-gradient(ellipse 40% 30% at -5% 0%, rgba(241,192,134,0.07) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* All direct children must be above the grid */
+/* All direct children must be above the overlay */
 .grid-bg > * { position: relative; z-index: 1; }
 
-/* Dashboard main content area — always above grid overlays (z-index:0) */
-.dashboard-main { position: relative; z-index: 1; padding-left: 16px; }
+/* Dashboard main content area */
+.dashboard-main { position: relative; z-index: 1; }
 
 /* Mobile responsive fixes */
 @media (max-width: 768px) {
@@ -356,8 +363,8 @@
 /* Smooth scroll */
 html { scroll-behavior: smooth; }
 
-/* Light mode: suppress dark grid + glow everywhere */
-.light .grid-bg { background: none !important; }
+/* Light mode */
+.light .grid-bg { background: var(--content-bg) !important; }
 .light .grid-bg::before,
 .light .grid-bg::after { display: none !important; }
 
@@ -382,30 +389,32 @@ html { scroll-behavior: smooth; }
   --border: 215 20% 88%;
   --input: 215 20% 88%;
   --ring: 0 0% 20%;
-  /* Content area */
-  --content-bg: #f8f9fc;
+  /* Content area — light mode */
+  --content-bg: #f1f5f9;
   --card-dark: #ffffff;
-  --card-dark-border: rgba(0,0,0,0.08);
-  --mini-card-bg: #f1f5f9;
+  --card-dark-border: rgba(0,0,0,0.07);
+  --mini-card-bg: #f8fafc;
   --modal-surface: #ffffff;
-  --modal-surface-border: rgba(0,0,0,0.12);
+  --modal-surface-border: rgba(0,0,0,0.10);
   --popover-surface: #ffffff;
-  --popover-surface-border: rgba(0,0,0,0.10);
-  --text-primary: #111111;
-  --text-muted-c: rgba(0,0,0,0.58);
-  --text-subtle: rgba(0,0,0,0.42);
-  --text-em: rgba(0,0,0,0.75);
+  --popover-surface-border: rgba(0,0,0,0.09);
+  --text-primary: #1e2432;
+  --text-muted-c: #637381;
+  --text-subtle: rgba(99,115,129,0.70);
+  --text-em: rgba(30,36,50,0.85);
   --section-border: rgba(0,0,0,0.05);
-  --row-hover: rgba(0,0,0,0.03);
+  --row-hover: rgba(0,0,0,0.025);
   --icon-chip-bg: rgba(0,0,0,0.04);
-  --icon-chip-border: rgba(0,0,0,0.08);
-  --chart-grid: hsl(0 0% 88%);
-  --chart-tick: hsl(0 0% 42%);
-  --chart-line: hsl(0 0% 15%);
-  --chart-line-dim: hsl(0 0% 60%);
-  --chart-fill-1: hsl(0 0% 55%);
-  --chart-fill-2: hsl(0 0% 35%);
-  --chart-fill-3: hsl(0 0% 20%);
+  --icon-chip-border: rgba(0,0,0,0.07);
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  --card-shadow-hover: 0 6px 18px rgba(0,0,0,0.12);
+  --chart-grid: rgba(0,0,0,0.06);
+  --chart-tick: #637381;
+  --chart-line: #c8922a;
+  --chart-line-dim: #f1c086;
+  --chart-fill-1: #f1c086;
+  --chart-fill-2: #34d399;
+  --chart-fill-3: #38bdf8;
   /* Sidebar */
   --sb-bg: #eef1f7;
   --sb-border: rgba(0,0,0,0.08);
@@ -439,11 +448,15 @@ html { scroll-behavior: smooth; }
   color: var(--sb-active-text) !important;
   background: var(--sb-active-bg) !important;
   border-color: var(--sb-active-border) !important;
-  box-shadow: inset 2px 0 0 #f1c086;
+  box-shadow: inset 3px 0 0 #f1c086;
 }
 .sb-link-active svg {
   color: #f1c086 !important;
 }
+.light .sb-link-active {
+  box-shadow: inset 3px 0 0 #c8922a;
+}
+.light .sb-link-active svg { color: #c8922a !important; }
 /* Gold gradient text helper */
 .sb-gold-text {
   background: linear-gradient(135deg, #c8922a 0%, #f1c086 60%, #c8922a 100%);
@@ -464,14 +477,16 @@ html { scroll-behavior: smooth; }
 
 /* ── Card micro-animations ──────────────────────────────────────────────── */
 .card-hover {
-  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease !important;
 }
 .card-hover:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35) !important;
+  border-color: rgba(255,255,255,0.10) !important;
 }
 .light .card-hover:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+  border-color: rgba(0,0,0,0.12) !important;
 }
 
 /* ── Left-border semantic indicators ────────────────────────────────────── */

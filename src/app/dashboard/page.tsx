@@ -304,10 +304,8 @@ export default function HomePage() {
     <div className="flex-1" style={{ background: 'var(--content-bg)', minHeight: '100vh' }}>
 
       {/* ── HERO ── */}
-      <div className="relative overflow-hidden px-5 xl:px-6"
-        style={{ borderBottom: '1px solid var(--section-border)', paddingTop: 'clamp(20px,3vw,36px)', paddingBottom: 'clamp(20px,3vw,36px)' }}>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(ellipse at 20% 50%, ${GOLD}06, transparent 60%)` }} />
+      <div className="relative px-6"
+        style={{ borderBottom: '1px solid var(--section-border)', paddingTop: 28, paddingBottom: 28 }}>
 
         <div className="relative">
           {/* Greeting */}
@@ -343,8 +341,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* KPI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          {/* ── KPI Cards — NextAdmin style ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
             {/* Patrimoine total */}
             {(() => {
               const hasTimeline = patrimoineTimeline.length >= 2
@@ -354,80 +352,83 @@ export default function HomePage() {
               const deltaPos = delta != null && delta >= 0
               const deltaColor = deltaPos ? '#34d399' : '#f87171'
               return (
-                <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
-                  <div className="rounded-xl p-4 transition-all duration-150"
-                    style={{ background: `linear-gradient(135deg, ${GOLD}14, transparent)`, border: `1px solid ${GOLD_BORDER}` }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(241,192,134,0.35)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 2 }}>
-                      <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Patrimoine</p>
-                      {hasTimeline && <PatrimoineSparkline snapshots={patrimoineTimeline} />}
-                    </div>
-                    {loaded
-                      ? <p style={{ fontSize: '1.5rem', fontWeight: 700, color: GOLD, letterSpacing: '-0.025em', fontFamily: 'Geist Mono, monospace' }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
-                      : <div className="skeleton" style={{ height: 32, width: 110, marginBottom: 4 }} />
-                    }
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                      <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>net estimé</p>
+                <Link href="/dashboard/patrimoine" className="block card-hover" style={{ textDecoration: 'none' }}>
+                  <div className="na-card p-5">
+                    {/* Icon + Trend */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: 10, background: `${GOLD}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <TrendingUp style={{ width: 22, height: 22, color: GOLD }} />
+                      </div>
                       {delta != null && loaded && (
-                        <span style={{ fontSize: 10, fontWeight: 600, color: deltaColor, background: deltaColor + '18', borderRadius: 5, padding: '1px 5px' }}>
-                          {deltaPos ? '+' : ''}{fmtCompact(Math.abs(delta))}
+                        <span style={{ fontSize: 11, fontWeight: 600, color: deltaColor, background: deltaColor + '18', borderRadius: 20, padding: '3px 9px' }}>
+                          {deltaPos ? '↑ +' : '↓ '}{fmtCompact(Math.abs(delta))}
                         </span>
                       )}
                     </div>
+                    {loaded
+                      ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', fontFamily: 'Geist Mono, monospace', marginBottom: 6, lineHeight: 1 }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
+                      : <div className="skeleton" style={{ height: 36, width: 120, marginBottom: 10 }} />
+                    }
+                    <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Patrimoine net</p>
                   </div>
                 </Link>
               )
             })()}
 
             {/* Enveloppes */}
-            <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
-              <div className="rounded-xl p-4 transition-all duration-150"
-                style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Enveloppes</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  {loaded
-                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedEnvelopes}</p>
-                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
-                  }
-                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>actives</p>}
+            <Link href="/dashboard/patrimoine" className="block card-hover" style={{ textDecoration: 'none' }}>
+              <div className="na-card p-5">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(52,211,153,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <PiggyBank style={{ width: 22, height: 22, color: '#34d399' }} />
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.12)', borderRadius: 20, padding: '3px 9px' }}>
+                    Actives
+                  </span>
                 </div>
+                {loaded
+                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedEnvelopes}</p>
+                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
+                }
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Enveloppes</p>
               </div>
             </Link>
 
             {/* Simulations ce mois */}
-            <Link href="/dashboard/history" className="block" style={{ textDecoration: 'none' }}>
-              <div className="rounded-xl p-4 transition-all duration-150"
-                style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Ce mois</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  {loaded
-                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedThisMonth}</p>
-                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
-                  }
-                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>simulations</p>}
+            <Link href="/dashboard/history" className="block card-hover" style={{ textDecoration: 'none' }}>
+              <div className="na-card p-5">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(56,189,248,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Calculator style={{ width: 22, height: 22, color: '#38bdf8' }} />
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#38bdf8', background: 'rgba(56,189,248,0.12)', borderRadius: 20, padding: '3px 9px' }}>
+                    Mois
+                  </span>
                 </div>
+                {loaded
+                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedThisMonth}</p>
+                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
+                }
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Simulations ce mois</p>
               </div>
             </Link>
 
             {/* Total simulations */}
-            <Link href="/dashboard/history" className="block" style={{ textDecoration: 'none' }}>
-              <div className="rounded-xl p-4 transition-all duration-150"
-                style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>Simulations</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  {loaded
-                    ? <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>{animatedTotalSims}</p>
-                    : <div className="skeleton" style={{ height: 32, width: 48, marginBottom: 4 }} />
-                  }
-                  {loaded && <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>au total</p>}
+            <Link href="/dashboard/history" className="block card-hover" style={{ textDecoration: 'none' }}>
+              <div className="na-card p-5">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(251,146,60,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Sparkles style={{ width: 22, height: 22, color: '#fb923c' }} />
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#fb923c', background: 'rgba(251,146,60,0.12)', borderRadius: 20, padding: '3px 9px' }}>
+                    Total
+                  </span>
                 </div>
+                {loaded
+                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedTotalSims}</p>
+                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
+                }
+                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Simulations</p>
               </div>
             </Link>
           </div>
@@ -440,8 +441,9 @@ export default function HomePage() {
                 const color = idx.isRate ? '#60a5fa' : pos ? '#34d399' : '#f87171'
                 return (
                   <div key={idx.symbol} style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px',
                     borderRadius: 10, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                    boxShadow: '0 1px 6px rgba(0,0,0,0.20)',
                     flexShrink: 0,
                   }}>
                     <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontWeight: 500 }}>{idx.label}</span>
@@ -515,17 +517,17 @@ export default function HomePage() {
 
       {/* ── PATRIMOINE HISTORY ── */}
       {loaded && nbEnvelopes > 0 && (
-        <div className="px-5 xl:px-6 pt-4" style={{ borderBottom: loaded && totalSims > 0 ? undefined : '1px solid var(--section-border)' }}>
+        <div className="px-6 pt-4" style={{ borderBottom: loaded && totalSims > 0 ? undefined : '1px solid var(--section-border)' }}>
           <PatrimoineHistoryChart />
         </div>
       )}
 
       {/* ── CHARTS ── (if data) */}
       {loaded && totalSims > 0 && (
-        <div className="px-5 xl:px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-3"
+        <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4"
           style={{ borderBottom: '1px solid var(--section-border)' }}>
           {/* Activity */}
-          <div className="rounded-xl p-5" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <div className="na-card p-5">
             <div className="flex items-center justify-between mb-4">
               <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Activité</span>
               <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>12 semaines</span>
@@ -547,7 +549,7 @@ export default function HomePage() {
           </div>
 
           {/* Distribution */}
-          <div className="rounded-xl p-5" style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <div className="na-card p-5">
             <div className="flex items-center justify-between mb-3">
               <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Répartition</span>
               <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{totalSims} sim.</span>
@@ -575,12 +577,12 @@ export default function HomePage() {
       )}
 
       {/* ── MAIN CONTENT ── */}
-      <div className={`grid grid-cols-1 gap-0 ${loaded && totalSims > 0 ? 'xl:grid-cols-[280px_1fr]' : ''}`}
-        style={{ minHeight: 'calc(100vh - 380px)' }}>
+      <div className={`grid grid-cols-1 gap-0 ${loaded && totalSims > 0 ? 'xl:grid-cols-[300px_1fr]' : ''}`}
+        style={{ minHeight: 'calc(100vh - 420px)' }}>
 
         {/* LEFT: Recent simulations — or empty state */}
         {loaded && totalSims === 0 && (
-          <div className="p-5 xl:p-6" style={{ borderRight: '1px solid var(--section-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260, textAlign: 'center', gap: 16 }}>
+          <div className="p-6" style={{ borderRight: '1px solid var(--section-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260, textAlign: 'center', gap: 16 }}>
             {/* SVG illustration */}
             <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
               <rect width="72" height="72" rx="20" fill={`${GOLD}12`} />
@@ -603,7 +605,7 @@ export default function HomePage() {
           </div>
         )}
         {loaded && totalSims > 0 && (
-          <div className="p-5 xl:p-6" style={{ borderRight: '1px solid var(--section-border)' }}>
+          <div className="p-6" style={{ borderRight: '1px solid var(--section-border)' }}>
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => setRecentOpen(v => !v)}
@@ -657,7 +659,7 @@ export default function HomePage() {
         )}
 
         {/* RIGHT: Enveloppes + Accès rapides */}
-        <div className="p-5 xl:p-6 space-y-6">
+        <div className="p-6 space-y-6">
 
           {/* ── Prise en main progress bar ── */}
           {loaded && !onboardingDismissed && (() => {

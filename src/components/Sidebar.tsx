@@ -93,22 +93,21 @@ interface SidebarProps {
   isDemo?: boolean
 }
 
-// ── Icon box helpers ──────────────────────────────────────────────────────────
-function IconBox({ icon: Icon, active, size = 32 }: { icon: Icon; active: boolean; size?: number }) {
+// ── Icon box helpers — NextAdmin style ──────────────────────────────────────
+function IconBox({ icon: Icon, active, size = 30 }: { icon: Icon; active: boolean; size?: number }) {
   return (
     <div style={{
       width: size,
       height: size,
-      borderRadius: 9,
+      borderRadius: 8,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
-      background: active ? 'rgba(241,192,134,0.10)' : 'transparent',
-      border: active ? '1px solid rgba(241,192,134,0.28)' : '1px solid transparent',
+      background: active ? 'rgba(241,192,134,0.12)' : 'transparent',
       transition: 'all 0.15s',
     }}>
-      <Icon style={{ width: 15, height: 15, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
+      <Icon style={{ width: 16, height: 16, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
     </div>
   )
 }
@@ -227,24 +226,24 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const W = collapsed ? 64 : 290
   const [sbTooltip, setSbTooltip] = useState<{ label: string; y: number } | null>(null)
 
-  // ── Section label ─────────────────────────────────────────────────────────
+  // ── Section label — NextAdmin style ─────────────────────────────────────
   const SectionLabel = ({ label, sectionKey }: { label: string; sectionKey: string }) => {
-    if (collapsed) return <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />
+    if (collapsed) return <div style={{ height: 1, margin: '8px 4px', background: 'var(--sb-divider)' }} />
     return (
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="flex items-center justify-between w-full px-2 mb-1"
-        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        className="flex items-center justify-between w-full px-2"
+        style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: 4, marginTop: 8 }}
       >
         <span style={{
-          fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '0.12em', color: 'var(--sb-text-section)',
+          fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.10em', color: 'var(--sb-text-section)',
         }}>
           {label}
         </span>
         <ChevronDown
           style={{
-            width: 10, height: 10,
+            width: 11, height: 11,
             color: 'var(--sb-text-dim)',
             transform: collapsedSections.has(sectionKey) ? 'rotate(-90deg)' : 'rotate(0deg)',
             transition: 'transform 0.2s',
@@ -254,7 +253,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     )
   }
 
-  // ── Single nav item (icon-box style) ─────────────────────────────────────
+  // ── Single nav item — NextAdmin style ─────────────────────────────────────
   const NavItem = ({
     href, label, icon: Icon, active, badge, onToggleExpand, expandable, expanded,
   }: {
@@ -265,8 +264,9 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       <Link
         href={href}
         className={cn(
-          'flex items-center gap-2.5 rounded-xl flex-1 min-w-0 transition-colors',
-          collapsed ? 'justify-center py-1.5 px-1.5' : 'px-1.5 py-1',
+          'flex items-center gap-2.5 rounded-lg flex-1 min-w-0',
+          collapsed ? 'justify-center py-2 px-2' : 'px-2.5 py-2',
+          active ? 'sb-link-active' : 'sb-link',
         )}
         style={{
           textDecoration: 'none',
@@ -274,32 +274,28 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         }}
         onClick={() => { if (expandable && !expanded && onToggleExpand) onToggleExpand() }}
         onMouseEnter={e => {
-          if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)'
           if (collapsed) {
             const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
             setSbTooltip({ label, y: rect.top + rect.height / 2 })
           }
         }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLElement).style.background = 'none'
-          setSbTooltip(null)
-        }}
+        onMouseLeave={() => { setSbTooltip(null) }}
       >
         <IconBox icon={Icon} active={active} />
         {!collapsed && (
           <>
             <span style={{
-              fontSize: 13, fontWeight: active ? 600 : 400,
-              color: active ? 'var(--sb-text-strong)' : 'var(--sb-text)',
+              fontSize: 13.5, fontWeight: active ? 600 : 400,
+              color: active ? 'var(--sb-active-text)' : 'var(--sb-text)',
               flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {label}
             </span>
             {badge != null && badge > 0 && (
               <span style={{
-                fontSize: 9, color: '#f1c086',
-                background: 'rgba(241,192,134,0.10)',
-                padding: '1px 6px', borderRadius: 4,
+                fontSize: 10, color: '#f1c086',
+                background: 'rgba(241,192,134,0.12)',
+                padding: '1px 7px', borderRadius: 20,
                 fontWeight: 700, flexShrink: 0,
               }}>
                 {badge}
@@ -388,7 +384,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         style={{
           width: W,
           background: 'var(--sb-bg)',
-          borderRight: 'none',
+          borderRight: '1px solid var(--sb-border)',
           overflow: 'visible',
         }}
       >
@@ -415,39 +411,23 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           </div>
         )}
 
-        {/* ── Right edge fondu ── */}
+        {/* ── Subtle top gold accent ── */}
         <div aria-hidden style={{
-          position: 'absolute', top: 0, bottom: 0, right: -44, width: 44,
-          pointerEvents: 'none',
-          background: 'linear-gradient(90deg, var(--sb-bg) 0%, transparent 100%)',
-          zIndex: 1,
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          background: 'linear-gradient(90deg, #c8922a, #f1c086, transparent)',
+          opacity: 0.55,
+          pointerEvents: 'none', zIndex: 2,
         }} />
 
-        {/* ── Top gold halo ── */}
-        <div aria-hidden style={{
-          position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)',
-          width: 280, height: 220,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(241,192,134,0.13) 0%, transparent 68%)',
-          pointerEvents: 'none', zIndex: -1,
-        }} />
-
-        {/* ── Bottom gold halo ── */}
-        <div aria-hidden style={{
-          position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)',
-          width: 260, height: 180,
-          background: 'radial-gradient(ellipse at 50% 100%, rgba(241,192,134,0.09) 0%, transparent 68%)',
-          pointerEvents: 'none', zIndex: -1,
-        }} />
-
-        {/* ── Logo / header ── */}
+        {/* ── Logo / header — 65px to match topbar ── */}
         <div className={cn(
           'flex-shrink-0 transition-all duration-200',
-          collapsed ? 'h-16 px-3 flex items-center justify-center' : 'px-4 pt-5 pb-4'
-        )}>
+          collapsed ? 'px-3 flex items-center justify-center' : 'px-4'
+        )} style={{ height: 65, borderBottom: '1px solid var(--sb-border)', display: 'flex', alignItems: 'center' }}>
           {!collapsed ? (
-            <div>
+            <div style={{ width: '100%' }}>
               {/* Logo row */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between">
                 <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                   <PatrimoLogo width={126} uid="sb" />
                 </Link>
@@ -462,13 +442,13 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                 </button>
               </div>
 
-              {/* Patrimoine widget — V6 Gold */}
+              {/* Patrimoine widget */}
               {patrimoineTotal !== null && (() => {
                 const isDark = theme === 'dark'
-                const cardBg = isDark ? 'linear-gradient(135deg, #13161f, #0e1018)' : 'linear-gradient(135deg, #fffbf2, #fef3e0)'
-                const cardBorder = isDark ? 'rgba(241,192,134,0.14)' : 'rgba(184,118,10,0.22)'
-                const cardBorderHover = isDark ? 'rgba(241,192,134,0.38)' : 'rgba(184,118,10,0.48)'
-                const cardShadow = isDark ? '0 2px 12px rgba(0,0,0,0.35)' : '0 2px 12px rgba(184,118,10,0.10)'
+                const cardBg = isDark ? '#1e2738' : '#fffbf2'
+                const cardBorder = isDark ? 'rgba(241,192,134,0.18)' : 'rgba(184,118,10,0.22)'
+                const cardBorderHover = isDark ? 'rgba(241,192,134,0.40)' : 'rgba(184,118,10,0.48)'
+                const cardShadow = isDark ? '0 2px 14px rgba(0,0,0,0.40)' : '0 2px 12px rgba(184,118,10,0.10)'
                 const labelColor = isDark ? '#f1c086' : '#b8760a'
                 const valueColor = isDark ? '#ffffff' : '#1a1208'
                 const subColor = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.32)'
@@ -568,10 +548,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               {/* Score widget */}
               {score !== null && (() => {
                 const isDark = theme === 'dark'
-                const cardBg = isDark ? 'linear-gradient(135deg, #13161f, #0e1018)' : 'linear-gradient(135deg, #fffbf2, #fef3e0)'
-                const cardBorder = isDark ? 'rgba(241,192,134,0.14)' : 'rgba(184,118,10,0.22)'
-                const cardBorderHover = isDark ? 'rgba(241,192,134,0.38)' : 'rgba(184,118,10,0.48)'
-                const cardShadow = isDark ? '0 2px 12px rgba(0,0,0,0.35)' : '0 2px 12px rgba(184,118,10,0.10)'
+                const cardBg = isDark ? '#1e2738' : '#fffbf2'
+                const cardBorder = isDark ? 'rgba(241,192,134,0.18)' : 'rgba(184,118,10,0.22)'
+                const cardBorderHover = isDark ? 'rgba(241,192,134,0.40)' : 'rgba(184,118,10,0.48)'
+                const cardShadow = isDark ? '0 2px 14px rgba(0,0,0,0.40)' : '0 2px 12px rgba(184,118,10,0.10)'
                 const labelColor = isDark ? '#f1c086' : '#b8760a'
                 const valueColor = isDark ? '#ffffff' : '#1a1208'
                 const valueMutedColor = isDark ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.32)'

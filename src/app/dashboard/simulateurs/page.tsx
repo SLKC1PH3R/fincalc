@@ -244,37 +244,36 @@ export default function SimulateursPage() {
                 </div>
 
                 {/* Module cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(248px, 1fr))', gap: 10 }}>
                   {cat.modules.map(mod => {
                     const typeSims = simsByType[mod.type] || []
                     const lastSim = typeSims[0]
                     return (
                       <Link key={mod.href} href={mod.href} style={{ textDecoration: 'none' }}>
                         <div
+                          className="na-card"
                           style={{
-                            position: 'relative', overflow: 'hidden', borderRadius: 10, padding: '10px 12px',
-                            background: `radial-gradient(ellipse at top left, ${mod.color}12, transparent 70%)`,
-                            border: `1px solid ${mod.color}20`,
+                            padding: '14px 16px',
+                            display: 'flex', alignItems: 'center', gap: 12,
                             transition: 'all 0.15s', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', gap: 10,
+                            borderLeft: `3px solid ${mod.color}`,
                           }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '50'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)' }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '20'; (e.currentTarget as HTMLElement).style.transform = '' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = '' }}
                         >
-                          {/* Icon */}
-                          <div style={{ width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: mod.color + '18', border: `1px solid ${mod.color}28` }}>
-                            <mod.icon style={{ color: mod.color, width: 16, height: 16 }} />
+                          {/* Icon circle */}
+                          <div style={{ width: 40, height: 40, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: mod.color + '18' }}>
+                            <mod.icon style={{ color: mod.color, width: 19, height: 19 }} />
                           </div>
 
                           {/* Content */}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
-                              <span style={{ fontSize: 9, color: mod.color, background: mod.color + '18', padding: '1px 5px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>{mod.tag}</span>
-                              {(() => { const dc = DIFF_COLORS[mod.diff]; return <span style={{ fontSize: 9, color: dc, background: dc + '18', padding: '1px 5px', borderRadius: 4, fontWeight: 600, flexShrink: 0 }}>{mod.diff}</span> })()}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                              <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
+                              {(() => { const dc = DIFF_COLORS[mod.diff]; return <span style={{ fontSize: 9, color: dc, background: dc + '18', padding: '1px 6px', borderRadius: 20, fontWeight: 600, flexShrink: 0 }}>{mod.diff}</span> })()}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                              <p style={{ fontSize: 11.5, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '78%' }}>
                                 {mod.desc}
                               </p>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
@@ -282,7 +281,7 @@ export default function SimulateursPage() {
                                   <>
                                     <Clock style={{ width: 10, height: 10, color: 'var(--text-subtle)' }} />
                                     <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{lastSim ? timeAgo(lastSim.createdAt) : ''}</span>
-                                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 3, background: mod.color + '18', color: mod.color }}>{typeSims.length}</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 20, background: mod.color + '18', color: mod.color }}>{typeSims.length}</span>
                                   </>
                                 ) : (
                                   <ArrowUpRight style={{ width: 12, height: 12, color: 'var(--text-muted-c)' }} />

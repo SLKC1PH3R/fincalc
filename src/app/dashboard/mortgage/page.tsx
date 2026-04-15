@@ -250,24 +250,6 @@ function MortgagePageInner() {
             </div>
           </div>
 
-          {/* Mini résumé */}
-          <div style={{ background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '12px 14px' }}>
-            <p style={{ fontSize: 10, fontWeight: 700, color: COLOR, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Résumé du prêt</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {[
-                { label: 'Mensualité (crédit)', value: fmt(r.monthlyPayment) },
-                { label: 'Mensualité totale', value: fmt(r.totalMonthly), color: COLOR },
-                { label: 'TAEG', value: `${r.taeg.toFixed(2)}%` },
-                { label: 'Coût total crédit', value: fmt(r.totalCost) },
-                { label: 'Total déboursé', value: fmt(inputs.amount + r.totalCost), color: '#f87171' },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: row.color ?? 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* CENTER: KPIs + chart + amortization table */}
@@ -414,6 +396,25 @@ function MortgagePageInner() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Résumé du prêt */}
+          <div style={{ background: `${COLOR}0d`, border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: COLOR, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Résumé du prêt</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { label: 'Mensualité (crédit)', value: fmt(r.monthlyPayment) },
+                { label: 'Mensualité totale', value: fmt(r.totalMonthly), color: COLOR },
+                { label: 'TAEG', value: `${r.taeg.toFixed(2)}%` },
+                { label: 'Coût total crédit', value: fmt(r.totalCost) },
+                { label: 'Total déboursé', value: fmt(inputs.amount + r.totalCost), color: '#f87171' },
+              ].map(row => (
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: '1px solid var(--section-border)' }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: row.color ?? 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 

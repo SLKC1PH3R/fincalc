@@ -100,7 +100,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <PanelLeftOpen className="h-5 w-5" />
           </button>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <PatrimoLogo width={110} uid="shell-mob" />
+            <PatrimoLogo width={110} uid="shell-mob" variant={theme === 'dark' ? 'dark' : 'light'} />
           </Link>
         </div>
         <NotificationCenter />

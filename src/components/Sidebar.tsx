@@ -427,7 +427,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           {!collapsed ? (
             <div className="flex items-center justify-between w-full">
                 <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                  <PatrimoLogo width={126} uid="sb" />
+                  <PatrimoLogo width={126} uid="sb" variant={theme === 'dark' ? 'dark' : 'light'} />
                 </Link>
                 <button
                   onClick={toggle}

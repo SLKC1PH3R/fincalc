@@ -2945,7 +2945,7 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div className="grid-bg" style={{ color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div style={{ background: '#050509', color: '#fff', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
       {!introComplete && <FIntroAnimation onDone={() => { sessionStorage.setItem('patrimo_intro', '1'); setIntroComplete(true) }} />}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}

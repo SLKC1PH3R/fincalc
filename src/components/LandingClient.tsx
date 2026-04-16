@@ -3291,47 +3291,60 @@ export function LandingClient() {
 
           {/* ── LEFT: text content ── */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: 'rgba(139,92,246,0.10)', border: '1px solid rgba(139,92,246,0.25)', color: '#6d28d9', fontSize: 11, fontWeight: 600, marginBottom: 16 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7c3aed', animation: 'glow-pulse 2s infinite' }} />
-              18 simulateurs · 15 pages · Fiscalité 2026
+            {/* Badge — Finorio glassmorphism pill with gradient border */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center',
+              borderRadius: 100,
+              marginBottom: 20,
+              padding: 1,
+              background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.15))',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                borderRadius: 100,
+                background: 'rgba(255,255,255,0.18)',
+                backdropFilter: 'blur(3.65px)',
+                WebkitBackdropFilter: 'blur(3.65px)',
+                padding: '4px 12px 4px 4px',
+              }}>
+                <span style={{
+                  borderRadius: 100,
+                  background: '#C6BDFA',
+                  padding: '2px 10px',
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: '#181B25',
+                }}>Nouveau</span>
+                <span style={{ fontSize: 13, fontWeight: 300, color: '#4b5563', letterSpacing: '0.01em' }}>
+                  18 simulateurs · Fiscalité 2026
+                </span>
+              </div>
             </div>
 
-            {/* Ambient halo behind headline */}
-            <div style={{ position: 'absolute', top: -40, left: -60, width: 600, height: 280, background: `radial-gradient(ellipse at 40% 50%, rgba(241,192,134,0.07) 0%, transparent 68%)`, pointerEvents: 'none', zIndex: -1 }} />
-
-            {/* Headline */}
-            <h1 style={{ fontSize: 'clamp(2rem,3vw,3.4rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.04em', color: '#0f172a', marginBottom: 14, textAlign: 'left' }}>
-              Simulez, optimisez,{' '}
-              <span style={{
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                animation: 'shimmer 4s linear infinite',
-              }}>
-                décidez mieux
-              </span>
+            {/* Headline — Finorio light weight */}
+            <h1 style={{ fontSize: 'clamp(2rem,3.2vw,3.6rem)', fontWeight: 300, lineHeight: 1.12, letterSpacing: '-0.075em', color: '#181B25', marginBottom: 16, textAlign: 'left' }}>
+              Gérez vos finances<br />
+              avec <span style={{ fontWeight: 300, color: '#7c3aed' }}>confiance</span>
             </h1>
 
-            <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.6, maxWidth: 400, marginBottom: 22 }}>
+            <p style={{ fontSize: 15, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 420, marginBottom: 28, letterSpacing: '0.01em' }}>
               18 simulateurs financiers 100&nbsp;% gratuits — impôts, FIRE, patrimoine — sans jamais toucher à vos comptes.
             </p>
 
-            {/* Single primary CTA */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 16 }}>
-              <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 100, fontSize: 14, fontWeight: 700, background: '#c8922a', color: '#ffffff', textDecoration: 'none', transition: 'background 0.2s, box-shadow 0.2s', letterSpacing: '-0.02em' }}
-                onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 8px 32px ${GOLD}50` }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#c8922a'; e.currentTarget.style.boxShadow = '' }}>
-                Commencer gratuitement <ArrowRight style={{ width: 15, height: 15 }} />
+            {/* CTAs — Finorio dark button style */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+              <Link href="/login" className="cta-primary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#ffffff', textDecoration: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000', transition: 'background 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%), #2d2f3a' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25' }}>
+                Commencer gratuitement <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
-              <a href="#demo" style={{ fontSize: 13, color: '#6d28d9', textDecoration: 'none', transition: 'color 0.15s', letterSpacing: '-0.01em', opacity: 0.75 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.75' }}>
-                Voir la démo ↓
-              </a>
+              <Link href="/login"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#181B25', textDecoration: 'none', background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', transition: 'background 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff' }}>
+                Se connecter
+              </Link>
             </div>
 
             {/* Social proof + demo link */}

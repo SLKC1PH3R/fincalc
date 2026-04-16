@@ -2945,20 +2945,23 @@ export function LandingClient() {
     <div style={{ background: '#ffffff', color: '#111827', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
       {!introComplete && <FIntroAnimation onDone={() => { sessionStorage.setItem('patrimo_intro', '1'); setIntroComplete(true) }} />}
 
-      {/* ── NAVBAR ──────────────────────────────────────────────────── */}
+      {/* ── NAVBAR — floating pill (Finorio style) ──────────────────── */}
       <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: 64,
-        background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.18)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid rgba(198,189,250,0.28)',
-        transition: 'background 0.4s, border-color 0.4s, box-shadow 0.4s',
-        boxShadow: scrolled ? '0 1px 16px rgba(0,0,0,0.08)' : 'none',
+        position: 'fixed',
+        top: 16,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 100,
+        width: 'calc(100% - 32px)',
+        maxWidth: 1152,
+        background: '#ffffff',
+        borderRadius: 16,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06)',
+        transition: 'box-shadow 0.3s',
       }}>
-        <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
             <PatrimoLogo width={130} uid="nav" />
           </Link>
 
@@ -2966,9 +2969,9 @@ export function LandingClient() {
           <div style={{ alignItems: 'center', gap: 2 }} className="hidden md:flex">
 
             {/* Taux en direct — live dot + simple link */}
-            <a href="#rates" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: scrolled ? '#4b5563' : '#3b2fa0', textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'color 0.15s, background 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = scrolled ? '#111827' : '#1e1b4b'; e.currentTarget.style.background = scrolled ? 'rgba(0,0,0,0.04)' : 'rgba(198,189,250,0.25)' }}
-              onMouseLeave={e => { e.currentTarget.style.color = scrolled ? '#4b5563' : '#3b2fa0'; e.currentTarget.style.background = 'transparent' }}>
+            <a href="#rates" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 400, color: '#6b7280', textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'color 0.15s, background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#111827'; e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.background = 'transparent' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block', flexShrink: 0 }} />
               Taux en direct
             </a>
@@ -2990,11 +2993,11 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
+                  <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 400, color: openMenu === key ? '#111827' : '#6b7280', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Simulateurs <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
-                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 520, boxShadow: '0 24px 60px rgba(0,0,0,0.15)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
                         <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -3036,11 +3039,11 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
+                  <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 400, color: openMenu === key ? '#111827' : '#6b7280', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Patrimoine <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
-                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 480, boxShadow: '0 24px 60px rgba(0,0,0,0.15)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
                       {items.map(it => (
                         <Link key={it.label} href={it.href} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -3080,11 +3083,11 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 400, color: openMenu === key ? '#111827' : '#6b7280', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     Ressources <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
-                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 300, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 300, boxShadow: '0 24px 60px rgba(0,0,0,0.15)' }}>
                     {links.map(it => (
                       <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
@@ -3110,11 +3113,11 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 400, color: openMenu === key ? '#111827' : '#6b7280', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     À propos <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
-                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 280, boxShadow: '0 24px 60px rgba(0,0,0,0.7)' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 16, padding: 16, width: 280, boxShadow: '0 24px 60px rgba(0,0,0,0.15)' }}>
                     {links.map(it => (
                       <a key={it.label} href={it.href} style={{ display: 'flex', flexDirection: 'column', padding: '10px 12px', borderRadius: 10, textDecoration: 'none', transition: 'background 0.15s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
@@ -3132,15 +3135,19 @@ export function LandingClient() {
           </div>
 
           {/* Desktop CTA */}
-          <div style={{ alignItems: 'center', gap: 16 }} className="hidden md:flex">
-            <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: scrolled ? '#4b5563' : '#3b2fa0', textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = scrolled ? '#111827' : '#1e1b4b' }}
-              onMouseLeave={e => { e.currentTarget.style.color = scrolled ? '#4b5563' : '#3b2fa0' }}>
+          <div style={{ alignItems: 'center', gap: 10 }} className="hidden md:flex">
+            {/* Se connecter — bordered ghost button */}
+            <Link href="/login"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 500, color: '#111827', textDecoration: 'none', padding: '8px 16px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', background: '#ffffff', letterSpacing: '-0.01em', transition: 'background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#ffffff' }}>
               Se connecter
             </Link>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 100, background: '#c8922a', letterSpacing: '-0.01em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.boxShadow = `0 4px 20px ${GOLD}50` }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#c8922a'; e.currentTarget.style.boxShadow = '' }}>
+            {/* Commencer — dark gradient button (Finorio style) */}
+            <Link href="/login"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 500, color: '#ffffff', textDecoration: 'none', padding: '8px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.10)', background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000', letterSpacing: '-0.01em', transition: 'background 0.15s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%), #2d2f3a' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25' }}>
               Commencer <ArrowRight style={{ width: 13, height: 13 }} />
             </Link>
           </div>
@@ -3150,34 +3157,34 @@ export function LandingClient() {
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden flex items-center justify-center"
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}
+            style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid rgba(0,0,0,0.12)', background: '#ffffff', cursor: 'pointer' }}
           >
-            <div style={{ width: 22, height: 13, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ width: 18, height: 12, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <span style={{
                 display: 'block', height: 1.5, background: '#374151', borderRadius: 2,
                 transformOrigin: 'center',
                 transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-                transform: menuOpen ? 'translateY(5.75px) rotate(45deg)' : 'none',
+                transform: menuOpen ? 'translateY(5.25px) rotate(45deg)' : 'none',
               }} />
               <span style={{
                 display: 'block', height: 1.5, background: '#374151', borderRadius: 2,
                 transformOrigin: 'center',
                 transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-                transform: menuOpen ? 'translateY(-5.75px) rotate(-45deg)' : 'none',
+                transform: menuOpen ? 'translateY(-5.25px) rotate(-45deg)' : 'none',
               }} />
             </div>
           </button>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu — expands inside the pill */}
         <div style={{
           overflow: 'hidden',
           maxHeight: menuOpen ? 680 : 0,
           transition: 'max-height 0.35s cubic-bezier(0.23, 1, 0.32, 1)',
-          background: '#f8f9fc',
-          borderTop: menuOpen ? '1px solid rgba(0,0,0,0.08)' : '1px solid transparent',
+          borderTop: menuOpen ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
+          borderRadius: '0 0 16px 16px',
         }}>
-          <div style={{ padding: '16px 20px 20px' }}>
+          <div style={{ padding: '16px 24px 20px' }}>
             {[
               ['#rates', 'Taux en direct'],
               ['/tools', 'Tous les simulateurs'],
@@ -3195,7 +3202,7 @@ export function LandingClient() {
                 key={href}
                 href={href}
                 onClick={() => setMenuOpen(false)}
-                style={{ display: 'flex', alignItems: 'center', padding: '13px 0', fontSize: 15, color: '#374151', textDecoration: 'none', borderBottom: '1px solid rgba(0,0,0,0.06)', transition: 'color 0.15s' }}
+                style={{ display: 'flex', alignItems: 'center', padding: '12px 0', fontSize: 15, color: '#374151', textDecoration: 'none', borderBottom: '1px solid rgba(0,0,0,0.06)', transition: 'color 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#374151')}
               >
@@ -3203,10 +3210,10 @@ export function LandingClient() {
               </a>
             ))}
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              <Link href="/login" style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 9, border: '1px solid rgba(0,0,0,0.09)', color: '#374151', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+              <Link href="/login" style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', color: '#374151', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
                 Se connecter
               </Link>
-              <Link href="/login" style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 9, background: GOLD, color: '#000', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+              <Link href="/login" style={{ flex: 1, textAlign: 'center', padding: '11px 0', borderRadius: 10, background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 0 0 1px #000', color: '#fff', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
                 Commencer
               </Link>
             </div>
@@ -3215,7 +3222,7 @@ export function LandingClient() {
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 68, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 45%, #ffffff 100%)' }}>
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 96, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 45%, #ffffff 100%)' }}>
 
         {/* ── Purple-accent decorative layers ── */}
 

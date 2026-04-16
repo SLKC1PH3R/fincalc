@@ -2962,7 +2962,7 @@ export function LandingClient() {
         <div style={{ padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-            <PatrimoLogo width={130} uid="nav" />
+            <PatrimoLogo width={130} uid="nav" variant="light" />
           </Link>
 
           {/* Desktop nav — dropdowns */}

@@ -1311,29 +1311,39 @@ function SocialProofBar() {
   const { ref, visible } = useInView(0.2)
   const count = useCountUp(12843, 2200, visible)
   const hours = useCountUp(19264, 2400, visible)
+  const users = useCountUp(3847, 1800, visible)
+
+  const stats = [
+    { value: visible ? users.toLocaleString('fr-FR') : '0', suffix: '+', label: 'Utilisateurs actifs', color: '#111827' },
+    { value: visible ? count.toLocaleString('fr-FR') : '0', suffix: '', label: 'Simulations ce mois', color: '#111827' },
+    { value: visible ? `${hours.toLocaleString('fr-FR')}` : '0', suffix: ' h', label: 'Économisées vs Excel', color: '#111827' },
+    { value: 'Zéro', suffix: '', label: 'Données bancaires', color: '#111827' },
+  ]
+
   return (
-    <section style={{ padding: '0 20px 72px' }}>
-      <div ref={ref} style={{ maxWidth: 900, margin: '0 auto' }}>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-          background: 'rgba(0,0,0,0.02)',
-          borderRadius: 20, border: '1px solid rgba(0,0,0,0.07)', overflow: 'hidden',
-        }}>
-          {[
-            { value: visible ? count.toLocaleString('fr-FR') : '0', label: 'Simulations lancées ce mois', color: GOLD },
-            { value: visible ? `${hours.toLocaleString('fr-FR')} h` : '0 h', label: 'Économisées vs Excel ce mois', color: '#34d399' },
-            { value: 'Zéro', label: 'Données bancaires requises', color: '#38bdf8' },
-          ].map((s, i) => (
-            <div key={s.label} style={{
-              padding: 'clamp(20px,3vw,36px) clamp(16px,2vw,28px)',
-              textAlign: 'center',
-              borderLeft: i > 0 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-            }}>
-              <div style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, color: s.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 8, lineHeight: 1.5 }}>{s.label}</div>
+    <section style={{ padding: '64px 20px 72px', background: '#ffffff' }}>
+      <div ref={ref} style={{ maxWidth: 1152, margin: '0 auto', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 40, flexWrap: 'wrap' }}>
+
+        {/* Left — headline */}
+        <div style={{ maxWidth: 420 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>PatrImo en chiffres</p>
+          <h2 style={{ fontSize: 'clamp(1.5rem,2.8vw,2.2rem)', fontWeight: 300, lineHeight: 1.2, letterSpacing: '-0.04em', color: '#111827', margin: 0 }}>
+            La plateforme de simulation financière préférée des investisseurs français.
+          </h2>
+        </div>
+
+        {/* Right — stats row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 40, flexWrap: 'wrap' }}>
+          {stats.map((s, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ fontSize: 'clamp(1.8rem,3vw,2.6rem)', fontWeight: 700, color: s.color, letterSpacing: '-0.05em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                {s.value}{s.suffix}
+              </div>
+              <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.4 }}>{s.label}</p>
             </div>
           ))}
         </div>
+
       </div>
     </section>
   )
@@ -2802,18 +2812,25 @@ function LiveActivityFeed() {
   const entry = ACTIVITY_ENTRIES[idx]
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '10px 20px', background: 'rgba(0,0,0,0.02)', borderTop: '1px solid rgba(0,0,0,0.07)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', flexShrink: 0, animation: 'glow-pulse 2s infinite' }} />
-      <div style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.28s', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <span style={{ fontWeight: 700, color: '#111827' }}>{entry.name}</span>
-        <span style={{ color: '#6b7280' }}>·</span>
-        <span style={{ color: '#4b5563' }}>{entry.action}</span>
-        <span style={{ fontWeight: 700, color: entry.color }}>{entry.result}</span>
-        <span style={{ color: '#9ca3af', fontSize: 11 }}>· il y a {entry.ago}</span>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '9px 24px', background: '#ffffff', borderTop: '1px solid #f3f4f6', borderBottom: '1px solid #f3f4f6' }}>
+      {/* Live dot */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', flexShrink: 0, animation: 'glow-pulse 2s infinite' }} />
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Live</span>
       </div>
-      <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+      <div style={{ width: 1, height: 14, background: '#e5e7eb' }} />
+      {/* Activity text */}
+      <div style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.28s', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+        <span style={{ fontWeight: 600, color: '#111827' }}>{entry.name}</span>
+        <span style={{ color: '#d1d5db' }}>·</span>
+        <span style={{ color: '#6b7280' }}>{entry.action}</span>
+        <span style={{ fontWeight: 700, color: entry.color }}>{entry.result}</span>
+        <span style={{ color: '#9ca3af', fontSize: 11 }}>— il y a {entry.ago}</span>
+      </div>
+      {/* Dots */}
+      <div style={{ display: 'flex', gap: 3, flexShrink: 0, marginLeft: 4 }}>
         {ACTIVITY_ENTRIES.map((_, i) => (
-          <div key={i} style={{ width: i === idx ? 14 : 4, height: 4, borderRadius: 2, background: i === idx ? GOLD : 'rgba(0,0,0,0.15)', transition: 'all 0.3s' }} />
+          <div key={i} style={{ width: i === idx ? 12 : 4, height: 4, borderRadius: 2, background: i === idx ? '#111827' : '#e5e7eb', transition: 'all 0.3s' }} />
         ))}
       </div>
     </div>

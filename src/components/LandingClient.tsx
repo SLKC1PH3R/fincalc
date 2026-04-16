@@ -3348,7 +3348,7 @@ export function LandingClient() {
       <SectionDivider />
 
       {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
-      <section id="demo" style={{ padding: '60px 20px 100px' }}>
+      <section id="demo" style={{ padding: '60px 20px 100px', background: '#f9fafb' }}>
         <div style={{ maxWidth: 1240, margin: '0 auto' }}>
 
           {/* Section header */}
@@ -3399,7 +3399,7 @@ export function LandingClient() {
       <SectionDivider />
 
       {/* ── MODULES ───────────────────────────────────────────────────── */}
-      <section id="modules" style={{ padding: '80px 20px 100px' }}>
+      <section id="modules" style={{ padding: '80px 20px 100px', background: '#f9fafb' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
 
           {/* Header */}
@@ -3546,13 +3546,13 @@ export function LandingClient() {
       </section>
 
       {/* ── CASE STUDIES ──────────────────────────────────────────────── */}
-      <CaseStudiesSection />
+      <div style={{ background: '#f9fafb' }}><CaseStudiesSection /></div>
 
       {/* ── PERSONALIZATION QUIZ ──────────────────────────────────────── */}
       <PersonalizationQuiz />
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
-      <HowItWorks />
+      <div style={{ background: '#f9fafb' }}><HowItWorks /></div>
 
       {/* ── POUR QUI ? ────────────────────────────────────────────────── */}
       <section id="pour-qui" style={{ padding: '80px 20px' }}>
@@ -3612,7 +3612,7 @@ export function LandingClient() {
       </section>
 
       {/* ── WHY FINCALC ───────────────────────────────────────────────── */}
-      <section id="why" style={{ padding: '80px 20px 100px' }}>
+      <section id="why" style={{ padding: '80px 20px 100px', background: '#f9fafb' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           {/* Divider */}
           <div style={{ height: 1, background: 'linear-gradient(90deg,transparent,rgba(0,0,0,0.08) 50%,transparent)', marginBottom: 80 }} />
@@ -3687,7 +3687,7 @@ export function LandingClient() {
       </section>
 
       {/* ── TESTIMONIALS MARQUEE ──────────────────────────────────────── */}
-      <TestimonialsMarquee />
+      <div style={{ background: '#f9fafb' }}><TestimonialsMarquee /></div>
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
       <section id="roadmap" style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(251,191,36,0.03), transparent)' }}>
@@ -3749,7 +3749,7 @@ export function LandingClient() {
       </section>
 
       {/* ── COMPETITOR TABLE ──────────────────────────────────────────── */}
-      <CompetitorTable />
+      <div style={{ background: '#f9fafb' }}><CompetitorTable /></div>
 
       {/* ── FAQ ────────────────────────────────────────────────────────── */}
       <section id="faq" style={{ padding: '80px 20px' }}>

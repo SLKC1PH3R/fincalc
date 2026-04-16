@@ -2453,9 +2453,9 @@ function HeroCompoundCalc() {
     : n >= 1000 ? `${Math.round(n / 1000)} k€`
     : `${Math.round(n)} €`
 
-  // Chart data — one point per year
-  const CW = 340, CH = 250
-  const PAD = { top: 12, right: 8, bottom: 28, left: 0 }
+  // Chart data
+  const CW = 340, CH = 220
+  const PAD = { top: 12, right: 52, bottom: 28, left: 0 }
   const gW = CW - PAD.left - PAD.right
   const gH = CH - PAD.top - PAD.bottom
 
@@ -2473,45 +2473,49 @@ function HeroCompoundCalc() {
   const totalCoords = totalPts.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
   const investedCoords = investedPts.map((v, i) => `${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
   const areaTotal = `${PAD.left},${PAD.top + gH} ${totalCoords} ${toX(years).toFixed(1)},${(PAD.top + gH).toFixed(1)}`
-  // Interests shaded zone (between invested and total)
   const areaInterest = `${totalCoords} ${investedPts.slice().reverse().map((v, i) => `${toX(years - i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')}`
 
-  // Y axis ticks
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map(p => ({ v: p * maxV, y: PAD.top + gH - p * gH }))
-  // X axis ticks every 5 years
   const xTicks = Array.from({ length: Math.floor(years / 5) + 1 }, (_, i) => i * 5).filter(y => y <= years)
 
   const lastX = toX(years)
   const lastTotalY = toY(totalPts[years])
   const lastInvY = toY(investedPts[years])
 
+  // Site color palette
+  const P = '#7c3aed'        // purple primary
+  const PL = '#ede9fe'       // purple light
+  const PM = '#C6BDFA'       // purple medium
+  const GR = '#10b981'       // green
+  const GRL = '#d1fae5'      // green light
+
   const SLIDERS = [
-    { label: 'Capital initial', value: capital, min: 0, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital, color: GOLD },
-    { label: 'Versement / mois', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €`, set: setMonthly, color: '#34d399' },
-    { label: 'Durée', value: years, min: 5, max: 35, step: 1, display: `${years} ans`, set: setYears, color: '#818cf8' },
+    { label: 'Capital initial', value: capital, min: 0, max: 100000, step: 1000, display: `${capital.toLocaleString('fr-FR')} €`, set: setCapital, color: P },
+    { label: 'Versement / mois', value: monthly, min: 0, max: 2000, step: 50, display: `${monthly} €`, set: setMonthly, color: GR },
+    { label: 'Durée', value: years, min: 5, max: 35, step: 1, display: `${years} ans`, set: setYears, color: '#3b82f6' },
   ] as const
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Ambient glow */}
-      <div style={{ position: 'absolute', top: '20%', left: '40%', width: 400, height: 400, background: `radial-gradient(ellipse, ${GOLD}0e 0%, transparent 70%)`, pointerEvents: 'none', filter: 'blur(30px)' }} />
+      {/* Ambient purple glow behind card */}
+      <div style={{ position: 'absolute', top: '10%', left: '30%', width: 420, height: 420, background: 'radial-gradient(ellipse, rgba(124,58,237,0.10) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(32px)' }} />
 
-      {/* Main card */}
-      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.09)', background: '#07070a', boxShadow: '0 40px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)' }}>
+      {/* Main card — white */}
+      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', border: '1px solid #e5e7eb', background: '#ffffff', boxShadow: '0 24px 60px rgba(124,58,237,0.10), 0 4px 16px rgba(0,0,0,0.06)' }}>
 
         {/* Browser chrome */}
-        <div style={{ background: '#f8f9fc', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {['rgba(255,96,96,0.5)', 'rgba(255,189,0,0.45)', 'rgba(40,200,80,0.4)'].map((c, i) => (
+        <div style={{ background: '#f8f9fc', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'flex', gap: 5 }}>
+            {['#fca5a5', '#fcd34d', '#86efac'].map((c, i) => (
               <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
             ))}
           </div>
-          <div style={{ flex: 1, background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 6, padding: '4px 12px', fontSize: 10.5, color: '#9ca3af', textAlign: 'center', fontFamily: 'monospace' }}>
-            <span style={{ color: '#e5e7eb' }}>https://</span>finance.digitalstack.cloud<span style={{ color: GOLD + '88' }}>/simulateurs/interets-composes</span>
+          <div style={{ flex: 1, background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 6, padding: '4px 12px', fontSize: 10.5, color: '#9ca3af', textAlign: 'center', fontFamily: 'monospace' }}>
+            <span style={{ color: '#d1d5db' }}>https://</span>finance.digitalstack.cloud<span style={{ color: P + 'aa' }}>/simulateurs/interets-composes</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 6, background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.22)' }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399', animation: 'glow-pulse 2s infinite' }} />
-            <span style={{ fontSize: 9, fontWeight: 700, color: '#34d399', letterSpacing: '0.08em' }}>LIVE</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80', animation: 'glow-pulse 2s infinite' }} />
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#16a34a', letterSpacing: '0.08em' }}>LIVE</span>
           </div>
         </div>
 
@@ -2519,50 +2523,38 @@ function HeroCompoundCalc() {
         <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr' }}>
 
           {/* ── LEFT: sliders + KPIs ── */}
-          <div style={{ padding: '20px 18px', borderRight: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: 0, background: '#050508' }}>
+          <div style={{ padding: '18px 16px', borderRight: '1px solid #f3f4f6', display: 'flex', flexDirection: 'column', background: '#fafafa' }}>
 
-            <p style={{ fontSize: 9, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20 }}>Intérêts composés</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18 }}>
+              <div style={{ width: 20, height: 20, borderRadius: 6, background: PL, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 10 }}>📈</span>
+              </div>
+              <p style={{ fontSize: 10, color: '#374151', fontWeight: 700, letterSpacing: '0.04em', margin: 0 }}>Intérêts composés</p>
+            </div>
 
             {/* Sliders */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 24 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginBottom: 20 }}>
               {SLIDERS.map(s => {
                 const pct = ((s.value - s.min) / (s.max - s.min)) * 100
                 return (
                   <div key={s.label}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
-                      <span style={{ fontSize: 11, color: '#6b7280' }}>{s.label}</span>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: s.color, letterSpacing: '-0.03em' }}>{s.display}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10.5, color: '#6b7280', fontWeight: 500 }}>{s.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 800, color: s.color, letterSpacing: '-0.03em' }}>{s.display}</span>
                     </div>
-                    {/* Track + thumb container */}
                     <div style={{ position: 'relative', height: 20, display: 'flex', alignItems: 'center' }}>
-                      {/* Track background */}
-                      <div style={{ position: 'absolute', left: 0, right: 0, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }} />
-                      {/* Filled track */}
-                      <div style={{ position: 'absolute', left: 0, height: 4, borderRadius: 2, width: `${pct}%`, background: `linear-gradient(to right, ${s.color}66, ${s.color})` }} />
-                      {/* Visible thumb */}
+                      <div style={{ position: 'absolute', left: 0, right: 0, height: 4, borderRadius: 2, background: '#e5e7eb' }} />
+                      <div style={{ position: 'absolute', left: 0, height: 4, borderRadius: 2, width: `${pct}%`, background: `linear-gradient(to right, ${s.color}55, ${s.color})` }} />
                       <div style={{
                         position: 'absolute',
-                        left: `calc(${pct}% - 10px)`,
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        background: `radial-gradient(circle at 38% 35%, ${s.color}ff, ${s.color}bb)`,
+                        left: `calc(${pct}% - 9px)`,
+                        width: 18, height: 18, borderRadius: '50%',
+                        background: '#ffffff',
                         border: `2px solid ${s.color}`,
-                        boxShadow: `0 0 0 3px ${s.color}22, 0 2px 8px ${s.color}44`,
+                        boxShadow: `0 0 0 3px ${s.color}18, 0 2px 6px rgba(0,0,0,0.12)`,
                         pointerEvents: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                         flexShrink: 0,
-                      }}>
-                        {/* Grip lines */}
-                        <div style={{ display: 'flex', gap: 2, pointerEvents: 'none' }}>
-                          {[0, 1, 2].map(i => (
-                            <div key={i} style={{ width: 1.5, height: 6, borderRadius: 1, background: 'rgba(0,0,0,0.45)' }} />
-                          ))}
-                        </div>
-                      </div>
-                      {/* Invisible input on top */}
+                      }} />
                       <input type="range" min={s.min} max={s.max} step={s.step} value={s.value}
                         onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
                         style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, height: '100%', cursor: 'grab', zIndex: 2, margin: 0 }} />
@@ -2572,43 +2564,50 @@ function HeroCompoundCalc() {
               })}
             </div>
 
-            {/* KPI stack */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 'auto' }}>
-              <div style={{ background: `linear-gradient(135deg, ${GOLD}12, transparent)`, border: `1px solid ${GOLD}28`, borderRadius: 10, padding: '11px 13px' }}>
-                <p style={{ fontSize: 9, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Capital final</p>
-                <p style={{ fontSize: 22, fontWeight: 800, color: GOLD, letterSpacing: '-0.04em', lineHeight: 1 }}>{fmtK(total)}</p>
-                <p style={{ fontSize: 10, color: '#9ca3af', marginTop: 4 }}>×{multiplier.toFixed(1)} votre mise</p>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                {[
-                  { label: 'Investi', value: fmtK(invested), color: '#374151' },
-                  { label: 'Intérêts', value: fmtK(interests), color: '#34d399' },
-                ].map(k => (
-                  <div key={k.label} style={{ background: '#0d0d12', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, padding: '8px 10px' }}>
-                    <p style={{ fontSize: 8.5, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{k.label}</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: k.color, letterSpacing: '-0.02em' }}>{k.value}</p>
-                  </div>
-                ))}
-              </div>
+            {/* Capital final hero card */}
+            <div style={{ background: `linear-gradient(135deg, ${P} 0%, #6d28d9 100%)`, borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
+              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.60)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Capital final</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1, margin: '0 0 3px' }}>{fmtK(total)}</p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', margin: 0 }}>×{multiplier.toFixed(1)} votre mise</p>
+            </div>
+
+            {/* 2 sub-KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
+              {[
+                { label: 'Investi', value: fmtK(invested), color: '#374151', bg: '#ffffff', border: '#e5e7eb' },
+                { label: 'Intérêts', value: fmtK(interests), color: GR, bg: GRL, border: '#6ee7b7' },
+              ].map(k => (
+                <div key={k.label} style={{ background: k.bg, border: `1px solid ${k.border}`, borderRadius: 8, padding: '8px 10px' }}>
+                  <p style={{ fontSize: 8.5, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{k.label}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: k.color, letterSpacing: '-0.02em', margin: 0 }}>{k.value}</p>
+                </div>
+              ))}
             </div>
 
             {/* CTA */}
-            <Link href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 10, background: GOLD, color: '#000', fontSize: 12, fontWeight: 700, textDecoration: 'none', marginTop: 14 }}>
-              Simuler en détail <ArrowRight style={{ width: 12, height: 12 }} />
+            <Link href="/login" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '9px 0', borderRadius: 10,
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25',
+              boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000',
+              color: '#ffffff', fontSize: 11.5, fontWeight: 700, textDecoration: 'none',
+            }}>
+              Simuler en détail <ArrowRight style={{ width: 11, height: 11 }} />
             </Link>
           </div>
 
-          {/* ── RIGHT: large chart ── */}
-          <div style={{ padding: '20px 20px 16px', background: '#07070a', display: 'flex', flexDirection: 'column' }}>
+          {/* ── RIGHT: chart ── */}
+          <div style={{ padding: '16px 18px 14px', background: '#ffffff', display: 'flex', flexDirection: 'column' }}>
 
-            {/* View tabs */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div style={{ display: 'flex', gap: 4 }}>
+            {/* Tabs */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <div style={{ display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 8, padding: 3 }}>
                 {(['Croissance', 'Répartition', 'Score'] as const).map((label, i) => (
                   <button key={label} onClick={() => setChartView(i)} style={{
-                    fontSize: 9.5, fontWeight: 600, padding: '3px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
-                    background: chartView === i ? (i === 0 ? GOLD + '22' : i === 1 ? 'rgba(139,92,246,0.18)' : 'rgba(251,146,60,0.18)') : 'transparent',
-                    color: chartView === i ? (i === 0 ? GOLD : i === 1 ? '#a78bfa' : '#fb923c') : 'rgba(255,255,255,0.22)',
+                    fontSize: 9.5, fontWeight: 600, padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                    background: chartView === i ? '#ffffff' : 'transparent',
+                    color: chartView === i ? P : '#9ca3af',
+                    boxShadow: chartView === i ? '0 1px 3px rgba(0,0,0,0.10)' : 'none',
                     transition: 'all 0.2s', fontFamily: 'inherit',
                   }}>
                     {label}
@@ -2616,8 +2615,8 @@ function HeroCompoundCalc() {
                 ))}
               </div>
               {chartView === 0 && (
-                <div style={{ display: 'flex', gap: 12 }}>
-                  {[{ color: GOLD, label: 'Capital total' }, { color: '#34d399', label: 'Investi', dashed: true }].map(l => (
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {[{ color: P, label: 'Capital' }, { color: '#d1d5db', label: 'Investi', dashed: true }].map(l => (
                     <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <svg width={16} height={6}><line x1={0} y1={3} x2={16} y2={3} stroke={l.color} strokeWidth={l.dashed ? 1.5 : 2} strokeDasharray={l.dashed ? '3,2' : undefined} /></svg>
                       <span style={{ fontSize: 9, color: '#9ca3af' }}>{l.label}</span>
@@ -2627,156 +2626,158 @@ function HeroCompoundCalc() {
               )}
             </div>
 
-            {/* Chart area — switches between 3 views */}
+            {/* Chart switching area */}
             <div style={{ flex: 1, position: 'relative', minHeight: CH }}>
 
-            {/* View 1: Allocation pie (chartView === 1) */}
-            <div style={{ position: 'absolute', inset: 0, opacity: chartView === 1 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 1 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
-              {(() => {
-                const pctInt = Math.round((interests / total) * 100)
-                const pctInv = 100 - pctInt
-                const R = 70, cx = 80, cy = 90
-                const angle = (pctInt / 100) * 2 * Math.PI
-                const x1 = cx + R * Math.sin(0), y1 = cy - R * Math.cos(0)
-                const x2 = cx + R * Math.sin(angle), y2 = cy - R * Math.cos(angle)
-                const large = angle > Math.PI ? 1 : 0
-                return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-                    <svg width={160} height={180} viewBox="0 0 160 180" style={{ display: 'block' }}>
-                      <circle cx={cx} cy={cy} r={R} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-                      <path d={`M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`} fill={GOLD} opacity={0.85} />
-                      <path d={`M ${cx} ${cy} L ${x2.toFixed(1)} ${y2.toFixed(1)} A ${R} ${R} 0 ${1 - large} 1 ${x1} ${y1} Z`} fill="rgba(52,211,153,0.7)" />
-                      <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="800" fill={GOLD}>{pctInt}%</text>
-                      <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="rgba(0,0,0,0.35)">intérêts</text>
-                    </svg>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                      {[
-                        { color: GOLD, label: 'Intérêts générés', value: fmtK(interests), pct: pctInt },
-                        { color: '#34d399', label: 'Capital investi', value: fmtK(invested), pct: pctInv },
-                      ].map(s => (
-                        <div key={s.label}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                            <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, color: '#4b5563' }}>{s.label}</span>
+              {/* View 1: Répartition */}
+              <div style={{ position: 'absolute', inset: 0, opacity: chartView === 1 ? 1 : 0, transition: 'opacity 0.45s', pointerEvents: chartView === 1 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+                {(() => {
+                  const pctInt = Math.round((interests / total) * 100)
+                  const pctInv = 100 - pctInt
+                  const R = 64, cx = 75, cy = 85
+                  const angle = (pctInt / 100) * 2 * Math.PI
+                  const x1 = cx + R * Math.sin(0), y1 = cy - R * Math.cos(0)
+                  const x2 = cx + R * Math.sin(angle), y2 = cy - R * Math.cos(angle)
+                  const large = angle > Math.PI ? 1 : 0
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                      <svg width={150} height={170} viewBox="0 0 150 170" style={{ display: 'block' }}>
+                        <circle cx={cx} cy={cy} r={R} fill={PL} />
+                        <path d={`M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`} fill={P} />
+                        <path d={`M ${cx} ${cy} L ${x2.toFixed(1)} ${y2.toFixed(1)} A ${R} ${R} 0 ${1 - large} 1 ${x1} ${y1} Z`} fill={GR} opacity={0.85} />
+                        <circle cx={cx} cy={cy} r={36} fill="#ffffff" />
+                        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="17" fontWeight="800" fill={P}>{pctInt}%</text>
+                        <text x={cx} y={cy + 11} textAnchor="middle" fontSize="8" fill="#9ca3af">intérêts</text>
+                      </svg>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        {[
+                          { color: P, label: 'Intérêts générés', value: fmtK(interests), pct: pctInt },
+                          { color: GR, label: 'Capital investi', value: fmtK(invested), pct: pctInv },
+                        ].map(s => (
+                          <div key={s.label}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                              <div style={{ width: 8, height: 8, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
+                            </div>
+                            <p style={{ fontSize: 17, fontWeight: 800, color: s.color, letterSpacing: '-0.03em', margin: '0 0 1px' }}>{s.value}</p>
+                            <p style={{ fontSize: 9, color: '#9ca3af', margin: 0 }}>{s.pct}% du total</p>
                           </div>
-                          <p style={{ fontSize: 18, fontWeight: 800, color: s.color, letterSpacing: '-0.03em', margin: 0 }}>{s.value}</p>
-                          <p style={{ fontSize: 10, color: '#9ca3af', margin: 0 }}>{s.pct}% du total</p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )
-              })()}
+                  )
+                })()}
+              </div>
+
+              {/* View 2: Score */}
+              <div style={{ position: 'absolute', inset: 0, opacity: chartView === 2 ? 1 : 0, transition: 'opacity 0.45s', pointerEvents: chartView === 2 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+                {(() => {
+                  const score = 74
+                  const cx = 88, cy = 95, R = 65, SW = 11
+                  const perim = 2 * Math.PI * R
+                  const arcFrac = 0.70
+                  const arcLen = arcFrac * perim
+                  const filledLen = (score / 100) * arcLen
+                  const rot = -90 - arcFrac * 180
+                  const pillars = [
+                    { label: 'Sécurité', pct: 0.82, color: '#3b82f6' },
+                    { label: 'Immobilier', pct: 0.60, color: GR },
+                    { label: 'Long terme', pct: 0.78, color: P },
+                    { label: 'Diversif.', pct: 0.55, color: '#f59e0b' },
+                    { label: 'Risque', pct: 0.90, color: PM },
+                  ]
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                      <svg width={176} height={190} viewBox="0 0 176 190" style={{ display: 'block' }}>
+                        {/* Track */}
+                        <circle cx={cx} cy={cy} r={R} fill="none" stroke="#f3f4f6" strokeWidth={SW} strokeDasharray={`${arcLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+                        {/* Filled — purple */}
+                        <circle cx={cx} cy={cy} r={R} fill="none" stroke={P} strokeWidth={SW} strokeLinecap="round" strokeDasharray={`${filledLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
+                        <text x={cx} y={cy - 8} textAnchor="middle" fontSize="28" fontWeight="800" fill={P}>{score}</text>
+                        <text x={cx} y={cy + 10} textAnchor="middle" fontSize="10" fill="#9ca3af">/ 100</text>
+                        <text x={cx} y={cy + 25} textAnchor="middle" fontSize="10" fontWeight="700" fill={GR}>Bien</text>
+                      </svg>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {pillars.map(p => (
+                          <div key={p.label}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                              <span style={{ fontSize: 10, color: '#6b7280' }}>{p.label}</span>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: p.color }}>{Math.round(p.pct * 100)}%</span>
+                            </div>
+                            <div style={{ width: 110, height: 4, borderRadius: 2, background: '#f3f4f6', overflow: 'hidden' }}>
+                              <div style={{ width: `${p.pct * 100}%`, height: '100%', background: p.color, borderRadius: 2 }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+
+              {/* View 0: Croissance chart */}
+              <div style={{ position: chartView === 0 ? 'relative' : 'absolute', inset: chartView === 0 ? 'auto' : 0, opacity: chartView === 0 ? 1 : 0, transition: 'opacity 0.45s', pointerEvents: chartView === 0 ? 'all' : 'none' }}>
+                <svg width="100%" height={CH} viewBox={`0 0 ${CW} ${CH}`} style={{ overflow: 'visible', display: 'block' }}>
+                  <defs>
+                    <linearGradient id="hcc-total" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={P} stopOpacity="0.20" />
+                      <stop offset="100%" stopColor={P} stopOpacity="0.01" />
+                    </linearGradient>
+                    <linearGradient id="hcc-interest" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={GR} stopOpacity="0.10" />
+                      <stop offset="100%" stopColor={GR} stopOpacity="0.01" />
+                    </linearGradient>
+                    <clipPath id="hcc-clip">
+                      <rect x={PAD.left} y={PAD.top} width={gW} height={gH} />
+                    </clipPath>
+                  </defs>
+
+                  {/* Grid lines */}
+                  {yTicks.map((t, i) => (
+                    <g key={i}>
+                      <line x1={PAD.left} y1={t.y} x2={PAD.left + gW} y2={t.y} stroke="#f3f4f6" strokeWidth={1} />
+                      {i > 0 && (
+                        <text x={PAD.left + gW + 6} y={t.y + 4} fontSize={8.5} fill="#9ca3af" textAnchor="start">
+                          {fmtK(t.v)}
+                        </text>
+                      )}
+                    </g>
+                  ))}
+
+                  {/* X ticks */}
+                  {xTicks.map(y => (
+                    <g key={y}>
+                      <text x={toX(y)} y={PAD.top + gH + 16} fontSize={9} fill="#9ca3af" textAnchor="middle">{y}a</text>
+                    </g>
+                  ))}
+
+                  {/* Chart fill + lines */}
+                  <g clipPath="url(#hcc-clip)">
+                    <polygon points={areaInterest} fill="url(#hcc-interest)" />
+                    <polygon points={areaTotal} fill="url(#hcc-total)" />
+                    <polyline points={investedCoords} fill="none" stroke="#d1d5db" strokeWidth={1.5} strokeDasharray="5,3" strokeLinejoin="round" />
+                    <polyline points={totalCoords} fill="none" stroke={P} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+                  </g>
+
+                  {/* End-of-line callout */}
+                  <line x1={lastX} y1={lastTotalY} x2={lastX} y2={PAD.top + gH} stroke={`${P}25`} strokeWidth={1} strokeDasharray="3,2" />
+                  <circle cx={lastX} cy={lastTotalY} r={5} fill={P} />
+                  <circle cx={lastX} cy={lastTotalY} r={10} fill={P} opacity={0.12} />
+                  <circle cx={lastX} cy={lastInvY} r={3.5} fill="#9ca3af" opacity={0.8} />
+
+                  {/* Capital label */}
+                  <rect x={lastX - 52} y={lastTotalY - 30} width={56} height={24} rx={5} fill={PL} stroke={PM} strokeWidth={1} />
+                  <text x={lastX - 24} y={lastTotalY - 20} fontSize={9} fill="#6b7280" textAnchor="middle">Capital</text>
+                  <text x={lastX - 24} y={lastTotalY - 9} fontSize={10} fontWeight="800" fill={P} textAnchor="middle">{fmtK(total)}</text>
+                </svg>
+              </div>
             </div>
 
-            {/* View 2: Score gauge (chartView === 2) */}
-            <div style={{ position: 'absolute', inset: 0, opacity: chartView === 2 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 2 ? 'all' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24 }}>
-              {(() => {
-                const score = 74
-                const cx = 90, cy = 100, R = 68, SW = 12
-                const perim = 2 * Math.PI * R
-                const arcFrac = 0.68
-                const arcLen = arcFrac * perim
-                const filledLen = (score / 100) * arcLen
-                const rot = -90 - arcFrac * 180
-                const pillars = [{ label: 'Sécurité', pct: 0.82, color: '#38bdf8' }, { label: 'Immobilier', pct: 0.60, color: '#34d399' }, { label: 'Long terme', pct: 0.78, color: GOLD }, { label: 'Diversif.', pct: 0.55, color: '#fb923c' }, { label: 'Risque', pct: 0.90, color: '#a78bfa' }]
-                return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-                    <svg width={180} height={200} viewBox="0 0 180 200" style={{ display: 'block' }}>
-                      <circle cx={cx} cy={cy} r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={SW} strokeDasharray={`${arcLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
-                      <circle cx={cx} cy={cy} r={R} fill="none" stroke="#fb923c" strokeWidth={SW} strokeLinecap="round" strokeDasharray={`${filledLen.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot.toFixed(1)} ${cx} ${cy})`} />
-                      <text x={cx} y={cy - 8} textAnchor="middle" fontSize="30" fontWeight="800" fill="#fb923c">{score}</text>
-                      <text x={cx} y={cy + 10} textAnchor="middle" fontSize="10" fill="rgba(255,255,255,0.3)">/ 100</text>
-                      <text x={cx} y={cy + 26} textAnchor="middle" fontSize="11" fontWeight="700" fill="rgba(255,255,255,0.55)">Bien</text>
-                    </svg>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {pillars.map(p => (
-                        <div key={p.label}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                            <span style={{ fontSize: 10, color: '#6b7280' }}>{p.label}</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: p.color }}>{Math.round(p.pct * 100)}%</span>
-                          </div>
-                          <div style={{ width: 110, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                            <div style={{ width: `${p.pct * 100}%`, height: '100%', background: p.color, borderRadius: 2 }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })()}
-            </div>
-
-            {/* View 0: Growth chart (default) */}
-            <div style={{ position: chartView === 0 ? 'relative' : 'absolute', inset: chartView === 0 ? 'auto' : 0, opacity: chartView === 0 ? 1 : 0, transition: 'opacity 0.5s', pointerEvents: chartView === 0 ? 'all' : 'none' }}>
-              <svg width="100%" height={CH} viewBox={`0 0 ${CW} ${CH}`} style={{ overflow: 'visible', display: 'block' }}>
-                <defs>
-                  <linearGradient id="hcc-total" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={GOLD} stopOpacity="0.22" />
-                    <stop offset="100%" stopColor={GOLD} stopOpacity="0.01" />
-                  </linearGradient>
-                  <linearGradient id="hcc-interest" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#34d399" stopOpacity="0.12" />
-                    <stop offset="100%" stopColor="#34d399" stopOpacity="0.02" />
-                  </linearGradient>
-                  <clipPath id="hcc-clip">
-                    <rect x={PAD.left} y={PAD.top} width={gW} height={gH} />
-                  </clipPath>
-                </defs>
-
-                {/* Horizontal grid lines */}
-                {yTicks.map((t, i) => (
-                  <g key={i}>
-                    <line x1={PAD.left} y1={t.y} x2={PAD.left + gW} y2={t.y} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-                    {i > 0 && (
-                      <text x={PAD.left + gW + 5} y={t.y + 4} fontSize={8.5} fill="rgba(0,0,0,0.35)" textAnchor="start">
-                        {fmtK(t.v)}
-                      </text>
-                    )}
-                  </g>
-                ))}
-
-                {/* X axis ticks */}
-                {xTicks.map(y => (
-                  <g key={y}>
-                    <line x1={toX(y)} y1={PAD.top + gH} x2={toX(y)} y2={PAD.top + gH + 4} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
-                    <text x={toX(y)} y={PAD.top + gH + 16} fontSize={9} fill="rgba(0,0,0,0.4)" textAnchor="middle">{y}a</text>
-                  </g>
-                ))}
-
-                {/* Clipped chart areas */}
-                <g clipPath="url(#hcc-clip)">
-                  {/* Interest zone (between invested and total) */}
-                  <polygon points={areaInterest} fill="url(#hcc-interest)" />
-                  {/* Total area */}
-                  <polygon points={areaTotal} fill="url(#hcc-total)" />
-                  {/* Invested dashed line */}
-                  <polyline points={investedCoords} fill="none" stroke="#34d399" strokeWidth={1.5} strokeDasharray="5,3" strokeLinejoin="round" opacity={0.6} />
-                  {/* Total line */}
-                  <polyline points={totalCoords} fill="none" stroke={GOLD} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-                </g>
-
-                {/* Final value callout */}
-                <line x1={lastX} y1={lastTotalY} x2={lastX} y2={PAD.top + gH} stroke={`${GOLD}30`} strokeWidth={1} strokeDasharray="3,2" />
-                {/* Dot on total */}
-                <circle cx={lastX} cy={lastTotalY} r={5} fill={GOLD} />
-                <circle cx={lastX} cy={lastTotalY} r={10} fill={GOLD} opacity={0.12} />
-                {/* Dot on invested */}
-                <circle cx={lastX} cy={lastInvY} r={3.5} fill="#34d399" opacity={0.8} />
-
-                {/* Capital final label */}
-                <rect x={lastX - 52} y={lastTotalY - 30} width={58} height={24} rx={5} fill="#0a0a0e" stroke={`${GOLD}44`} strokeWidth={1} />
-                <text x={lastX - 23} y={lastTotalY - 21} fontSize={9} fill="rgba(255,255,255,0.4)" textAnchor="middle">Capital</text>
-                <text x={lastX - 23} y={lastTotalY - 11} fontSize={10} fontWeight="700" fill={GOLD} textAnchor="middle">{fmtK(total)}</text>
-              </svg>
-            </div>{/* end view 0 */}
-            </div>{/* end chart area */}
-
-            {/* Bottom bar: interests highlight */}
-            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.14)' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', flexShrink: 0 }} />
-              <span style={{ fontSize: 11, color: '#4b5563', flex: 1 }}>Intérêts générés par l&apos;effet boule de neige</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#34d399', letterSpacing: '-0.03em' }}>{fmtK(interests)}</span>
+            {/* Bottom interest highlight */}
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: GR, flexShrink: 0 }} />
+              <span style={{ fontSize: 10.5, color: '#374151', flex: 1 }}>Intérêts générés par l&apos;effet boule de neige</span>
+              <span style={{ fontSize: 12, fontWeight: 800, color: GR, letterSpacing: '-0.02em' }}>{fmtK(interests)}</span>
             </div>
           </div>
         </div>

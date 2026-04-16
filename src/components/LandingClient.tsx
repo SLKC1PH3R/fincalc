@@ -2942,19 +2942,19 @@ export function LandingClient() {
   }, [])
 
   return (
-    <div style={{ background: '#f8fafc', color: '#111827', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
+    <div style={{ background: '#ffffff', color: '#111827', minHeight: '100vh', fontFamily: "'Inter Tight', 'Inter', 'Geist', system-ui, sans-serif", overflowX: 'hidden' }}>
       {!introComplete && <FIntroAnimation onDone={() => { sessionStorage.setItem('patrimo_intro', '1'); setIntroComplete(true) }} />}
 
       {/* ── NAVBAR ──────────────────────────────────────────────────── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         height: 64,
-        background: scrolled ? 'rgba(255,255,255,0.95)' : 'rgba(248,250,252,0.92)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid rgba(0,0,0,0.04)',
-        transition: 'background 0.4s, border-color 0.4s',
-        boxShadow: scrolled ? '0 1px 12px rgba(0,0,0,0.06)' : 'none',
+        background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.18)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid rgba(198,189,250,0.28)',
+        transition: 'background 0.4s, border-color 0.4s, box-shadow 0.4s',
+        boxShadow: scrolled ? '0 1px 16px rgba(0,0,0,0.08)' : 'none',
       }}>
         <div style={{ maxWidth: 1152, margin: '0 auto', padding: '0 20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
@@ -2966,9 +2966,9 @@ export function LandingClient() {
           <div style={{ alignItems: 'center', gap: 2 }} className="hidden md:flex">
 
             {/* Taux en direct — live dot + simple link */}
-            <a href="#rates" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#4b5563', textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'color 0.15s, background 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#111827'; e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#4b5563'; e.currentTarget.style.background = 'transparent' }}>
+            <a href="#rates" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: scrolled ? '#4b5563' : '#3b2fa0', textDecoration: 'none', padding: '6px 12px', borderRadius: 8, transition: 'color 0.15s, background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = scrolled ? '#111827' : '#1e1b4b'; e.currentTarget.style.background = scrolled ? 'rgba(0,0,0,0.04)' : 'rgba(198,189,250,0.25)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = scrolled ? '#4b5563' : '#3b2fa0'; e.currentTarget.style.background = 'transparent' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80', display: 'inline-block', flexShrink: 0 }} />
               Taux en direct
             </a>
@@ -2990,7 +2990,7 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#111827' : '#4b5563', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
+                  <Link href="/tools" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Simulateurs <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
@@ -3036,7 +3036,7 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#111827' : '#4b5563', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
+                  <Link href="/patrimoine" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s', textDecoration: 'none' }}>
                     Patrimoine <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </Link>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
@@ -3080,7 +3080,7 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#111827' : '#4b5563', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     Ressources <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
@@ -3110,7 +3110,7 @@ export function LandingClient() {
               ]
               return (
                 <div style={{ position: 'relative' }} onMouseEnter={() => openMenuDelayed(key)} onMouseLeave={closeMenuDelayed}>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? '#111827' : '#4b5563', background: openMenu === key ? 'rgba(0,0,0,0.05)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
+                  <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: openMenu === key ? (scrolled ? '#111827' : '#1e1b4b') : (scrolled ? '#4b5563' : '#3b2fa0'), background: openMenu === key ? (scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(198,189,250,0.25)') : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'all 0.15s' }}>
                     À propos <ChevronDown style={{ width: 12, height: 12, transition: 'transform 0.2s', transform: openMenu === key ? 'rotate(180deg)' : 'none' }} />
                   </button>
                   <div style={{ position: 'absolute', top: '100%', left: '50%', paddingTop: 10, transform: openMenu === key ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)', opacity: openMenu === key ? 1 : 0, pointerEvents: openMenu === key ? 'all' : 'none', transition: 'opacity 0.2s, transform 0.2s', zIndex: 200 }}>
@@ -3133,9 +3133,9 @@ export function LandingClient() {
 
           {/* Desktop CTA */}
           <div style={{ alignItems: 'center', gap: 16 }} className="hidden md:flex">
-            <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: '#4b5563', textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#111827' }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#4b5563' }}>
+            <Link href="/login" style={{ fontSize: 13, fontWeight: 500, color: scrolled ? '#4b5563' : '#3b2fa0', textDecoration: 'none', letterSpacing: '-0.01em', transition: 'color 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = scrolled ? '#111827' : '#1e1b4b' }}
+              onMouseLeave={e => { e.currentTarget.style.color = scrolled ? '#4b5563' : '#3b2fa0' }}>
               Se connecter
             </Link>
             <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 100, background: '#c8922a', letterSpacing: '-0.01em', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
@@ -3215,42 +3215,42 @@ export function LandingClient() {
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 68, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden' }}>
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 68, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 45%, #ffffff 100%)' }}>
 
-        {/* ── RefractWeb-style left gradient signature ── */}
+        {/* ── Purple-accent decorative layers ── */}
 
-        {/* 1. Vertical light bar — left edge (gold → blue → transparent) */}
+        {/* 1. Soft left-edge shimmer */}
         <div style={{
           position: 'absolute', top: 0, left: 0, bottom: 0, width: 2, zIndex: 2,
-          background: `linear-gradient(to bottom, ${GOLD}90 0%, rgba(59,130,246,0.55) 45%, transparent 85%)`,
+          background: 'linear-gradient(to bottom, rgba(139,92,246,0.6) 0%, rgba(198,189,250,0.35) 50%, transparent 85%)',
           pointerEvents: 'none',
         }} />
 
-        {/* 2. Large gold bloom — upper left */}
+        {/* 2. Large purple bloom — upper left */}
         <div style={{
           position: 'absolute', top: -180, left: -220, width: 860, height: 860,
-          background: `radial-gradient(ellipse at top left, ${GOLD}1a 0%, rgba(30,58,138,0.08) 45%, transparent 68%)`,
+          background: 'radial-gradient(ellipse at top left, rgba(139,92,246,0.18) 0%, rgba(198,189,250,0.08) 45%, transparent 68%)',
           pointerEvents: 'none', filter: 'blur(32px)',
         }} />
 
-        {/* 3. Blue depth bloom — mid left */}
+        {/* 3. Gold accent bloom — mid left (brand signature) */}
         <div style={{
-          position: 'absolute', top: '25%', left: -160, width: 640, height: 640,
-          background: `radial-gradient(ellipse at left center, rgba(37,99,235,0.10) 0%, rgba(30,58,138,0.04) 50%, transparent 70%)`,
-          pointerEvents: 'none', filter: 'blur(48px)',
+          position: 'absolute', top: '30%', left: -120, width: 520, height: 520,
+          background: `radial-gradient(ellipse at left center, ${GOLD}14 0%, transparent 65%)`,
+          pointerEvents: 'none', filter: 'blur(40px)',
         }} />
 
-        {/* 4. Subtle top-center haze */}
+        {/* 4. Soft violet haze — top center */}
         <div style={{
-          position: 'absolute', top: -100, left: '15%', right: '25%', height: 320,
-          background: `radial-gradient(ellipse at 30% top, ${GOLD}0b 0%, transparent 65%)`,
+          position: 'absolute', top: -80, left: '20%', right: '20%', height: 280,
+          background: 'radial-gradient(ellipse at 50% top, rgba(167,139,250,0.22) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
 
-        {/* 5. Right edge — very faint blue counter-balance */}
+        {/* 5. Right edge — faint lavender counter-balance */}
         <div style={{
           position: 'absolute', top: -80, right: -120, width: 500, height: 500,
-          background: `radial-gradient(ellipse at top right, rgba(59,130,246,0.06) 0%, transparent 65%)`,
+          background: 'radial-gradient(ellipse at top right, rgba(167,139,250,0.14) 0%, transparent 65%)',
           pointerEvents: 'none',
         }} />
 
@@ -3285,8 +3285,8 @@ export function LandingClient() {
           {/* ── LEFT: text content ── */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 11, fontWeight: 600, marginBottom: 16 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD, animation: 'glow-pulse 2s infinite' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: 'rgba(139,92,246,0.10)', border: '1px solid rgba(139,92,246,0.25)', color: '#6d28d9', fontSize: 11, fontWeight: 600, marginBottom: 16 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#7c3aed', animation: 'glow-pulse 2s infinite' }} />
               18 simulateurs · 15 pages · Fiscalité 2026
             </div>
 
@@ -3320,9 +3320,9 @@ export function LandingClient() {
                 onMouseLeave={e => { e.currentTarget.style.background = '#c8922a'; e.currentTarget.style.boxShadow = '' }}>
                 Commencer gratuitement <ArrowRight style={{ width: 15, height: 15 }} />
               </Link>
-              <a href="#demo" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', transition: 'color 0.15s', letterSpacing: '-0.01em' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#111827' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#6b7280' }}>
+              <a href="#demo" style={{ fontSize: 13, color: '#6d28d9', textDecoration: 'none', transition: 'color 0.15s', letterSpacing: '-0.01em', opacity: 0.75 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.75' }}>
                 Voir la démo ↓
               </a>
             </div>
@@ -3334,7 +3334,7 @@ export function LandingClient() {
                   <div key={i} style={{
                     width: 26, height: 26, borderRadius: '50%',
                     background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
-                    border: '2px solid #f8fafc',
+                    border: '2px solid #ede9fe',
                     marginLeft: i === 0 ? 0 : -7,
                     zIndex: 4 - i,
                     position: 'relative',

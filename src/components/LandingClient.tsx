@@ -3846,34 +3846,87 @@ export function LandingClient() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ────────────────────────────────────────────────── */}
+      {/* ── CTA BANNER — Finorio purple gradient style ─────────────── */}
       <section style={{ padding: '40px 20px 80px' }}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealSection>
-            <div style={{ background: 'rgba(0,0,0,0.025)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid rgba(241,192,134,0.2)`, borderRadius: 28, padding: 'clamp(40px,5vw,64px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, rgba(241,192,134,0.06), transparent)`, pointerEvents: 'none' }} />
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 14, position: 'relative', color: '#0f172a' }}>
-                Prêt à reprendre le contrôle{' '}
-                <span style={{
-                  background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
-                  WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                }}>de vos finances ?</span>
-              </h2>
-              <p style={{ fontSize: 15, color: '#4b5563', lineHeight: 1.75, marginBottom: 32, position: 'relative' }}>
-                Gratuit, sans carte bancaire, sans engagement.<br />
-                Créez votre compte en 30 secondes.
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', position: 'relative' }}>
-                <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 12, fontSize: 14, fontWeight: 600, background: GOLD, color: '#000', textDecoration: 'none', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${GOLD}50` }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-                  Créer un compte gratuit <ArrowRight style={{ width: 15, height: 15 }} />
-                </Link>
-                <Link href="/login" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#111827')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#6b7280')}>
-                  Déjà un compte ? Se connecter →
-                </Link>
+            {/* Outer card */}
+            <div style={{
+              background: 'linear-gradient(180deg, rgba(221,215,254,0.40) 0%, #DDD7FE 100%)',
+              borderRadius: 28,
+              padding: 'clamp(40px,5vw,56px) 24px',
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Decorative radial glow — bottom left */}
+              <div style={{
+                position: 'absolute', bottom: -60, left: -60, width: 300, height: 300,
+                background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }} />
+              {/* Decorative radial glow — bottom right */}
+              <div style={{
+                position: 'absolute', bottom: -60, right: -60, width: 300, height: 300,
+                background: 'radial-gradient(circle, rgba(167,139,250,0.22) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }} />
+              {/* Top center shimmer */}
+              <div style={{
+                position: 'absolute', top: 0, left: '25%', right: '25%', height: 1,
+                background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent)',
+                pointerEvents: 'none',
+              }} />
+
+              {/* Content */}
+              <div style={{ position: 'relative', maxWidth: 560, margin: '0 auto' }}>
+                <h2 style={{
+                  fontSize: 'clamp(1.6rem,3.5vw,2.4rem)',
+                  fontWeight: 300,
+                  lineHeight: 1.2,
+                  letterSpacing: '-0.04em',
+                  marginBottom: 12,
+                  color: '#181B25',
+                }}>
+                  Prenez le contrôle de vos finances, simplement
+                </h2>
+                <p style={{ fontSize: 14, fontWeight: 300, letterSpacing: '0.02em', color: '#4b5563', lineHeight: 1.7, marginBottom: 36 }}>
+                  18 simulateurs gratuits — impôts, FIRE, patrimoine.<br />
+                  Sans carte bancaire, sans engagement.
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  {/* Primary — dark Finorio button */}
+                  <Link href="/login"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      padding: '10px 22px', borderRadius: 10,
+                      fontSize: 14, fontWeight: 500,
+                      color: '#ffffff', textDecoration: 'none',
+                      background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25',
+                      border: '1px solid rgba(255,255,255,0.10)',
+                      boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%), #2d2f3a' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25' }}>
+                    Créer un compte gratuit <ArrowRight style={{ width: 14, height: 14 }} />
+                  </Link>
+                  {/* Secondary — ghost */}
+                  <Link href="/login"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      padding: '10px 22px', borderRadius: 10,
+                      fontSize: 14, fontWeight: 500,
+                      color: '#181B25', textDecoration: 'none',
+                      background: '#ffffff',
+                      border: '1px solid rgba(0,0,0,0.12)',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#ffffff' }}>
+                    Se connecter
+                  </Link>
+                </div>
               </div>
             </div>
           </RevealSection>

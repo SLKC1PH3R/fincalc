@@ -3224,6 +3224,16 @@ export function LandingClient() {
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 96, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 45%, #ffffff 100%)' }}>
 
+        {/* ── Grid pattern overlay — Finorio style ── */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M 48 0 L 0 0 0 48' fill='none' stroke='rgba(198%2C189%2C250%2C0.35)' stroke-width='0.75'/%3E%3C/svg%3E")`,
+          backgroundSize: '48px 48px',
+          backgroundPosition: '0 0',
+          maskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0) 100%)',
+        }} />
+
         {/* ── Purple-accent decorative layers ── */}
 
         {/* 1. Soft left-edge shimmer */}

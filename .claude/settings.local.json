@@ -68,7 +68,16 @@
       "WebFetch(domain:finorio.demo.nextjstemplates.com)",
       "Bash(node -e ':*)",
       "Bash(grep -v \"//\")",
-      "Bash(node fix_landing2.js)"
+      "Bash(node fix_landing2.js)",
+      "WebFetch(domain:invvest.co)",
+      "Bash(curl -s https://invvest.co/)",
+      "Bash(curl -s 'https://invvest.co/assets/index-mYbkHgTm.css')",
+      "Bash(curl -s 'https://invvest.co/assets/index-0p7G1-ok.js')",
+      "Bash(curl -s 'https://invvest.co/')",
+      "Bash(curl -s 'https://invvest.co/sitemap.xml')",
+      "Bash(cd /tmp)",
+      "Bash(npm list:*)",
+      "Bash(curl -s 'https://invvest.co/' --compressed)"
     ]
   }
 }

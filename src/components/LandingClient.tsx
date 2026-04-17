@@ -3174,7 +3174,7 @@ export function LandingClient() {
       </nav>
 
       {/* ── HERO ───────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 96, paddingBottom: 24, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 45%, #ffffff 100%)' }}>
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 120, paddingBottom: 0, paddingLeft: 24, paddingRight: 24, overflow: 'hidden', background: 'linear-gradient(180deg, #DDD7FE 0%, #f3f0ff 50%, #ffffff 100%)' }}>
 
         {/* ── bg-gradient.svg overlay — Finorio exact ── */}
         <img
@@ -3225,129 +3225,125 @@ export function LandingClient() {
           pointerEvents: 'none',
         }} />
 
-        {/* Floating icons — reduced opacity to not fight the gradients */}
-        {FLOAT_ICONS.map((f, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            left: `${f.x}%`, top: `${f.y}%`,
-            opacity: f.opacity * 0.7,
-            pointerEvents: 'none',
-            animation: `float-slow ${f.dur}s ease-in-out infinite ${f.delay}s`,
-            width: f.size + 18, height: f.size + 18,
-            borderRadius: '50%',
-            background: f.color + '12',
-            border: `1px solid ${f.color}1e`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <f.Icon style={{ width: Math.round(f.size * 0.52), height: Math.round(f.size * 0.52), color: f.color }} />
-          </div>
-        ))}
-
         {/* Fine grain overlay */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.022, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.018, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: '200px' }} />
 
-        {/* Two-column hero */}
-        <div className="hero-two-col" style={{
-          position: 'relative', maxWidth: 1400, width: '100%',
+        {/* ── CENTERED HERO CONTENT ── */}
+        <div style={{
+          position: 'relative', width: '100%', maxWidth: 1100,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
           opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(20px)',
           transition: 'all 0.8s ease',
         }}>
 
-          {/* ── LEFT: text content ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Badge — Finorio glassmorphism pill with gradient border */}
+          {/* ── Text block — centered ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 740, width: '100%', marginBottom: 52 }}>
+
+            {/* Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center',
-              borderRadius: 100,
-              marginBottom: 20,
-              padding: 1,
+              borderRadius: 100, marginBottom: 24, padding: 1,
               background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.15))',
             }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 borderRadius: 100,
                 background: 'rgba(255,255,255,0.18)',
-                backdropFilter: 'blur(3.65px)',
-                WebkitBackdropFilter: 'blur(3.65px)',
-                padding: '4px 12px 4px 4px',
+                backdropFilter: 'blur(3.65px)', WebkitBackdropFilter: 'blur(3.65px)',
+                padding: '4px 14px 4px 4px',
               }}>
-                <span style={{
-                  borderRadius: 100,
-                  background: '#C6BDFA',
-                  padding: '2px 10px',
-                  fontSize: 12,
-                  fontWeight: 400,
-                  color: '#181B25',
-                }}>Nouveau</span>
-                <span style={{ fontSize: 13, fontWeight: 300, color: '#4b5563', letterSpacing: '0.01em' }}>
-                  18 simulateurs · Fiscalité 2026
-                </span>
+                <span style={{ borderRadius: 100, background: '#C6BDFA', padding: '2px 10px', fontSize: 12, fontWeight: 500, color: '#181B25' }}>Nouveau</span>
+                <span style={{ fontSize: 13, fontWeight: 300, color: '#4b5563', letterSpacing: '0.01em' }}>18 simulateurs · Fiscalité 2026</span>
               </div>
             </div>
 
-            {/* Headline — Finorio light weight */}
-            <h1 style={{ fontSize: 'clamp(2rem,3.2vw,3.6rem)', fontWeight: 300, lineHeight: 1.12, letterSpacing: '-0.075em', color: '#181B25', marginBottom: 16, textAlign: 'left' }}>
-              Gérez vos finances<br />
-              avec <span style={{ fontWeight: 300, color: '#7c3aed' }}>confiance</span>
+            {/* H1 */}
+            <h1 style={{ fontSize: 'clamp(2.4rem,5vw,4.4rem)', fontWeight: 300, lineHeight: 1.08, letterSpacing: '-0.075em', color: '#181B25', marginBottom: 20, textAlign: 'center' }}>
+              La plateforme patrimoniale<br />
+              <span style={{ fontWeight: 300, color: '#7c3aed' }}>tout-en-un</span>
             </h1>
 
-            <p style={{ fontSize: 15, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 420, marginBottom: 28, letterSpacing: '0.01em' }}>
-              18 simulateurs financiers 100&nbsp;% gratuits — impôts, FIRE, patrimoine — sans jamais toucher à vos comptes.
+            {/* Subtitle */}
+            <p style={{ fontSize: 16, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 540, marginBottom: 32, letterSpacing: '0.01em', textAlign: 'center' }}>
+              18 simulateurs financiers 100&nbsp;% gratuits — impôts, FIRE, patrimoine, crédit — avec des données en temps réel. Sans jamais toucher à vos comptes.
             </p>
 
-            {/* CTAs — Finorio dark button style */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
-              <Link href="/login" className="cta-primary"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#ffffff', textDecoration: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000', transition: 'background 0.15s' }}
+            {/* CTAs */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+              <Link href="/login"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#ffffff', textDecoration: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000', transition: 'background 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%), #2d2f3a' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25' }}>
                 Commencer gratuitement <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
               <Link href="/login"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#181B25', textDecoration: 'none', background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', transition: 'background 0.15s' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#181B25', textDecoration: 'none', background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', transition: 'background 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff' }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#ffffff' }}>
                 Se connecter
               </Link>
+              <button
+                onClick={loginAsDemo}
+                disabled={demoLoading}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '12px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ede9fe', cursor: demoLoading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#ede9fe' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#f5f3ff' }}
+              >
+                ⚡ {demoLoading ? 'Connexion…' : 'Compte démo'}
+              </button>
             </div>
 
-            {/* Social proof + demo link */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            {/* Social proof */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
                   <div key={i} style={{
                     width: 26, height: 26, borderRadius: '50%',
                     background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
                     border: '2px solid #ede9fe',
-                    marginLeft: i === 0 ? 0 : -7,
-                    zIndex: 4 - i,
-                    position: 'relative',
+                    marginLeft: i === 0 ? 0 : -7, zIndex: 4 - i, position: 'relative',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 9, fontWeight: 700, color: '#fff',
-                  }}>
-                    {['J','M','A','T'][i]}
-                  </div>
+                  }}>{['J','M','A','T'][i]}</div>
                 ))}
               </div>
               <span style={{ fontSize: 12, color: '#6b7280' }}>
                 <span style={{ color: '#374151', fontWeight: 600 }}>3 847</span> utilisateurs · 0 pub · 100 % gratuit
               </span>
-              <span style={{ color: '#d1d5db', fontSize: 12 }}>·</span>
-              <button
-                onClick={loginAsDemo}
-                disabled={demoLoading}
-                style={{ background: 'none', border: 'none', cursor: demoLoading ? 'wait' : 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 12, color: GOLD, opacity: 0.7, transition: 'opacity 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '0.7' }}
-              >
-                {demoLoading ? 'Connexion…' : '⚡ Compte démo'}
-              </button>
             </div>
           </div>
 
-          {/* ── RIGHT: live compound calc ── */}
-          <div style={{ position: 'relative', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'none' : 'translateY(24px) scale(0.97)', transition: 'all 1s ease 0.25s' }}>
-            <HeroCompoundCalc />
+          {/* ── Dashboard screenshot — browser mockup ── */}
+          <div style={{
+            width: '100%',
+            opacity: heroVisible ? 1 : 0,
+            transform: heroVisible ? 'none' : 'translateY(32px)',
+            transition: 'all 1.1s ease 0.25s',
+          }}>
+            {/* Subtle glow behind screenshot */}
+            <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: 200, background: 'radial-gradient(ellipse, rgba(124,58,237,0.18) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
+            {/* Browser frame */}
+            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.07), 0 40px 100px rgba(124,58,237,0.18), 0 16px 40px rgba(0,0,0,0.08)' }}>
+              {/* Chrome bar */}
+              <div style={{ background: '#f8f9fc', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #e5e7eb' }}>
+                <div style={{ display: 'flex', gap: 5 }}>
+                  {['#fca5a5', '#fcd34d', '#86efac'].map((c, i) => (
+                    <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+                  ))}
+                </div>
+                <div style={{ flex: 1, background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 7, padding: '4px 14px', fontSize: 10.5, color: '#9ca3af', textAlign: 'center', fontFamily: 'monospace', maxWidth: 360, margin: '0 auto' }}>
+                  <span style={{ color: '#d1d5db' }}>https://</span>finance.digitalstack.cloud<span style={{ color: '#7c3aed99' }}>/dashboard</span>
+                </div>
+                <div style={{ width: 48 }} />
+              </div>
+              {/* Screenshot */}
+              <img
+                src="/dashboard-desktop.png"
+                alt="PatrImo — tableau de bord"
+                style={{ width: '100%', display: 'block', borderRadius: '0 0 15px 15px' }}
+              />
+            </div>
           </div>
         </div>
 

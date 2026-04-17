@@ -1,68 +1,137 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { Search, TrendingUp, TrendingDown, ChevronRight, Star, Filter } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, ChevronRight, Star, Filter, RefreshCw, Wifi } from 'lucide-react'
 import { ETF_DATABASE } from '@/lib/etf-database'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Category = 'etf' | 'actions' | 'crypto' | 'scpi'
 
-// ── Static mock data ───────────────────────────────────────────────────────────
-const ACTIONS = [
-  { ticker: 'AAPL',   name: 'Apple Inc.',        market: 'NASDAQ', sector: 'Technologie',   price: 224.37, change: 1.24,  mcap: '3 310B$',  pe: 35.2, popular: true  },
-  { ticker: 'MSFT',   name: 'Microsoft Corp.',   market: 'NASDAQ', sector: 'Technologie',   price: 415.29, change: 0.87,  mcap: '3 080B$',  pe: 38.1, popular: true  },
-  { ticker: 'NVDA',   name: 'NVIDIA Corp.',      market: 'NASDAQ', sector: 'Semi-conducteurs', price: 875.60, change: 3.21, mcap: '2 150B$', pe: 67.4, popular: true  },
-  { ticker: 'AMZN',   name: 'Amazon.com Inc.',   market: 'NASDAQ', sector: 'Commerce',      price: 194.50, change: -0.43, mcap: '2 010B$', pe: 44.2, popular: true  },
-  { ticker: 'META',   name: 'Meta Platforms',    market: 'NASDAQ', sector: 'Réseaux sociaux', price: 536.18, change: 2.11, mcap: '1 360B$', pe: 28.7, popular: true  },
-  { ticker: 'GOOG',   name: 'Alphabet Inc.',     market: 'NASDAQ', sector: 'Technologie',   price: 172.45, change: -1.03, mcap: '2 140B$', pe: 24.1, popular: false },
-  { ticker: 'TSLA',   name: 'Tesla Inc.',        market: 'NASDAQ', sector: 'Auto & Énergie', price: 248.30, change: -2.14, mcap: '790B$',  pe: 68.3, popular: true  },
-  { ticker: 'MC.PA',  name: 'LVMH',             market: 'Euronext', sector: 'Luxe',         price: 572.40, change: 0.62,  mcap: '285B€',  pe: 22.4, popular: true  },
-  { ticker: 'TTE.PA', name: 'TotalEnergies',    market: 'Euronext', sector: 'Énergie',       price: 58.44,  change: -0.38, mcap: '131B€',  pe: 8.7,  popular: false },
-  { ticker: 'OR.PA',  name: "L'Oréal",         market: 'Euronext', sector: 'Cosmétiques',   price: 356.85, change: 1.05,  mcap: '188B€',  pe: 31.2, popular: true  },
-  { ticker: 'SAN.PA', name: 'Sanofi',           market: 'Euronext', sector: 'Santé',         price: 98.62,  change: 0.21,  mcap: '125B€',  pe: 18.3, popular: false },
-  { ticker: 'AI.PA',  name: 'Air Liquide',      market: 'Euronext', sector: 'Industrie',     price: 148.90, change: 0.74,  mcap: '79B€',   pe: 25.6, popular: false },
-  { ticker: 'BNP.PA', name: 'BNP Paribas',     market: 'Euronext', sector: 'Banque',         price: 68.50,  change: -0.53, mcap: '82B€',  pe: 7.1,  popular: false },
-  { ticker: 'ASML',   name: 'ASML Holding',    market: 'NASDAQ', sector: 'Semi-conducteurs', price: 687.44, change: 1.87,  mcap: '270B€',  pe: 41.8, popular: true  },
-  { ticker: 'SAP',    name: 'SAP SE',           market: 'NYSE', sector: 'Logiciel',           price: 232.10, change: 0.45,  mcap: '284B€',  pe: 49.3, popular: false },
+interface LivePrice { price: number; changePercent: number }
+
+// ── ETF → Yahoo Finance symbol map ────────────────────────────────────────────
+const ETF_YAHOO: Record<string, string> = {
+  VWCE: 'VWCE.DE', SXR8: 'SXR8.DE', IWDA: 'IWDA.AS', PE500: 'PE500.PA',
+  CW8: 'CW8.PA', EQQQ: 'EQQQ.DE', SXRV: 'SXRV.DE', IUSA: 'IUSA.AS',
+  EIMI: 'EIMI.AS', VWRL: 'VWRL.AS', CSPX: 'CSPX.AS', VUAG: 'VUAG.AS',
+  VUSA: 'VUSA.AS', WPEA: 'WPEA.PA', EWLD: 'EWLD.PA', XDWD: 'XDWD.DE',
+  PAEEM: 'PAEEM.PA', PAASI: 'PAASI.PA', SSAC: 'SSAC.AS', ANX: 'ANX.PA',
+  INRG: 'INRG.AS', EXS1: 'EXS1.DE', PHAU: 'PHAU.AS', GOLD: 'GOLD.PA',
+  SMEA: 'SMEA.AS', AGGH: 'AGGH.AS', IEAG: 'IEAG.AS', IUSN: 'IUSN.AS',
+  IWQU: 'IWQU.AS', SUSW: 'SUSW.AS', VHYL: 'VHYL.AS', TDIV: 'TDIV.AS',
+  CS5E: 'CS5E.AS', IDTL: 'IDTL.AS', IEQU: 'IEQU.AS',
+}
+
+// ── Static data — Actions ──────────────────────────────────────────────────────
+interface Stock {
+  ticker: string; yahooTicker: string; name: string; market: string
+  sector: string; price: number; change: number; mcap: string; pe: number; popular: boolean
+}
+
+const ACTIONS: Stock[] = [
+  // US – Mega-cap
+  { ticker: 'AAPL',   yahooTicker: 'AAPL',    name: 'Apple Inc.',          market: 'NASDAQ', sector: 'Technologie',      price: 224.37, change:  1.24, mcap: '3 310B$', pe: 35.2, popular: true  },
+  { ticker: 'MSFT',   yahooTicker: 'MSFT',    name: 'Microsoft Corp.',      market: 'NASDAQ', sector: 'Technologie',      price: 415.29, change:  0.87, mcap: '3 080B$', pe: 38.1, popular: true  },
+  { ticker: 'NVDA',   yahooTicker: 'NVDA',    name: 'NVIDIA Corp.',         market: 'NASDAQ', sector: 'Semi-conducteurs', price: 875.60, change:  3.21, mcap: '2 150B$', pe: 67.4, popular: true  },
+  { ticker: 'AMZN',   yahooTicker: 'AMZN',    name: 'Amazon.com Inc.',      market: 'NASDAQ', sector: 'Commerce',         price: 194.50, change: -0.43, mcap: '2 010B$', pe: 44.2, popular: true  },
+  { ticker: 'META',   yahooTicker: 'META',    name: 'Meta Platforms',       market: 'NASDAQ', sector: 'Réseaux sociaux', price: 536.18, change:  2.11, mcap: '1 360B$', pe: 28.7, popular: true  },
+  { ticker: 'GOOGL',  yahooTicker: 'GOOGL',   name: 'Alphabet Inc.',        market: 'NASDAQ', sector: 'Technologie',      price: 172.45, change: -1.03, mcap: '2 140B$', pe: 24.1, popular: false },
+  { ticker: 'TSLA',   yahooTicker: 'TSLA',    name: 'Tesla Inc.',           market: 'NASDAQ', sector: 'Auto & Énergie',  price: 248.30, change: -2.14, mcap: '790B$',   pe: 68.3, popular: true  },
+  { ticker: 'ASML',   yahooTicker: 'ASML',    name: 'ASML Holding',         market: 'NASDAQ', sector: 'Semi-conducteurs', price: 687.44, change:  1.87, mcap: '270B€',   pe: 41.8, popular: true  },
+  // US – Large cap
+  { ticker: 'JPM',    yahooTicker: 'JPM',     name: 'JPMorgan Chase',       market: 'NYSE',   sector: 'Banque',           price: 215.80, change:  0.42, mcap: '620B$',   pe: 13.2, popular: false },
+  { ticker: 'V',      yahooTicker: 'V',       name: 'Visa Inc.',            market: 'NYSE',   sector: 'Fintech',          price: 278.50, change:  0.88, mcap: '570B$',   pe: 30.1, popular: false },
+  { ticker: 'JNJ',    yahooTicker: 'JNJ',     name: 'Johnson & Johnson',    market: 'NYSE',   sector: 'Santé',            price: 162.40, change: -0.21, mcap: '390B$',   pe: 16.8, popular: false },
+  { ticker: 'WMT',    yahooTicker: 'WMT',     name: 'Walmart Inc.',         market: 'NYSE',   sector: 'Distribution',     price: 68.20,  change:  0.55, mcap: '547B$',   pe: 32.4, popular: false },
+  { ticker: 'LLY',    yahooTicker: 'LLY',     name: 'Eli Lilly & Co.',      market: 'NYSE',   sector: 'Pharma',           price: 803.50, change:  1.92, mcap: '762B$',   pe: 89.3, popular: true  },
+  { ticker: 'AVGO',   yahooTicker: 'AVGO',    name: 'Broadcom Inc.',        market: 'NASDAQ', sector: 'Semi-conducteurs', price: 168.70, change:  2.05, mcap: '780B$',   pe: 38.7, popular: false },
+  { ticker: 'NFLX',   yahooTicker: 'NFLX',   name: 'Netflix Inc.',         market: 'NASDAQ', sector: 'Streaming',        price: 692.40, change:  0.73, mcap: '302B$',   pe: 50.1, popular: false },
+  { ticker: 'AMD',    yahooTicker: 'AMD',     name: 'Advanced Micro Devices', market: 'NASDAQ', sector: 'Semi-conducteurs', price: 174.30, change: 1.44, mcap: '282B$',  pe: 47.6, popular: false },
+  { ticker: 'XOM',    yahooTicker: 'XOM',     name: 'Exxon Mobil',          market: 'NYSE',   sector: 'Énergie',          price: 113.40, change: -0.55, mcap: '452B$',   pe: 14.3, popular: false },
+  { ticker: 'SAP',    yahooTicker: 'SAP',     name: 'SAP SE',               market: 'NYSE',   sector: 'Logiciel',         price: 232.10, change:  0.45, mcap: '284B€',   pe: 49.3, popular: false },
+  // France – CAC 40
+  { ticker: 'MC',     yahooTicker: 'MC.PA',   name: 'LVMH',                 market: 'Paris',  sector: 'Luxe',             price: 572.40, change:  0.62, mcap: '285B€',   pe: 22.4, popular: true  },
+  { ticker: 'TTE',    yahooTicker: 'TTE.PA',  name: 'TotalEnergies',        market: 'Paris',  sector: 'Énergie',          price: 58.44,  change: -0.38, mcap: '131B€',   pe: 8.7,  popular: false },
+  { ticker: 'OR',     yahooTicker: 'OR.PA',   name: "L'Oréal",             market: 'Paris',  sector: 'Cosmétiques',      price: 356.85, change:  1.05, mcap: '188B€',   pe: 31.2, popular: true  },
+  { ticker: 'SAN',    yahooTicker: 'SAN.PA',  name: 'Sanofi',              market: 'Paris',  sector: 'Santé',            price: 98.62,  change:  0.21, mcap: '125B€',   pe: 18.3, popular: false },
+  { ticker: 'AI',     yahooTicker: 'AI.PA',   name: 'Air Liquide',         market: 'Paris',  sector: 'Industrie',        price: 148.90, change:  0.74, mcap: '79B€',    pe: 25.6, popular: false },
+  { ticker: 'BNP',    yahooTicker: 'BNP.PA',  name: 'BNP Paribas',        market: 'Paris',  sector: 'Banque',           price: 68.50,  change: -0.53, mcap: '82B€',    pe: 7.1,  popular: false },
+  { ticker: 'ACA',    yahooTicker: 'ACA.PA',  name: 'Crédit Agricole',    market: 'Paris',  sector: 'Banque',           price: 14.82,  change: -0.27, mcap: '38B€',    pe: 6.8,  popular: false },
+  { ticker: 'RMS',    yahooTicker: 'RMS.PA',  name: 'Hermès International', market: 'Paris', sector: 'Luxe',            price: 2430.0, change:  0.38, mcap: '206B€',   pe: 50.2, popular: true  },
+  { ticker: 'SU',     yahooTicker: 'SU.PA',   name: 'Schneider Electric',  market: 'Paris',  sector: 'Industrie',        price: 236.80, change:  1.12, mcap: '137B€',   pe: 29.7, popular: false },
+  { ticker: 'CS',     yahooTicker: 'CS.PA',   name: 'AXA',                market: 'Paris',  sector: 'Assurance',        price: 34.82,  change:  0.44, mcap: '65B€',    pe: 10.1, popular: false },
+  { ticker: 'CAP',    yahooTicker: 'CAP.PA',  name: 'Capgemini',           market: 'Paris',  sector: 'IT & Conseil',     price: 165.45, change: -0.87, mcap: '54B€',    pe: 17.3, popular: false },
+  { ticker: 'DSY',    yahooTicker: 'DSY.PA',  name: 'Dassault Systèmes',  market: 'Paris',  sector: 'Logiciel',         price: 28.40,  change:  0.25, mcap: '37B€',    pe: 42.1, popular: false },
+  { ticker: 'KER',    yahooTicker: 'KER.PA',  name: 'Kering',              market: 'Paris',  sector: 'Luxe',             price: 235.80, change: -1.42, mcap: '29B€',    pe: 14.8, popular: false },
+  { ticker: 'DG',     yahooTicker: 'DG.PA',   name: 'Vinci',               market: 'Paris',  sector: 'Construction',     price: 108.20, change:  0.18, mcap: '76B€',    pe: 14.5, popular: false },
+  { ticker: 'ORA',    yahooTicker: 'ORA.PA',  name: 'Orange',              market: 'Paris',  sector: 'Télécom',          price: 11.44,  change: -0.09, mcap: '30B€',    pe: 11.2, popular: false },
 ]
 
-const CRYPTO = [
-  { ticker: 'BTC',  name: 'Bitcoin',       price: 83420,  change: 2.14,  cap: '1 647B$', vol24h: '28.4B$', popular: true  },
-  { ticker: 'ETH',  name: 'Ethereum',      price: 3180,   change: -1.22, cap: '383B$',   vol24h: '12.1B$', popular: true  },
-  { ticker: 'SOL',  name: 'Solana',        price: 147.2,  change: 4.87,  cap: '68.2B$',  vol24h: '3.8B$',  popular: true  },
-  { ticker: 'BNB',  name: 'BNB',           price: 598.4,  change: 0.63,  cap: '86.1B$',  vol24h: '1.9B$',  popular: false },
-  { ticker: 'XRP',  name: 'Ripple',        price: 0.548,  change: -2.45, cap: '31.4B$',  vol24h: '1.4B$',  popular: false },
-  { ticker: 'AVAX', name: 'Avalanche',     price: 38.74,  change: 3.21,  cap: '15.8B$',  vol24h: '0.8B$',  popular: false },
-  { ticker: 'DOT',  name: 'Polkadot',      price: 7.82,   change: 1.44,  cap: '11.2B$',  vol24h: '0.4B$',  popular: false },
-  { ticker: 'MATIC', name: 'Polygon',      price: 0.884,  change: -0.87, cap: '8.6B$',   vol24h: '0.3B$',  popular: false },
-  { ticker: 'LINK', name: 'Chainlink',     price: 15.23,  change: 2.76,  cap: '9.1B$',   vol24h: '0.5B$',  popular: false },
-  { ticker: 'UNI',  name: 'Uniswap',       price: 8.46,   change: -3.12, cap: '6.3B$',   vol24h: '0.2B$',  popular: false },
+// ── Static data — Crypto ───────────────────────────────────────────────────────
+interface Crypto {
+  ticker: string; yahooTicker: string; name: string
+  price: number; change: number; cap: string; vol24h: string; popular: boolean
+}
+
+const CRYPTO: Crypto[] = [
+  { ticker: 'BTC',   yahooTicker: 'BTC-USD',  name: 'Bitcoin',        price: 83420,  change:  2.14, cap: '1 647B$', vol24h: '28.4B$', popular: true  },
+  { ticker: 'ETH',   yahooTicker: 'ETH-USD',  name: 'Ethereum',       price: 3180,   change: -1.22, cap: '383B$',   vol24h: '12.1B$', popular: true  },
+  { ticker: 'SOL',   yahooTicker: 'SOL-USD',  name: 'Solana',         price: 147.2,  change:  4.87, cap: '68.2B$',  vol24h: '3.8B$',  popular: true  },
+  { ticker: 'BNB',   yahooTicker: 'BNB-USD',  name: 'BNB',            price: 598.4,  change:  0.63, cap: '86.1B$',  vol24h: '1.9B$',  popular: false },
+  { ticker: 'XRP',   yahooTicker: 'XRP-USD',  name: 'XRP',            price: 0.548,  change: -2.45, cap: '31.4B$',  vol24h: '1.4B$',  popular: false },
+  { ticker: 'AVAX',  yahooTicker: 'AVAX-USD', name: 'Avalanche',      price: 38.74,  change:  3.21, cap: '15.8B$',  vol24h: '0.8B$',  popular: false },
+  { ticker: 'DOT',   yahooTicker: 'DOT-USD',  name: 'Polkadot',       price: 7.82,   change:  1.44, cap: '11.2B$',  vol24h: '0.4B$',  popular: false },
+  { ticker: 'MATIC', yahooTicker: 'MATIC-USD',name: 'Polygon',        price: 0.884,  change: -0.87, cap: '8.6B$',   vol24h: '0.3B$',  popular: false },
+  { ticker: 'LINK',  yahooTicker: 'LINK-USD', name: 'Chainlink',      price: 15.23,  change:  2.76, cap: '9.1B$',   vol24h: '0.5B$',  popular: false },
+  { ticker: 'ADA',   yahooTicker: 'ADA-USD',  name: 'Cardano',        price: 0.462,  change: -1.18, cap: '16.3B$',  vol24h: '0.6B$',  popular: false },
+  { ticker: 'DOGE',  yahooTicker: 'DOGE-USD', name: 'Dogecoin',       price: 0.162,  change:  1.05, cap: '23.7B$',  vol24h: '1.2B$',  popular: true  },
+  { ticker: 'UNI',   yahooTicker: 'UNI-USD',  name: 'Uniswap',        price: 8.46,   change: -3.12, cap: '6.3B$',   vol24h: '0.2B$',  popular: false },
 ]
 
+// ── Static data — SCPI ─────────────────────────────────────────────────────────
 const SCPI = [
-  { ticker: 'PRIM', name: 'Primopierre',        type: 'Bureaux',        yield: 4.31, price: 202.0,  change: 0,     aum: '3.2B€', popular: true  },
-  { ticker: 'CAPI', name: 'Corum Origin',       type: 'Diversifié',     yield: 6.06, price: 1135.0, change: 0,     aum: '4.5B€', popular: true  },
-  { ticker: 'IMMO', name: 'Immorente',          type: 'Commerce',       yield: 4.73, price: 182.0,  change: -0.55, aum: '5.1B€', popular: true  },
-  { ticker: 'EURS', name: 'Eurovalys',          type: 'Diversifié EU',  yield: 4.50, price: 1000.0, change: 0,     aum: '1.2B€', popular: false },
-  { ticker: 'PIED', name: 'Pierval Santé',      type: 'Santé',          yield: 5.02, price: 1053.0, change: 0.48,  aum: '2.8B€', popular: true  },
-  { ticker: 'MACI', name: 'Maci Invest',        type: 'Bureaux',        yield: 3.87, price: 215.0,  change: -1.39, aum: '0.8B€', popular: false },
-  { ticker: 'TRAN', name: 'Transitions Europe', type: 'Diversifié',     yield: 5.67, price: 1050.0, change: 0,     aum: '1.5B€', popular: false },
-  { ticker: 'OPEX', name: 'Opus Real Estate',   type: 'Bureaux + Logis', yield: 4.12, price: 420.0, change: 0,     aum: '0.6B€', popular: false },
+  { ticker: 'PRIM', name: 'Primopierre',        type: 'Bureaux',         yield: 4.31, price: 202.0,  change: 0,     aum: '3.2B€', popular: true  },
+  { ticker: 'CAPI', name: 'Corum Origin',        type: 'Diversifié',      yield: 6.06, price: 1135.0, change: 0,     aum: '4.5B€', popular: true  },
+  { ticker: 'IMMO', name: 'Immorente',           type: 'Commerce',        yield: 4.73, price: 182.0,  change: -0.55, aum: '5.1B€', popular: true  },
+  { ticker: 'EURS', name: 'Eurovalys',           type: 'Diversifié EU',   yield: 4.50, price: 1000.0, change: 0,     aum: '1.2B€', popular: false },
+  { ticker: 'PIED', name: 'Pierval Santé',       type: 'Santé',           yield: 5.02, price: 1053.0, change: 0.48,  aum: '2.8B€', popular: true  },
+  { ticker: 'MACI', name: 'Maci Invest',         type: 'Bureaux',         yield: 3.87, price: 215.0,  change: -1.39, aum: '0.8B€', popular: false },
+  { ticker: 'TRAN', name: 'Transitions Europe',  type: 'Diversifié',      yield: 5.67, price: 1050.0, change: 0,     aum: '1.5B€', popular: false },
+  { ticker: 'OPEX', name: 'Opus Real Estate',    type: 'Bureaux + Logis', yield: 4.12, price: 420.0,  change: 0,     aum: '0.6B€', popular: false },
 ]
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function fmtPrice(n: number): string {
-  if (n >= 1000) return n.toLocaleString('fr-FR', { maximumFractionDigits: 0 })
+  if (n >= 10000) return n.toLocaleString('fr-FR', { maximumFractionDigits: 0 })
+  if (n >= 1000) return n.toLocaleString('fr-FR', { maximumFractionDigits: 1 })
   if (n >= 10) return n.toFixed(2)
-  return n.toFixed(3)
+  if (n >= 1) return n.toFixed(3)
+  return n.toFixed(4)
 }
 
-function ChangeChip({ v }: { v: number }) {
+function fmtUpdated(ts: number | null): string {
+  if (!ts) return ''
+  const d = new Date(ts)
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`
+}
+
+function ChangeChip({ v }: { v: number | null | undefined }) {
+  if (v == null) return <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: 'Geist Mono, monospace' }}>—</span>
   const pos = v > 0
   const col = v === 0 ? '#9ca3af' : pos ? '#34d399' : '#f87171'
   return (
     <span style={{ fontSize: 11, fontWeight: 700, color: col, background: col + '15', borderRadius: 6, padding: '2px 7px', fontFamily: 'Geist Mono, monospace', whiteSpace: 'nowrap' }}>
       {v === 0 ? '—' : `${pos ? '+' : ''}${v.toFixed(2)}%`}
+    </span>
+  )
+}
+
+function LiveDot({ live }: { live: boolean }) {
+  if (!live) return null
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, color: '#34d399', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 6, padding: '2px 7px' }}>
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+      Live
     </span>
   )
 }
@@ -81,15 +150,75 @@ const SORT_OPTIONS = {
   scpi:    [{ key: 'name', label: 'Nom' }, { key: 'yield', label: 'Rendement' }, { key: 'aum', label: 'AUM' }],
 }
 
+// ── Component ──────────────────────────────────────────────────────────────────
 export default function MarchePage() {
   const [tab, setTab] = useState<Category>('etf')
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('name')
   const [onlyPopular, setOnlyPopular] = useState(false)
+  const [livePrices, setLivePrices] = useState<Map<string, LivePrice>>(new Map())
+  const [loading, setLoading] = useState(false)
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null)
+  const refreshTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // Fetch live prices for current tab
+  const fetchPrices = useCallback(async (currentTab: Category) => {
+    let symbols: string[] = []
+
+    if (currentTab === 'actions') {
+      symbols = ACTIONS.map(s => s.yahooTicker)
+    } else if (currentTab === 'crypto') {
+      symbols = CRYPTO.map(c => c.yahooTicker)
+    } else if (currentTab === 'etf') {
+      symbols = ETF_DATABASE
+        .filter(e => ETF_YAHOO[e.ticker])
+        .map(e => ETF_YAHOO[e.ticker])
+        .slice(0, 40) // stay within Yahoo limits
+    } else {
+      return // SCPI: no real-time source
+    }
+
+    if (symbols.length === 0) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/market/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbols }),
+      })
+      if (!res.ok) return
+      const json = await res.json() as { data: Array<{ symbol: string; price: number | null; changePercent: number | null }>; updatedAt: number }
+      const map = new Map<string, LivePrice>()
+      for (const q of json.data) {
+        if (q.price != null && q.changePercent != null) {
+          map.set(q.symbol, { price: q.price, changePercent: q.changePercent })
+        }
+      }
+      setLivePrices(map)
+      setUpdatedAt(json.updatedAt ?? Date.now())
+    } catch {
+      // fail silently — static fallback remains
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Fetch on mount and tab change; auto-refresh every 5 min
+  useEffect(() => {
+    fetchPrices(tab)
+    if (refreshTimer.current) clearInterval(refreshTimer.current)
+    refreshTimer.current = setInterval(() => fetchPrices(tab), 5 * 60 * 1000)
+    return () => { if (refreshTimer.current) clearInterval(refreshTimer.current) }
+  }, [tab, fetchPrices])
+
+  // ── Filtered lists ──────────────────────────────────────────────────────────
   const etfFiltered = useMemo(() => {
     let list = ETF_DATABASE
-    if (query) list = list.filter(e => e.name.toLowerCase().includes(query.toLowerCase()) || e.ticker.toLowerCase().includes(query.toLowerCase()) || e.isin.toLowerCase().includes(query.toLowerCase()) || e.benchmark.toLowerCase().includes(query.toLowerCase()))
+    if (query) list = list.filter(e =>
+      e.name.toLowerCase().includes(query.toLowerCase()) ||
+      e.ticker.toLowerCase().includes(query.toLowerCase()) ||
+      e.isin.toLowerCase().includes(query.toLowerCase()) ||
+      e.benchmark.toLowerCase().includes(query.toLowerCase()))
     if (sortBy === 'ter') list = [...list].sort((a, b) => a.ter - b.ter)
     if (sortBy === 'aum') list = [...list].sort((a, b) => b.aum - a.aum)
     if (sortBy === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
@@ -98,25 +227,38 @@ export default function MarchePage() {
 
   const actionsFiltered = useMemo(() => {
     let list = ACTIONS
-    if (query) list = list.filter(s => s.name.toLowerCase().includes(query.toLowerCase()) || s.ticker.toLowerCase().includes(query.toLowerCase()))
+    if (query) list = list.filter(s =>
+      s.name.toLowerCase().includes(query.toLowerCase()) ||
+      s.ticker.toLowerCase().includes(query.toLowerCase()) ||
+      s.sector.toLowerCase().includes(query.toLowerCase()))
     if (onlyPopular) list = list.filter(s => s.popular)
-    if (sortBy === 'change') list = [...list].sort((a, b) => b.change - a.change)
+    const getLiveChange = (s: Stock) => livePrices.get(s.yahooTicker)?.changePercent ?? s.change
+    if (sortBy === 'change') list = [...list].sort((a, b) => getLiveChange(b) - getLiveChange(a))
     if (sortBy === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
     return list
-  }, [query, sortBy, onlyPopular])
+  }, [query, sortBy, onlyPopular, livePrices])
 
   const cryptoFiltered = useMemo(() => {
     let list = CRYPTO
-    if (query) list = list.filter(c => c.name.toLowerCase().includes(query.toLowerCase()) || c.ticker.toLowerCase().includes(query.toLowerCase()))
+    if (query) list = list.filter(c =>
+      c.name.toLowerCase().includes(query.toLowerCase()) ||
+      c.ticker.toLowerCase().includes(query.toLowerCase()))
     if (onlyPopular) list = list.filter(c => c.popular)
-    if (sortBy === 'change') list = [...list].sort((a, b) => b.change - a.change)
-    if (sortBy === 'cap') list = [...list].sort((a, b) => b.price - a.price)
+    const getLiveChange = (c: Crypto) => livePrices.get(c.yahooTicker)?.changePercent ?? c.change
+    if (sortBy === 'change') list = [...list].sort((a, b) => getLiveChange(b) - getLiveChange(a))
+    if (sortBy === 'cap') list = [...list].sort((a, b) => {
+      const pa = livePrices.get(a.yahooTicker)?.price ?? a.price
+      const pb = livePrices.get(b.yahooTicker)?.price ?? b.price
+      return pb - pa
+    })
     return list
-  }, [query, sortBy, onlyPopular])
+  }, [query, sortBy, onlyPopular, livePrices])
 
   const scpiFiltered = useMemo(() => {
     let list = SCPI
-    if (query) list = list.filter(s => s.name.toLowerCase().includes(query.toLowerCase()) || s.type.toLowerCase().includes(query.toLowerCase()))
+    if (query) list = list.filter(s =>
+      s.name.toLowerCase().includes(query.toLowerCase()) ||
+      s.type.toLowerCase().includes(query.toLowerCase()))
     if (onlyPopular) list = list.filter(s => s.popular)
     if (sortBy === 'yield') list = [...list].sort((a, b) => b.yield - a.yield)
     if (sortBy === 'aum') list = [...list].sort((a, b) => b.aum.localeCompare(a.aum))
@@ -124,12 +266,15 @@ export default function MarchePage() {
   }, [query, sortBy, onlyPopular])
 
   const sortOptions = SORT_OPTIONS[tab]
+  const hasLive = livePrices.size > 0 && tab !== 'scpi'
 
   // Stats strip
-  const gainers = tab === 'actions' ? ACTIONS.filter(a => a.change > 1).length
-    : tab === 'crypto' ? CRYPTO.filter(c => c.change > 1).length : 0
-  const losers = tab === 'actions' ? ACTIONS.filter(a => a.change < -1).length
-    : tab === 'crypto' ? CRYPTO.filter(c => c.change < -1).length : 0
+  const gainers = tab === 'actions'
+    ? ACTIONS.filter(a => (livePrices.get(a.yahooTicker)?.changePercent ?? a.change) > 1).length
+    : tab === 'crypto' ? CRYPTO.filter(c => (livePrices.get(c.yahooTicker)?.changePercent ?? c.change) > 1).length : 0
+  const losers = tab === 'actions'
+    ? ACTIONS.filter(a => (livePrices.get(a.yahooTicker)?.changePercent ?? a.change) < -1).length
+    : tab === 'crypto' ? CRYPTO.filter(c => (livePrices.get(c.yahooTicker)?.changePercent ?? c.change) < -1).length : 0
 
   return (
     <div style={{ background: 'var(--content-bg)', minHeight: '100vh', padding: '28px 24px 56px' }}>
@@ -137,9 +282,32 @@ export default function MarchePage() {
       {/* ── Header ── */}
       <div style={{ marginBottom: 24 }}>
         <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 4 }}>Explorer</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', margin: '0 0 20px' }}>
-          Marchés & Actifs
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+          <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', margin: 0 }}>
+            Marchés & Actifs
+          </h1>
+          {/* Live status + refresh */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {hasLive && (
+              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                MAJ {fmtUpdated(updatedAt)}
+              </span>
+            )}
+            <LiveDot live={hasLive} />
+            {tab !== 'scpi' && (
+              <button
+                onClick={() => fetchPrices(tab)}
+                disabled={loading}
+                title="Rafraîchir les cours"
+                style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'transparent', cursor: loading ? 'not-allowed' : 'pointer', color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+                onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--row-hover)'; e.currentTarget.style.color = 'var(--text-em)' } }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted-c)' }}
+              >
+                <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Big search bar */}
         <div style={{ position: 'relative', maxWidth: 640 }}>
@@ -149,7 +317,7 @@ export default function MarchePage() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={tab === 'etf' ? 'Rechercher un ETF (nom, ticker, ISIN, indice)…'
-              : tab === 'actions' ? 'Rechercher une action (nom, ticker)…'
+              : tab === 'actions' ? 'Rechercher une action (nom, ticker, secteur)…'
               : tab === 'crypto' ? 'Rechercher une crypto (nom, ticker)…'
               : 'Rechercher une SCPI (nom, type)…'}
             style={{ width: '100%', padding: '12px 16px 12px 44px', borderRadius: 12, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', fontSize: 14, color: 'var(--text-em)', outline: 'none', transition: 'border-color 0.15s', boxSizing: 'border-box' }}
@@ -158,7 +326,7 @@ export default function MarchePage() {
           />
           {query && (
             <button onClick={() => setQuery('')}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1 }}>×</button>
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 18, lineHeight: 1 }}>×</button>
           )}
         </div>
       </div>
@@ -166,7 +334,7 @@ export default function MarchePage() {
       {/* ── Tabs ── */}
       <div style={{ display: 'flex', gap: 0, marginBottom: 16, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
         {TAB_LIST.map(t => (
-          <button key={t.key} onClick={() => { setTab(t.key); setQuery(''); setSortBy('name') }}
+          <button key={t.key} onClick={() => { setTab(t.key); setQuery(''); setSortBy('name'); setLivePrices(new Map()) }}
             style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: tab === t.key ? 600 : 400, transition: 'all 0.15s', background: tab === t.key ? 'var(--modal-surface)' : 'transparent', color: tab === t.key ? 'var(--text-em)' : 'var(--text-muted-c)', boxShadow: tab === t.key ? '0 1px 4px rgba(0,0,0,0.15)' : 'none', whiteSpace: 'nowrap' }}>
             <span style={{ fontSize: 14 }}>{t.emoji}</span>
             {t.label}
@@ -177,7 +345,6 @@ export default function MarchePage() {
 
       {/* ── Toolbar ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        {/* Sort */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '4px 8px' }}>
           <Filter style={{ width: 12, height: 12, color: 'var(--text-subtle)' }} />
           <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Trier par</span>
@@ -189,7 +356,6 @@ export default function MarchePage() {
           ))}
         </div>
 
-        {/* Popular filter */}
         {(tab === 'actions' || tab === 'crypto' || tab === 'scpi') && (
           <button onClick={() => setOnlyPopular(v => !v)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: `1px solid ${onlyPopular ? 'rgba(241,192,134,0.4)' : 'var(--card-dark-border)'}`, background: onlyPopular ? 'rgba(241,192,134,0.08)' : 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: onlyPopular ? '#f1c086' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
@@ -198,9 +364,15 @@ export default function MarchePage() {
           </button>
         )}
 
-        {/* Market stats */}
+        {!hasLive && tab !== 'scpi' && !loading && (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--text-subtle)', marginLeft: 'auto' }}>
+            <Wifi style={{ width: 11, height: 11, opacity: 0.4 }} />
+            Données statiques
+          </span>
+        )}
+
         {(tab === 'actions' || tab === 'crypto') && gainers + losers > 0 && (
-          <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', gap: 6, marginLeft: hasLive ? 'auto' : 0 }}>
             <span style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, color: '#34d399', background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 6, padding: '3px 10px' }}>
               <TrendingUp style={{ width: 11, height: 11 }} /> {gainers} haussiers
             </span>
@@ -211,52 +383,66 @@ export default function MarchePage() {
         )}
       </div>
 
-      {/* ── CONTENT ── */}
+      {/* ── Loading skeleton ── */}
+      {loading && livePrices.size === 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 12, color: 'var(--text-subtle)' }}>
+          <RefreshCw style={{ width: 12, height: 12, animation: 'spin 1s linear infinite' }} />
+          Chargement des cours en temps réel…
+        </div>
+      )}
 
-      {/* ETF Tab */}
+      {/* ── ETF Tab ── */}
       {tab === 'etf' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          {/* Table header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 80px 80px 36px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
-            {['Nom / Ticker', 'Indice de réf.', 'TER', 'AUM', 'Réplication', ''].map((h, i) => (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+            {['Nom / Ticker', 'Indice de réf.', 'Cours', 'TER', 'AUM', 'Réplication', ''].map((h, i) => (
               <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {etfFiltered.length === 0 && (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Aucun ETF trouvé pour «&nbsp;{query}&nbsp;»</div>
           )}
-          {etfFiltered.map((etf, i) => (
-            <Link key={etf.isin} href={`/dashboard/marche/etf/${etf.ticker}`}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: i < etfFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, textDecoration: 'none', alignItems: 'center', transition: 'background 0.12s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              {/* Name + ticker */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
-                  {etf.distributing && <span style={{ fontSize: 9, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '1px 5px' }}>DIST</span>}
+          {etfFiltered.map((etf, i) => {
+            const yahoo = ETF_YAHOO[etf.ticker]
+            const live = yahoo ? livePrices.get(yahoo) : undefined
+            return (
+              <Link key={etf.isin} href={`/dashboard/marche/etf/${etf.ticker}`}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: i < etfFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, textDecoration: 'none', alignItems: 'center', transition: 'background 0.12s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
+                    {etf.distributing && <span style={{ fontSize: 9, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '1px 5px' }}>DIST</span>}
+                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
-              </div>
-              {/* Benchmark */}
-              <span style={{ fontSize: 12, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
-              {/* TER */}
-              <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#f1c086' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
-              {/* AUM */}
-              <span style={{ fontSize: 11, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
-              {/* Replication */}
-              <span style={{ fontSize: 10, fontWeight: 600, color: etf.replication === 'physical' ? '#38bdf8' : '#a78bfa', background: etf.replication === 'physical' ? 'rgba(56,189,248,0.1)' : 'rgba(167,139,250,0.1)', borderRadius: 5, padding: '2px 6px', textAlign: 'right', whiteSpace: 'nowrap' }}>{etf.replication === 'physical' ? 'Physique' : 'Synthétique'}</span>
-              {/* Arrow */}
-              <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
-            </Link>
-          ))}
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
+                {/* Live price */}
+                <div style={{ textAlign: 'right' }}>
+                  {live ? (
+                    <>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(live.price)}</p>
+                      <ChangeChip v={live.changePercent} />
+                    </>
+                  ) : (
+                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>—</span>
+                  )}
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#f1c086' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: etf.replication === 'physical' ? '#38bdf8' : '#a78bfa', background: etf.replication === 'physical' ? 'rgba(56,189,248,0.1)' : 'rgba(167,139,250,0.1)', borderRadius: 5, padding: '2px 6px', textAlign: 'right', whiteSpace: 'nowrap' }}>{etf.replication === 'physical' ? 'Physique' : 'Synthétique'}</span>
+                <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
+              </Link>
+            )
+          })}
         </div>
       )}
 
-      {/* Actions Tab */}
+      {/* ── Actions Tab ── */}
       {tab === 'actions' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 100px 90px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
             {['Société', 'Secteur', 'Prix', 'Var. 1j', 'P/E'].map((h, i) => (
               <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
@@ -264,45 +450,53 @@ export default function MarchePage() {
           {actionsFiltered.length === 0 && (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Aucune action trouvée</div>
           )}
-          {actionsFiltered.map((stock, i) => (
-            <div key={stock.ticker}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 100px 90px', gap: 12, padding: '13px 20px', borderBottom: i < actionsFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
-                  {stock.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
-                  <span style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'var(--mini-card-bg)', border: '1px solid var(--card-dark-border)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
+          {actionsFiltered.map((stock, i) => {
+            const live = livePrices.get(stock.yahooTicker)
+            const price = live?.price ?? stock.price
+            const change = live?.changePercent ?? stock.change
+            return (
+              <div key={stock.ticker}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '13px 20px', borderBottom: i < actionsFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
+                    {stock.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
+                    <span style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'var(--mini-card-bg)', border: '1px solid var(--card-dark-border)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
+                <span style={{ fontSize: 11, color: 'var(--text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--text-em)') : 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}</span>
+                <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
               </div>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(stock.price)}</span>
-              <div style={{ textAlign: 'right' }}><ChangeChip v={stock.change} /></div>
-              <span style={{ fontSize: 12, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
-      {/* Crypto Tab */}
+      {/* ── Crypto Tab ── */}
       {tab === 'crypto' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 100px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
             {['Actif', 'Cap. de marché', 'Prix', 'Var. 24h'].map((h, i) => (
               <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
-          {cryptoFiltered.map((c, i) => (
-            <div key={c.ticker}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 120px 100px 100px', gap: 12, padding: '13px 20px', borderBottom: i < cryptoFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c' }}>{c.ticker.slice(0, 2)}</span>
+          {cryptoFiltered.map((c, i) => {
+            const live = livePrices.get(c.yahooTicker)
+            const price = live?.price ?? c.price
+            const change = live?.changePercent ?? c.change
+            return (
+              <div key={c.ticker}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '13px 20px', borderBottom: i < cryptoFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c' }}>{c.ticker.slice(0, 3)}</span>
                   </div>
                   <div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>{c.name}</p>
@@ -310,16 +504,16 @@ export default function MarchePage() {
                   </div>
                   {c.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
                 </div>
+                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--text-em)') : 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}&nbsp;$</span>
+                <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
               </div>
-              <span style={{ fontSize: 12, color: 'var(--text-muted-c)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(c.price)}&nbsp;$</span>
-              <div style={{ textAlign: 'right' }}><ChangeChip v={c.change} /></div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
-      {/* SCPI Tab */}
+      {/* ── SCPI Tab ── */}
       {tab === 'scpi' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 90px 90px 90px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
@@ -350,9 +544,13 @@ export default function MarchePage() {
 
       {/* ── Disclaimer ── */}
       <p style={{ marginTop: 20, fontSize: 11, color: 'var(--text-subtle)', lineHeight: 1.5 }}>
-        Données indicatives à titre éducatif uniquement. Les prix et performances affichés peuvent ne pas refléter les cours en temps réel.
+        Données indicatives à titre éducatif uniquement. Les cours en temps réel proviennent de Yahoo Finance et peuvent présenter un délai de 15 minutes.
         Pas de conseil en investissement.
       </p>
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
     </div>
   )
 }

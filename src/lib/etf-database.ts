@@ -13,6 +13,7 @@ export interface ETFInfo {
   alternatives?: string[] // ISINs d'alternatives moins chères ou équivalentes
   dividendYield?: number  // rendement dividende annuel ex: 0.018 = 1.8% (undefined = capitalisant/acc)
   distributing?: boolean  // true = distribuant (dist), false/undefined = capitalisant (acc)
+  yahooSymbol?: string    // symbole Yahoo Finance pour les cours temps réel
 }
 
 export interface GeoAllocation {

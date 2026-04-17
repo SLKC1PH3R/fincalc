@@ -77,7 +77,8 @@
       "Bash(curl -s 'https://invvest.co/sitemap.xml')",
       "Bash(cd /tmp)",
       "Bash(npm list:*)",
-      "Bash(curl -s 'https://invvest.co/' --compressed)"
+      "Bash(curl -s 'https://invvest.co/' --compressed)",
+      "WebFetch(domain:demo.invvest.co)"
     ]
   }
 }

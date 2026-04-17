@@ -2921,6 +2921,25 @@ function StickyMobileCTA() {
   )
 }
 
+// ── Bento card with invvest-style mouse-tracking glow border ─────────────────
+function BentoCardGlow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`)
+    el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`)
+  }
+  return (
+    <div ref={ref} className={`bento-glow-wrapper ${className}`} onMouseMove={handleMove}>
+      <div className="bento-glow-inner">
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export function LandingClient() {
   const router = useRouter()
   const [introComplete, setIntroComplete] = useState(() => {
@@ -3383,6 +3402,7 @@ export function LandingClient() {
 
             {/* ── Card 1 — Simulateurs temps réel ── */}
             <RevealSection delay={0}>
+              <BentoCardGlow>
               <div style={{ background: '#f5f3ff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', position: 'relative', border: '1px solid #ede9fe' }}>
                 {/* Dot pattern */}
                 <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(124,58,237,0.10) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
@@ -3392,8 +3412,8 @@ export function LandingClient() {
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Manipulez les curseurs et voyez instantanément l'impact — FIRE, intérêts composés, crédit immobilier — sans inscription.</p>
                 </div>
                 {/* Illustration */}
-                <div style={{ marginTop: 28, position: 'relative', flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)' }}>
+                <div style={{ marginTop: 28, position: 'relative', flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+                  <div className="bento-slide-up" style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)' }}>
                     <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 14px' }}>Intérêts composés</p>
                     {[
                       { label: 'Capital initial', val: '10 000 €', pct: 20, color: '#7c3aed' },
@@ -3417,10 +3437,12 @@ export function LandingClient() {
                   </div>
                 </div>
               </div>
+              </BentoCardGlow>
             </RevealSection>
 
             {/* ── Card 2 — Statistiques & Insights ── */}
             <RevealSection delay={80}>
+              <BentoCardGlow>
               <div style={{ background: '#ffffff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #e5e7eb', position: 'relative' }}>
                 <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
                 <div style={{ position: 'relative' }}>
@@ -3429,8 +3451,8 @@ export function LandingClient() {
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Des graphiques clairs révèlent la croissance de votre capital — répartition, tendances et comparaisons mensuelles.</p>
                 </div>
                 {/* Chart illustration */}
-                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                  <div style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 0', width: '100%' }}>
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+                  <div className="bento-slide-up" style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 0', width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                       <p style={{ fontSize: 10, fontWeight: 700, color: '#374151', margin: 0 }}>Évolution patrimoine</p>
                       <div style={{ display: 'flex', gap: 8 }}>
@@ -3473,10 +3495,12 @@ export function LandingClient() {
                   </div>
                 </div>
               </div>
+              </BentoCardGlow>
             </RevealSection>
 
             {/* ── Card 3 — Suivi patrimonial ── */}
             <RevealSection delay={120}>
+              <BentoCardGlow>
               <div style={{ background: '#ffffff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #e5e7eb', position: 'relative' }}>
                 <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
                 <div style={{ position: 'relative' }}>
@@ -3485,8 +3509,8 @@ export function LandingClient() {
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout votre patrimoine centralisé avec des données de marché en temps réel.</p>
                 </div>
                 {/* Allocation illustration */}
-                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                  <div style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', width: '100%' }}>
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+                  <div className="bento-slide-up" style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', width: '100%' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 14 }}>
                       {/* Donut */}
                       <svg width={72} height={72} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
@@ -3527,10 +3551,12 @@ export function LandingClient() {
                   </div>
                 </div>
               </div>
+              </BentoCardGlow>
             </RevealSection>
 
             {/* ── Card 4 — Sécurité ── */}
             <RevealSection delay={160}>
+              <BentoCardGlow>
               <div style={{ background: '#f0fdf4', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #bbf7d0', position: 'relative' }}>
                 <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(16,185,129,0.08) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
                 <div style={{ position: 'relative' }}>
@@ -3539,8 +3565,8 @@ export function LandingClient() {
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Aucune connexion bancaire requise. Vos données sont chiffrées, hébergées en Europe et ne sont jamais revendues.</p>
                 </div>
                 {/* Security illustration */}
-                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #d1fae5', borderBottom: 'none', padding: '20px 24px 24px', width: '100%', boxShadow: '0 -4px 20px rgba(16,185,129,0.06)' }}>
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+                  <div className="bento-slide-up" style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #d1fae5', borderBottom: 'none', padding: '20px 24px 24px', width: '100%', boxShadow: '0 -4px 20px rgba(16,185,129,0.06)' }}>
                     {/* Shield */}
                     <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
                       <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', border: '2px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -3565,6 +3591,7 @@ export function LandingClient() {
                   </div>
                 </div>
               </div>
+              </BentoCardGlow>
             </RevealSection>
 
           </div>

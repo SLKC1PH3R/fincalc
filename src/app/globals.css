@@ -569,3 +569,85 @@ html { scroll-behavior: smooth; }
   border-bottom-color: rgba(241,192,134,0.08) !important;
   box-shadow: 0 1px 0 rgba(241,192,134,0.04);
 }
+
+/* ── Bento card glow border effect (invvest-style) ─────────────────────────── */
+.bento-glow-wrapper {
+  position: relative;
+  border-radius: 25px;
+  padding: 1.5px;
+  background: transparent;
+}
+
+.bento-glow-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 25px;
+  background: radial-gradient(
+    480px circle at var(--mouse-x, -200px) var(--mouse-y, -200px),
+    rgba(124, 58, 237, 0.35),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bento-glow-wrapper:hover::before {
+  opacity: 1;
+}
+
+.bento-glow-inner {
+  position: relative;
+  border-radius: 23px;
+  overflow: hidden;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Hover slide animations for bento card contents */
+.bento-slide-up {
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-glow-wrapper:hover .bento-slide-up {
+  transform: translateY(-112px);
+}
+
+.bento-slide-left {
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-slide-left-start { transform: translateX(-400px); }
+.bento-glow-wrapper:hover .bento-slide-left-start {
+  transform: translateX(0);
+}
+.bento-slide-left-start2 { transform: translateX(100px); }
+.bento-glow-wrapper:hover .bento-slide-left-start2 {
+  transform: translateX(-48px);
+}
+.bento-slide-left-start3 { transform: translateX(-384px); }
+.bento-glow-wrapper:hover .bento-slide-left-start3 {
+  transform: translateX(-128px);
+}
+
+.bento-scale {
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-scale-down { transform: scale(0.95); }
+.bento-glow-wrapper:hover .bento-scale-down { transform: scale(1); }
+.bento-glow-wrapper:hover .bento-scale-down-rev { transform: scale(0.95); }
+
+/* Fade reveal on hover */
+.bento-reveal {
+  transition: opacity 0.5s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-reveal-hidden { opacity: 0; transform: scale(0.9) translateY(10px); }
+.bento-glow-wrapper:hover .bento-reveal-hidden {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.bento-reveal-visible { opacity: 1; transform: scale(1); }
+.bento-glow-wrapper:hover .bento-reveal-visible {
+  opacity: 0;
+  transform: scale(0.9) translateY(-10px);
+}

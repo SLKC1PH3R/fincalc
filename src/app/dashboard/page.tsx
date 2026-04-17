@@ -303,523 +303,490 @@ export default function HomePage() {
   return (
     <div className="flex-1" style={{ background: 'var(--content-bg)', minHeight: '100vh' }}>
 
-      {/* ── HERO ── */}
-      <div className="relative px-6"
-        style={{ borderBottom: '1px solid var(--section-border)', paddingTop: 28, paddingBottom: 28 }}>
-
-        <div className="relative">
-          {/* Greeting */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
-            <div>
-              <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 4 }}>
-                {greeting}{firstName ? `, ${firstName}` : ''}
-              </p>
-              <h1 style={{ fontSize: 'clamp(1.3rem,3vw,1.75rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-                Tableau de bord
-              </h1>
+      {/* ── MARKET TICKER STRIP ── */}
+      {indices.length > 0 && (
+        <div style={{ background: 'var(--card-dark)', borderBottom: '1px solid var(--section-border)', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'stretch', overflowX: 'auto', scrollbarWidth: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 20px', borderRight: '1px solid var(--section-border)', flexShrink: 0 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#34d399', letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Live</span>
             </div>
-            <div className="flex items-center gap-3 flex-wrap" style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-              <div className="flex items-center gap-2">
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
-                {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-                {indicesLoadedAt > 0 && ` · Marchés ${timeAgo(new Date(indicesLoadedAt).toISOString()).toLowerCase()}`}
-              </div>
-              <button
-                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontSize: 11, color: 'var(--text-subtle)', transition: 'all 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--text-em)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text-subtle)' }}
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                Recherche rapide
-                <span style={{ display: 'flex', gap: 2 }}>
-                  {['⌘', 'K'].map(k => (
-                    <kbd key={k} style={{ fontSize: 10, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '0px 4px' }}>{k}</kbd>
-                  ))}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* ── KPI Cards — NextAdmin style ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
-            {/* Patrimoine total */}
-            {(() => {
-              const hasTimeline = patrimoineTimeline.length >= 2
-              const tLast = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 1].value : null
-              const tPrev = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 2].value : null
-              const delta = tLast != null && tPrev != null ? tLast - tPrev : null
-              const deltaPos = delta != null && delta >= 0
-              const deltaColor = deltaPos ? '#34d399' : '#f87171'
+            {indices.map((idx, i) => {
+              const pos = idx.changePct >= 0
+              const color = idx.isRate ? '#60a5fa' : pos ? '#34d399' : '#f87171'
               return (
-                <Link href="/dashboard/patrimoine" className="block card-hover" style={{ textDecoration: 'none' }}>
-                  <div className="na-card p-5">
-                    {/* Icon + Trend */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                      <div style={{ width: 48, height: 48, borderRadius: 10, background: `${GOLD}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <TrendingUp style={{ width: 22, height: 22, color: GOLD }} />
-                      </div>
-                      {delta != null && loaded && (
-                        <span style={{ fontSize: 11, fontWeight: 600, color: deltaColor, background: deltaColor + '18', borderRadius: 20, padding: '3px 9px' }}>
-                          {deltaPos ? '↑ +' : '↓ '}{fmtCompact(Math.abs(delta))}
-                        </span>
-                      )}
-                    </div>
-                    {loaded
-                      ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', fontFamily: 'Geist Mono, monospace', marginBottom: 6, lineHeight: 1 }}>{patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}</p>
-                      : <div className="skeleton" style={{ height: 36, width: 120, marginBottom: 10 }} />
-                    }
-                    <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Patrimoine net</p>
-                  </div>
-                </Link>
+                <div key={idx.symbol} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px', borderRight: i < indices.length - 1 ? '1px solid var(--section-border)' : undefined, flexShrink: 0 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 500 }}>{idx.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', letterSpacing: '-0.02em' }}>
+                    {idx.isRate ? `${idx.price}%` : idx.price >= 10000 ? `${(idx.price / 1000).toFixed(1)}k` : idx.price >= 1000 ? idx.price.toFixed(0) : idx.price.toFixed(2)}
+                  </span>
+                  {!idx.isRate && (
+                    <span style={{ fontSize: 10, fontWeight: 600, color, background: color + '15', borderRadius: 4, padding: '2px 6px', letterSpacing: '0.02em' }}>
+                      {pos ? '+' : ''}{idx.changePct.toFixed(2)}%
+                    </span>
+                  )}
+                </div>
               )
-            })()}
+            })}
+          </div>
+        </div>
+      )}
 
-            {/* Enveloppes */}
-            <Link href="/dashboard/patrimoine" className="block card-hover" style={{ textDecoration: 'none' }}>
-              <div className="na-card p-5">
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(52,211,153,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <PiggyBank style={{ width: 22, height: 22, color: '#34d399' }} />
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.12)', borderRadius: 20, padding: '3px 9px' }}>
-                    Actives
-                  </span>
-                </div>
-                {loaded
-                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedEnvelopes}</p>
-                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
-                }
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Enveloppes</p>
-              </div>
-            </Link>
+      {/* ── PAGE CONTENT ── */}
+      <div style={{ padding: '28px 24px 56px' }}>
 
-            {/* Simulations ce mois */}
-            <Link href="/dashboard/history" className="block card-hover" style={{ textDecoration: 'none' }}>
-              <div className="na-card p-5">
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(56,189,248,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Calculator style={{ width: 22, height: 22, color: '#38bdf8' }} />
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#38bdf8', background: 'rgba(56,189,248,0.12)', borderRadius: 20, padding: '3px 9px' }}>
-                    Mois
-                  </span>
-                </div>
-                {loaded
-                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedThisMonth}</p>
-                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
-                }
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Simulations ce mois</p>
-              </div>
-            </Link>
-
-            {/* Total simulations */}
-            <Link href="/dashboard/history" className="block card-hover" style={{ textDecoration: 'none' }}>
-              <div className="na-card p-5">
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(251,146,60,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Sparkles style={{ width: 22, height: 22, color: '#fb923c' }} />
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#fb923c', background: 'rgba(251,146,60,0.12)', borderRadius: 20, padding: '3px 9px' }}>
-                    Total
-                  </span>
-                </div>
-                {loaded
-                  ? <p style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 6, lineHeight: 1 }}>{animatedTotalSims}</p>
-                  : <div className="skeleton" style={{ height: 36, width: 60, marginBottom: 10 }} />
-                }
-                <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0 }}>Simulations</p>
-              </div>
+        {/* ── Greeting row ── */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 4 }}>
+              {greeting}{firstName ? `, ${firstName}` : ''}
+            </p>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', margin: 0 }}>
+              Tableau de bord
+            </h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
+              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+            </span>
+            <button
+              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', cursor: 'pointer', fontSize: 11, color: 'var(--text-subtle)', transition: 'all 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-em)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-subtle)'; e.currentTarget.style.borderColor = 'var(--card-dark-border)' }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Recherche
+              <span style={{ display: 'flex', gap: 2 }}>
+                {['⌘', 'K'].map(k => (
+                  <kbd key={k} style={{ fontSize: 9, background: 'rgba(255,255,255,0.06)', border: '1px solid var(--card-dark-border)', borderRadius: 3, padding: '0 3px', fontFamily: 'inherit' }}>{k}</kbd>
+                ))}
+              </span>
+            </button>
+            <Link href="/dashboard/calendar"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', cursor: 'pointer', fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none', transition: 'all 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-em)'; e.currentTarget.style.borderColor = 'rgba(241,192,134,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-subtle)'; e.currentTarget.style.borderColor = 'var(--card-dark-border)' }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Calendrier
             </Link>
           </div>
+        </div>
 
-          {/* Market indices strip */}
-          {indices.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-              {indices.map(idx => {
-                const pos = idx.changePct >= 0
-                const color = idx.isRate ? '#60a5fa' : pos ? '#34d399' : '#f87171'
-                return (
-                  <div key={idx.symbol} style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '7px 14px',
-                    borderRadius: 10, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-                    boxShadow: '0 1px 6px rgba(0,0,0,0.20)',
-                    flexShrink: 0,
-                  }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontWeight: 500 }}>{idx.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', fontVariantNumeric: 'tabular-nums' }}>
-                      {idx.isRate ? `${idx.price}%` : idx.price >= 10000 ? `${(idx.price / 1000).toFixed(1)}k` : idx.price >= 1000 ? idx.price.toFixed(0) : idx.price.toFixed(2)}
-                    </span>
-                    {!idx.isRate && (
-                      <span style={{ fontSize: 10, fontWeight: 600, color, background: color + '18', borderRadius: 5, padding: '1px 5px' }}>
-                        {pos ? '+' : ''}{idx.changePct.toFixed(2)}%
+        {/* ── KPI CARDS ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4" style={{ marginBottom: 24 }}>
+
+          {/* Patrimoine net */}
+          {(() => {
+            const hasTimeline = patrimoineTimeline.length >= 2
+            const tLast = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 1].value : null
+            const tPrev = hasTimeline ? patrimoineTimeline[patrimoineTimeline.length - 2].value : null
+            const delta = tLast != null && tPrev != null ? tLast - tPrev : null
+            const deltaPos = delta != null && delta >= 0
+            const deltaColor = deltaPos ? '#34d399' : '#f87171'
+            return (
+              <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
+                <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 32px ${GOLD}18` }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${GOLD}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <TrendingUp style={{ width: 18, height: 18, color: GOLD }} />
+                    </div>
+                    {delta != null && loaded && (
+                      <span style={{ fontSize: 11, fontWeight: 600, color: deltaColor, background: deltaColor + '15', borderRadius: 20, padding: '3px 8px' }}>
+                        {deltaPos ? '+' : ''}{fmtCompact(delta)}
                       </span>
                     )}
                   </div>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Score Patrimonial widget */}
-          {scoreWidget && (
-            <Link href="/dashboard/score" style={{ textDecoration: 'none', display: 'block', marginBottom: 12 }}>
-              <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreWidget.color}28`, borderRadius: 16, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16, transition: 'border-color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = scoreWidget.color + '55')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = scoreWidget.color + '28')}>
-                <ScoreGauge score={scoreWidget.score} color={scoreWidget.color} size={72} showLabel={false} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Score Patrimonial</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', border: `1px solid ${scoreWidget.color}30`, borderRadius: 6, padding: '1px 7px' }}>{scoreWidget.score} · {scoreWidget.label}</span>
-                  </div>
-                  {/* Pillar mini-bars */}
-                  {scoreWidget.details && (
-                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
-                      {([
-                        { key: 'security', label: 'Sécu', color: '#38bdf8' },
-                        { key: 'realestate', label: 'Immo', color: '#34d399' },
-                        { key: 'longterm', label: 'Long', color: '#f1c086' },
-                        { key: 'diversification', label: 'Diver', color: '#fb923c' },
-                        { key: 'risk', label: 'Risque', color: '#f87171' },
-                      ] as { key: keyof ScoreDetails; label: string; color: string }[]).map(({ key, label, color }) => {
-                        const p = scoreWidget.details![key]
-                        const pct = p ? p.score / p.max : 0
-                        return (
-                          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                            <div style={{ width: 44, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                              <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 0.6s ease' }} />
-                            </div>
-                            <span style={{ fontSize: 9, color: 'var(--text-subtle)', textAlign: 'center' }}>{label}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
-                  {scoreWidget.quickActions.length > 0 ? (
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
-                      <span style={{ color: '#34d399', fontWeight: 600 }}>{scoreWidget.quickActions.length} actions</span>
-                      {' '}pour gagner <span style={{ color: '#34d399', fontWeight: 600 }}>+{scoreWidget.quickActions.reduce((s, a) => s + a.pts, 0)} pts</span>
-                    </span>
-                  ) : (
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Profil complet — voir le détail</span>
-                  )}
+                  {loaded
+                    ? <p style={{ fontSize: 'clamp(1.3rem,2.5vw,1.6rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', fontFamily: 'Geist Mono, monospace', marginBottom: 4, lineHeight: 1 }}>
+                        {patrimoineKPI ? fmtCompact(animatedPatrimoine) : '—'}
+                      </p>
+                    : <div className="skeleton" style={{ height: 32, width: 110, marginBottom: 6 }} />
+                  }
+                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Patrimoine net</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--text-subtle)', flexShrink: 0 }}>
-                  <span>Détail</span>
-                  <ArrowRight style={{ width: 12, height: 12 }} />
-                </div>
-              </div>
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* ── PATRIMOINE HISTORY ── */}
-      {loaded && nbEnvelopes > 0 && (
-        <div className="px-6 pt-4" style={{ borderBottom: loaded && totalSims > 0 ? undefined : '1px solid var(--section-border)' }}>
-          <PatrimoineHistoryChart />
-        </div>
-      )}
-
-      {/* ── CHARTS ── (if data) */}
-      {loaded && totalSims > 0 && (
-        <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4"
-          style={{ borderBottom: '1px solid var(--section-border)' }}>
-          {/* Activity */}
-          <div className="na-card p-5">
-            <div className="flex items-center justify-between mb-4">
-              <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Activité</span>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>12 semaines</span>
-            </div>
-            <ResponsiveContainer width="100%" height={80}>
-              <AreaChart data={activityData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="actBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3C50E0" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#3C50E0" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="w" hide /><YAxis hide />
-                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11, color: 'hsl(var(--foreground))' }}
-                  formatter={(v: unknown) => [`${v} sim.`, '']} />
-                <Area type="monotone" dataKey="n" stroke="#3C50E0" strokeWidth={2} fill="url(#actBlue)" dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Distribution */}
-          <div className="na-card p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>Répartition</span>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{totalSims} sim.</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={80} height={80}>
-                <PieChart>
-                  <Pie data={distData} cx="50%" cy="50%" innerRadius={26} outerRadius={38} dataKey="value" paddingAngle={2} startAngle={90} endAngle={450}>
-                    {distData.map((d, i) => <Cell key={i} fill={d.color} strokeWidth={0} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-1.5">
-                {distData.slice(0, 6).map((d, i) => (
-                  <div key={i} className="flex items-center gap-1.5 min-w-0">
-                    <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: d.color }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: 'var(--text-em)', flexShrink: 0 }}>{d.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── MAIN CONTENT ── */}
-      <div className={`grid grid-cols-1 gap-0 ${loaded && totalSims > 0 ? 'xl:grid-cols-[300px_1fr]' : ''}`}
-        style={{ minHeight: 'calc(100vh - 420px)' }}>
-
-        {/* LEFT: Recent simulations — or empty state */}
-        {loaded && totalSims === 0 && (
-          <div className="p-6" style={{ borderRight: '1px solid var(--section-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 260, textAlign: 'center', gap: 16 }}>
-            {/* SVG illustration */}
-            <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-              <rect width="72" height="72" rx="20" fill={`${GOLD}12`} />
-              <rect x="16" y="38" width="8" height="18" rx="3" fill={`${GOLD}55`} />
-              <rect x="28" y="28" width="8" height="28" rx="3" fill={`${GOLD}80`} />
-              <rect x="40" y="18" width="8" height="38" rx="3" fill={GOLD} />
-              <path d="M13 54 Q22 38 30 32 Q40 24 56 14" stroke={`${GOLD}60`} strokeWidth="1.5" strokeDasharray="3,3" fill="none" />
-              <circle cx="56" cy="14" r="3" fill={GOLD} />
-            </svg>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 6 }}>Aucune simulation</p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, maxWidth: 200, margin: '0 auto 14px' }}>
-                Lancez votre premier calcul pour voir vos résultats ici.
-              </p>
-            </div>
-            <Link href="/dashboard/compound" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: `${GOLD}18`, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-              <TrendingUp className="h-3.5 w-3.5" />
-              Commencer avec les Intérêts Composés
-            </Link>
-          </div>
-        )}
-        {loaded && totalSims > 0 && (
-          <div className="p-6" style={{ borderRight: '1px solid var(--section-border)' }}>
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={() => setRecentOpen(v => !v)}
-                className="flex items-center gap-2"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                <Sparkles className="h-3.5 w-3.5" style={{ color: GOLD }} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>Récentes</span>
-                <ChevronDown className="h-3.5 w-3.5" style={{ color: 'var(--text-subtle)', transition: 'transform 0.2s', transform: recentOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
-              </button>
-              <Link href="/dashboard/history" className="flex items-center gap-1"
-                style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
-                Voir tout <ArrowUpRight className="h-3 w-3" />
               </Link>
-            </div>
-            {recentOpen && (
-              <div className="space-y-1">
-                {sims.slice(0, 8).map(sim => {
-                  const meta = TYPE_META[sim.type]
-                  const Icon = meta?.icon || BarChart3
-                  const preview = getSimPreview(sim.type, sim.results)
-                  return (
-                    <Link key={sim.id}
-                      href={`/dashboard/${sim.type}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`}
-                      className="group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
-                      style={{ textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                      <div className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'var(--icon-chip-bg)', border: '1px solid var(--icon-chip-border)' }}>
-                        <Icon className="h-3.5 w-3.5" style={{ color: meta?.color || '#6b7280' }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p style={{ fontSize: 13, color: 'var(--text-em)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sim.name}</p>
-                        <div className="flex items-center gap-2">
-                          <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{meta?.label}</p>
-                          {preview && <span style={{ fontSize: 11, fontWeight: 600, color: meta?.color, fontFamily: 'Geist Mono, monospace' }}>{preview}</span>}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{timeAgo(sim.createdAt)}</span>
-                        <ChevronRight className="h-3.5 w-3.5" style={{ color: 'var(--text-subtle)' }} />
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* RIGHT: Enveloppes + Accès rapides */}
-        <div className="p-6 space-y-6">
-
-          {/* ── Prise en main progress bar ── */}
-          {loaded && !onboardingDismissed && (() => {
-            const steps = [
-              { done: true,          label: 'Créer un compte',                  href: null,                       cta: null },
-              { done: profileFilled, label: 'Renseigner votre profil financier', href: '/dashboard/profil',        cta: 'Compléter' },
-              { done: totalSims > 0, label: 'Lancer votre première simulation',  href: '/dashboard/simulateurs',   cta: 'Commencer' },
-              { done: hasGoals,      label: 'Ajouter un objectif patrimonial',   href: '/dashboard/goals',         cta: 'Ajouter' },
-              { done: !!scoreWidget, label: 'Consulter votre Score Patrimonial', href: '/dashboard/score',         cta: 'Voir' },
-            ]
-            const completed = steps.filter(s => s.done).length
-            const allDone = completed === steps.length
-            if (allDone) return null
-            return (
-              <div style={{ background: `linear-gradient(135deg, ${GOLD}08, rgba(129,140,248,0.04))`, border: `1px solid ${GOLD_BORDER}`, borderRadius: 16, padding: '18px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: GOLD, margin: 0 }}>Prise en main PatrImo</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>{completed}/{steps.length} étapes complétées</p>
-                  </div>
-                  <button
-                    onClick={() => { localStorage.setItem('onboarding_dismissed', '1'); setOnboardingDismissed(true) }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 4, flexShrink: 0 }}
-                  >×</button>
-                </div>
-                {/* Progress bar */}
-                <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)', marginBottom: 14, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${(completed / steps.length) * 100}%`, borderRadius: 99, background: `linear-gradient(90deg, ${GOLD}80, ${GOLD})`, transition: 'width 0.5s ease' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {steps.map((s, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 10, background: s.done ? 'rgba(52,211,153,0.04)' : 'rgba(255,255,255,0.02)', border: `1px solid ${s.done ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.05)'}` }}>
-                      <div style={{ width: 20, height: 20, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: s.done ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${s.done ? 'rgba(52,211,153,0.35)' : 'rgba(255,255,255,0.08)'}` }}>
-                        {s.done
-                          ? <Check style={{ width: 11, height: 11, color: '#34d399' }} />
-                          : <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-subtle)' }}>{i + 1}</span>
-                        }
-                      </div>
-                      <span style={{ flex: 1, fontSize: 12, color: s.done ? 'var(--text-muted-c)' : 'var(--text-em)', textDecoration: s.done ? 'line-through' : 'none', opacity: s.done ? 0.5 : 1 }}>{s.label}</span>
-                      {!s.done && s.href && (
-                        <a href={s.href} style={{ fontSize: 11, fontWeight: 600, color: GOLD, textDecoration: 'none', background: `${GOLD}15`, border: `1px solid ${GOLD}30`, borderRadius: 6, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                          {s.cta} →
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
             )
           })()}
 
-          {/* Enveloppes patrimoine */}
-          {loaded && nbEnvelopes > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>
-                  Mes enveloppes
-                </span>
-                <Link href="/dashboard/patrimoine"
-                  className="flex items-center gap-1"
-                  style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
-                  Vue complète <ArrowUpRight className="h-3 w-3" />
+          {/* Enveloppes */}
+          <Link href="/dashboard/patrimoine" className="block" style={{ textDecoration: 'none' }}>
+            <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(52,211,153,0.12)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(52,211,153,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <PiggyBank style={{ width: 18, height: 18, color: '#34d399' }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.12)', borderRadius: 20, padding: '3px 8px' }}>Actives</span>
+              </div>
+              {loaded
+                ? <p style={{ fontSize: 'clamp(1.3rem,2.5vw,1.6rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', marginBottom: 4, lineHeight: 1 }}>{animatedEnvelopes}</p>
+                : <div className="skeleton" style={{ height: 32, width: 60, marginBottom: 6 }} />
+              }
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Enveloppes</p>
+            </div>
+          </Link>
+
+          {/* Simulations ce mois */}
+          <Link href="/dashboard/history" className="block" style={{ textDecoration: 'none' }}>
+            <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(56,189,248,0.12)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(56,189,248,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Calculator style={{ width: 18, height: 18, color: '#38bdf8' }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#38bdf8', background: 'rgba(56,189,248,0.12)', borderRadius: 20, padding: '3px 8px' }}>Ce mois</span>
+              </div>
+              {loaded
+                ? <p style={{ fontSize: 'clamp(1.3rem,2.5vw,1.6rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', marginBottom: 4, lineHeight: 1 }}>{animatedThisMonth}</p>
+                : <div className="skeleton" style={{ height: 32, width: 60, marginBottom: 6 }} />
+              }
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Simulations ce mois</p>
+            </div>
+          </Link>
+
+          {/* Total simulations */}
+          <Link href="/dashboard/history" className="block" style={{ textDecoration: 'none' }}>
+            <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(251,146,60,0.12)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(251,146,60,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Sparkles style={{ width: 18, height: 18, color: '#fb923c' }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#fb923c', background: 'rgba(251,146,60,0.12)', borderRadius: 20, padding: '3px 8px' }}>Total</span>
+              </div>
+              {loaded
+                ? <p style={{ fontSize: 'clamp(1.3rem,2.5vw,1.6rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', marginBottom: 4, lineHeight: 1 }}>{animatedTotalSims}</p>
+                : <div className="skeleton" style={{ height: 32, width: 60, marginBottom: 6 }} />
+              }
+              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Simulations</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* ── TWO-COLUMN LAYOUT ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 20, alignItems: 'start' }} className="xl:grid-cols-[1fr_300px] grid-cols-1">
+
+          {/* ── LEFT COLUMN ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
+
+            {/* Patrimoine history chart */}
+            {loaded && nbEnvelopes > 0 && (
+              <div className="na-card" style={{ padding: 20 }}>
+                <PatrimoineHistoryChart />
+              </div>
+            )}
+
+            {/* Activity + Distribution charts */}
+            {loaded && totalSims > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Activity */}
+                <div className="na-card" style={{ padding: '18px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', margin: 0 }}>Activité</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '2px 0 0' }}>Simulations sur 12 semaines</p>
+                    </div>
+                    <span style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'var(--mini-card-bg)', border: '1px solid var(--card-dark-border)', borderRadius: 6, padding: '2px 8px' }}>12 sem.</span>
+                  </div>
+                  <ResponsiveContainer width="100%" height={80}>
+                    <AreaChart data={activityData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="actGold" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={GOLD} stopOpacity={0.2} />
+                          <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="w" hide /><YAxis hide />
+                      <Tooltip contentStyle={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 8, fontSize: 11, color: 'var(--text-em)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
+                        formatter={(v: unknown) => [`${v} sim.`, '']} />
+                      <Area type="monotone" dataKey="n" stroke={GOLD} strokeWidth={2} fill="url(#actGold)" dot={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Distribution */}
+                <div className="na-card" style={{ padding: '18px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', margin: 0 }}>Répartition</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: '2px 0 0' }}>Par type de simulation</p>
+                    </div>
+                    <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: 'Geist Mono, monospace', fontWeight: 700 }}>{totalSims}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <ResponsiveContainer width={72} height={72}>
+                      <PieChart>
+                        <Pie data={distData} cx="50%" cy="50%" innerRadius={22} outerRadius={34} dataKey="value" paddingAngle={2} startAngle={90} endAngle={450}>
+                          {distData.map((d, i) => <Cell key={i} fill={d.color} strokeWidth={0} />)}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                      {distData.slice(0, 5).map((d, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
+                          <span style={{ fontSize: 11, color: 'var(--text-muted-c)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace' }}>{d.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Recent simulations */}
+            {loaded && totalSims > 0 && (
+              <div className="na-card" style={{ overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--section-border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Sparkles style={{ width: 14, height: 14, color: GOLD }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Simulations récentes</span>
+                  </div>
+                  <Link href="/dashboard/history"
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none', transition: 'color 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
+                    Voir tout <ArrowUpRight style={{ width: 12, height: 12 }} />
+                  </Link>
+                </div>
+                <div>
+                  {sims.slice(0, 6).map((sim, idx) => {
+                    const meta = TYPE_META[sim.type]
+                    const Icon = meta?.icon || BarChart3
+                    const preview = getSimPreview(sim.type, sim.results)
+                    return (
+                      <Link key={sim.id}
+                        href={`/dashboard/${sim.type}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', textDecoration: 'none', borderBottom: idx < 5 ? '1px solid var(--section-border)' : undefined, transition: 'background 0.12s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <div style={{ width: 34, height: 34, borderRadius: 10, background: (meta?.color || '#6b7280') + '15', border: `1px solid ${meta?.color || '#6b7280'}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Icon style={{ width: 15, height: 15, color: meta?.color || '#6b7280' }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>{sim.name}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: meta?.color || '#6b7280', background: (meta?.color || '#6b7280') + '15', borderRadius: 4, padding: '1px 6px' }}>{meta?.label || sim.type}</span>
+                            {preview && <span style={{ fontSize: 11, color: 'var(--text-muted-c)', fontFamily: 'Geist Mono, monospace' }}>{preview}</span>}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flex: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
+                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{timeAgo(sim.createdAt)}</span>
+                          <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', opacity: 0.5 }} />
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Empty state — no simulations */}
+            {loaded && totalSims === 0 && (
+              <div className="na-card" style={{ padding: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
+                <svg width="64" height="64" viewBox="0 0 72 72" fill="none">
+                  <rect width="72" height="72" rx="20" fill={`${GOLD}12`} />
+                  <rect x="16" y="38" width="8" height="18" rx="3" fill={`${GOLD}55`} />
+                  <rect x="28" y="28" width="8" height="28" rx="3" fill={`${GOLD}80`} />
+                  <rect x="40" y="18" width="8" height="38" rx="3" fill={GOLD} />
+                  <path d="M13 54 Q22 38 30 32 Q40 24 56 14" stroke={`${GOLD}60`} strokeWidth="1.5" strokeDasharray="3,3" fill="none" />
+                  <circle cx="56" cy="14" r="3" fill={GOLD} />
+                </svg>
+                <div>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-em)', marginBottom: 6 }}>Lancez votre première simulation</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6, maxWidth: 280, margin: '0 auto' }}>
+                    Explorez les intérêts composés, le FIRE, la fiscalité et bien plus encore.
+                  </p>
+                </div>
+                <Link href="/dashboard/compound" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 12, background: `${GOLD}18`, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'background 0.15s' }}>
+                  <TrendingUp style={{ width: 15, height: 15 }} />
+                  Commencer avec les Intérêts Composés
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {envelopes.slice(0, 6).map(env => {
-                  const Icon = ENVELOPE_ICONS[env.type] || Wallet
-                  const color = ENVELOPE_COLORS[env.type] || '#6b7280'
-                  return (
-                    <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`}
-                      className="group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-150"
-                      style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', textDecoration: 'none' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = color + '40' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)' }}>
-                      <div className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ background: color + '18', border: `1px solid ${color}25` }}>
-                        <Icon className="h-4 w-4" style={{ color }} />
+            )}
+          </div>
+
+          {/* ── RIGHT SIDEBAR ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            {/* Score Patrimonial widget */}
+            {scoreWidget && (
+              <Link href="/dashboard/score" style={{ textDecoration: 'none' }}>
+                <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, border-color 0.2s', border: `1px solid ${scoreWidget.color}28` }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.borderColor = scoreWidget.color + '55' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.borderColor = scoreWidget.color + '28' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <ScoreGauge score={scoreWidget.score} color={scoreWidget.color} size={64} showLabel={false} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Score Patrimonial</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', borderRadius: 5, padding: '1px 6px' }}>{scoreWidget.score}</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{env.name}</p>
-                        <p style={{ fontSize: 11, color: 'var(--text-muted-c)', fontFamily: 'Geist Mono, monospace' }}>
+                      <span style={{ fontSize: 11, color: scoreWidget.color, fontWeight: 600 }}>{scoreWidget.label}</span>
+                      {scoreWidget.details && (
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+                          {([
+                            { key: 'security', label: 'S', color: '#38bdf8' },
+                            { key: 'realestate', label: 'I', color: '#34d399' },
+                            { key: 'longterm', label: 'L', color: '#f1c086' },
+                            { key: 'diversification', label: 'D', color: '#fb923c' },
+                            { key: 'risk', label: 'R', color: '#f87171' },
+                          ] as { key: keyof ScoreDetails; label: string; color: string }[]).map(({ key, label, color }) => {
+                            const p = scoreWidget.details![key]
+                            const pct = p ? p.score / p.max : 0
+                            return (
+                              <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
+                                <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                                  <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: color, borderRadius: 2 }} />
+                                </div>
+                                <span style={{ fontSize: 9, color: 'var(--text-subtle)' }}>{label}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {/* Enveloppes */}
+            {loaded && nbEnvelopes > 0 && (
+              <div className="na-card" style={{ overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--section-border)' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Mes enveloppes</span>
+                  <Link href="/dashboard/patrimoine" style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
+                    Voir tout <ArrowUpRight style={{ width: 11, height: 11 }} />
+                  </Link>
+                </div>
+                <div>
+                  {envelopes.slice(0, 5).map((env, i) => {
+                    const Icon = ENVELOPE_ICONS[env.type] || Wallet
+                    const color = ENVELOPE_COLORS[env.type] || '#6b7280'
+                    return (
+                      <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', textDecoration: 'none', borderBottom: i < Math.min(envelopes.length, 5) - 1 ? '1px solid var(--section-border)' : undefined, transition: 'background 0.12s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <div style={{ width: 30, height: 30, borderRadius: 8, background: color + '18', border: `1px solid ${color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Icon style={{ width: 14, height: 14, color }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>{env.name}</p>
+                          <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: '1px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{env.type}</p>
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', flexShrink: 0 }}>
                           {env.totalValue != null ? fmtCompact(env.totalValue) : '—'}
-                        </p>
+                        </span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Quick access modules */}
+            <div className="na-card" style={{ padding: '14px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Accès rapides</span>
+                <Link href="/dashboard/simulateurs" style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
+                  Tous <ArrowUpRight style={{ width: 11, height: 11 }} />
+                </Link>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                {sortedModules.map(mod => {
+                  const preview = lastSimByType[mod.href.replace('/dashboard/', '')] &&
+                    getSimPreview(mod.href.replace('/dashboard/', ''), lastSimByType[mod.href.replace('/dashboard/', '')]?.results)
+                  return (
+                    <Link key={mod.href} href={mod.href}
+                      style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 10, background: mod.color + '08', border: `1px solid ${mod.color}18`, textDecoration: 'none', transition: 'border-color 0.15s, background 0.15s' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '45'; (e.currentTarget as HTMLElement).style.background = mod.color + '12' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = mod.color + '18'; (e.currentTarget as HTMLElement).style.background = mod.color + '08' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: mod.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <mod.icon style={{ width: 13, height: 13, color: mod.color }} />
                       </div>
-                      <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-subtle)' }} />
+                      <div>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mod.label}</p>
+                        {preview && <p style={{ fontSize: 10, color: mod.color, margin: '2px 0 0', fontFamily: 'Geist Mono, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{preview}</p>}
+                      </div>
                     </Link>
                   )
                 })}
               </div>
-            </div>
-          )}
-
-          {/* Accès rapides */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>
-                Accès rapides
-              </span>
               <Link href="/dashboard/simulateurs"
-                className="flex items-center gap-1"
-                style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}>
-                Tous les simulateurs <ArrowUpRight className="h-3 w-3" />
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: 10, background: `${GOLD}08`, border: `1px solid ${GOLD_BORDER}`, textDecoration: 'none', marginTop: 8, transition: 'border-color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(241,192,134,0.35)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = GOLD_BORDER)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <LayoutGrid style={{ width: 14, height: 14, color: GOLD }} />
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>37 simulateurs & outils</span>
+                </div>
+                <ArrowRight style={{ width: 13, height: 13, color: GOLD }} />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-              {sortedModules.map(mod => {
-                const preview = lastSimByType[mod.href.replace('/dashboard/', '')] &&
-                  getSimPreview(mod.href.replace('/dashboard/', ''), lastSimByType[mod.href.replace('/dashboard/', '')]?.results)
-                return (
-                  <Link key={mod.href} href={mod.href}
-                    className="group flex items-center gap-2.5 rounded-xl px-3 py-3"
-                    style={{ background: 'var(--card-dark)', border: `1px solid ${mod.color}20`, textDecoration: 'none', transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.15s' }}
-                    onMouseMove={e => {
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8
-                      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -8
-                      e.currentTarget.style.transform = `perspective(400px) rotateX(${y}deg) rotateY(${x}deg) translateY(-2px)`
-                      e.currentTarget.style.borderColor = mod.color + '55'
-                      e.currentTarget.style.boxShadow = `0 8px 24px ${mod.color}18`
-                    }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = mod.color + '20'; e.currentTarget.style.boxShadow = '' }}>
-                    <div className="h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: mod.color + '18', border: `1px solid ${mod.color}25` }}>
-                      <mod.icon className="h-3.5 w-3.5" style={{ color: mod.color }} />
+            {/* ── Prise en main progress bar ── */}
+            {loaded && !onboardingDismissed && (() => {
+              const steps = [
+                { done: true,          label: 'Créer un compte',                  href: null,                       cta: null },
+                { done: profileFilled, label: 'Renseigner votre profil financier', href: '/dashboard/profil',        cta: 'Compléter' },
+                { done: totalSims > 0, label: 'Lancer votre première simulation',  href: '/dashboard/simulateurs',   cta: 'Commencer' },
+                { done: hasGoals,      label: 'Ajouter un objectif patrimonial',   href: '/dashboard/goals',         cta: 'Ajouter' },
+                { done: !!scoreWidget, label: 'Consulter votre Score Patrimonial', href: '/dashboard/score',         cta: 'Voir' },
+              ]
+              const completed = steps.filter(s => s.done).length
+              const allDone = completed === steps.length
+              if (allDone) return null
+              return (
+                <div className="na-card" style={{ padding: '16px 18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: GOLD, margin: 0 }}>Prise en main</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>{completed}/{steps.length} complétées</p>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {mod.label}
-                      </p>
-                      {preview && (
-                        <p style={{ fontSize: 10, color: mod.color, fontFamily: 'Geist Mono, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {preview}
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-
-            {/* CTA Simulateurs */}
-            <Link href="/dashboard/simulateurs"
-              className="flex items-center justify-between w-full rounded-xl px-4 py-3 transition-all duration-150"
-              style={{ background: `linear-gradient(135deg, rgba(241,192,134,0.08), transparent)`, border: `1px solid ${GOLD_BORDER}`, textDecoration: 'none' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(241,192,134,0.3)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = GOLD_BORDER }}>
-              <div className="flex items-center gap-2.5">
-                <LayoutGrid className="h-4 w-4" style={{ color: GOLD }} />
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)' }}>Tous les simulateurs</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{'37 simulateurs & outils'}</p>
+                    <button
+                      onClick={() => { localStorage.setItem('onboarding_dismissed', '1'); setOnboardingDismissed(true) }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 16, lineHeight: 1, padding: 4, flexShrink: 0 }}
+                    >×</button>
+                  </div>
+                  <div style={{ height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.06)', marginBottom: 12, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(completed / steps.length) * 100}%`, borderRadius: 99, background: `linear-gradient(90deg, ${GOLD}80, ${GOLD})`, transition: 'width 0.5s ease' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {steps.map((s, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, background: s.done ? 'rgba(52,211,153,0.04)' : 'transparent' }}>
+                        <div style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: s.done ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${s.done ? 'rgba(52,211,153,0.35)' : 'rgba(255,255,255,0.08)'}` }}>
+                          {s.done
+                            ? <Check style={{ width: 10, height: 10, color: '#34d399' }} />
+                            : <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-subtle)' }}>{i + 1}</span>
+                          }
+                        </div>
+                        <span style={{ flex: 1, fontSize: 11, color: s.done ? 'var(--text-muted-c)' : 'var(--text-em)', textDecoration: s.done ? 'line-through' : 'none', opacity: s.done ? 0.5 : 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.label}</span>
+                        {!s.done && s.href && (
+                          <a href={s.href} style={{ fontSize: 10, fontWeight: 600, color: GOLD, textDecoration: 'none', background: `${GOLD}15`, border: `1px solid ${GOLD}30`, borderRadius: 5, padding: '2px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                            {s.cta}
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <ArrowUpRight className="h-4 w-4 flex-shrink-0" style={{ color: GOLD }} />
-            </Link>
+              )
+            })()}
           </div>
         </div>
       </div>

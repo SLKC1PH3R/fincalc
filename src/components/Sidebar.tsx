@@ -9,7 +9,7 @@ import {
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users, Scale, Landmark, Search, UserCircle,
-  Banknote, TrendingDown, LineChart, MapPin,
+  Banknote, TrendingDown, LineChart, MapPin, CalendarDays,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -677,6 +677,16 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               <NavItem href="/dashboard/score" label="Score Patrimonial" icon={Award} active={pathname === '/dashboard/score'} />
             </div>
           )}
+
+          {/* Calendrier financier */}
+          <div style={{ marginBottom: 4 }}>
+            <NavItem href="/dashboard/calendar" label="Calendrier" icon={CalendarDays} active={pathname === '/dashboard/calendar'} />
+          </div>
+
+          {/* Marchés explorer */}
+          <div style={{ marginBottom: 4 }}>
+            <NavItem href="/dashboard/marche" label="Marchés & Actifs" icon={LineChart} active={pathname.startsWith('/dashboard/marche')} />
+          </div>
 
           {/* thin divider */}
           <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />

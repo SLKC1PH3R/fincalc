@@ -3411,26 +3411,42 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Aperçu en temps réel</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Manipulez les curseurs et voyez instantanément l'impact — FIRE, intérêts composés, crédit immobilier — sans inscription.</p>
                 </div>
-                {/* Illustration */}
-                <div style={{ marginTop: 28, position: 'relative', flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
-                  <div className="bento-slide-up" style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)' }}>
+                {/* Illustration — rows slide in from sides on hover */}
+                <div style={{ marginTop: 28, position: 'relative', flex: 1, overflow: 'hidden' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)', overflow: 'hidden' }}>
                     <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 14px' }}>Intérêts composés</p>
-                    {[
-                      { label: 'Capital initial', val: '10 000 €', pct: 20, color: '#7c3aed' },
-                      { label: 'Versement / mois', val: '300 €', pct: 45, color: '#10b981' },
-                      { label: 'Durée', val: '20 ans', pct: 65, color: '#3b82f6' },
-                    ].map(s => (
-                      <div key={s.label} style={{ marginBottom: 12 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 10.5, color: '#6b7280' }}>{s.label}</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: s.color }}>{s.val}</span>
-                        </div>
-                        <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
-                          <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: 2 }} />
-                        </div>
+                    {/* Row 1 — slides in from left */}
+                    <div className="bento-slide-left bento-slide-left-start" style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Capital initial</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed' }}>10 000 €</span>
                       </div>
-                    ))}
-                    <div style={{ marginTop: 14, background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
+                        <div style={{ width: '20%', height: '100%', background: '#7c3aed', borderRadius: 2 }} />
+                      </div>
+                    </div>
+                    {/* Row 2 — slides in from right */}
+                    <div className="bento-slide-left bento-slide-left-start2" style={{ marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Versement / mois</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981' }}>300 €</span>
+                      </div>
+                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
+                        <div style={{ width: '45%', height: '100%', background: '#10b981', borderRadius: 2 }} />
+                      </div>
+                    </div>
+                    {/* Row 3 — slides in from left (partial) */}
+                    <div className="bento-slide-left bento-slide-left-start3" style={{ marginBottom: 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Durée</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>20 ans</span>
+                      </div>
+                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
+                        <div style={{ width: '65%', height: '100%', background: '#3b82f6', borderRadius: 2 }} />
+                      </div>
+                    </div>
+                    {/* Result — slides up */}
+                    <div className="bento-slide-up" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Capital final</span>
                       <span style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.04em' }}>195 k€</span>
                     </div>
@@ -3450,10 +3466,11 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Statistiques & Visualisations</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Des graphiques clairs révèlent la croissance de votre capital — répartition, tendances et comparaisons mensuelles.</p>
                 </div>
-                {/* Chart illustration */}
+                {/* Chart illustration — list slides up, header shrinks, stats row grows */}
                 <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
                   <div className="bento-slide-up" style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 0', width: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    {/* Header row — scales down on hover (like first portfolio row) */}
+                    <div className="bento-scale bento-scale-down-rev" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, transformOrigin: 'right center' }}>
                       <p style={{ fontSize: 10, fontWeight: 700, color: '#374151', margin: 0 }}>Évolution patrimoine</p>
                       <div style={{ display: 'flex', gap: 8 }}>
                         {['1M', '6M', '1A', 'MAX'].map((t, i) => (
@@ -3461,7 +3478,7 @@ export function LandingClient() {
                         ))}
                       </div>
                     </div>
-                    {/* SVG bar chart */}
+                    {/* SVG chart */}
                     <svg width="100%" height={100} viewBox="0 0 300 100" preserveAspectRatio="none" style={{ display: 'block' }}>
                       <defs>
                         <linearGradient id="feat-chart-grad" x1="0" y1="0" x2="0" y2="1">
@@ -3469,18 +3486,14 @@ export function LandingClient() {
                           <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.01" />
                         </linearGradient>
                       </defs>
-                      {/* Grid lines */}
                       {[20, 50, 80].map(y => <line key={y} x1={0} y1={y} x2={300} y2={y} stroke="#f3f4f6" strokeWidth={1} />)}
-                      {/* Area fill */}
                       <polygon points="0,88 40,75 80,68 120,55 160,42 200,30 240,20 280,12 300,8 300,95 0,95" fill="url(#feat-chart-grad)" />
-                      {/* Line */}
                       <polyline points="0,88 40,75 80,68 120,55 160,42 200,30 240,20 280,12 300,8" fill="none" stroke="#7c3aed" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
-                      {/* End dot */}
                       <circle cx={300} cy={8} r={4} fill="#7c3aed" />
                       <circle cx={300} cy={8} r={8} fill="#7c3aed" opacity={0.15} />
                     </svg>
-                    {/* Stats row */}
-                    <div style={{ display: 'flex', gap: 20, padding: '10px 0 16px' }}>
+                    {/* Stats row — starts slightly small, grows to full on hover (like last portfolio row) */}
+                    <div className="bento-scale bento-scale-down" style={{ display: 'flex', gap: 20, padding: '10px 0 16px', transformOrigin: 'right center' }}>
                       {[
                         { label: 'Patrimoine total', val: '195 k€', up: true },
                         { label: 'Progression', val: '+12.4%', up: true },
@@ -3508,46 +3521,81 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Suivi patrimonial complet</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout votre patrimoine centralisé avec des données de marché en temps réel.</p>
                 </div>
-                {/* Allocation illustration */}
-                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
-                  <div className="bento-slide-up" style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 14 }}>
-                      {/* Donut */}
-                      <svg width={72} height={72} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
-                        {[
-                          { pct: 0.42, color: '#7c3aed', offset: 0 },
-                          { pct: 0.28, color: '#3b82f6', offset: 0.42 },
-                          { pct: 0.18, color: '#10b981', offset: 0.70 },
-                          { pct: 0.12, color: '#f59e0b', offset: 0.88 },
-                        ].map((s, i) => {
-                          const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
-                          const dash = s.pct * perim
-                          const rot = s.offset * 360 - 90
-                          return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={10} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
-                        })}
-                        <circle cx={36} cy={36} r={19} fill="#f9fafb" />
-                        <text x={36} y={39} textAnchor="middle" fontSize="9" fontWeight="800" fill="#374151">100%</text>
-                      </svg>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                        {[
-                          { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
-                          { label: 'Actions', pct: '28%', color: '#3b82f6' },
-                          { label: 'Livrets', pct: '18%', color: '#10b981' },
-                          { label: 'Crypto', pct: '12%', color: '#f59e0b' },
-                        ].map(s => (
-                          <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ width: 7, height: 7, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
-                          </div>
-                        ))}
+                {/* Illustration — left panel slides out, right performance panel slides in */}
+                <div style={{ marginTop: 28, flex: 1, position: 'relative', overflow: 'hidden' }}>
+                  {/* 200%-wide container slides left on hover */}
+                  <div className="bento-panel-wide" style={{ top: 0, left: 0 }}>
+                    {/* Left half — allocation panel */}
+                    <div style={{ width: '50%', flexShrink: 0, background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+                        <svg width={68} height={68} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
+                          {[
+                            { pct: 0.42, color: '#7c3aed', offset: 0 },
+                            { pct: 0.28, color: '#3b82f6', offset: 0.42 },
+                            { pct: 0.18, color: '#10b981', offset: 0.70 },
+                            { pct: 0.12, color: '#f59e0b', offset: 0.88 },
+                          ].map((s, i) => {
+                            const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
+                            const dash = s.pct * perim
+                            const rot = s.offset * 360 - 90
+                            return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={10} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
+                          })}
+                          <circle cx={36} cy={36} r={19} fill="#f9fafb" />
+                          <text x={36} y={39} textAnchor="middle" fontSize="9" fontWeight="800" fill="#374151">100%</text>
+                        </svg>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                          {[
+                            { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
+                            { label: 'Actions', pct: '28%', color: '#3b82f6' },
+                            { label: 'Livrets', pct: '18%', color: '#10b981' },
+                            { label: 'Crypto', pct: '12%', color: '#f59e0b' },
+                          ].map(s => (
+                            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <div style={{ width: 7, height: 7, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
+                        <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600 }}>Patrimoine net total</span>
+                        <span style={{ fontSize: 16, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
                       </div>
                     </div>
-                    {/* Total */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
-                      <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600 }}>Patrimoine net total</span>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
+                    {/* Right half — performance metrics (hidden until hover) */}
+                    <div style={{ width: '50%', flexShrink: 0, background: '#f0f4ff', borderRadius: '16px 16px 0 0', border: '1px solid #dbeafe', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Performance</p>
+                      {[
+                        { label: 'YTD', val: '+8.4%', color: '#10b981' },
+                        { label: '1 an', val: '+21.2%', color: '#10b981' },
+                        { label: 'Depuis le début', val: '+62.7%', color: '#7c3aed' },
+                      ].map(m => (
+                        <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>{m.label}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: m.color, fontFamily: 'Geist Mono, monospace' }}>{m.val}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
+                        <span style={{ fontSize: 11, color: '#6b7280' }}>Diversification</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>4 classes d'actifs</span>
+                      </div>
                     </div>
+                  </div>
+                  {/* Badge top-left — slides out with panel */}
+                  <div className="bento-panel-wide" style={{ top: 0, left: 0, height: 'auto', alignItems: 'flex-start', paddingTop: 12, paddingLeft: 12 }}>
+                    <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderRadius: 20, padding: '4px 10px', border: '1px solid #e5e7eb', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#374151' }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+                      Données en temps réel
+                    </div>
+                    {/* placeholder for right half alignment */}
+                    <div style={{ width: '50%' }} />
+                  </div>
+                  {/* Performance panel — fades in from right on hover */}
+                  <div className="bento-panel-peek" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '10px 14px', border: '1px solid #dbeafe', minWidth: 160, boxShadow: '0 4px 16px rgba(59,130,246,0.1)' }}>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Meilleur actif</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>Actions — PEA</p>
+                    <p style={{ fontSize: 15, fontWeight: 800, color: '#10b981', margin: 0 }}>+31.4%</p>
                   </div>
                 </div>
               </div>
@@ -3564,27 +3612,53 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Portefeuille sécurisé & confidentiel</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Aucune connexion bancaire requise. Vos données sont chiffrées, hébergées en Europe et ne sont jamais revendues.</p>
                 </div>
-                {/* Security illustration */}
-                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
-                  <div className="bento-slide-up" style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #d1fae5', borderBottom: 'none', padding: '20px 24px 24px', width: '100%', boxShadow: '0 -4px 20px rgba(16,185,129,0.06)' }}>
-                    {/* Shield */}
-                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-                      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', border: '2px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Shield style={{ width: 28, height: 28, color: '#059669' }} />
+                {/* Security illustration — checklist slides up, info badge disappears */}
+                <div style={{ marginTop: 28, flex: 1, position: 'relative', overflow: 'hidden' }}>
+                  {/* Info badge — visible initially, disappears upward on hover */}
+                  <div className="bento-info-disappear" style={{ top: 12, left: 12, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '8px 14px', border: '1px solid #d1fae5', boxShadow: '0 2px 8px rgba(16,185,129,0.12)', zIndex: 5 }}>
+                    <div style={{ display: 'flex', gap: 16 }}>
+                      <div>
+                        <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px' }}>Chiffrement</p>
+                        <p style={{ fontSize: 13, fontWeight: 800, color: '#059669', margin: 0 }}>AES-256</p>
                       </div>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {[
-                          'Zéro donnée bancaire partagée',
-                          'Hébergement 🇪🇺 Europe · RGPD',
-                          'Aucune publicité · Aucun tracking',
-                          'Chiffrement de bout en bout',
-                        ].map((item, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#d1fae5', border: '1px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              <svg width={8} height={8} viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" fill="none" stroke="#059669" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <div>
+                        <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px' }}>Hébergement</p>
+                        <p style={{ fontSize: 13, fontWeight: 800, color: '#059669', margin: 0 }}>🇪🇺 EU</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Security checklist — slides up on hover */}
+                  <div className="bento-bars-up" style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+                    <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #d1fae5', borderBottom: 'none', padding: '20px 24px 24px', boxShadow: '0 -4px 20px rgba(16,185,129,0.06)' }}>
+                      {/* Shield icon */}
+                      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+                        <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', border: '2px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Shield style={{ width: 24, height: 24, color: '#059669' }} />
+                        </div>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          {[
+                            'Zéro donnée bancaire partagée',
+                            'Hébergement 🇪🇺 Europe · RGPD',
+                            'Aucune publicité · Aucun tracking',
+                            'Chiffrement de bout en bout',
+                          ].map((item, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{ width: 15, height: 15, borderRadius: '50%', background: '#d1fae5', border: '1px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <svg width={7} height={7} viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" fill="none" stroke="#059669" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              </div>
+                              <span style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{item}</span>
                             </div>
-                            <span style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{item}</span>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Hidden content revealed when checklist slides up */}
+                    <div style={{ background: 'linear-gradient(135deg, #059669, #10b981)', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Conforme RGPD · ISO 27001</span>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {['🔒', '🇪🇺', '✓'].map((e, i) => (
+                          <span key={i} style={{ fontSize: 14 }}>{e}</span>
                         ))}
                       </div>
                     </div>
@@ -3688,31 +3762,31 @@ export function LandingClient() {
             {
               tag: 'Patrimoine', tagColor: GOLD,
               items: [
-                { icon: Globe, label: 'Vue d\'ensemble', desc: 'Dashboard global : valeur totale, répartition par classe, carte monde géographique', color: GOLD },
-                { icon: Building2, label: 'Immobilier', desc: 'Biens, valeur de marché, crédit restant et loyers perçus', color: '#f472b6' },
-                { icon: TrendingUp, label: 'Actions & Fonds', desc: 'Positions en PEA, CTO, Assurance Vie, PER — valeur en temps réel', color: '#34d399' },
-                { icon: PiggyBank, label: 'Livrets', desc: 'Livret A, LDDS, LEP avec suivi des plafonds et intérêts', color: '#38bdf8' },
-                { icon: Bitcoin, label: 'Autres actifs', desc: 'Crypto-monnaies, métaux précieux et actifs alternatifs', color: '#fb923c' },
-                { icon: Wallet, label: 'Comptes bancaires', desc: 'Soldes et suivi de vos comptes courants et d\'épargne', color: '#a78bfa' },
-                { icon: Receipt, label: 'Emprunts', desc: 'Vue consolidée de tous vos crédits : immobilier, conso, pro', color: '#fb7185' },
-                { icon: Layers, label: 'Détail enveloppe', desc: 'Page individuelle avec positions, historique et performance par enveloppe', color: '#4b5563' },
+                { icon: Globe,     label: 'Vue d\'ensemble',   desc: 'Dashboard global : valeur totale, répartition par classe, carte monde géographique', color: GOLD,      href: '/patrimoine/vue-densemble' },
+                { icon: Building2, label: 'Immobilier',         desc: 'Biens, valeur de marché, crédit restant et loyers perçus', color: '#f472b6', href: '/patrimoine/immobilier' },
+                { icon: TrendingUp,label: 'Actions & Fonds',    desc: 'Positions en PEA, CTO, Assurance Vie, PER — valeur en temps réel', color: '#34d399', href: '/patrimoine/actions-fonds' },
+                { icon: PiggyBank, label: 'Livrets',             desc: 'Livret A, LDDS, LEP avec suivi des plafonds et intérêts', color: '#38bdf8', href: '/patrimoine/livrets' },
+                { icon: Bitcoin,   label: 'Autres actifs',      desc: 'Crypto-monnaies, métaux précieux et actifs alternatifs', color: '#fb923c', href: '/patrimoine/autres-actifs' },
+                { icon: Wallet,    label: 'Comptes bancaires',   desc: 'Soldes et suivi de vos comptes courants et d\'épargne', color: '#a78bfa', href: '/patrimoine/comptes-bancaires' },
+                { icon: Receipt,   label: 'Emprunts',            desc: 'Vue consolidée de tous vos crédits : immobilier, conso, pro', color: '#fb7185', href: '/patrimoine/emprunts' },
+                { icon: Layers,    label: 'Détail enveloppe',    desc: 'Page individuelle avec positions, historique et performance par enveloppe', color: '#4b5563', href: '/patrimoine/detail-enveloppe' },
               ],
             },
             {
               tag: 'Suivi & Trading', tagColor: '#38bdf8',
               items: [
-                { icon: BarChart3, label: 'Mon Portefeuille', desc: 'Positions boursières avec prix live via Finnhub & CoinGecko', color: '#38bdf8' },
-                { icon: RefreshCw, label: 'Rééquilibrage', desc: 'Arbitrages nécessaires pour retrouver votre allocation cible', color: '#34d399' },
-                { icon: Star, label: 'Mes Objectifs', desc: 'Objectifs financiers personnalisés avec barre de progression', color: GOLD },
-                { icon: Layers, label: 'Carnet d\'ordres', desc: 'Journal BUY / SELL / DIVIDEND avec calcul du P&L réalisé', color: '#c084fc' },
+                { icon: BarChart3, label: 'Mon Portefeuille',   desc: 'Positions boursières avec prix live via Finnhub & CoinGecko', color: '#38bdf8', href: '/patrimoine/mon-portefeuille' },
+                { icon: RefreshCw, label: 'Rééquilibrage',      desc: 'Arbitrages nécessaires pour retrouver votre allocation cible', color: '#34d399', href: '/patrimoine/reequilibrage' },
+                { icon: Star,      label: 'Mes Objectifs',       desc: 'Objectifs financiers personnalisés avec barre de progression', color: GOLD, href: '/patrimoine/mes-objectifs' },
+                { icon: Layers,    label: 'Carnet d\'ordres',    desc: 'Journal BUY / SELL / DIVIDEND avec calcul du P&L réalisé', color: '#c084fc', href: '/patrimoine/carnet-dordres' },
               ],
             },
             {
               tag: 'Analyse & Fiscal', tagColor: '#818cf8',
               items: [
-                { icon: Calculator, label: 'Rapport Fiscal', desc: 'Plus-values, durées de détention, optimisation par enveloppe', color: '#fbbf24' },
-                { icon: Award, label: 'Score Patrimonial', desc: 'Notation 0-100 sur 6 piliers : épargne, dettes, diversification…', color: GOLD },
-                { icon: Globe, label: 'Gestion personnelle', desc: 'Vue synthétique : allocation globale, objectifs, situation fiscale', color: '#818cf8' },
+                { icon: Calculator, label: 'Rapport Fiscal',     desc: 'Plus-values, durées de détention, optimisation par enveloppe', color: '#fbbf24', href: '/patrimoine/rapport-fiscal' },
+                { icon: Award,      label: 'Score Patrimonial',   desc: 'Notation 0-100 sur 6 piliers : épargne, dettes, diversification…', color: GOLD, href: '/patrimoine/score-patrimonial' },
+                { icon: Globe,      label: 'Gestion personnelle', desc: 'Vue synthétique : allocation globale, objectifs, situation fiscale', color: '#818cf8', href: '/patrimoine/gestion-personnelle' },
               ],
             },
           ].map(group => (
@@ -3724,7 +3798,7 @@ export function LandingClient() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
                   {group.items.map(item => (
-                    <Link key={item.label} href="/login" style={{ textDecoration: 'none' }}>
+                    <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
                       <div
                         style={{ background: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 14, padding: '18px 20px', transition: 'border-color 0.15s, background 0.15s', cursor: 'pointer', height: '100%', boxSizing: 'border-box' as const }}
                         onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color + '44'; el.style.background = item.color + '08' }}
@@ -3747,7 +3821,7 @@ export function LandingClient() {
 
           <RevealSection>
             <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 24px', borderRadius: 24, background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.09)', color: '#374151', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 24px', borderRadius: 24, background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.09)', color: '#374151', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                 Accéder à toutes les pages <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
             </div>

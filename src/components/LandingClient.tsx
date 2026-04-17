@@ -3365,43 +3365,212 @@ export function LandingClient() {
 
       <SectionDivider />
 
-      {/* ── INTERACTIVE DEMO ──────────────────────────────────────────── */}
-      <section id="demo" style={{ padding: '60px 20px 100px', background: '#f9fafb' }}>
-        <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+      {/* ── FEATURES BENTO ────────────────────────────────────────────── */}
+      <section id="features" style={{ padding: '80px 20px 100px', background: '#f9fafb' }}>
+        <div style={{ maxWidth: 1152, margin: '0 auto' }}>
 
-          {/* Section header */}
+          {/* Header */}
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Essayez maintenant nos simulateurs</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 10px' }}>
-                Commençons{' '}
-                <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>maintenant</span>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Fonctionnalités</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 300, lineHeight: 1.15, letterSpacing: '-0.055em', color: '#111827', margin: '0 0 16px' }}>
+                Prenez le contrôle total<br />de votre vie financière
               </h2>
-              <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.7 }}>
-                Manipulez les curseurs en temps réel — sans inscription, sans données bancaires.
+              <p style={{ fontSize: 15, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
+                Des simulateurs puissants, des données actualisées et des insights visuels pour décider plus intelligemment.
               </p>
             </div>
           </RevealSection>
 
-          {/* Two-column layout */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: 16, alignItems: 'stretch' }}>
+          {/* 2×2 bento grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 
-            {/* Left column — FIRE calc + Opportunity cost */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <RevealSection>
-                <HeroFireCalc />
-              </RevealSection>
-              <RevealSection delay={80}>
-                <OpportunityCostWidget />
-              </RevealSection>
-            </div>
-
-            {/* Right column — tabbed simulator */}
-            <RevealSection delay={120} style={{ height: '100%' }}>
-              <div style={{ height: '100%' }}>
-                <InteractiveDemo />
+            {/* ── Card 1 — Simulateurs temps réel ── */}
+            <RevealSection delay={0}>
+              <div style={{ background: '#f5f3ff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', position: 'relative', border: '1px solid #ede9fe' }}>
+                {/* Dot pattern */}
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(124,58,237,0.10) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#7c3aed', background: '#ede9fe', borderRadius: 6, padding: '3px 10px', letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Simulateurs</span>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Aperçu en temps réel</h3>
+                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Manipulez les curseurs et voyez instantanément l'impact — FIRE, intérêts composés, crédit immobilier — sans inscription.</p>
+                </div>
+                {/* Illustration */}
+                <div style={{ marginTop: 28, position: 'relative', flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)' }}>
+                    <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 14px' }}>Intérêts composés</p>
+                    {[
+                      { label: 'Capital initial', val: '10 000 €', pct: 20, color: '#7c3aed' },
+                      { label: 'Versement / mois', val: '300 €', pct: 45, color: '#10b981' },
+                      { label: 'Durée', val: '20 ans', pct: 65, color: '#3b82f6' },
+                    ].map(s => (
+                      <div key={s.label} style={{ marginBottom: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                          <span style={{ fontSize: 10.5, color: '#6b7280' }}>{s.label}</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: s.color }}>{s.val}</span>
+                        </div>
+                        <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
+                          <div style={{ width: `${s.pct}%`, height: '100%', background: s.color, borderRadius: 2 }} />
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ marginTop: 14, background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Capital final</span>
+                      <span style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.04em' }}>195 k€</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </RevealSection>
+
+            {/* ── Card 2 — Statistiques & Insights ── */}
+            <RevealSection delay={80}>
+              <div style={{ background: '#ffffff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #e5e7eb', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#10b981', background: '#d1fae5', borderRadius: 6, padding: '3px 10px', letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Insights</span>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Statistiques & Visualisations</h3>
+                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Des graphiques clairs révèlent la croissance de votre capital — répartition, tendances et comparaisons mensuelles.</p>
+                </div>
+                {/* Chart illustration */}
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                  <div style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 0', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: '#374151', margin: 0 }}>Évolution patrimoine</p>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {['1M', '6M', '1A', 'MAX'].map((t, i) => (
+                          <span key={t} style={{ fontSize: 9, fontWeight: i === 3 ? 700 : 500, color: i === 3 ? '#7c3aed' : '#9ca3af', cursor: 'pointer' }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* SVG bar chart */}
+                    <svg width="100%" height={100} viewBox="0 0 300 100" preserveAspectRatio="none" style={{ display: 'block' }}>
+                      <defs>
+                        <linearGradient id="feat-chart-grad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.18" />
+                          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.01" />
+                        </linearGradient>
+                      </defs>
+                      {/* Grid lines */}
+                      {[20, 50, 80].map(y => <line key={y} x1={0} y1={y} x2={300} y2={y} stroke="#f3f4f6" strokeWidth={1} />)}
+                      {/* Area fill */}
+                      <polygon points="0,88 40,75 80,68 120,55 160,42 200,30 240,20 280,12 300,8 300,95 0,95" fill="url(#feat-chart-grad)" />
+                      {/* Line */}
+                      <polyline points="0,88 40,75 80,68 120,55 160,42 200,30 240,20 280,12 300,8" fill="none" stroke="#7c3aed" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+                      {/* End dot */}
+                      <circle cx={300} cy={8} r={4} fill="#7c3aed" />
+                      <circle cx={300} cy={8} r={8} fill="#7c3aed" opacity={0.15} />
+                    </svg>
+                    {/* Stats row */}
+                    <div style={{ display: 'flex', gap: 20, padding: '10px 0 16px' }}>
+                      {[
+                        { label: 'Patrimoine total', val: '195 k€', up: true },
+                        { label: 'Progression', val: '+12.4%', up: true },
+                        { label: 'Intérêts générés', val: '113 k€', up: true },
+                      ].map(s => (
+                        <div key={s.label}>
+                          <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px' }}>{s.label}</p>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: s.up ? '#7c3aed' : '#ef4444', margin: 0 }}>{s.val}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* ── Card 3 — Suivi patrimonial ── */}
+            <RevealSection delay={120}>
+              <div style={{ background: '#ffffff', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #e5e7eb', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', background: '#dbeafe', borderRadius: 6, padding: '3px 10px', letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine</span>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Suivi patrimonial complet</h3>
+                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout votre patrimoine centralisé avec des données de marché en temps réel.</p>
+                </div>
+                {/* Allocation illustration */}
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                  <div style={{ background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 14 }}>
+                      {/* Donut */}
+                      <svg width={72} height={72} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
+                        {[
+                          { pct: 0.42, color: '#7c3aed', offset: 0 },
+                          { pct: 0.28, color: '#3b82f6', offset: 0.42 },
+                          { pct: 0.18, color: '#10b981', offset: 0.70 },
+                          { pct: 0.12, color: '#f59e0b', offset: 0.88 },
+                        ].map((s, i) => {
+                          const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
+                          const dash = s.pct * perim
+                          const rot = s.offset * 360 - 90
+                          return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={10} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
+                        })}
+                        <circle cx={36} cy={36} r={19} fill="#f9fafb" />
+                        <text x={36} y={39} textAnchor="middle" fontSize="9" fontWeight="800" fill="#374151">100%</text>
+                      </svg>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                        {[
+                          { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
+                          { label: 'Actions', pct: '28%', color: '#3b82f6' },
+                          { label: 'Livrets', pct: '18%', color: '#10b981' },
+                          { label: 'Crypto', pct: '12%', color: '#f59e0b' },
+                        ].map(s => (
+                          <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ width: 7, height: 7, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Total */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
+                      <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600 }}>Patrimoine net total</span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+
+            {/* ── Card 4 — Sécurité ── */}
+            <RevealSection delay={160}>
+              <div style={{ background: '#f0fdf4', borderRadius: 24, padding: '36px 36px 0', overflow: 'hidden', minHeight: 380, display: 'flex', flexDirection: 'column', border: '1px solid #bbf7d0', position: 'relative' }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(16,185,129,0.08) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', background: '#d1fae5', borderRadius: 6, padding: '3px 10px', letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Sécurité</span>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Portefeuille sécurisé & confidentiel</h3>
+                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Aucune connexion bancaire requise. Vos données sont chiffrées, hébergées en Europe et ne sont jamais revendues.</p>
+                </div>
+                {/* Security illustration */}
+                <div style={{ marginTop: 28, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #d1fae5', borderBottom: 'none', padding: '20px 24px 24px', width: '100%', boxShadow: '0 -4px 20px rgba(16,185,129,0.06)' }}>
+                    {/* Shield */}
+                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+                      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', border: '2px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Shield style={{ width: 28, height: 28, color: '#059669' }} />
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {[
+                          'Zéro donnée bancaire partagée',
+                          'Hébergement 🇪🇺 Europe · RGPD',
+                          'Aucune publicité · Aucun tracking',
+                          'Chiffrement de bout en bout',
+                        ].map((item, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#d1fae5', border: '1px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <svg width={8} height={8} viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" fill="none" stroke="#059669" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </div>
+                            <span style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+
           </div>
         </div>
       </section>

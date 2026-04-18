@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   TrendingUp,
   Flame,
@@ -47,6 +47,9 @@ const GOLD = '#f1c086'
 const GOLD_DARK = 'rgba(241,192,134,0.10)'
 const GOLD_BORDER = 'rgba(241,192,134,0.20)'
 const GOLD_GLOW = 'rgba(241,192,134,0.05)'
+const BG2 = '#0f1117'
+const BG3 = '#13161e'
+const BENTO_BORDER = 'rgba(255,255,255,0.08)'
 
 const MODULES = [
   { icon: TrendingUp, label: 'Intérêts Composés', desc: 'Visualisez l\'effet boule de neige de votre épargne sur des décennies.', tag: 'Épargne', color: '#34d399', href: '/tools/interets-composes' },
@@ -2936,6 +2939,400 @@ function StickyMobileCTA() {
   )
 }
 
+// ─── Features bento — invvest-style BorderCard components ────────────────────
+function BorderCard({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [mouse, setMouse] = useState({ x: 0, y: 0 })
+  const [hovered, setHovered] = useState(false)
+  const onMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setMouse({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }, [])
+  return (
+    <div ref={cardRef} onMouseMove={onMove} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{ position: 'relative', borderRadius: 24, padding: 1.5, height: '100%',
+        background: hovered
+          ? `radial-gradient(300px circle at ${mouse.x}px ${mouse.y}px, rgba(241,192,134,0.22), rgba(241,192,134,0.04) 60%, transparent)`
+          : 'rgba(255,255,255,0.07)',
+        transition: 'background 0.15s', ...style }}>
+      <div style={{ borderRadius: 23, background: BG2, height: '100%', overflow: 'hidden', position: 'relative' }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function GridBg({ uid = 'g' }: { uid?: string }) {
+  return (
+    <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.18, pointerEvents: 'none' }}>
+      <defs>
+        <pattern id={`bgrid-${uid}`} width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#bgrid-${uid})`} />
+    </svg>
+  )
+}
+
+function EdgeFades({ color = BG2 }: { color?: string }) {
+  return (
+    <>
+      <div style={{ position: 'absolute', zIndex: 10, pointerEvents: 'none', top: 0, left: 0, height: '100%', width: 56, background: `linear-gradient(to right, ${color}, transparent)` }} />
+      <div style={{ position: 'absolute', zIndex: 10, pointerEvents: 'none', top: 0, right: 0, height: '100%', width: 56, background: `linear-gradient(to left, ${color}, transparent)` }} />
+      <div style={{ position: 'absolute', zIndex: 10, pointerEvents: 'none', bottom: 0, left: 0, height: 56, width: '100%', background: `linear-gradient(to top, ${color}, transparent)` }} />
+    </>
+  )
+}
+
+function GlassPill({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{ background: 'rgba(15,17,23,0.65)', backdropFilter: 'blur(12px)', border: `1px solid ${BENTO_BORDER}`, borderRadius: 99, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, ...style }}>
+      {children}
+    </div>
+  )
+}
+
+function GlassCard({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{ background: 'rgba(15,17,23,0.65)', backdropFilter: 'blur(12px)', border: `1px solid ${BENTO_BORDER}`, borderRadius: 12, padding: '12px 14px', ...style }}>
+      {children}
+    </div>
+  )
+}
+
+function CardSimulateurs() {
+  const [tab, setTab] = useState('Composés')
+  const [capital, setCapital] = useState(10000)
+  const [versement, setVersement] = useState(300)
+  const [duree, setDuree] = useState(20)
+  const r = 0.07
+  const final = Math.round(capital * Math.pow(1 + r, duree) + versement * 12 * ((Math.pow(1 + r, duree) - 1) / r))
+  const investi = Math.round(capital + versement * 12 * duree)
+  const interets = final - investi
+  const tabs = ['Composés', 'FI/RE', 'Crédit']
+  return (
+    <BorderCard>
+      <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}>
+        <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: 14, marginBottom: 16, background: BG3 }}>
+          <GridBg uid="sim" />
+          <EdgeFades />
+          {/* Tab bar */}
+          <div style={{ position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 20, display: 'flex', gap: 4, background: 'rgba(15,17,23,0.8)', backdropFilter: 'blur(8px)', borderRadius: 99, padding: 4, border: `1px solid ${BENTO_BORDER}` }}>
+            {tabs.map(t => (
+              <button key={t} onClick={() => setTab(t)}
+                style={{ padding: '4px 14px', borderRadius: 99, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, background: tab === t ? GOLD : 'transparent', color: tab === t ? '#07090f' : 'rgba(255,255,255,0.4)', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                {t}
+              </button>
+            ))}
+          </div>
+          {/* Sliders */}
+          <div style={{ position: 'absolute', bottom: 12, left: 12, right: 12, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {([
+              { label: 'Capital initial', val: capital, set: setCapital, min: 1000, max: 100000, step: 1000, fmt: (v: number) => `${(v / 1000).toFixed(0)}k` },
+              { label: 'Versement / mois', val: versement, set: setVersement, min: 50, max: 2000, step: 50, fmt: (v: number) => `${v}` },
+              { label: 'Durée', val: duree, set: setDuree, min: 1, max: 40, step: 1, fmt: (v: number) => `${v}a` },
+            ] as const).map((s, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', minWidth: 90, whiteSpace: 'nowrap' }}>{s.label}</span>
+                <input type="range" min={s.min} max={s.max} step={s.step} value={s.val}
+                  onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
+                  style={{ flex: 1, accentColor: GOLD, height: 3, cursor: 'pointer' }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: GOLD, minWidth: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{s.fmt(s.val)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Results */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+          {[
+            { label: 'Capital final', val: `${(final / 1000).toFixed(0)} k€`, c: GOLD },
+            { label: 'Intérêts', val: `+${(interets / 1000).toFixed(0)} k€`, c: '#4ade80' },
+            { label: 'Rendement', val: '7.00 %', c: 'rgba(255,255,255,0.6)' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: BG3, borderRadius: 10, padding: '10px 12px', border: `1px solid ${BENTO_BORDER}` }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '0 4px', marginTop: 'auto' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Simulateurs</h3>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
+            Aperçu en temps réel — manipulez les curseurs et voyez instantanément l&apos;impact sans inscription.
+          </p>
+        </div>
+      </article>
+    </BorderCard>
+  )
+}
+
+function CardInsights() {
+  const [period, setPeriod] = useState('1A')
+  const [hovered, setHovered] = useState(false)
+  const periods = ['1M', '6M', '1A', 'MAX']
+  const dataMap: Record<string, number[]> = {
+    '1M':  [185, 188, 190, 192, 195],
+    '6M':  [160, 168, 172, 178, 185, 195],
+    '1A':  [130, 140, 148, 155, 162, 170, 178, 182, 186, 190, 192, 195],
+    'MAX': [60, 80, 95, 110, 125, 140, 155, 165, 172, 180, 188, 195],
+  }
+  const data = dataMap[period]
+  const W = 260, H = 80
+  const dMin = Math.min(...data) * 0.95
+  const dMax = Math.max(...data) * 1.02
+  const dRange = dMax - dMin
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * W},${H - ((v - dMin) / dRange) * H}`).join(' ')
+  const lastY = H - ((data[data.length - 1] - dMin) / dRange) * H
+  const area = `M0,${H} L${pts.split(' ').join(' L')} L${W},${H} Z`
+  return (
+    <BorderCard>
+      <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: 14, marginBottom: 16, background: BG3 }}>
+          <GridBg uid="ins" />
+          <EdgeFades />
+          {/* Period selector */}
+          <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 20, display: 'flex', gap: 3 }}>
+            {periods.map(p => (
+              <button key={p} onClick={() => setPeriod(p)}
+                style={{ padding: '3px 10px', borderRadius: 99, border: `1px solid ${period === p ? GOLD + '55' : BENTO_BORDER}`, background: period === p ? `${GOLD}18` : 'transparent', color: period === p ? GOLD : 'rgba(255,255,255,0.35)', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                {p}
+              </button>
+            ))}
+          </div>
+          {/* Chart */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 5, display: 'flex', alignItems: 'flex-end' }}>
+            <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+              <defs>
+                <linearGradient id="ins-areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={GOLD} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={GOLD} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <path d={area} fill="url(#ins-areaGrad)" />
+              <polyline points={pts} fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx={W} cy={lastY} r="4" fill={GOLD} />
+            </svg>
+          </div>
+          {/* Stats overlay on hover */}
+          <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, opacity: hovered ? 1 : 0, transform: hovered ? 'translateY(0)' : 'translateY(-8px)', transition: 'all 0.4s ease' }}>
+            <GlassCard>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>Performance</div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                {[{ label: 'Patrimoine', val: '+12.4%', c: '#4ade80' }, { label: 'Benchmark', val: '+8.2%', c: 'rgba(255,255,255,0.5)' }].map((s, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>{s.label}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: s.c }}>{s.val}</div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+          {/* Default pill */}
+          <div style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 20, opacity: hovered ? 0 : 1, transition: 'opacity 0.3s' }}>
+            <GlassPill>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, display: 'inline-block' }} />
+              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>Patrimoine</span>
+              <span style={{ color: GOLD, fontWeight: 700 }}>195 k€</span>
+              <span style={{ color: '#4ade80', fontSize: 11 }}>+12.4 %</span>
+            </GlassPill>
+          </div>
+        </div>
+        {/* KPIs */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+          {[
+            { label: 'Patrimoine', val: '195 k€', c: GOLD },
+            { label: 'Progression', val: '+12.4 %', c: '#4ade80' },
+            { label: 'Intérêts', val: '113 k€', c: 'rgba(255,255,255,0.6)' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: BG3, borderRadius: 10, padding: '10px 12px', border: `1px solid ${BENTO_BORDER}` }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '0 4px', marginTop: 'auto' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Insights</h3>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
+            Statistiques & Visualisations — graphiques clairs révélant la croissance, la répartition et les tendances.
+          </p>
+        </div>
+      </article>
+    </BorderCard>
+  )
+}
+
+function CardPatrimoine() {
+  const [hovered, setHovered] = useState(false)
+  const alloc = [
+    { label: 'Immobilier', pct: 42, color: '#f472b6' },
+    { label: 'Actions',    pct: 28, color: '#818cf8' },
+    { label: 'Livrets',    pct: 18, color: '#34d399' },
+    { label: 'Crypto',     pct: 12, color: GOLD },
+  ]
+  const rows = [
+    { label: 'Immobilier', val: '476.7 k€', pct: '+8.4%',  up: true,  color: '#f472b6' },
+    { label: 'Actions',    val: '115.5 k€', pct: '+21.2%', up: true,  color: '#818cf8' },
+    { label: 'Livrets',    val: '74.2 k€',  pct: '+3.0%',  up: true,  color: '#34d399' },
+    { label: 'Crypto',     val: '49.5 k€',  pct: '-4.2%',  up: false, color: GOLD },
+  ]
+  return (
+    <BorderCard>
+      <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: 14, marginBottom: 16, background: BG3 }}>
+          <GridBg uid="pat" />
+          <EdgeFades />
+          {/* Donut */}
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', zIndex: 10 }}>
+            <svg width={130} height={130} viewBox="0 0 130 130">
+              {(() => {
+                let offset = 0
+                const r = 48, cx = 65, cy = 65, circ = 2 * Math.PI * r
+                return alloc.map((a, i) => {
+                  const dash = (a.pct / 100) * circ
+                  const el = (
+                    <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={a.color}
+                      strokeWidth={hovered ? 16 : 12}
+                      strokeDasharray={`${dash} ${circ - dash}`}
+                      strokeDashoffset={-(offset / 100) * circ}
+                      strokeLinecap="butt"
+                      style={{ transition: 'stroke-width 0.4s ease', transformOrigin: '65px 65px', transform: 'rotate(-90deg)' }} />
+                  )
+                  offset += a.pct
+                  return el
+                })
+              })()}
+              <text x={65} y={60} textAnchor="middle" style={{ fontSize: 10, fill: 'rgba(255,255,255,0.4)', fontFamily: 'system-ui' }}>Net</text>
+              <text x={65} y={75} textAnchor="middle" style={{ fontSize: 14, fill: '#fff', fontWeight: 700, fontFamily: 'system-ui', fontVariantNumeric: 'tabular-nums' }}>412k</text>
+            </svg>
+          </div>
+          {/* Slide-in rows */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 15, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '8px 14px',
+            transform: hovered ? 'translateX(0)' : 'translateX(110%)', transition: 'transform 0.5s cubic-bezier(.4,0,.2,1)', background: 'rgba(19,22,30,0.95)' }}>
+            {rows.map((row, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 2, background: row.color }} />
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>{row.label}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', fontVariantNumeric: 'tabular-nums' }}>{row.val}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: row.up ? '#4ade80' : '#f87171', minWidth: 48, textAlign: 'right' }}>{row.pct}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Legend pills */}
+          <div style={{ position: 'absolute', bottom: 10, left: 10, right: 10, zIndex: 11, display: 'flex', gap: 6, flexWrap: 'wrap',
+            opacity: hovered ? 0 : 1, transition: 'opacity 0.25s' }}>
+            {alloc.map((a, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(15,17,23,0.7)', backdropFilter: 'blur(8px)', borderRadius: 99, padding: '3px 9px', border: `1px solid ${BENTO_BORDER}`, fontSize: 11 }}>
+                <div style={{ width: 6, height: 6, borderRadius: 2, background: a.color }} />
+                <span style={{ color: 'rgba(255,255,255,0.5)' }}>{a.label}</span>
+                <span style={{ color: a.color, fontWeight: 700 }}>{a.pct}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* KPIs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
+          {[
+            { label: 'Net',   val: '412.5 k€', c: GOLD },
+            { label: 'YTD',   val: '+8.4 %',   c: '#4ade80' },
+            { label: '1 an',  val: '+21.2 %',  c: '#4ade80' },
+            { label: 'Actifs',val: '4 classes', c: 'rgba(255,255,255,0.5)' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: BG3, borderRadius: 10, padding: '9px 10px', border: `1px solid ${BENTO_BORDER}` }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginBottom: 3, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums', lineHeight: 1.2 }}>{k.val}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '0 4px', marginTop: 'auto' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Patrimoine</h3>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
+            Suivi complet — immobilier, actions, livrets, crypto — centralisé avec des données de marché en temps réel.
+          </p>
+        </div>
+      </article>
+    </BorderCard>
+  )
+}
+
+function CardSecurite() {
+  const [hovered, setHovered] = useState(false)
+  const [step, setStep] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setStep(s => (s + 1) % 4), 1800)
+    return () => clearInterval(id)
+  }, [])
+  const features = [
+    { icon: '🔒', label: 'Chiffrement AES-256',    sub: 'Données chiffrées au repos et en transit' },
+    { icon: '🏦', label: 'Zéro données bancaires', sub: 'Aucun RIB, aucun accès aux comptes' },
+    { icon: '🇪🇺', label: 'Hébergement Europe',    sub: 'Serveurs en France, conformité RGPD' },
+    { icon: '👁',  label: 'Jamais revendues',       sub: 'Vos données ne nous servent qu\'à vous' },
+  ]
+  return (
+    <BorderCard>
+      <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: 14, marginBottom: 16, background: BG3 }}>
+          <GridBg uid="sec" />
+          <EdgeFades />
+          <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            {/* Shield */}
+            <div style={{ position: 'relative' }}>
+              <div style={{ width: 64, height: 64, borderRadius: 18, background: `linear-gradient(135deg, ${GOLD}22, ${GOLD}08)`, border: `1.5px solid ${GOLD}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, boxShadow: hovered ? `0 0 32px ${GOLD}30` : 'none', transition: 'box-shadow 0.4s' }}>🛡️</div>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{ position: 'absolute', inset: -i * 13, borderRadius: 18 + i * 4, border: `1px solid ${GOLD}${hovered ? '22' : '0a'}`, transition: 'border-color 0.4s' }} />
+              ))}
+            </div>
+            {/* Feature list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '100%', padding: '0 12px' }}>
+              {features.map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 11px', borderRadius: 10,
+                  background: i === step ? `rgba(241,192,134,0.08)` : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${i === step ? GOLD + '33' : BENTO_BORDER}`,
+                  transition: 'all 0.4s ease', transform: i === step ? 'scale(1.02)' : 'scale(1)' }}>
+                  <span style={{ fontSize: 13, flexShrink: 0 }}>{f.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: i === step ? GOLD : 'rgba(255,255,255,0.6)' }}>{f.label}</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>{f.sub}</div>
+                  </div>
+                  {i === step && <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: GOLD, flexShrink: 0 }} />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* Trust badges */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+          {[
+            { val: '0',    label: 'Données bancaires',   c: '#4ade80' },
+            { val: 'AES',  label: 'Chiffrement 256-bit', c: GOLD },
+            { val: 'RGPD', label: 'Conformité Europe',   c: '#818cf8' },
+            { val: '100%', label: 'Auto-hébergé',        c: 'rgba(255,255,255,0.5)' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: BG3, borderRadius: 10, padding: '9px 12px', border: `1px solid ${BENTO_BORDER}` }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginBottom: 3, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: '0 4px', marginTop: 'auto' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Sécurité</h3>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
+            Portefeuille sécurisé & confidentiel — aucune connexion bancaire, chiffrement AES-256, hébergé en Europe.
+          </p>
+        </div>
+      </article>
+    </BorderCard>
+  )
+}
+
 // ── Bento card with invvest-style mouse-tracking glow border ─────────────────
 function BentoCardGlow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -3430,378 +3827,38 @@ export function LandingClient() {
       <SectionDivider />
 
       {/* ── FEATURES BENTO ────────────────────────────────────────────── */}
-      <section id="features" style={{ padding: '80px 20px 100px', background: '#ffffff' }}>
-        <div style={{ maxWidth: 1152, margin: '0 auto' }}>
+      <section id="features" style={{ padding: '80px 20px 100px', background: '#07090f' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto' }}>
 
           {/* Header */}
           <RevealSection>
-            <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <SectionTag><Zap style={{ width: 11, height: 11 }} /> Fonctionnalités</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.9rem)', fontWeight: 300, lineHeight: 1.1, letterSpacing: '-0.06em', color: '#111827', margin: '0 0 8px' }}>
-                Quatre piliers pour
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 99, border: `1px solid ${GOLD}33`, background: `${GOLD}0a`, marginBottom: 18 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: GOLD }} />
+                <span style={{ fontSize: 11, fontWeight: 600, color: GOLD, letterSpacing: '0.8px' }}>PLATEFORME</span>
+              </div>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.2, margin: '0 0 14px' }}>
+                Quatre piliers pour<br />maîtriser votre patrimoine
               </h2>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.9rem)', fontWeight: 300, lineHeight: 1.1, letterSpacing: '-0.06em', margin: '0 0 20px',
-                background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 60%, #c4b5fd 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              }}>
-                maîtriser votre patrimoine
-              </h2>
-              <p style={{ fontSize: 15, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 480, margin: '0 auto' }}>
-                Simulateurs, visualisations, suivi patrimonial et sécurité totale — réunis dans un seul outil.
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
+                Des outils complets pour simuler, analyser, suivre et sécuriser votre situation financière.
               </p>
             </div>
           </RevealSection>
 
-          {/* 2×2 bento grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {/* Row 1 — 3fr + 4fr */}
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 4fr', gap: 14, marginBottom: 14 }}>
 
-            {/* ── Card 1 — Simulateurs temps réel ── */}
-            <RevealSection delay={0}>
-              <BentoCardGlow>
-              <div style={{ background: '#ffffff', borderRadius: 24, padding: '32px 32px 0', overflow: 'hidden', minHeight: 400, display: 'flex', flexDirection: 'column', position: 'relative', border: '1px solid rgba(124,58,237,0.14)', borderTop: '3px solid #7c3aed', boxShadow: '0 4px 24px rgba(124,58,237,0.06)' }}>
-                {/* Corner glow */}
-                <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(ellipse at 100% 0%, rgba(124,58,237,0.09) 0%, transparent 65%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(167,139,250,0.06))', border: '1px solid rgba(124,58,237,0.18)', borderRadius: 8, padding: '3px 10px' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#7c3aed' }} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#7c3aed', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>Simulateurs</span>
-                  </div>
-                  <h3 style={{ fontSize: 21, fontWeight: 600, color: '#111827', margin: '12px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Aperçu en temps réel</h3>
-                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Manipulez les curseurs et voyez instantanément l'impact — FIRE, intérêts composés, crédit — sans inscription.</p>
-                </div>
+            <RevealSection delay={0} style={{ height: '100%' }}><CardSimulateurs /></RevealSection>
+            <RevealSection delay={80} style={{ height: '100%' }}><CardInsights /></RevealSection>
 
-                {/* Illustration */}
-                <div style={{ marginTop: 22, position: 'relative', flex: 1, overflow: 'hidden' }}>
-                  <div style={{ background: '#fafafa', borderRadius: '14px 14px 0 0', border: '1px solid #f0f0f0', borderBottom: 'none', boxShadow: '0 -6px 32px rgba(124,58,237,0.08)', overflow: 'hidden' }}>
+          </div>
 
-                    {/* Segmented tab bar */}
-                    <div style={{ display: 'flex', gap: 4, padding: '12px 14px 10px', borderBottom: '1px solid #f0f0f0', background: '#ffffff' }}>
-                      {[
-                        { label: 'Composés', active: true },
-                        { label: 'FI/RE',    active: false },
-                        { label: 'Crédit',   active: false },
-                      ].map(t => (
-                        <div key={t.label} style={{
-                          padding: '4px 12px',
-                          borderRadius: 20,
-                          background: t.active ? '#7c3aed' : 'transparent',
-                          color: t.active ? '#fff' : '#9ca3af',
-                          fontSize: 10, fontWeight: t.active ? 700 : 500,
-                          letterSpacing: '0.01em',
-                          transition: 'all 0.15s',
-                        }}>{t.label}</div>
-                      ))}
-                    </div>
+          {/* Row 2 — 4fr + 3fr */}
+          <div style={{ display: 'grid', gridTemplateColumns: '4fr 3fr', gap: 14 }}>
 
-                    <div style={{ padding: '14px 16px' }}>
-                      {/* Row 1 — slides in from far left */}
-                      <div className="bento-slide-left bento-slide-left-start" style={{ marginBottom: 10 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500 }}>Capital initial</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', background: 'rgba(124,58,237,0.08)', borderRadius: 20, padding: '2px 9px' }}>10 000 €</span>
-                        </div>
-                        <div style={{ height: 4, background: '#f0f0f0', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: '20%', height: '100%', background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', borderRadius: 4 }} />
-                        </div>
-                      </div>
-
-                      {/* Row 2 — slides in from right */}
-                      <div className="bento-slide-left bento-slide-left-start2" style={{ marginBottom: 10 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500 }}>Versement / mois</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.08)', borderRadius: 20, padding: '2px 9px' }}>300 €</span>
-                        </div>
-                        <div style={{ height: 4, background: '#f0f0f0', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: '45%', height: '100%', background: 'linear-gradient(90deg, #10b981, #34d399)', borderRadius: 4 }} />
-                        </div>
-                      </div>
-
-                      {/* Row 3 — slides in from left (offset) */}
-                      <div className="bento-slide-left bento-slide-left-start3" style={{ marginBottom: 12 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                          <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500 }}>Durée</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', background: 'rgba(59,130,246,0.08)', borderRadius: 20, padding: '2px 9px' }}>20 ans</span>
-                        </div>
-                        <div style={{ height: 4, background: '#f0f0f0', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: '65%', height: '100%', background: 'linear-gradient(90deg, #3b82f6, #60a5fa)', borderRadius: 4 }} />
-                        </div>
-                      </div>
-
-                      {/* Mini area chart + result — slides up on hover */}
-                      <div className="bento-slide-up">
-                        <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(124,58,237,0.12)', background: '#fdfbff', marginBottom: 8 }}>
-                          <svg width="100%" height={54} viewBox="0 0 280 54" preserveAspectRatio="none" style={{ display: 'block' }}>
-                            <defs>
-                              <linearGradient id="c1b-grad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.20" />
-                                <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.01" />
-                              </linearGradient>
-                            </defs>
-                            <polygon points="0,50 35,47 70,42 105,36 140,28 175,19 210,12 245,6 280,3 280,52 0,52" fill="url(#c1b-grad)" />
-                            <polyline points="0,50 35,47 70,42 105,36 140,28 175,19 210,12 245,6 280,3" fill="none" stroke="#7c3aed" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-                            <circle cx="280" cy="3" r="3" fill="#7c3aed" />
-                            <circle cx="280" cy="3" r="7" fill="#7c3aed" fillOpacity="0.15" />
-                            <polyline points="0,50 280,36" fill="none" stroke="#c4b5fd" strokeWidth="1.2" strokeDasharray="4,3" />
-                          </svg>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8 }}>
-                          <div style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 12px rgba(124,58,237,0.25)' }}>
-                            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.55)', margin: '0 0 3px', fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Capital final</p>
-                            <p style={{ fontSize: 22, fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.04em' }}>195 k€</p>
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                            <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '7px 11px', border: '1px solid #d1fae5' }}>
-                              <p style={{ fontSize: 8, color: '#9ca3af', margin: '0 0 2px', fontWeight: 500 }}>Intérêts</p>
-                              <p style={{ fontSize: 13, fontWeight: 700, color: '#10b981', margin: 0 }}>+113 k€</p>
-                            </div>
-                            <div style={{ background: '#eff6ff', borderRadius: 8, padding: '7px 11px', border: '1px solid #bfdbfe' }}>
-                              <p style={{ fontSize: 8, color: '#9ca3af', margin: '0 0 2px', fontWeight: 500 }}>Rendement</p>
-                              <p style={{ fontSize: 13, fontWeight: 700, color: '#3b82f6', margin: 0 }}>7.00 %</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              </BentoCardGlow>
-            </RevealSection>
-
-            {/* ── Card 2 — Statistiques & Insights ── */}
-            <RevealSection delay={80}>
-              <BentoCardGlow>
-              <div style={{ background: '#0f172a', borderRadius: 24, padding: '32px 32px 0', overflow: 'hidden', minHeight: 400, display: 'flex', flexDirection: 'column', border: '1px solid rgba(255,255,255,0.06)', borderTop: '3px solid #a78bfa', position: 'relative' }}>
-                {/* Subtle grid pattern */}
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
-                {/* Top glow */}
-                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '80%', height: 120, background: 'radial-gradient(ellipse, rgba(124,58,237,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 8, padding: '3px 10px' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#a78bfa' }} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>Insights</span>
-                  </div>
-                  <h3 style={{ fontSize: 21, fontWeight: 600, color: '#f1f5f9', margin: '12px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Statistiques & Visualisations</h3>
-                  <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Des graphiques clairs révèlent la croissance de votre capital — répartition, tendances et comparaisons mensuelles.</p>
-                </div>
-                {/* Chart illustration */}
-                <div style={{ marginTop: 24, flex: 1, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
-                  <div className="bento-slide-up" style={{ background: '#1e293b', borderRadius: '14px 14px 0 0', border: '1px solid rgba(255,255,255,0.06)', borderBottom: 'none', padding: '16px 18px 0', width: '100%' }}>
-                    {/* Header row */}
-                    <div className="bento-scale bento-scale-down-rev" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, transformOrigin: 'right center' }}>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: '#94a3b8', margin: 0 }}>Évolution patrimoine</p>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        {['1M', '6M', '1A', 'MAX'].map((t, i) => (
-                          <span key={t} style={{ fontSize: 9, fontWeight: i === 3 ? 700 : 400, color: i === 3 ? '#a78bfa' : '#475569' }}>{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                    {/* SVG chart — glowing on dark */}
-                    <svg width="100%" height={96} viewBox="0 0 300 96" preserveAspectRatio="none" style={{ display: 'block' }}>
-                      <defs>
-                        <linearGradient id="dark-chart-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.30" />
-                          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.01" />
-                        </linearGradient>
-                        <filter id="chart-glow">
-                          <feGaussianBlur stdDeviation="2" result="blur" />
-                          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                        </filter>
-                      </defs>
-                      {[24, 52, 80].map(y => <line key={y} x1={0} y1={y} x2={300} y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth={1} />)}
-                      <polygon points="0,86 40,73 80,66 120,53 160,40 200,29 240,19 280,11 300,7 300,92 0,92" fill="url(#dark-chart-grad)" />
-                      <polyline points="0,86 40,73 80,66 120,53 160,40 200,29 240,19 280,11 300,7" fill="none" stroke="#a78bfa" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" filter="url(#chart-glow)" />
-                      <circle cx={300} cy={7} r={3.5} fill="#a78bfa" />
-                      <circle cx={300} cy={7} r={9} fill="#a78bfa" opacity={0.2} />
-                    </svg>
-                    {/* Stats row */}
-                    <div className="bento-scale bento-scale-down" style={{ display: 'flex', gap: 0, padding: '10px 0 14px', transformOrigin: 'right center', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 2 }}>
-                      {[
-                        { label: 'Patrimoine', val: '195 k€', color: '#f1f5f9' },
-                        { label: 'Progression', val: '+12.4 %', color: '#a78bfa' },
-                        { label: 'Intérêts', val: '113 k€', color: '#34d399' },
-                      ].map((s, i) => (
-                        <div key={s.label} style={{ flex: 1, paddingTop: 10, borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none', paddingLeft: i > 0 ? 16 : 0 }}>
-                          <p style={{ fontSize: 9, color: '#475569', margin: '0 0 3px', fontWeight: 500 }}>{s.label}</p>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: s.color, margin: 0, letterSpacing: '-0.02em' }}>{s.val}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              </BentoCardGlow>
-            </RevealSection>
-
-            {/* ── Card 3 — Suivi patrimonial ── */}
-            <RevealSection delay={120}>
-              <BentoCardGlow>
-              <div style={{ background: '#ffffff', borderRadius: 24, padding: '32px 32px 0', overflow: 'hidden', minHeight: 400, display: 'flex', flexDirection: 'column', border: '1px solid rgba(59,130,246,0.14)', borderTop: '3px solid #3b82f6', position: 'relative', boxShadow: '0 4px 24px rgba(59,130,246,0.05)' }}>
-                {/* Corner glow */}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: 200, height: 200, background: 'radial-gradient(ellipse at 0% 0%, rgba(59,130,246,0.07) 0%, transparent 65%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.18)', borderRadius: 8, padding: '3px 10px' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#3b82f6' }} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>Patrimoine</span>
-                  </div>
-                  <h3 style={{ fontSize: 21, fontWeight: 600, color: '#111827', margin: '12px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Suivi patrimonial complet</h3>
-                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout centralisé avec des données de marché en temps réel.</p>
-                </div>
-                {/* Illustration — left panel slides out, right performance panel slides in */}
-                <div style={{ marginTop: 22, flex: 1, position: 'relative', overflow: 'hidden' }}>
-                  {/* 200%-wide container slides left on hover */}
-                  <div className="bento-panel-wide" style={{ top: 0, left: 0 }}>
-                    {/* Left half — allocation panel */}
-                    <div style={{ width: '50%', flexShrink: 0, background: '#f8faff', borderRadius: '14px 14px 0 0', border: '1px solid #e8eeff', borderBottom: 'none', padding: '16px 18px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
-                        <svg width={64} height={64} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
-                          {[
-                            { pct: 0.42, color: '#7c3aed', offset: 0 },
-                            { pct: 0.28, color: '#3b82f6', offset: 0.42 },
-                            { pct: 0.18, color: '#10b981', offset: 0.70 },
-                            { pct: 0.12, color: '#f59e0b', offset: 0.88 },
-                          ].map((s, i) => {
-                            const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
-                            const dash = s.pct * perim
-                            const rot = s.offset * 360 - 90
-                            return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={9} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
-                          })}
-                          <circle cx={36} cy={36} r={20} fill="#f8faff" />
-                          <text x={36} y={39} textAnchor="middle" fontSize="8" fontWeight="800" fill="#374151">100%</text>
-                        </svg>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {[
-                            { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
-                            { label: 'Actions', pct: '28%', color: '#3b82f6' },
-                            { label: 'Livrets', pct: '18%', color: '#10b981' },
-                            { label: 'Crypto', pct: '12%', color: '#f59e0b' },
-                          ].map(s => (
-                            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                              <div style={{ width: 6, height: 6, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-                              <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
-                              <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #eef0f8' }}>
-                        <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 500 }}>Patrimoine net</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
-                      </div>
-                    </div>
-                    {/* Right half — performance metrics */}
-                    <div style={{ width: '50%', flexShrink: 0, background: 'linear-gradient(145deg, #eff6ff, #dbeafe22)', borderRadius: '14px 14px 0 0', border: '1px solid #dbeafe', borderBottom: 'none', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Performance</p>
-                      {[
-                        { label: 'YTD', val: '+8.4 %', color: '#10b981' },
-                        { label: '1 an', val: '+21.2 %', color: '#10b981' },
-                        { label: 'Depuis le début', val: '+62.7 %', color: '#7c3aed' },
-                      ].map(m => (
-                        <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: 'rgba(255,255,255,0.8)', borderRadius: 8, border: '1px solid rgba(219,234,254,0.8)', backdropFilter: 'blur(4px)' }}>
-                          <span style={{ fontSize: 11, color: '#6b7280' }}>{m.label}</span>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: m.color }}>{m.val}</span>
-                        </div>
-                      ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: 'rgba(255,255,255,0.8)', borderRadius: 8, border: '1px solid rgba(219,234,254,0.8)' }}>
-                        <span style={{ fontSize: 11, color: '#6b7280' }}>Diversification</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>4 classes</span>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Live badge — slides with panel */}
-                  <div className="bento-panel-wide" style={{ top: 0, left: 0, height: 'auto', alignItems: 'flex-start', paddingTop: 10, paddingLeft: 10 }}>
-                    <div style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: 20, padding: '4px 10px', border: '1px solid #e0e7ff', display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#374151', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 4px #10b981' }} />
-                      Données en temps réel
-                    </div>
-                    <div style={{ width: '50%' }} />
-                  </div>
-                  {/* Peek panel — fades in from right */}
-                  <div className="bento-panel-peek" style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderRadius: 12, padding: '10px 14px', border: '1px solid #dbeafe', minWidth: 150, boxShadow: '0 8px 24px rgba(59,130,246,0.12)' }}>
-                    <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>Meilleur actif</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>Immobilier</p>
-                    <p style={{ fontSize: 16, fontWeight: 800, color: '#10b981', margin: 0, letterSpacing: '-0.02em' }}>476.7 k€</p>
-                  </div>
-                </div>
-              </div>
-              </BentoCardGlow>
-            </RevealSection>
-
-            {/* ── Card 4 — Sécurité ── */}
-            <RevealSection delay={160}>
-              <BentoCardGlow>
-              <div style={{ background: 'linear-gradient(160deg, #fafffe 0%, #f0fdf8 50%, #ecfdf5 100%)', borderRadius: 24, padding: '32px 32px 0', overflow: 'hidden', minHeight: 400, display: 'flex', flexDirection: 'column', border: '1px solid rgba(16,185,129,0.16)', borderTop: '3px solid #10b981', position: 'relative', boxShadow: '0 4px 24px rgba(16,185,129,0.05)' }}>
-                {/* Corner glow */}
-                <div style={{ position: 'absolute', top: 0, right: 0, width: 220, height: 220, background: 'radial-gradient(ellipse at 100% 0%, rgba(16,185,129,0.10) 0%, transparent 65%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, padding: '3px 10px' }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#10b981' }} />
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>Sécurité</span>
-                  </div>
-                  <h3 style={{ fontSize: 21, fontWeight: 600, color: '#111827', margin: '12px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Portefeuille sécurisé & confidentiel</h3>
-                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Aucune connexion bancaire requise. Vos données sont chiffrées, hébergées en Europe et ne sont jamais revendues.</p>
-                </div>
-                {/* Security illustration */}
-                <div style={{ marginTop: 22, flex: 1, position: 'relative', overflow: 'hidden' }}>
-                  {/* Floating spec badges — disappear on hover */}
-                  <div className="bento-info-disappear" style={{ top: 10, left: 10, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', borderRadius: 12, padding: '8px 14px', border: '1px solid rgba(16,185,129,0.2)', boxShadow: '0 4px 16px rgba(16,185,129,0.10)', zIndex: 5 }}>
-                    <div style={{ display: 'flex', gap: 18 }}>
-                      <div>
-                        <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px', fontWeight: 500 }}>Chiffrement</p>
-                        <p style={{ fontSize: 14, fontWeight: 800, color: '#059669', margin: 0 }}>AES-256</p>
-                      </div>
-                      <div style={{ width: 1, background: '#d1fae5' }} />
-                      <div>
-                        <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px', fontWeight: 500 }}>Hébergement</p>
-                        <p style={{ fontSize: 14, fontWeight: 800, color: '#059669', margin: 0 }}>🇪🇺 Europe</p>
-                      </div>
-                      <div style={{ width: 1, background: '#d1fae5' }} />
-                      <div>
-                        <p style={{ fontSize: 9, color: '#9ca3af', margin: '0 0 2px', fontWeight: 500 }}>Conformité</p>
-                        <p style={{ fontSize: 14, fontWeight: 800, color: '#059669', margin: 0 }}>RGPD</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Checklist panel — slides up on hover */}
-                  <div className="bento-bars-up" style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-                    <div style={{ background: '#ffffff', borderRadius: '14px 14px 0 0', border: '1px solid rgba(16,185,129,0.15)', borderBottom: 'none', padding: '18px 20px 20px', boxShadow: '0 -8px 32px rgba(16,185,129,0.08)' }}>
-                      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                        <div style={{ width: 48, height: 48, borderRadius: 14, background: 'linear-gradient(135deg, #d1fae5, #6ee7b7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(16,185,129,0.2)' }}>
-                          <Shield style={{ width: 22, height: 22, color: '#059669' }} />
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9 }}>
-                          {[
-                            'Zéro donnée bancaire partagée',
-                            'Hébergement 🇪🇺 Europe · RGPD',
-                            'Aucune publicité · Aucun tracking',
-                            'Chiffrement de bout en bout',
-                          ].map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', border: '1px solid #6ee7b7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <svg width={7} height={7} viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" fill="none" stroke="#059669" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              </div>
-                              <span style={{ fontSize: 11, color: '#374151', fontWeight: 500 }}>{item}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    {/* Revealed footer */}
-                    <div style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontWeight: 600, letterSpacing: '0.01em' }}>Conforme RGPD · ISO 27001</span>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        {['🔒', '🇪🇺'].map((e, i) => (
-                          <span key={i} style={{ fontSize: 15 }}>{e}</span>
-                        ))}
-                        <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, padding: '2px 8px', fontSize: 10, fontWeight: 700, color: '#fff' }}>✓ Certifié</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              </BentoCardGlow>
-            </RevealSection>
+            <RevealSection delay={0} style={{ height: '100%' }}><CardPatrimoine /></RevealSection>
+            <RevealSection delay={80} style={{ height: '100%' }}><CardSecurite /></RevealSection>
 
           </div>
         </div>

@@ -3353,10 +3353,10 @@ function CardSecurite() {
   const GREEN = '#4ade80'
 
   const arcFeats = [
-    { angle: -110, icon: '🔒', label: 'AES-256', color: GOLD },
-    { angle: -50,  icon: '🏦', label: 'No bank', color: GREEN },
-    { angle: 10,   icon: '🇪🇺', label: 'Europe',  color: '#818cf8' },
-    { angle: 70,   icon: '👁',  label: 'Private', color: '#38bdf8' },
+    { angle: -135, icon: '🔒', label: 'AES-256', color: GOLD },
+    { angle: -45,  icon: '🏦', label: 'No bank', color: GREEN },
+    { angle:  45,  icon: '🇪🇺', label: 'Europe',  color: '#818cf8' },
+    { angle:  135, icon: '👁',  label: 'Private', color: '#38bdf8' },
   ]
 
   const badges = [

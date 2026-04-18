@@ -61,7 +61,7 @@ const MODULES = [
   { icon: BarChart3, label: 'Flat Tax vs Barème', desc: 'Comparez le PFU 30% au barème progressif selon votre TMI et type de revenus.', tag: 'Fiscal', color: '#38bdf8', href: '/tools/flat-tax-bareme' },
   { icon: Layers, label: 'PEA vs CTO vs AV', desc: 'Simulez la fiscalité nette de chaque enveloppe d\'investissement sur la durée.', tag: 'Investissement', color: '#c084fc', href: '/tools/pea-cto-av' },
   { icon: Percent, label: 'Taux d\'épargne', desc: 'Calculez et optimisez votre taux d\'épargne mensuel selon vos revenus et objectifs.', tag: 'Budget', color: '#34d399', href: '/tools/taux-epargne' },
-  { icon: Star, label: 'Score Patrimonial', desc: 'Obtenez votre score global et des recommandations concrètes sur 6 piliers patrimoniaux.', tag: 'Patrimoine', color: '#f1c086', href: '/dashboard/score' },
+  { icon: Star, label: 'Score Patrimonial', desc: 'Obtenez votre score global et des recommandations concrètes sur 6 piliers patrimoniaux.', tag: 'Patrimoine', color: '#f1c086', href: '/tools/score-patrimonial' },
   { icon: Shield, label: 'Épargne de précaution', desc: 'Calculez le montant optimal de votre fonds d\'urgence selon vos charges, emploi et situation.', tag: 'Budget', color: '#fbbf24', href: '/tools/epargne-urgence' },
   { icon: Wallet, label: 'Coût réel crédit conso', desc: 'TAEG → mensualité, coût total des intérêts, coût d\'opportunité vs placement alternatif.', tag: 'Fiscal', color: '#fb7185', href: '/tools/credit-conso' },
   { icon: Building2, label: 'Succession & Donations', desc: 'DMTG par lien de parenté, abattements, barème progressif, optimisation renouvellement 15 ans.', tag: 'Fiscal', color: '#818cf8', href: '/tools/succession' },

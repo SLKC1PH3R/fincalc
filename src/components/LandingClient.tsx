@@ -643,19 +643,23 @@ function SectionTag({ children }: { children: React.ReactNode }) {
 }
 
 // ─── FAQ Item ─────────────────────────────────────────────────────────────
-function FaqItem({ q, a, gold, goldBorder }: { q: string; a: string; gold: string; goldBorder: string }) {
+function FaqItem({ q, a, gold, goldBorder, dark }: { q: string; a: string; gold: string; goldBorder: string; dark?: boolean }) {
   const [open, setOpen] = useState(false)
+  const baseBg     = dark ? 'rgba(255,255,255,0.04)' : '#ffffff'
+  const baseText   = dark ? 'rgba(255,255,255,0.88)' : '#111827'
+  const answerText = dark ? 'rgba(255,255,255,0.5)'  : '#4b5563'
+  const baseBorder = dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)'
   return (
-    <div style={{ borderRadius: 14, border: `1px solid ${open ? goldBorder : 'rgba(0,0,0,0.08)'}`, background: open ? `rgba(241,192,134,0.06)` : '#ffffff', transition: 'all 0.2s', overflow: 'hidden' }}>
+    <div style={{ borderRadius: 14, border: `1px solid ${open ? goldBorder : baseBorder}`, background: open ? `rgba(241,192,134,0.06)` : baseBg, transition: 'all 0.2s', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '18px 22px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const }}
       >
-        <span style={{ fontSize: 15, fontWeight: 600, color: open ? gold : '#111827', transition: 'color 0.2s' }}>{q}</span>
+        <span style={{ fontSize: 15, fontWeight: 600, color: open ? gold : baseText, transition: 'color 0.2s' }}>{q}</span>
         <span style={{ fontSize: 18, color: open ? gold : '#9ca3af', flexShrink: 0, transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s, color 0.2s' }}>+</span>
       </button>
       {open && (
-        <div style={{ padding: '0 22px 18px', fontSize: 14, color: '#4b5563', lineHeight: 1.75 }}>{a}</div>
+        <div style={{ padding: '0 22px 18px', fontSize: 14, color: answerText, lineHeight: 1.75 }}>{a}</div>
       )}
     </div>
   )
@@ -1660,9 +1664,14 @@ function InteractiveDemo() {
 }
 
 // ─── Roadmap Flip Card ────────────────────────────────────────────────────
-function RoadmapFlipCard({ item, barColor, phaseId }: { item: { label: string; desc: string }; barColor: string; phaseId: string }) {
+function RoadmapFlipCard({ item, barColor, phaseId, dark }: { item: { label: string; desc: string }; barColor: string; phaseId: string; dark?: boolean }) {
   const [flipped, setFlipped] = useState(false)
   const emoji = phaseId === 'done' ? '✅' : phaseId === 'wip' ? '⚡' : '📅'
+  const frontBg  = dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.025)'
+  const frontBdr = dark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'
+  const titleClr = dark ? '#fff'                   : '#111827'
+  const hintClr  = dark ? 'rgba(255,255,255,0.4)'  : '#6b7280'
+  const descClr  = dark ? 'rgba(255,255,255,0.7)'  : '#374151'
   return (
     <div
       onMouseEnter={() => setFlipped(true)}
@@ -1679,15 +1688,15 @@ function RoadmapFlipCard({ item, barColor, phaseId }: { item: { label: string; d
         <div style={{
           position: 'absolute', inset: 0,
           backfaceVisibility: 'hidden' as any,
-          background: 'rgba(0,0,0,0.025)',
-          border: '1px solid rgba(0,0,0,0.08)',
+          background: frontBg,
+          border: `1px solid ${frontBdr}`,
           borderTop: `2px solid ${barColor}`,
           borderRadius: 12,
           padding: '10px 14px',
           display: 'flex', flexDirection: 'column' as any, justifyContent: 'center', gap: 6,
         }}>
-          <span style={{ fontSize: 13, color: '#111827', fontWeight: 600, lineHeight: 1.3 }}>{item.label}</span>
-          <span style={{ fontSize: 10, color: '#6b7280', letterSpacing: '0.04em' }}>{emoji} Survolez pour en savoir plus</span>
+          <span style={{ fontSize: 13, color: titleClr, fontWeight: 600, lineHeight: 1.3 }}>{item.label}</span>
+          <span style={{ fontSize: 10, color: hintClr, letterSpacing: '0.04em' }}>{emoji} Survolez pour en savoir plus</span>
         </div>
         {/* Back */}
         <div style={{
@@ -1701,7 +1710,7 @@ function RoadmapFlipCard({ item, barColor, phaseId }: { item: { label: string; d
           padding: '10px 14px',
           display: 'flex', alignItems: 'center',
         }}>
-          <p style={{ fontSize: 12, color: '#374151', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+          <p style={{ fontSize: 12, color: descClr, lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
         </div>
       </div>
     </div>
@@ -4009,15 +4018,15 @@ export function LandingClient() {
       </section>
 
       {/* ── GESTION & SUIVI ───────────────────────────────────────────── */}
-      <section style={{ padding: '0 20px 80px' }}>
+      <section style={{ padding: '80px 20px 80px', background: '#07090f' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
               <SectionTag><Globe style={{ width: 11, height: 11 }} /> Gestion & Suivi</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 12px' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Suivez votre patrimoine en temps réel
               </h2>
-              <p style={{ fontSize: 15, color: '#6b7280', lineHeight: 1.7 }}>15 pages de gestion incluses dans votre compte PatrImo</p>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>15 pages de gestion incluses dans votre compte PatrImo</p>
             </div>
           </RevealSection>
 
@@ -4057,23 +4066,23 @@ export function LandingClient() {
               <div style={{ marginBottom: 40 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: group.tagColor }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#4b5563', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{group.tag}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' as const, letterSpacing: '0.1em' }}>{group.tag}</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
                   {group.items.map(item => (
                     <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
                       <div
-                        style={{ background: 'rgba(0,0,0,0.015)', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 14, padding: '18px 20px', transition: 'border-color 0.15s, background 0.15s', cursor: 'pointer', height: '100%', boxSizing: 'border-box' as const }}
-                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color + '44'; el.style.background = item.color + '08' }}
-                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(0,0,0,0.07)'; el.style.background = 'rgba(0,0,0,0.015)' }}
+                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '18px 20px', transition: 'border-color 0.15s, background 0.15s', cursor: 'pointer', height: '100%', boxSizing: 'border-box' as const }}
+                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color + '55'; el.style.background = item.color + '12' }}
+                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(255,255,255,0.08)'; el.style.background = 'rgba(255,255,255,0.04)' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                          <div style={{ width: 34, height: 34, borderRadius: 10, background: item.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: item.color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <item.icon style={{ width: 15, height: 15, color: item.color }} />
                           </div>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.2 }}>{item.label}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>{item.label}</span>
                         </div>
-                        <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
                       </div>
                     </Link>
                   ))}
@@ -4084,7 +4093,7 @@ export function LandingClient() {
 
           <RevealSection>
             <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 24px', borderRadius: 24, background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.09)', color: '#374151', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 24px', borderRadius: 24, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                 Accéder à toutes les pages <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
             </div>
@@ -4096,21 +4105,21 @@ export function LandingClient() {
       <div style={{ background: '#f9fafb' }}><CaseStudiesSection /></div>
 
       {/* ── PERSONALIZATION QUIZ ──────────────────────────────────────── */}
-      <PersonalizationQuiz />
+      <div style={{ background: '#07090f' }}><PersonalizationQuiz /></div>
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────── */}
       <div style={{ background: '#f9fafb' }}><HowItWorks /></div>
 
       {/* ── POUR QUI ? ────────────────────────────────────────────────── */}
-      <section id="pour-qui" style={{ padding: '80px 20px' }}>
+      <section id="pour-qui" style={{ padding: '80px 20px', background: '#07090f' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 52 }}>
               <SectionTag><Users style={{ width: 11, height: 11 }} /> Pour qui</SectionTag>
-              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 12px' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 PatrImo s&apos;adapte à votre profil
               </h2>
-              <p style={{ fontSize: 15, color: '#6b7280', maxWidth: 520, margin: '0 auto' }}>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', maxWidth: 520, margin: '0 auto' }}>
                 Que vous débutiez ou optimisiez, trouvez les outils faits pour vous.
               </p>
             </div>
@@ -4141,11 +4150,11 @@ export function LandingClient() {
                   color: GOLD,
                 },
               ].map(({ emoji, label, desc, tools, color }) => (
-                <div key={label} style={{ borderRadius: 18, background: 'rgba(0,0,0,0.02)', border: `1px solid ${color}22`, padding: '28px 24px', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle at top right, ${color}15, transparent 70%)`, borderRadius: 18 }} />
+                <div key={label} style={{ borderRadius: 18, background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}30`, padding: '28px 24px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle at top right, ${color}20, transparent 70%)`, borderRadius: 18 }} />
                   <div style={{ fontSize: 32, marginBottom: 14 }}>{emoji}</div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 10 }}>{label}</h3>
-                  <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>{label}</h3>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: 18 }}>{desc}</p>
                   <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
                     {tools.map(t => (
                       <span key={t} style={{ fontSize: 11, fontWeight: 600, color, background: `${color}15`, border: `1px solid ${color}30`, borderRadius: 6, padding: '3px 9px' }}>{t}</span>
@@ -4196,19 +4205,19 @@ export function LandingClient() {
       </section>
 
       {/* ── SECURITY ──────────────────────────────────────────────────── */}
-      <section id="security" style={{ padding: '80px 20px 100px' }}>
+      <section id="security" style={{ padding: '80px 20px 100px', background: '#07090f' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ background: 'linear-gradient(135deg, rgba(241,192,134,0.04) 0%, rgba(52,211,153,0.03) 100%)', border: `1px solid ${GOLD_BORDER}`, borderRadius: 28, padding: 'clamp(32px,5vw,64px)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${GOLD}08, transparent 55%)`, pointerEvents: 'none' }} />
+          <div style={{ background: 'linear-gradient(135deg, rgba(241,192,134,0.06) 0%, rgba(52,211,153,0.04) 100%)', border: `1px solid ${GOLD_BORDER}`, borderRadius: 28, padding: 'clamp(32px,5vw,64px)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 50%, ${GOLD}0a, transparent 55%)`, pointerEvents: 'none' }} />
 
             <RevealSection>
               <div style={{ marginBottom: 44, position: 'relative' }}>
                 <SectionTag><Shield style={{ width: 11, height: 11 }} /> Protection</SectionTag>
-                <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 8px' }}>
+                <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 8px' }}>
                   Sécurité &{' '}
                   <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>confidentialité</span>
                 </h2>
-                <p style={{ fontSize: 15, color: '#4b5563', lineHeight: 1.7, marginTop: 12, maxWidth: 500 }}>
+                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginTop: 12, maxWidth: 500 }}>
                   Vos données personnelles et financières sont traitées avec le plus haut niveau de sécurité.
                 </p>
               </div>
@@ -4217,14 +4226,14 @@ export function LandingClient() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, position: 'relative' }}>
               {SECURITY.map((s, i) => (
                 <RevealSection key={i} delay={i * 100}>
-                  <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 14, padding: '20px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 14, padding: '20px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                       <div style={{ width: 32, height: 32, borderRadius: 9, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <s.icon style={{ width: 14, height: 14, color: GOLD }} />
                       </div>
-                      <h3 style={{ fontSize: 13, fontWeight: 600, color: '#1f2937' }}>{s.title}</h3>
+                      <h3 style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{s.title}</h3>
                     </div>
-                    <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>{s.desc}</p>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{s.desc}</p>
                   </div>
                 </RevealSection>
               ))}
@@ -4237,19 +4246,19 @@ export function LandingClient() {
       <div style={{ background: '#f9fafb' }}><TestimonialsMarquee /></div>
 
       {/* ── ROADMAP ───────────────────────────────────────────────────── */}
-      <section id="roadmap" style={{ padding: '80px 20px 100px', background: 'linear-gradient(to bottom, transparent, rgba(251,191,36,0.03), transparent)' }}>
+      <section id="roadmap" style={{ padding: '80px 20px 100px', background: '#07090f' }}>
         <div style={{ maxWidth: 1152, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <SectionTag><Clock style={{ width: 11, height: 11 }} /> Évolution continue</SectionTag>
-              <h2 style={{ fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 12px' }}>
+              <h2 style={{ fontSize: 'clamp(2rem,4.5vw,3rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.03em', color: '#fff', margin: '0 0 12px' }}>
                 Ce qui arrive sur{' '}
                 <span style={{
                   background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`,
                   WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
                 }}>PatrImo</span>
               </h2>
-              <p style={{ fontSize: 14, color: '#6b7280', maxWidth: 500, margin: '0 auto' }}>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', maxWidth: 500, margin: '0 auto' }}>
                 PatrImo évolue en continu. Voici les fonctionnalités déjà disponibles et ce qui arrive.
               </p>
             </div>
@@ -4257,8 +4266,8 @@ export function LandingClient() {
 
           {/* Phase groups with flip cards */}
           {ROADMAP_PHASES.map((phase, pi) => {
-            const barColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(0,0,0,0.2)'
-            const badgeBg = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? GOLD_DARK : 'rgba(0,0,0,0.05)'
+            const barColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : 'rgba(255,255,255,0.15)'
+            const badgeBg = phase.id === 'done' ? 'rgba(52,211,153,0.15)' : phase.id === 'wip' ? GOLD_DARK : 'rgba(255,255,255,0.05)'
             const badgeColor = phase.id === 'done' ? '#34d399' : phase.id === 'wip' ? GOLD : '#9ca3af'
             const displayItems = phase.id === 'planned' ? phase.items.slice(0, 9) : phase.items
             return (
@@ -4267,7 +4276,7 @@ export function LandingClient() {
                   {/* Phase header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                     <div style={{ height: 3, width: 32, background: barColor, borderRadius: 2, flexShrink: 0 }} />
-                    <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{phase.period}</span>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{phase.period}</span>
                     <div style={{ fontSize: 10, fontWeight: 700, color: badgeColor, background: badgeBg, border: `1px solid ${barColor}40`, padding: '3px 10px', borderRadius: 100, letterSpacing: '0.06em', textTransform: 'uppercase' as any }}>
                       {phase.label}
                     </div>
@@ -4276,11 +4285,11 @@ export function LandingClient() {
                   {/* Flip cards grid */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
                     {displayItems.map((item, i) => (
-                      <RoadmapFlipCard key={i} item={item} barColor={barColor} phaseId={phase.id} />
+                      <RoadmapFlipCard key={i} item={item} barColor={barColor} phaseId={phase.id} dark />
                     ))}
                     {phase.id === 'planned' && phase.items.length > 9 && (
                       <div style={{
-                        height: 96, borderRadius: 12, border: '1px dashed rgba(0,0,0,0.15)',
+                        height: 96, borderRadius: 12, border: '1px dashed rgba(255,255,255,0.12)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 12, color: '#9ca3af',
                       }}>
@@ -4299,19 +4308,19 @@ export function LandingClient() {
       <div style={{ background: '#f9fafb' }}><CompetitorTable /></div>
 
       {/* ── FAQ ────────────────────────────────────────────────────────── */}
-      <section id="faq" style={{ padding: '80px 20px' }}>
+      <section id="faq" style={{ padding: '80px 20px', background: '#07090f' }}>
         <div style={{ maxWidth: 680, margin: '0 auto' }}>
           <RevealSection>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 100, background: GOLD_DARK, border: `1px solid ${GOLD_BORDER}`, color: GOLD, fontSize: 11, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 16 }}>
                 Questions fréquentes
               </div>
-              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#0f172a', lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: '#fff', lineHeight: 1.2 }}>
                 Ce que vous vous demandez
               </h2>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 2 }}>
-              {[
+              {([
                 {
                   q: 'Est-ce vraiment gratuit, pour toujours ?',
                   a: 'Oui, PatrImo est 100 % gratuit. Aucune fonctionnalité premium cachée, aucune limitation dans le temps, aucune carte bancaire requise. Jamais.',
@@ -4344,8 +4353,8 @@ export function LandingClient() {
                   q: 'Comment fonctionne le compte démo ?',
                   a: 'Le compte démo donne un accès immédiat à toutes les fonctionnalités de PatrImo avec des données pré-remplies. Il suffit de cliquer sur "Accéder au compte démo" sur la page d\'accueil — aucune inscription requise. Vos propres simulations ne sont pas affectées.',
                 },
-              ].map(({ q, a }, i) => (
-                <FaqItem key={i} q={q} a={a} gold={GOLD} goldBorder={GOLD_BORDER} />
+              ] as {q:string;a:string}[]).map(({ q, a }, i) => (
+                <FaqItem key={i} q={q} a={a} gold={GOLD} goldBorder={GOLD_BORDER} dark />
               ))}
             </div>
           </RevealSection>

@@ -3353,12 +3353,31 @@ export function LandingClient() {
             opacity: heroVisible ? 1 : 0,
             transform: heroVisible ? 'none' : 'translateY(32px)',
             transition: 'all 1.1s ease 0.25s',
+            position: 'relative',
           }}>
             {/* Subtle glow behind screenshot */}
             <div style={{ position: 'absolute', top: '30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: 200, background: 'radial-gradient(ellipse, rgba(124,58,237,0.18) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
+            {/* Decorative webp — behind the browser frame, slightly oversized */}
+            <img
+              src="/hero-decor.webp"
+              aria-hidden="true"
+              alt=""
+              style={{
+                position: 'absolute',
+                top: '-6%', left: '-4%',
+                width: '108%', height: '112%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                borderRadius: 20,
+                zIndex: 0,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            />
+
             {/* Browser frame */}
-            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.07), 0 40px 100px rgba(124,58,237,0.18), 0 16px 40px rgba(0,0,0,0.08)' }}>
+            <div style={{ position: 'relative', zIndex: 1, borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 0 1px rgba(0,0,0,0.07), 0 40px 100px rgba(124,58,237,0.18), 0 16px 40px rgba(0,0,0,0.08)' }}>
               {/* Chrome bar */}
               <div style={{ background: '#f8f9fc', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #e5e7eb' }}>
                 <div style={{ display: 'flex', gap: 5 }}>

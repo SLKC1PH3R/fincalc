@@ -3445,44 +3445,100 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Aperçu en temps réel</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Manipulez les curseurs et voyez instantanément l'impact — FIRE, intérêts composés, crédit immobilier — sans inscription.</p>
                 </div>
-                {/* Illustration — rows slide in from sides on hover */}
-                <div style={{ marginTop: 28, position: 'relative', flex: 1, overflow: 'hidden' }}>
-                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', padding: '18px 20px 20px', width: '100%', boxShadow: '0 -4px 20px rgba(124,58,237,0.08)', overflow: 'hidden' }}>
-                    <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 14px' }}>Intérêts composés</p>
-                    {/* Row 1 — slides in from left */}
-                    <div className="bento-slide-left bento-slide-left-start" style={{ marginBottom: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Capital initial</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed' }}>10 000 €</span>
-                      </div>
-                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
-                        <div style={{ width: '20%', height: '100%', background: '#7c3aed', borderRadius: 2 }} />
-                      </div>
+
+                {/* Illustration */}
+                <div style={{ marginTop: 24, position: 'relative', flex: 1, overflow: 'hidden' }}>
+                  <div style={{ background: '#ffffff', borderRadius: '16px 16px 0 0', border: '1px solid #e5e7eb', borderBottom: 'none', boxShadow: '0 -4px 24px rgba(124,58,237,0.10)', overflow: 'hidden' }}>
+
+                    {/* Tab bar */}
+                    <div style={{ display: 'flex', gap: 2, padding: '12px 14px 0', borderBottom: '1px solid #f3f4f6' }}>
+                      {[
+                        { label: 'Composés', active: true },
+                        { label: 'FI/RE',    active: false },
+                        { label: 'Crédit',   active: false },
+                      ].map(t => (
+                        <div key={t.label} style={{
+                          padding: '5px 11px 7px',
+                          borderRadius: '7px 7px 0 0',
+                          background: t.active ? '#7c3aed' : 'transparent',
+                          color: t.active ? '#fff' : '#9ca3af',
+                          fontSize: 10, fontWeight: 700,
+                          letterSpacing: '0.02em',
+                        }}>{t.label}</div>
+                      ))}
                     </div>
-                    {/* Row 2 — slides in from right */}
-                    <div className="bento-slide-left bento-slide-left-start2" style={{ marginBottom: 12 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Versement / mois</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981' }}>300 €</span>
+
+                    <div style={{ padding: '16px 18px' }}>
+                      {/* Row 1 — slides in from far left */}
+                      <div className="bento-slide-left bento-slide-left-start" style={{ marginBottom: 11 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>Capital initial</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', borderRadius: 6, padding: '2px 8px' }}>10 000 €</span>
+                        </div>
+                        <div style={{ height: 5, background: '#f3f4f6', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ width: '20%', height: '100%', background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', borderRadius: 3 }} />
+                        </div>
                       </div>
-                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
-                        <div style={{ width: '45%', height: '100%', background: '#10b981', borderRadius: 2 }} />
+
+                      {/* Row 2 — slides in from right */}
+                      <div className="bento-slide-left bento-slide-left-start2" style={{ marginBottom: 11 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>Versement / mois</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', background: '#f0fdf4', borderRadius: 6, padding: '2px 8px' }}>300 €</span>
+                        </div>
+                        <div style={{ height: 5, background: '#f3f4f6', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ width: '45%', height: '100%', background: 'linear-gradient(90deg, #10b981, #34d399)', borderRadius: 3 }} />
+                        </div>
                       </div>
-                    </div>
-                    {/* Row 3 — slides in from left (partial) */}
-                    <div className="bento-slide-left bento-slide-left-start3" style={{ marginBottom: 14 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                        <span style={{ fontSize: 10.5, color: '#6b7280' }}>Durée</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>20 ans</span>
+
+                      {/* Row 3 — slides in from left (offset) */}
+                      <div className="bento-slide-left bento-slide-left-start3" style={{ marginBottom: 14 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>Durée</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', background: '#eff6ff', borderRadius: 6, padding: '2px 8px' }}>20 ans</span>
+                        </div>
+                        <div style={{ height: 5, background: '#f3f4f6', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ width: '65%', height: '100%', background: 'linear-gradient(90deg, #3b82f6, #60a5fa)', borderRadius: 3 }} />
+                        </div>
                       </div>
-                      <div style={{ height: 4, background: '#f3f4f6', borderRadius: 2 }}>
-                        <div style={{ width: '65%', height: '100%', background: '#3b82f6', borderRadius: 2 }} />
+
+                      {/* Mini area chart + result — slides up on hover */}
+                      <div className="bento-slide-up">
+                        {/* Mini compound growth chart */}
+                        <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #ede9fe', background: '#faf8ff', marginBottom: 10 }}>
+                          <svg width="100%" height={56} viewBox="0 0 280 56" preserveAspectRatio="none" style={{ display: 'block' }}>
+                            <defs>
+                              <linearGradient id="c1-grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.22" />
+                                <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.02" />
+                              </linearGradient>
+                            </defs>
+                            <polygon points="0,52 35,49 70,44 105,38 140,30 175,21 210,13 245,7 280,4 280,54 0,54" fill="url(#c1-grad)" />
+                            <polyline points="0,52 35,49 70,44 105,38 140,30 175,21 210,13 245,7 280,4" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                            <circle cx="280" cy="4" r="3.5" fill="#7c3aed" />
+                            <circle cx="280" cy="4" r="7" fill="#7c3aed" fillOpacity="0.18" />
+                            {/* Invested flat line */}
+                            <polyline points="0,52 280,38" fill="none" stroke="#c4b5fd" strokeWidth="1.5" strokeDasharray="5,3" />
+                          </svg>
+                        </div>
+                        {/* Result strip */}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <div style={{ flex: 1, background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', borderRadius: 9, padding: '9px 13px' }}>
+                            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', margin: '0 0 2px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Capital final</p>
+                            <p style={{ fontSize: 20, fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.04em' }}>195 k€</p>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '6px 10px', border: '1px solid #bbf7d0' }}>
+                              <p style={{ fontSize: 8, color: '#6b7280', margin: '0 0 1px' }}>Intérêts</p>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: '#10b981', margin: 0 }}>+113 k€</p>
+                            </div>
+                            <div style={{ background: '#eff6ff', borderRadius: 8, padding: '6px 10px', border: '1px solid #bfdbfe' }}>
+                              <p style={{ fontSize: 8, color: '#6b7280', margin: '0 0 1px' }}>Rendement</p>
+                              <p style={{ fontSize: 12, fontWeight: 700, color: '#3b82f6', margin: 0 }}>7.00%</p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    {/* Result — slides up */}
-                    <div className="bento-slide-up" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>Capital final</span>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.04em' }}>195 k€</span>
                     </div>
                   </div>
                 </div>
@@ -3555,25 +3611,65 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Suivi patrimonial complet</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout votre patrimoine centralisé avec des données de marché en temps réel.</p>
                 </div>
-                {/* Illustration — left screenshot slides out, right screenshot slides in */}
+                {/* Illustration — left panel slides out, right performance panel slides in */}
                 <div style={{ marginTop: 28, flex: 1, position: 'relative', overflow: 'hidden' }}>
                   {/* 200%-wide container slides left on hover */}
                   <div className="bento-panel-wide" style={{ top: 0, left: 0 }}>
-                    {/* Left half — dashboard overview screenshot */}
-                    <div style={{ width: '50%', flexShrink: 0, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: '#181c24' }}>
-                      <img
-                        src="/patrimoine-overview.png"
-                        alt="Vue d'ensemble patrimoine"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', display: 'block', minHeight: 200 }}
-                      />
+                    {/* Left half — allocation panel */}
+                    <div style={{ width: '50%', flexShrink: 0, background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+                        <svg width={68} height={68} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
+                          {[
+                            { pct: 0.42, color: '#7c3aed', offset: 0 },
+                            { pct: 0.28, color: '#3b82f6', offset: 0.42 },
+                            { pct: 0.18, color: '#10b981', offset: 0.70 },
+                            { pct: 0.12, color: '#f59e0b', offset: 0.88 },
+                          ].map((s, i) => {
+                            const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
+                            const dash = s.pct * perim
+                            const rot = s.offset * 360 - 90
+                            return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={10} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
+                          })}
+                          <circle cx={36} cy={36} r={19} fill="#f9fafb" />
+                          <text x={36} y={39} textAnchor="middle" fontSize="9" fontWeight="800" fill="#374151">100%</text>
+                        </svg>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                          {[
+                            { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
+                            { label: 'Actions', pct: '28%', color: '#3b82f6' },
+                            { label: 'Livrets', pct: '18%', color: '#10b981' },
+                            { label: 'Crypto', pct: '12%', color: '#f59e0b' },
+                          ].map(s => (
+                            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <div style={{ width: 7, height: 7, borderRadius: 2, background: s.color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
+                        <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600 }}>Patrimoine net total</span>
+                        <span style={{ fontSize: 16, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
+                      </div>
                     </div>
-                    {/* Right half — actifs view screenshot (hidden until hover) */}
-                    <div style={{ width: '50%', flexShrink: 0, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: '#181c24' }}>
-                      <img
-                        src="/patrimoine-actifs.png"
-                        alt="Vue actifs patrimoine"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', display: 'block', minHeight: 200 }}
-                      />
+                    {/* Right half — performance metrics (hidden until hover) */}
+                    <div style={{ width: '50%', flexShrink: 0, background: '#f0f4ff', borderRadius: '16px 16px 0 0', border: '1px solid #dbeafe', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Performance</p>
+                      {[
+                        { label: 'YTD', val: '+8.4%', color: '#10b981' },
+                        { label: '1 an', val: '+21.2%', color: '#10b981' },
+                        { label: 'Depuis le début', val: '+62.7%', color: '#7c3aed' },
+                      ].map(m => (
+                        <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>{m.label}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: m.color, fontFamily: 'Geist Mono, monospace' }}>{m.val}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
+                        <span style={{ fontSize: 11, color: '#6b7280' }}>Diversification</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>4 classes d&apos;actifs</span>
+                      </div>
                     </div>
                   </div>
                   {/* Badge top-left — slides out with panel */}
@@ -3585,7 +3681,7 @@ export function LandingClient() {
                     {/* placeholder for right half alignment */}
                     <div style={{ width: '50%' }} />
                   </div>
-                  {/* Score panel — fades in from right on hover */}
+                  {/* Performance panel — fades in from right on hover */}
                   <div className="bento-panel-peek" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '10px 14px', border: '1px solid #dbeafe', minWidth: 160, boxShadow: '0 4px 16px rgba(59,130,246,0.1)' }}>
                     <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Meilleur actif</p>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>Immobilier</p>

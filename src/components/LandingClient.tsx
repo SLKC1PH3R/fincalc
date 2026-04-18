@@ -3343,72 +3343,130 @@ function CardPatrimoine() {
 }
 
 function CardSecurite() {
-  const [hovered, setHovered] = useState(false)
-  const [step, setStep] = useState(0)
+  const [hov, setHov] = useState(false)
+  const [unlocked, setUnlocked] = useState(false)
   useEffect(() => {
-    const id = setInterval(() => setStep(s => (s + 1) % 4), 1800)
+    const id = setInterval(() => setUnlocked(u => !u), 3000)
     return () => clearInterval(id)
   }, [])
-  const features = [
-    { icon: '🔒', label: 'Chiffrement AES-256',    sub: 'Données chiffrées au repos et en transit' },
-    { icon: '🏦', label: 'Zéro données bancaires', sub: 'Aucun RIB, aucun accès aux comptes' },
-    { icon: '🇪🇺', label: 'Hébergement Europe',    sub: 'Serveurs en France, conformité RGPD' },
-    { icon: '👁',  label: 'Jamais revendues',       sub: 'Vos données ne nous servent qu\'à vous' },
+
+  const GREEN = '#4ade80'
+
+  const arcFeats = [
+    { angle: -110, icon: '🔒', label: 'AES-256', color: GOLD },
+    { angle: -50,  icon: '🏦', label: 'No bank', color: GREEN },
+    { angle: 10,   icon: '🇪🇺', label: 'Europe',  color: '#818cf8' },
+    { angle: 70,   icon: '👁',  label: 'Private', color: '#38bdf8' },
   ]
+
+  const badges = [
+    { val: '0',    label: 'Données bancaires',   c: GREEN },
+    { val: 'AES',  label: 'Chiffrement 256-bit', c: GOLD },
+    { val: 'RGPD', label: 'Conformité Europe',   c: '#818cf8' },
+    { val: '100%', label: 'Auto-hébergé',        c: 'rgba(255,255,255,0.5)' },
+  ]
+
   return (
     <BorderCard>
       <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}
-        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+
         <div style={{ height: 240, position: 'relative', overflow: 'hidden', borderRadius: 14, marginBottom: 16, background: BG3 }}>
           <GridBg uid="sec" />
           <EdgeFades />
-          <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-            {/* Shield */}
-            <div style={{ position: 'relative' }}>
-              <div style={{ width: 64, height: 64, borderRadius: 18, background: `linear-gradient(135deg, ${GOLD}22, ${GOLD}08)`, border: `1.5px solid ${GOLD}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, boxShadow: hovered ? `0 0 32px ${GOLD}30` : 'none', transition: 'box-shadow 0.4s' }}>🛡️</div>
-              {[1, 2, 3].map(i => (
-                <div key={i} style={{ position: 'absolute', inset: -i * 13, borderRadius: 18 + i * 4, border: `1px solid ${GOLD}${hovered ? '22' : '0a'}`, transition: 'border-color 0.4s' }} />
-              ))}
-            </div>
-            {/* Feature list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: '100%', padding: '0 12px' }}>
-              {features.map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 11px', borderRadius: 10,
-                  background: i === step ? `rgba(241,192,134,0.08)` : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${i === step ? GOLD + '33' : BENTO_BORDER}`,
-                  transition: 'all 0.4s ease', transform: i === step ? 'scale(1.02)' : 'scale(1)' }}>
-                  <span style={{ fontSize: 13, flexShrink: 0 }}>{f.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: i === step ? GOLD : 'rgba(255,255,255,0.6)' }}>{f.label}</div>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>{f.sub}</div>
-                  </div>
-                  {i === step && <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: GOLD, flexShrink: 0 }} />}
+
+          {/* Central vault */}
+          <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Outer ring */}
+            <svg width={220} height={220} style={{ position: 'absolute' }}>
+              <circle cx={110} cy={110} r={90} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
+              <circle cx={110} cy={110} r={90} fill="none"
+                stroke={unlocked ? GREEN : GOLD} strokeWidth={1.5}
+                strokeDasharray={unlocked ? '20 8' : '5 12'}
+                strokeLinecap="round"
+                style={{
+                  transition: 'stroke 1s ease, stroke-dasharray 1s ease',
+                  transformOrigin: '110px 110px',
+                  animation: `secu-spin ${unlocked ? '8s' : '20s'} linear infinite`,
+                }} />
+            </svg>
+
+            {/* Feature nodes on arc */}
+            {arcFeats.map((f, i) => {
+              const rad = (f.angle * Math.PI) / 180
+              const r = 82
+              const x = 110 + r * Math.cos(rad) - 18
+              const y = 110 + r * Math.sin(rad) - 18
+              return (
+                <div key={i} style={{
+                  position: 'absolute', left: x, top: y, width: 36, height: 36,
+                  borderRadius: 10, background: `${f.color}18`, border: `1px solid ${f.color}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+                  zIndex: 15,
+                  transform: hov ? 'scale(1.15)' : 'scale(1)',
+                  transition: `transform ${0.3 + i * 0.08}s ease`,
+                  boxShadow: unlocked ? `0 0 12px ${f.color}44` : 'none',
+                }}>
+                  {f.icon}
                 </div>
-              ))}
+              )
+            })}
+
+            {/* Center */}
+            <div style={{
+              width: 64, height: 64, borderRadius: 18,
+              background: unlocked ? `linear-gradient(135deg,${GREEN}22,${GREEN}08)` : `linear-gradient(135deg,${GOLD}22,${GOLD}08)`,
+              border: `1.5px solid ${unlocked ? GREEN : GOLD}55`,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: 2, zIndex: 16,
+              boxShadow: unlocked ? `0 0 24px ${GREEN}30` : `0 0 24px ${GOLD}20`,
+              transition: 'all 0.8s ease',
+            }}>
+              <span style={{ fontSize: 22 }}>{unlocked ? '🔓' : '🔒'}</span>
+              <span style={{ fontSize: 8, fontWeight: 700, color: unlocked ? GREEN : GOLD, letterSpacing: '0.5px' }}>
+                {unlocked ? 'VÉRIFIÉ' : 'ACTIF'}
+              </span>
+            </div>
+
+            {/* Status pill */}
+            <div style={{
+              position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'rgba(15,17,23,0.8)', backdropFilter: 'blur(8px)',
+              border: `1px solid ${unlocked ? GREEN + '44' : BENTO_BORDER}`,
+              borderRadius: 99, padding: '5px 14px', zIndex: 20,
+              transition: 'border-color 0.8s',
+            }}>
+              <div style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: unlocked ? GREEN : GOLD,
+                boxShadow: `0 0 6px ${unlocked ? GREEN : GOLD}88`,
+                transition: 'background 0.8s',
+              }} />
+              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>
+                {unlocked ? 'Identité vérifiée — accès autorisé' : 'Chiffrement en cours…'}
+              </span>
             </div>
           </div>
         </div>
-        {/* Trust badges */}
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-          {[
-            { val: '0',    label: 'Données bancaires',   c: '#4ade80' },
-            { val: 'AES',  label: 'Chiffrement 256-bit', c: GOLD },
-            { val: 'RGPD', label: 'Conformité Europe',   c: '#818cf8' },
-            { val: '100%', label: 'Auto-hébergé',        c: 'rgba(255,255,255,0.5)' },
-          ].map((k, i) => (
+          {badges.map((k, i) => (
             <div key={i} style={{ background: BG3, borderRadius: 10, padding: '9px 12px', border: `1px solid ${BENTO_BORDER}` }}>
               <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginBottom: 3, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
             </div>
           ))}
         </div>
-        <div style={{ padding: '0 4px', marginTop: 'auto' }}>
+
+        <div style={{ padding: '0 4px' }}>
           <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Sécurité</h3>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
-            Portefeuille sécurisé & confidentiel — aucune connexion bancaire, chiffrement AES-256, hébergé en Europe.
+            Portefeuille sécurisé & confidentiel — chiffrement AES-256, hébergé en Europe, jamais revendues.
           </p>
         </div>
       </article>
+      <style>{`@keyframes secu-spin { to { transform: rotate(360deg); } }`}</style>
     </BorderCard>
   )
 }

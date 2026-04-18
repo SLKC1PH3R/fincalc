@@ -3271,79 +3271,94 @@ export function LandingClient() {
         }}>
 
           {/* ── Text block — centered ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 740, width: '100%', marginBottom: 52 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 780, width: '100%', marginBottom: 52 }}>
 
             {/* Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center',
-              borderRadius: 100, marginBottom: 24, padding: 1,
-              background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.15))',
+              borderRadius: 100, marginBottom: 28, padding: 1,
+              background: 'linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(167,139,250,0.12) 100%)',
             }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 borderRadius: 100,
-                background: 'rgba(255,255,255,0.18)',
-                backdropFilter: 'blur(3.65px)', WebkitBackdropFilter: 'blur(3.65px)',
-                padding: '4px 14px 4px 4px',
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                padding: '5px 16px 5px 5px',
               }}>
-                <span style={{ borderRadius: 100, background: '#C6BDFA', padding: '2px 10px', fontSize: 12, fontWeight: 500, color: '#181B25' }}>Nouveau</span>
-                <span style={{ fontSize: 13, fontWeight: 300, color: '#4b5563', letterSpacing: '0.01em' }}>18 simulateurs · Fiscalité 2026</span>
+                <span style={{ borderRadius: 100, background: 'linear-gradient(135deg, #7c3aed, #a78bfa)', padding: '2px 12px', fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Gratuit</span>
+                <span style={{ fontSize: 12, fontWeight: 400, color: '#4b5563', letterSpacing: '0.01em' }}>18 simulateurs · Données 2026</span>
               </div>
             </div>
 
             {/* H1 */}
-            <h1 style={{ fontSize: 'clamp(2.4rem,5vw,4.4rem)', fontWeight: 300, lineHeight: 1.08, letterSpacing: '-0.075em', color: '#181B25', marginBottom: 20, textAlign: 'center' }}>
-              La plateforme patrimoniale<br />
-              <span style={{ fontWeight: 300, color: '#7c3aed' }}>tout-en-un</span>
+            <h1 style={{ fontSize: 'clamp(2.6rem,5.5vw,4.8rem)', fontWeight: 300, lineHeight: 1.06, letterSpacing: '-0.07em', color: '#181B25', marginBottom: 8, textAlign: 'center' }}>
+              Prenez le contrôle total
+            </h1>
+            <h1 style={{ fontSize: 'clamp(2.6rem,5.5vw,4.8rem)', fontWeight: 300, lineHeight: 1.06, letterSpacing: '-0.07em', marginBottom: 28, textAlign: 'center',
+              background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 60%, #c4b5fd 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>
+              de votre vie financière
             </h1>
 
             {/* Subtitle */}
-            <p style={{ fontSize: 16, fontWeight: 300, color: '#6b7280', lineHeight: 1.7, maxWidth: 540, marginBottom: 32, letterSpacing: '0.01em', textAlign: 'center' }}>
-              18 simulateurs financiers 100&nbsp;% gratuits — impôts, FIRE, patrimoine, crédit — avec des données en temps réel. Sans jamais toucher à vos comptes.
+            <p style={{ fontSize: 16, fontWeight: 300, color: '#6b7280', lineHeight: 1.75, maxWidth: 560, marginBottom: 36, letterSpacing: '0.005em', textAlign: 'center' }}>
+              Des simulateurs puissants, des données actualisées et des insights visuels pour décider plus intelligemment.
             </p>
 
+            {/* Divider line */}
+            <div style={{ width: 40, height: 1, background: 'linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent)', marginBottom: 32 }} />
+
             {/* CTAs */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
               <Link href="/login"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#ffffff', textDecoration: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 1px 2px 0 rgba(21,14,27,0.24), 0 0 0 1px #000', transition: 'background 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.04) 100%), #2d2f3a' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%), #181B25' }}>
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#ffffff', textDecoration: 'none', background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', boxShadow: '0 4px 20px rgba(124,58,237,0.35), 0 1px 3px rgba(0,0,0,0.12)', transition: 'all 0.15s', letterSpacing: '0.01em' }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(124,58,237,0.45), 0 1px 3px rgba(0,0,0,0.12)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(124,58,237,0.35), 0 1px 3px rgba(0,0,0,0.12)'; e.currentTarget.style.transform = 'none' }}>
                 Commencer gratuitement <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
               <Link href="/login"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '12px 26px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#181B25', textDecoration: 'none', background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)', transition: 'background 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff' }}>
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '13px 26px', borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#181B25', textDecoration: 'none', background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.10)', backdropFilter: 'blur(6px)', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f5f3ff'; e.currentTarget.style.borderColor = 'rgba(124,58,237,0.2)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.85)'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.10)' }}>
                 Se connecter
               </Link>
               <button
                 onClick={loginAsDemo}
                 disabled={demoLoading}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '12px 20px', borderRadius: 10, fontSize: 14, fontWeight: 500, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ede9fe', cursor: demoLoading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#ede9fe' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#f5f3ff' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px', borderRadius: 12, fontSize: 14, fontWeight: 500, color: '#7c3aed', background: 'rgba(245,243,255,0.9)', border: '1px solid rgba(124,58,237,0.18)', cursor: demoLoading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'all 0.15s', backdropFilter: 'blur(6px)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#ede9fe'; e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,243,255,0.9)'; e.currentTarget.style.borderColor = 'rgba(124,58,237,0.18)' }}
               >
                 ⚡ {demoLoading ? 'Connexion…' : 'Compte démo'}
               </button>
             </div>
 
             {/* Social proof */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {['#34d399','#f472b6','#818cf8','#fbbf24'].map((c, i) => (
                   <div key={i} style={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}55)`,
-                    border: '2px solid #ede9fe',
-                    marginLeft: i === 0 ? 0 : -7, zIndex: 4 - i, position: 'relative',
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: `radial-gradient(circle at 35% 35%, ${c}cc, ${c}66)`,
+                    border: '2px solid rgba(255,255,255,0.85)',
+                    marginLeft: i === 0 ? 0 : -8, zIndex: 4 - i, position: 'relative',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 9, fontWeight: 700, color: '#fff',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                   }}>{['J','M','A','T'][i]}</div>
                 ))}
               </div>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>
-                <span style={{ color: '#374151', fontWeight: 600 }}>3 847</span> utilisateurs · 0 pub · 100 % gratuit
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#6b7280' }}>
+                  <span style={{ color: '#374151', fontWeight: 600 }}>3 847</span> utilisateurs
+                </span>
+                <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#d1d5db', display: 'inline-block' }} />
+                <span style={{ fontSize: 12, color: '#6b7280' }}>0 pub</span>
+                <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#d1d5db', display: 'inline-block' }} />
+                <span style={{ fontSize: 12, color: '#6b7280' }}>100 % gratuit</span>
+              </div>
             </div>
           </div>
 

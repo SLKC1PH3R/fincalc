@@ -1730,98 +1730,113 @@ function CompetitorTable() {
   return (
     <section id="comparatif" style={{ padding: '80px 20px 60px' }}>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Comparatif</SectionTag>
-            <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#0f172a', margin: '0 0 12px' }}>
-              PatrImo vs les{' '}
-              <span style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #fbbf24 50%, ${GOLD} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>alternatives</span>
-            </h2>
-            <p style={{ fontSize: 15, color: '#6b7280', marginTop: 12, lineHeight: 1.7 }}>
-              Des simulateurs conçus pour les investisseurs français, pas pour les banques.
-            </p>
-          </div>
-        </RevealSection>
+        {/* Violet gradient wrapper */}
+        <div style={{
+          background: 'linear-gradient(rgba(221,215,254,0.4) 0%, rgb(221,215,254) 100%)',
+          borderRadius: 28,
+          padding: 'clamp(40px, 5vw, 56px) 24px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Glow orbs */}
+          <div style={{ position: 'absolute', bottom: -60, left: -60, width: 300, height: 300, background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -60, right: -60, width: 300, height: 300, background: 'radial-gradient(circle, rgba(167,139,250,0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          {/* Top shimmer line */}
+          <div style={{ position: 'absolute', top: 0, left: '25%', right: '25%', height: 1, background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent)', pointerEvents: 'none' }} />
 
-        <RevealSection delay={100}>
-          <div style={{ border: `1px solid ${GOLD_BORDER}`, borderRadius: 20, overflow: 'hidden' }}>
-            {/* Header row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 130px', background: '#f8fafc', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-              <div style={{ padding: '14px 20px' }} />
-              {cols.map(col => (
-                <div key={col.name} style={{
-                  padding: col.isPatrimo ? '8px 8px 14px' : '14px 8px',
-                  textAlign: 'center',
-                  background: col.isPatrimo ? GOLD_CELL : 'transparent',
-                  borderLeft: '1px solid rgba(0,0,0,0.06)',
-                  borderTop: col.isPatrimo ? `2px solid ${GOLD}60` : '2px solid transparent',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {col.isPatrimo && (
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 3,
-                      fontSize: 9, fontWeight: 700, color: GOLD,
-                      background: `${GOLD}18`, border: `1px solid ${GOLD}40`,
-                      borderRadius: 100, padding: '2px 7px', marginBottom: 5,
-                      letterSpacing: '0.04em', textTransform: 'uppercase',
-                    }}>
-                      ★ Recommandé
-                    </span>
-                  )}
-                  <span style={{ fontSize: 12, fontWeight: 700, color: col.color }}>{col.name}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Feature rows */}
-            {COMPETITOR_FEATURES.map((f, i) => (
-              <RevealSection key={f.label} delay={i * 30}>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 120px 120px 130px',
-                  borderBottom: i < COMPETITOR_FEATURES.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                  background: i % 2 === 0 ? 'rgba(0,0,0,0.015)' : 'transparent',
-                }}>
-                  <div style={{ padding: '12px 20px', fontSize: 13, color: '#374151' }}>{f.label}</div>
-                  {cols.map(col => {
-                    const val = f[col.key]
-                    const isFalseNonPatrimo = val === false && !col.isPatrimo
-                    return (
-                      <div key={col.key} style={{
-                        padding: '12px 8px',
-                        textAlign: 'center',
-                        background: col.isPatrimo ? GOLD_CELL : isFalseNonPatrimo ? 'rgba(248,113,113,0.12)' : 'transparent',
-                        borderLeft: '1px solid rgba(0,0,0,0.06)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {val === true && col.isPatrimo && (
-                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Check style={{ width: 12, height: 12, color: '#4ade80' }} />
-                          </div>
-                        )}
-                        {val === true && !col.isPatrimo && (
-                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Check style={{ width: 12, height: 12, color: '#34d399' }} />
-                          </div>
-                        )}
-                        {val === false && !col.isPatrimo && <X style={{ width: 14, height: 14, color: '#f87171' }} />}
-                        {val === false && col.isPatrimo && <X style={{ width: 14, height: 14, color: '#d1d5db' }} />}
-                        {val === null && <span style={{ fontSize: 11, color: '#9ca3af', background: 'rgba(0,0,0,0.03)', borderRadius: 100, padding: '2px 8px' }}>partiel</span>}
-                      </div>
-                    )
-                  })}
-                </div>
-              </RevealSection>
-            ))}
-
-            {/* Footer note */}
-            <div style={{ padding: '12px 20px', background: '#080808', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <p style={{ fontSize: 10, color: '#9ca3af' }}>
-                Comparaison basée sur les offres publiques au 1er trimestre 2026. Finary = offre gratuite limitée. &quot;Votre banque&quot; = conseiller bancaire traditionnel.
+          <RevealSection>
+            <div style={{ textAlign: 'center', marginBottom: 40, position: 'relative' }}>
+              <SectionTag><BarChart3 style={{ width: 11, height: 11 }} /> Comparatif</SectionTag>
+              <h2 style={{ fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em', color: '#1e1b4b', margin: '0 0 12px' }}>
+                PatrImo vs les{' '}
+                <span style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #7c3aed 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>alternatives</span>
+              </h2>
+              <p style={{ fontSize: 15, color: '#4b5563', marginTop: 12, lineHeight: 1.7 }}>
+                Des simulateurs conçus pour les investisseurs français, pas pour les banques.
               </p>
             </div>
-          </div>
-        </RevealSection>
+          </RevealSection>
+
+          <RevealSection delay={100}>
+            <div style={{ border: '1px solid rgba(139,92,246,0.2)', borderRadius: 20, overflow: 'hidden', background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)' }}>
+              {/* Header row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 130px', background: 'rgba(245,243,255,0.8)', borderBottom: '1px solid rgba(139,92,246,0.1)' }}>
+                <div style={{ padding: '14px 20px' }} />
+                {cols.map(col => (
+                  <div key={col.name} style={{
+                    padding: col.isPatrimo ? '8px 8px 14px' : '14px 8px',
+                    textAlign: 'center',
+                    background: col.isPatrimo ? 'rgba(124,58,237,0.07)' : 'transparent',
+                    borderLeft: '1px solid rgba(139,92,246,0.12)',
+                    borderTop: col.isPatrimo ? '2px solid rgba(124,58,237,0.4)' : '2px solid transparent',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {col.isPatrimo && (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontSize: 9, fontWeight: 700, color: '#7c3aed',
+                        background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)',
+                        borderRadius: 100, padding: '2px 7px', marginBottom: 5,
+                        letterSpacing: '0.04em', textTransform: 'uppercase' as const,
+                      }}>
+                        ★ Recommandé
+                      </span>
+                    )}
+                    <span style={{ fontSize: 12, fontWeight: 700, color: col.isPatrimo ? '#7c3aed' : '#4b5563' }}>{col.name}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Feature rows */}
+              {COMPETITOR_FEATURES.map((f, i) => (
+                <RevealSection key={f.label} delay={i * 30}>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 120px 120px 130px',
+                    borderBottom: i < COMPETITOR_FEATURES.length - 1 ? '1px solid rgba(139,92,246,0.08)' : 'none',
+                    background: i % 2 === 0 ? 'rgba(139,92,246,0.025)' : 'transparent',
+                  }}>
+                    <div style={{ padding: '12px 20px', fontSize: 13, color: '#374151' }}>{f.label}</div>
+                    {cols.map(col => {
+                      const val = f[col.key]
+                      const isFalseNonPatrimo = val === false && !col.isPatrimo
+                      return (
+                        <div key={col.key} style={{
+                          padding: '12px 8px',
+                          textAlign: 'center',
+                          background: col.isPatrimo ? 'rgba(124,58,237,0.05)' : isFalseNonPatrimo ? 'rgba(248,113,113,0.08)' : 'transparent',
+                          borderLeft: '1px solid rgba(139,92,246,0.08)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          {val === true && col.isPatrimo && (
+                            <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Check style={{ width: 12, height: 12, color: '#7c3aed' }} />
+                            </div>
+                          )}
+                          {val === true && !col.isPatrimo && (
+                            <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Check style={{ width: 12, height: 12, color: '#34d399' }} />
+                            </div>
+                          )}
+                          {val === false && !col.isPatrimo && <X style={{ width: 14, height: 14, color: '#f87171' }} />}
+                          {val === false && col.isPatrimo && <X style={{ width: 14, height: 14, color: '#c4b5fd' }} />}
+                          {val === null && <span style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(139,92,246,0.08)', borderRadius: 100, padding: '2px 8px' }}>partiel</span>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </RevealSection>
+              ))}
+
+              {/* Footer note */}
+              <div style={{ padding: '12px 20px', background: 'rgba(245,243,255,0.6)', borderTop: '1px solid rgba(139,92,246,0.1)' }}>
+                <p style={{ fontSize: 10, color: '#6b7280', margin: 0 }}>
+                  Comparaison basée sur les offres publiques au 1er trimestre 2026. Finary = offre gratuite limitée. &quot;Votre banque&quot; = conseiller bancaire traditionnel.
+                </p>
+              </div>
+            </div>
+          </RevealSection>
+        </div>
       </div>
     </section>
   )
@@ -3521,65 +3536,25 @@ export function LandingClient() {
                   <h3 style={{ fontSize: 20, fontWeight: 600, color: '#111827', margin: '14px 0 8px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>Suivi patrimonial complet</h3>
                   <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.65, margin: 0, maxWidth: 300 }}>Immobilier, actions, livrets, crypto — tout votre patrimoine centralisé avec des données de marché en temps réel.</p>
                 </div>
-                {/* Illustration — left panel slides out, right performance panel slides in */}
+                {/* Illustration — left screenshot slides out, right screenshot slides in */}
                 <div style={{ marginTop: 28, flex: 1, position: 'relative', overflow: 'hidden' }}>
                   {/* 200%-wide container slides left on hover */}
                   <div className="bento-panel-wide" style={{ top: 0, left: 0 }}>
-                    {/* Left half — allocation panel */}
-                    <div style={{ width: '50%', flexShrink: 0, background: '#f9fafb', borderRadius: '16px 16px 0 0', border: '1px solid #f3f4f6', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-                        <svg width={68} height={68} viewBox="0 0 72 72" style={{ flexShrink: 0 }}>
-                          {[
-                            { pct: 0.42, color: '#7c3aed', offset: 0 },
-                            { pct: 0.28, color: '#3b82f6', offset: 0.42 },
-                            { pct: 0.18, color: '#10b981', offset: 0.70 },
-                            { pct: 0.12, color: '#f59e0b', offset: 0.88 },
-                          ].map((s, i) => {
-                            const R = 29, cx = 36, cy = 36, perim = 2 * Math.PI * R
-                            const dash = s.pct * perim
-                            const rot = s.offset * 360 - 90
-                            return <circle key={i} cx={cx} cy={cy} r={R} fill="none" stroke={s.color} strokeWidth={10} strokeDasharray={`${dash.toFixed(1)} ${perim.toFixed(1)}`} transform={`rotate(${rot} ${cx} ${cy})`} strokeLinecap="butt" />
-                          })}
-                          <circle cx={36} cy={36} r={19} fill="#f9fafb" />
-                          <text x={36} y={39} textAnchor="middle" fontSize="9" fontWeight="800" fill="#374151">100%</text>
-                        </svg>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                          {[
-                            { label: 'Immobilier', pct: '42%', color: '#7c3aed' },
-                            { label: 'Actions', pct: '28%', color: '#3b82f6' },
-                            { label: 'Livrets', pct: '18%', color: '#10b981' },
-                            { label: 'Crypto', pct: '12%', color: '#f59e0b' },
-                          ].map(s => (
-                            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <div style={{ width: 7, height: 7, borderRadius: 2, background: s.color, flexShrink: 0 }} />
-                              <span style={{ fontSize: 10, color: '#6b7280' }}>{s.label}</span>
-                              <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', marginLeft: 'auto' }}>{s.pct}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
-                        <span style={{ fontSize: 10, color: '#9ca3af', fontWeight: 600 }}>Patrimoine net total</span>
-                        <span style={{ fontSize: 16, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>412 500 €</span>
-                      </div>
+                    {/* Left half — dashboard overview screenshot */}
+                    <div style={{ width: '50%', flexShrink: 0, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: '#181c24' }}>
+                      <img
+                        src="/patrimoine-overview.png"
+                        alt="Vue d'ensemble patrimoine"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', display: 'block', minHeight: 200 }}
+                      />
                     </div>
-                    {/* Right half — performance metrics (hidden until hover) */}
-                    <div style={{ width: '50%', flexShrink: 0, background: '#f0f4ff', borderRadius: '16px 16px 0 0', border: '1px solid #dbeafe', borderBottom: 'none', padding: '16px 20px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Performance</p>
-                      {[
-                        { label: 'YTD', val: '+8.4%', color: '#10b981' },
-                        { label: '1 an', val: '+21.2%', color: '#10b981' },
-                        { label: 'Depuis le début', val: '+62.7%', color: '#7c3aed' },
-                      ].map(m => (
-                        <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
-                          <span style={{ fontSize: 11, color: '#6b7280' }}>{m.label}</span>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: m.color, fontFamily: 'Geist Mono, monospace' }}>{m.val}</span>
-                        </div>
-                      ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', background: '#ffffff', borderRadius: 8, border: '1px solid #e0e7ff' }}>
-                        <span style={{ fontSize: 11, color: '#6b7280' }}>Diversification</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>4 classes d'actifs</span>
-                      </div>
+                    {/* Right half — actifs view screenshot (hidden until hover) */}
+                    <div style={{ width: '50%', flexShrink: 0, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: '#181c24' }}>
+                      <img
+                        src="/patrimoine-actifs.png"
+                        alt="Vue actifs patrimoine"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top left', display: 'block', minHeight: 200 }}
+                      />
                     </div>
                   </div>
                   {/* Badge top-left — slides out with panel */}
@@ -3591,11 +3566,11 @@ export function LandingClient() {
                     {/* placeholder for right half alignment */}
                     <div style={{ width: '50%' }} />
                   </div>
-                  {/* Performance panel — fades in from right on hover */}
+                  {/* Score panel — fades in from right on hover */}
                   <div className="bento-panel-peek" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '10px 14px', border: '1px solid #dbeafe', minWidth: 160, boxShadow: '0 4px 16px rgba(59,130,246,0.1)' }}>
                     <p style={{ fontSize: 9, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Meilleur actif</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>Actions — PEA</p>
-                    <p style={{ fontSize: 15, fontWeight: 800, color: '#10b981', margin: 0 }}>+31.4%</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>Immobilier</p>
+                    <p style={{ fontSize: 15, fontWeight: 800, color: '#10b981', margin: 0 }}>476.7 k€</p>
                   </div>
                 </div>
               </div>

@@ -3004,14 +3004,91 @@ function GlassCard({ children, style = {} }: { children: React.ReactNode; style?
 
 function CardSimulateurs() {
   const [tab, setTab] = useState('Composés')
-  const [capital, setCapital] = useState(10000)
+
+  // ── Composés ──────────────────────────────────────────────
+  const [capital, setCapital]     = useState(10000)
   const [versement, setVersement] = useState(300)
-  const [duree, setDuree] = useState(20)
-  const r = 0.07
-  const final = Math.round(capital * Math.pow(1 + r, duree) + versement * 12 * ((Math.pow(1 + r, duree) - 1) / r))
-  const investi = Math.round(capital + versement * 12 * duree)
-  const interets = final - investi
-  const tabs = ['Composés', 'FI/RE', 'Crédit']
+  const [duree, setDuree]         = useState(20)
+
+  const rComp = 0.07
+  const compFinal    = Math.round(capital * Math.pow(1 + rComp, duree) + versement * 12 * ((Math.pow(1 + rComp, duree) - 1) / rComp))
+  const compInvesti  = Math.round(capital + versement * 12 * duree)
+  const compInterets = compFinal - compInvesti
+
+  // ── FI/RE ─────────────────────────────────────────────────
+  const [epargne,    setEpargne]    = useState(1500)
+  const [depenses,   setDepenses]   = useState(2500)
+  const [dureeFire,  setDureeFire]  = useState(20)
+
+  const objectifFire   = Math.round(depenses * 12 * 25)          // règle des 4%
+  const rFire          = 0.07
+  const capitalFire    = Math.round(epargne * 12 * ((Math.pow(1 + rFire, dureeFire) - 1) / rFire))
+  const pctFire        = Math.min(Math.round(capitalFire / objectifFire * 100), 999)
+  const surplusFire    = capitalFire - objectifFire
+
+  // ── Crédit ────────────────────────────────────────────────
+  const [montant,      setMontant]      = useState(200000)
+  const [tauxCredit,   setTauxCredit]   = useState(35)   // ×0.1 → 3.5 %
+  const [dureeCredit,  setDureeCredit]  = useState(20)
+
+  const tauxReel   = tauxCredit * 0.1
+  const rMensuel   = tauxReel / 100 / 12
+  const nMois      = dureeCredit * 12
+  const mensualite = Math.round(montant * rMensuel * Math.pow(1 + rMensuel, nMois) / (Math.pow(1 + rMensuel, nMois) - 1))
+  const coutTotal  = Math.round(mensualite * nMois)
+  const coutCredit = coutTotal - montant
+
+  const fmt = (v: number) => v >= 1000 ? `${Math.round(v / 1000)} k€` : `${v} €`
+
+  // ── Per-tab config ─────────────────────────────────────────
+  type Slider = { label: string; val: number; set: (v: number) => void; min: number; max: number; step: number; fmt: (v: number) => string }
+
+  const slidersMap: Record<string, Slider[]> = {
+    'Composés': [
+      { label: 'Capital initial',   val: capital,   set: setCapital,   min: 1000,  max: 100000, step: 1000, fmt: v => `${Math.round(v/1000)}k` },
+      { label: 'Versement / mois',  val: versement, set: setVersement, min: 50,    max: 2000,   step: 50,   fmt: v => `${v}` },
+      { label: 'Durée',             val: duree,     set: setDuree,     min: 1,     max: 40,     step: 1,    fmt: v => `${v}a` },
+    ],
+    'FI/RE': [
+      { label: 'Épargne / mois',    val: epargne,   set: setEpargne,   min: 100,   max: 5000,   step: 100,  fmt: v => `${Math.round(v/1000*10)/10}k` },
+      { label: 'Dépenses / mois',   val: depenses,  set: setDepenses,  min: 500,   max: 8000,   step: 100,  fmt: v => `${Math.round(v/1000*10)/10}k` },
+      { label: 'Horizon',           val: dureeFire, set: setDureeFire, min: 5,     max: 40,     step: 1,    fmt: v => `${v}a` },
+    ],
+    'Crédit': [
+      { label: 'Montant emprunté',  val: montant,     set: setMontant,     min: 50000, max: 600000, step: 5000, fmt: v => `${Math.round(v/1000)}k` },
+      { label: 'Taux annuel',       val: tauxCredit,  set: setTauxCredit,  min: 5,     max: 70,     step: 1,    fmt: v => `${(v*0.1).toFixed(1)}%` },
+      { label: 'Durée',             val: dureeCredit, set: setDureeCredit, min: 5,     max: 30,     step: 1,    fmt: v => `${v}a` },
+    ],
+  }
+
+  const resultsMap: Record<string, { label: string; val: string; c: string }[]> = {
+    'Composés': [
+      { label: 'Capital final', val: fmt(compFinal),    c: GOLD },
+      { label: 'Intérêts',      val: `+${fmt(compInterets)}`, c: '#4ade80' },
+      { label: 'Rendement',     val: '7.00 %',          c: 'rgba(255,255,255,0.6)' },
+    ],
+    'FI/RE': [
+      { label: 'Objectif FIRE',     val: fmt(objectifFire), c: GOLD },
+      { label: 'Capital accumulé',  val: fmt(capitalFire),  c: surplusFire >= 0 ? '#4ade80' : '#f87171' },
+      { label: '% Atteint',         val: `${pctFire} %`,    c: 'rgba(255,255,255,0.6)' },
+    ],
+    'Crédit': [
+      { label: 'Mensualité',   val: `${mensualite} €`,    c: GOLD },
+      { label: 'Coût crédit',  val: fmt(coutCredit),      c: '#f87171' },
+      { label: 'Coût total',   val: fmt(coutTotal),        c: 'rgba(255,255,255,0.6)' },
+    ],
+  }
+
+  const sliders = slidersMap[tab]
+  const results = resultsMap[tab]
+  const tabs    = ['Composés', 'FI/RE', 'Crédit']
+
+  const descMap: Record<string, string> = {
+    'Composés': 'Visualisez l\'effet boule de neige — intérêts qui s\'accumulent sur votre capital et vos versements.',
+    'FI/RE':    'Calculez votre objectif d\'indépendance financière et la date à laquelle vous pouvez arrêter de travailler.',
+    'Crédit':   'Simulez votre prêt immobilier — mensualité, coût total et coût des intérêts sur la durée.',
+  }
+
   return (
     <BorderCard>
       <article style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 18 }}>
@@ -3027,43 +3104,37 @@ function CardSimulateurs() {
               </button>
             ))}
           </div>
-          {/* Sliders */}
-          <div style={{ position: 'absolute', bottom: 12, left: 12, right: 12, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {([
-              { label: 'Capital initial', val: capital, set: setCapital, min: 1000, max: 100000, step: 1000, fmt: (v: number) => `${(v / 1000).toFixed(0)}k` },
-              { label: 'Versement / mois', val: versement, set: setVersement, min: 50, max: 2000, step: 50, fmt: (v: number) => `${v}` },
-              { label: 'Durée', val: duree, set: setDuree, min: 1, max: 40, step: 1, fmt: (v: number) => `${v}a` },
-            ] as const).map((s, i) => (
+          {/* Sliders — animate tab switch with key */}
+          <div key={tab} style={{ position: 'absolute', bottom: 12, left: 12, right: 12, zIndex: 20, display: 'flex', flexDirection: 'column', gap: 10,
+            animation: 'sim-fadein 0.25s ease' }}>
+            {sliders.map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', minWidth: 90, whiteSpace: 'nowrap' }}>{s.label}</span>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', minWidth: 94, whiteSpace: 'nowrap' }}>{s.label}</span>
                 <input type="range" min={s.min} max={s.max} step={s.step} value={s.val}
-                  onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
+                  onChange={e => s.set(Number(e.target.value))}
                   style={{ flex: 1, accentColor: GOLD, height: 3, cursor: 'pointer' }} />
-                <span style={{ fontSize: 11, fontWeight: 700, color: GOLD, minWidth: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{s.fmt(s.val)}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: GOLD, minWidth: 38, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{s.fmt(s.val)}</span>
               </div>
             ))}
           </div>
         </div>
         {/* Results */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
-          {[
-            { label: 'Capital final', val: `${(final / 1000).toFixed(0)} k€`, c: GOLD },
-            { label: 'Intérêts', val: `+${(interets / 1000).toFixed(0)} k€`, c: '#4ade80' },
-            { label: 'Rendement', val: '7.00 %', c: 'rgba(255,255,255,0.6)' },
-          ].map((k, i) => (
+        <div key={tab + '-res'} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16, animation: 'sim-fadein 0.3s ease' }}>
+          {results.map((k, i) => (
             <div key={i} style={{ background: BG3, borderRadius: 10, padding: '10px 12px', border: `1px solid ${BENTO_BORDER}` }}>
               <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: 1 }}>{k.label}</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: k.c, fontVariantNumeric: 'tabular-nums' }}>{k.val}</div>
             </div>
           ))}
         </div>
         <div style={{ padding: '0 4px', marginTop: 'auto' }}>
           <h3 style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.9)', margin: '0 0 6px' }}>Simulateurs</h3>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, margin: 0 }}>
-            Aperçu en temps réel — manipulez les curseurs et voyez instantanément l&apos;impact sans inscription.
+            {descMap[tab]}
           </p>
         </div>
       </article>
+      <style>{`@keyframes sim-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}`}</style>
     </BorderCard>
   )
 }

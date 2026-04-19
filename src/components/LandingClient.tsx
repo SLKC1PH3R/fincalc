@@ -3402,12 +3402,12 @@ function CardSecurite() {
                 return (
                   <div key={i} style={{
                     position: 'absolute', left: x, top: y, width: 36, height: 36,
-                    borderRadius: 10, background: `${f.color}18`, border: `1px solid ${f.color}40`,
+                    borderRadius: 10, background: `${f.color}30`, border: `1px solid ${f.color}66`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
                     zIndex: 15,
                     transform: hov ? 'scale(1.15)' : 'scale(1)',
                     transition: `transform ${0.3 + i * 0.08}s ease`,
-                    boxShadow: unlocked ? `0 0 12px ${f.color}44` : 'none',
+                    boxShadow: unlocked ? `0 0 12px ${f.color}55` : `0 0 6px ${f.color}22`,
                   }}>
                     {f.icon}
                   </div>
@@ -3431,27 +3431,28 @@ function CardSecurite() {
                 </span>
               </div>
 
-              {/* Status pill — ancré en bas du repère */}
-              <div style={{
-                position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)',
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: 'rgba(15,17,23,0.8)', backdropFilter: 'blur(8px)',
-                border: `1px solid ${unlocked ? GREEN + '44' : BENTO_BORDER}`,
-                borderRadius: 99, padding: '5px 14px', zIndex: 20,
-                transition: 'border-color 0.8s', whiteSpace: 'nowrap',
-              }}>
-                <div style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: unlocked ? GREEN : GOLD,
-                  boxShadow: `0 0 6px ${unlocked ? GREEN : GOLD}88`,
-                  transition: 'background 0.8s',
-                }} />
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>
-                  {unlocked ? 'Identité vérifiée — accès autorisé' : 'Chiffrement en cours…'}
-                </span>
-              </div>
-
             </div>
+
+            {/* Status pill — positionné dans le conteneur inset:0 pour rester visible */}
+            <div style={{
+              position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'rgba(15,17,23,0.85)', backdropFilter: 'blur(8px)',
+              border: `1px solid ${unlocked ? GREEN + '55' : 'rgba(255,255,255,0.15)'}`,
+              borderRadius: 99, padding: '6px 16px', zIndex: 20,
+              transition: 'border-color 0.8s', whiteSpace: 'nowrap',
+            }}>
+              <div style={{
+                width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                background: unlocked ? GREEN : GOLD,
+                boxShadow: `0 0 6px ${unlocked ? GREEN : GOLD}88`,
+                transition: 'background 0.8s',
+              }} />
+              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
+                {unlocked ? 'Identité vérifiée — accès autorisé' : 'Chiffrement en cours…'}
+              </span>
+            </div>
+
           </div>
         </div>
 

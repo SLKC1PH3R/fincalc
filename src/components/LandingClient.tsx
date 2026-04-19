@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { HeroShutterText } from '@/components/ui/hero-shutter-text'
+import { PatrimoHeader } from '@/components/ui/patrimo-header'
 
 // ─── Data ─────────────────────────────────────────────────────────────────
 
@@ -433,6 +435,7 @@ function animCounter(el: HTMLElement, to: number) {
 
 export function LandingClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [splashDone, setSplashDone] = useState(false)
 
   useEffect(() => {
     // Scroll fade + counters
@@ -487,6 +490,7 @@ export function LandingClient() {
 
   return (
     <>
+      <HeroShutterText text="PatrImo" onComplete={() => setSplashDone(true)} />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="lp-wrap">
 
@@ -498,23 +502,7 @@ export function LandingClient() {
         </div>
 
         {/* ── NAV ── */}
-        <nav className="lp-nav">
-          <div className="lp-nav-inner">
-            <Link href="/" className="lp-logo">
-              <span className="lp-logo-mark">P</span>
-              PatrImo
-            </Link>
-            <ul className="lp-nav-links">
-              {[['#simulateurs','Simulateurs'],['#patrimoine','Patrimoine'],['#fonctionnalites','Fonctionnalités'],['#roadmap','Roadmap'],['#faq','FAQ']].map(([h,l]) => (
-                <li key={h}><a href={h}>{l}</a></li>
-              ))}
-            </ul>
-            <div className="lp-nav-r">
-              <Link href="/login" className="lp-btn lp-ghost">Se connecter</Link>
-              <Link href="/login" className="lp-btn lp-primary">Commencer →</Link>
-            </div>
-          </div>
-        </nav>
+        <PatrimoHeader />
 
         {/* ── HERO ── */}
         <section className="lp-hero">

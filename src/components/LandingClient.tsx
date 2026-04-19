@@ -3375,77 +3375,82 @@ function CardSecurite() {
           <GridBg uid="sec" />
           <EdgeFades />
 
-          {/* Central vault */}
+          {/* Central vault — tout dans un repère 220×220 commun */}
           <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Outer ring */}
-            <svg width={220} height={220} style={{ position: 'absolute' }}>
-              <circle cx={110} cy={110} r={90} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-              <circle cx={110} cy={110} r={90} fill="none"
-                stroke={unlocked ? GREEN : GOLD} strokeWidth={1.5}
-                strokeDasharray={unlocked ? '20 8' : '5 12'}
-                strokeLinecap="round"
-                style={{
-                  transition: 'stroke 1s ease, stroke-dasharray 1s ease',
-                  transformOrigin: '110px 110px',
-                  animation: `secu-spin ${unlocked ? '8s' : '20s'} linear infinite`,
-                }} />
-            </svg>
+            <div style={{ position: 'relative', width: 220, height: 220 }}>
 
-            {/* Feature nodes on arc */}
-            {arcFeats.map((f, i) => {
-              const rad = (f.angle * Math.PI) / 180
-              const r = 82
-              const x = 110 + r * Math.cos(rad) - 18
-              const y = 110 + r * Math.sin(rad) - 18
-              return (
-                <div key={i} style={{
-                  position: 'absolute', left: x, top: y, width: 36, height: 36,
-                  borderRadius: 10, background: `${f.color}18`, border: `1px solid ${f.color}40`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
-                  zIndex: 15,
-                  transform: hov ? 'scale(1.15)' : 'scale(1)',
-                  transition: `transform ${0.3 + i * 0.08}s ease`,
-                  boxShadow: unlocked ? `0 0 12px ${f.color}44` : 'none',
-                }}>
-                  {f.icon}
-                </div>
-              )
-            })}
+              {/* Outer ring SVG */}
+              <svg width={220} height={220} style={{ position: 'absolute', top: 0, left: 0 }}>
+                <circle cx={110} cy={110} r={90} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
+                <circle cx={110} cy={110} r={90} fill="none"
+                  stroke={unlocked ? GREEN : GOLD} strokeWidth={1.5}
+                  strokeDasharray={unlocked ? '20 8' : '5 12'}
+                  strokeLinecap="round"
+                  style={{
+                    transition: 'stroke 1s ease, stroke-dasharray 1s ease',
+                    transformOrigin: '110px 110px',
+                    animation: `secu-spin ${unlocked ? '8s' : '20s'} linear infinite`,
+                  }} />
+              </svg>
 
-            {/* Center */}
-            <div style={{
-              width: 64, height: 64, borderRadius: 18,
-              background: unlocked ? `linear-gradient(135deg,${GREEN}22,${GREEN}08)` : `linear-gradient(135deg,${GOLD}22,${GOLD}08)`,
-              border: `1.5px solid ${unlocked ? GREEN : GOLD}55`,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: 2, zIndex: 16,
-              boxShadow: unlocked ? `0 0 24px ${GREEN}30` : `0 0 24px ${GOLD}20`,
-              transition: 'all 0.8s ease',
-            }}>
-              <span style={{ fontSize: 22 }}>{unlocked ? '🔓' : '🔒'}</span>
-              <span style={{ fontSize: 8, fontWeight: 700, color: unlocked ? GREEN : GOLD, letterSpacing: '0.5px' }}>
-                {unlocked ? 'VÉRIFIÉ' : 'ACTIF'}
-              </span>
-            </div>
+              {/* Feature nodes on arc — coords dans le repère 220×220 */}
+              {arcFeats.map((f, i) => {
+                const rad = (f.angle * Math.PI) / 180
+                const r = 82
+                const x = 110 + r * Math.cos(rad) - 18
+                const y = 110 + r * Math.sin(rad) - 18
+                return (
+                  <div key={i} style={{
+                    position: 'absolute', left: x, top: y, width: 36, height: 36,
+                    borderRadius: 10, background: `${f.color}18`, border: `1px solid ${f.color}40`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+                    zIndex: 15,
+                    transform: hov ? 'scale(1.15)' : 'scale(1)',
+                    transition: `transform ${0.3 + i * 0.08}s ease`,
+                    boxShadow: unlocked ? `0 0 12px ${f.color}44` : 'none',
+                  }}>
+                    {f.icon}
+                  </div>
+                )
+              })}
 
-            {/* Status pill */}
-            <div style={{
-              position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', alignItems: 'center', gap: 6,
-              background: 'rgba(15,17,23,0.8)', backdropFilter: 'blur(8px)',
-              border: `1px solid ${unlocked ? GREEN + '44' : BENTO_BORDER}`,
-              borderRadius: 99, padding: '5px 14px', zIndex: 20,
-              transition: 'border-color 0.8s',
-            }}>
+              {/* Center badge — centré dans le repère 220×220 */}
               <div style={{
-                width: 6, height: 6, borderRadius: '50%',
-                background: unlocked ? GREEN : GOLD,
-                boxShadow: `0 0 6px ${unlocked ? GREEN : GOLD}88`,
-                transition: 'background 0.8s',
-              }} />
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap' }}>
-                {unlocked ? 'Identité vérifiée — accès autorisé' : 'Chiffrement en cours…'}
-              </span>
+                position: 'absolute', left: 110 - 32, top: 110 - 32,
+                width: 64, height: 64, borderRadius: 18,
+                background: unlocked ? `linear-gradient(135deg,${GREEN}22,${GREEN}08)` : `linear-gradient(135deg,${GOLD}22,${GOLD}08)`,
+                border: `1.5px solid ${unlocked ? GREEN : GOLD}55`,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 2, zIndex: 16,
+                boxShadow: unlocked ? `0 0 24px ${GREEN}30` : `0 0 24px ${GOLD}20`,
+                transition: 'all 0.8s ease',
+              }}>
+                <span style={{ fontSize: 22 }}>{unlocked ? '🔓' : '🔒'}</span>
+                <span style={{ fontSize: 8, fontWeight: 700, color: unlocked ? GREEN : GOLD, letterSpacing: '0.5px' }}>
+                  {unlocked ? 'VÉRIFIÉ' : 'ACTIF'}
+                </span>
+              </div>
+
+              {/* Status pill — ancré en bas du repère */}
+              <div style={{
+                position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)',
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'rgba(15,17,23,0.8)', backdropFilter: 'blur(8px)',
+                border: `1px solid ${unlocked ? GREEN + '44' : BENTO_BORDER}`,
+                borderRadius: 99, padding: '5px 14px', zIndex: 20,
+                transition: 'border-color 0.8s', whiteSpace: 'nowrap',
+              }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: unlocked ? GREEN : GOLD,
+                  boxShadow: `0 0 6px ${unlocked ? GREEN : GOLD}88`,
+                  transition: 'background 0.8s',
+                }} />
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)' }}>
+                  {unlocked ? 'Identité vérifiée — accès autorisé' : 'Chiffrement en cours…'}
+                </span>
+              </div>
+
             </div>
           </div>
         </div>

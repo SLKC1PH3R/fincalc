@@ -55,7 +55,7 @@ const TESTIS = [
 ]
 
 const RMAP_DONE = ['Connexion Google OAuth','32 simulateurs','Historique simulations','Mode sombre/clair','Tableau patrimonial','Portefeuille temps réel','Score Patrimonial','Flat Tax vs Barème','PEA/CTO/AV','Partage simulation','Glossaire contextuel','Taux en direct',"Carnet d'ordres",'Timeline patrimoine','Revenus passifs','Connexion FIRE ↔ Patrimoine',"Épargne d'urgence","Crédit conso","Succession & Donations",'Catégories patrimoniales']
-const RMAP_WIP  = ['Export PDF','Livrets réglementés','Impact des frais','Inflation & pouvoir d\'achat','Remboursement dettes','Plus-value immobilière','SCPI','Déficit foncier','Viager','Auto-entrepreneur','IFI','Stock-options / BSPCE']
+const RMAP_WIP  = ['Export PDF','Livrets réglementés','Impact des frais',"Inflation & pouvoir d'achat",'Remboursement dettes','Plus-value immobilière','SCPI','Déficit foncier','Viager','Auto-entrepreneur','IFI','Stock-options / BSPCE']
 const RMAP_SOON = ['Comparateur de scénarios','Calculatrice rapide','Mode reverse','Alertes paramétrables','Rapport mensuel email','Mode présentation','Articles & guides','Application mobile','Intégrations bancaires']
 
 const FAQ_ITEMS = [
@@ -84,263 +84,327 @@ const COMPARE_ROWS = [
 // ─── CSS ──────────────────────────────────────────────────────────────────
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
-.lp-wrap *,.lp-wrap *::before,.lp-wrap *::after{box-sizing:border-box;margin:0;padding:0}
+.lp-wrap*,.lp-wrap *::before,.lp-wrap *::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --lp-bg0:#080b13;--lp-bg1:#0d1120;--lp-bg2:#111827;
-  --lp-card:#131929;--lp-card-b:rgba(255,255,255,0.06);
-  --lp-blue:#4b78ff;--lp-blue2:#3a60e6;
-  --lp-blue-g:rgba(75,120,255,0.12);
-  --lp-white:#f1f5ff;--lp-g1:#c8d0e7;--lp-g2:#7b88aa;--lp-g3:#3d4d6a;
-  --lp-green:#22c55e;--lp-red:#ef4444;--lp-amber:#f59e0b;
-  --lp-r:8px;--lp-r2:12px;--lp-r3:16px;
+  --lp-bg:#05080f;--lp-bg1:#080d1a;--lp-bg2:#0c1120;
+  --lp-blue:#4b78ff;--lp-blue2:#3360e6;--lp-blue-l:#7b9fff;
+  --lp-gold:#f59e0b;--lp-gold-l:#fbbf24;
+  --lp-purple:#8b5cf6;--lp-purple-l:#c4b5fd;
+  --lp-green:#22c55e;--lp-red:#ef4444;
+  --lp-white:#f8fafc;--lp-g1:#cbd5e1;--lp-g2:#94a3b8;--lp-g3:#475569;
+  --lp-glass:rgba(255,255,255,0.04);--lp-glass2:rgba(255,255,255,0.07);--lp-glass3:rgba(255,255,255,0.11);
+  --lp-gb:rgba(255,255,255,0.08);
+  --lp-r:10px;--lp-r2:16px;--lp-r3:24px;
 }
 
-.lp-wrap{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
-  background:var(--lp-bg0);color:var(--lp-white);line-height:1.6;overflow-x:hidden;
-}
-.lp-wrap h1,.lp-wrap h2,.lp-wrap h3,.lp-wrap h4{line-height:1.2;letter-spacing:-0.02em}
-.lp-wrap h1{font-size:clamp(2.6rem,5.5vw,5rem);font-weight:800}
-.lp-wrap h2{font-size:clamp(1.8rem,3vw,2.75rem);font-weight:700}
+.lp-wrap{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--lp-bg);color:var(--lp-white);line-height:1.6;overflow-x:hidden;min-height:100vh}
+.lp-wrap h1,.lp-wrap h2,.lp-wrap h3,.lp-wrap h4{line-height:1.12;letter-spacing:-0.03em;color:var(--lp-white)}
+.lp-wrap h1{font-size:clamp(2.8rem,5.5vw,5rem);font-weight:800}
+.lp-wrap h2{font-size:clamp(2rem,3.5vw,3rem);font-weight:700}
 .lp-wrap h3{font-size:1.1rem;font-weight:600}
 .lp-wrap p{color:var(--lp-g1)}
 .lp-wrap a{text-decoration:none}
 
-.lp-container{max-width:1180px;margin:0 auto;padding:0 1.75rem}
-.lp-section{padding:6rem 0}
+.lp-container{max-width:1200px;margin:0 auto;padding:0 2rem}
+.lp-section{padding:7rem 0}
 
-.lp-glow{position:absolute;border-radius:50%;pointer-events:none;z-index:0;filter:blur(100px)}
+/* ── ORB BACKGROUND ── */
+.lp-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.lp-orb{position:absolute;border-radius:50%;filter:blur(120px);animation:lp-drift 22s ease-in-out infinite alternate}
+.lp-orb1{width:700px;height:700px;top:-200px;left:-150px;background:radial-gradient(circle,rgba(75,120,255,0.09),transparent 65%)}
+.lp-orb2{width:600px;height:600px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(139,92,246,0.07),transparent 65%);animation-delay:-11s}
+.lp-orb3{width:400px;height:400px;top:45%;left:55%;background:radial-gradient(circle,rgba(245,158,11,0.04),transparent 65%);animation-delay:-6s}
+@keyframes lp-drift{0%{transform:translate(0,0)}100%{transform:translate(35px,25px)}}
 
 /* ── NAV ── */
-.lp-nav{position:sticky;top:0;z-index:100;background:rgba(8,11,19,0.92);backdrop-filter:blur(16px) saturate(180%);border-bottom:1px solid rgba(255,255,255,0.05)}
-.lp-nav-inner{max-width:1180px;margin:0 auto;padding:0 1.75rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
-.lp-logo{font-weight:800;font-size:1.3rem;color:var(--lp-white);letter-spacing:-0.03em;display:flex;align-items:center;gap:0.3rem}
-.lp-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--lp-blue);display:inline-block;flex-shrink:0}
-.lp-nav-links{display:flex;gap:0.1rem;list-style:none}
-.lp-nav-links a{font-size:0.85rem;font-weight:500;color:var(--lp-g2);padding:0.45rem 0.9rem;border-radius:6px;transition:color 0.15s,background 0.15s}
-.lp-nav-links a:hover{color:var(--lp-white);background:rgba(255,255,255,0.05)}
+.lp-nav{position:sticky;top:0;z-index:100;background:rgba(5,8,15,0.88);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);border-bottom:1px solid var(--lp-gb)}
+.lp-nav-inner{max-width:1200px;margin:0 auto;padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
+.lp-logo{font-weight:800;font-size:1.3rem;color:var(--lp-white);letter-spacing:-0.04em;display:flex;align-items:center;gap:0.45rem}
+.lp-logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--lp-blue),var(--lp-purple));display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(75,120,255,0.4)}
+.lp-nav-links{display:flex;gap:0;list-style:none}
+.lp-nav-links a{font-size:0.85rem;font-weight:500;color:var(--lp-g2);padding:0.45rem 0.9rem;border-radius:8px;transition:color 0.15s,background 0.15s}
+.lp-nav-links a:hover{color:var(--lp-white);background:var(--lp-glass)}
 .lp-nav-r{display:flex;gap:0.6rem;align-items:center}
 
 /* ── BUTTONS ── */
-.lp-btn{display:inline-flex;align-items:center;gap:0.4rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.875rem;padding:0.575rem 1.25rem;border-radius:var(--lp-r);cursor:pointer;border:1px solid transparent;transition:all 0.18s;white-space:nowrap;text-decoration:none}
-.lp-ghost{color:var(--lp-g1);border-color:var(--lp-card-b);background:transparent}
-.lp-ghost:hover{color:var(--lp-white);background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1)}
-.lp-primary{background:var(--lp-blue);color:#fff;border-color:var(--lp-blue)}
-.lp-primary:hover{background:var(--lp-blue2);border-color:var(--lp-blue2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(75,120,255,0.3)}
-.lp-outline{color:var(--lp-blue);border-color:rgba(75,120,255,0.35);background:rgba(75,120,255,0.06)}
-.lp-outline:hover{background:rgba(75,120,255,0.12);border-color:var(--lp-blue)}
-.lp-lg{padding:0.8rem 1.75rem;font-size:0.95rem;border-radius:var(--lp-r2)}
+.lp-btn{display:inline-flex;align-items:center;gap:0.4rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.875rem;padding:0.6rem 1.35rem;border-radius:var(--lp-r);cursor:pointer;border:1px solid transparent;transition:all 0.2s;white-space:nowrap;text-decoration:none}
+.lp-ghost{color:var(--lp-g1);border-color:var(--lp-gb);background:var(--lp-glass)}
+.lp-ghost:hover{color:var(--lp-white);background:var(--lp-glass2);border-color:var(--lp-glass3)}
+.lp-primary{background:linear-gradient(135deg,var(--lp-blue),var(--lp-blue2));color:#fff;box-shadow:0 4px 18px rgba(75,120,255,0.28)}
+.lp-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(75,120,255,0.42)}
+.lp-gold-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 18px rgba(245,158,11,0.28)}
+.lp-gold-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,158,11,0.42)}
+.lp-outline{color:var(--lp-blue-l);border-color:rgba(75,120,255,0.3);background:rgba(75,120,255,0.06)}
+.lp-outline:hover{background:rgba(75,120,255,0.1);border-color:var(--lp-blue);transform:translateY(-1px)}
+.lp-lg{padding:0.85rem 2rem;font-size:0.95rem;border-radius:var(--lp-r2)}
 
-/* ── PILL ── */
-.lp-pill{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(75,120,255,0.1);border:1px solid rgba(75,120,255,0.22);color:var(--lp-blue);border-radius:99px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:600;letter-spacing:0.02em}
-.lp-pill .lp-live{width:6px;height:6px;border-radius:50%;background:var(--lp-green);animation:lp-pulse 2s infinite;display:inline-block}
-@keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-
-/* ── HERO ── */
-.lp-hero{position:relative;overflow:hidden;min-height:calc(100vh - 60px);display:flex;flex-direction:column;justify-content:center;padding:5rem 0 4rem}
-.lp-glow-l{width:800px;height:600px;top:-200px;left:-200px;background:radial-gradient(ellipse,rgba(75,120,255,0.09) 0%,transparent 65%)}
-.lp-glow-r{width:600px;height:500px;top:50%;right:-200px;transform:translateY(-50%);background:radial-gradient(ellipse,rgba(100,60,255,0.06) 0%,transparent 65%)}
-.lp-hero-content{position:relative;z-index:1}
-.lp-hero h1{margin-bottom:1.25rem;max-width:820px}
-.lp-hero h1 em{font-style:normal;color:var(--lp-blue)}
-.lp-hero-sub{font-size:1.1rem;color:var(--lp-g1);max-width:540px;font-weight:400;margin-bottom:2.25rem;line-height:1.7}
-.lp-hero-ctas{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:3.5rem}
-.lp-hero-trust{display:flex;gap:2rem;flex-wrap:wrap;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,0.06)}
-.lp-trust-i{display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--lp-g2)}
-.lp-trust-i svg{width:14px;height:14px;fill:var(--lp-blue);flex-shrink:0}
-
-/* ── MOCKUP ── */
-.lp-mock{position:relative;z-index:1;background:var(--lp-bg1);border:1px solid rgba(255,255,255,0.07);border-radius:var(--lp-r3);overflow:hidden;margin-top:4rem;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
-.lp-mock-bar{background:var(--lp-bg2);padding:0.7rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid rgba(255,255,255,0.05)}
-.lp-mock-dots{display:flex;gap:5px}
-.lp-mock-dot{width:10px;height:10px;border-radius:50%}
-.lp-mock-url{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:0.25rem 0.75rem;font-size:0.75rem;color:var(--lp-g2);max-width:340px;margin:0 auto;text-align:center}
-.lp-mock-body{padding:1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.04);min-height:260px}
-.lp-mock-panel{background:var(--lp-card);padding:1rem}
-.lp-panel-lbl{font-size:0.7rem;color:var(--lp-g2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem}
-.lp-mock-num{font-size:1.5rem;font-weight:700;color:var(--lp-white);letter-spacing:-0.02em}
-.lp-mock-delta{font-size:0.8rem;font-weight:600;margin-top:0.15rem}
-.lp-mock-delta.pos{color:var(--lp-green)}
-.lp-mock-barchart{margin-top:0.75rem;display:flex;align-items:flex-end;gap:3px;height:56px}
-.lp-mock-barchart .b{border-radius:3px 3px 0 0;flex:1}
-.lp-mock-tbl{width:100%;border-collapse:collapse;margin-top:0.5rem}
-.lp-mock-tbl td{font-size:0.75rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--lp-g1)}
-.lp-mock-tbl td:last-child{text-align:right}
-.lp-score-ring{width:64px;height:64px;border-radius:50%;border:3px solid var(--lp-blue);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--lp-white);margin:0.5rem auto}
-
-/* ── LOGOS ── */
-.lp-logos{border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);padding:2rem 0;background:var(--lp-bg1)}
-.lp-logos-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
-.lp-logos-lbl{font-size:0.78rem;color:var(--lp-g2);white-space:nowrap}
-.lp-logos-list{display:flex;gap:2rem;flex-wrap:wrap;align-items:center}
-.lp-logos-list span{font-size:0.85rem;font-weight:600;color:var(--lp-g3)}
-
-/* ── STATS ── */
-.lp-stats-wrap{background:var(--lp-bg1);padding:4.5rem 0}
-.lp-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);overflow:hidden}
-.lp-stat-cell{padding:2rem 1.75rem;border-right:1px solid rgba(255,255,255,0.06);text-align:center}
-.lp-stat-cell:last-child{border-right:none}
-.lp-stat-n{font-size:2.5rem;font-weight:800;color:var(--lp-white);letter-spacing:-0.04em;line-height:1}
-.lp-stat-n span{color:var(--lp-blue)}
-.lp-stat-l{font-size:0.82rem;color:var(--lp-g2);margin-top:0.35rem}
+/* ── PILLS ── */
+.lp-pill{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(75,120,255,0.1);border:1px solid rgba(75,120,255,0.22);color:var(--lp-blue-l);border-radius:99px;padding:0.3rem 0.95rem;font-size:0.78rem;font-weight:600;letter-spacing:0.02em}
+.lp-live{width:6px;height:6px;border-radius:50%;background:var(--lp-green);animation:lp-pulse 2s infinite;display:inline-block}
+@keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:0.35}}
 
 /* ── SECTION LABEL ── */
-.lp-s-label{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--lp-blue);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem}
-.lp-s-label::before{content:'';width:16px;height:2px;background:var(--lp-blue);border-radius:1px}
-.lp-s-head{margin-bottom:3rem}
-.lp-s-head h2{margin-bottom:0.6rem}
-.lp-s-head p{max-width:480px}
+.lp-s-label{display:inline-flex;align-items:center;gap:0.45rem;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--lp-blue-l);margin-bottom:0.9rem;padding:0.28rem 0.85rem;border-radius:99px;background:rgba(75,120,255,0.09);border:1px solid rgba(75,120,255,0.2)}
+.lp-s-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--lp-blue);flex-shrink:0}
+.lp-s-head{margin-bottom:3.5rem}
+.lp-s-head h2{margin-bottom:0.75rem}
+.lp-s-head p{max-width:500px;font-size:1.05rem;line-height:1.7;color:var(--lp-g2)}
 
-/* ── FEATURES ── */
-.lp-feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);overflow:hidden}
-.lp-feat-card{background:var(--lp-bg0);padding:2.25rem 2rem;transition:background 0.2s}
-.lp-feat-card:hover{background:var(--lp-bg1)}
-.lp-feat-icon{width:44px;height:44px;border-radius:var(--lp-r);background:var(--lp-blue-g);border:1px solid rgba(75,120,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1.1rem}
-.lp-feat-card h3{margin-bottom:0.4rem}
-.lp-feat-card p{font-size:0.875rem;line-height:1.65}
+/* ── GRADIENT TEXT ── */
+.lp-grad{background:linear-gradient(135deg,var(--lp-white) 0%,var(--lp-blue-l) 55%,var(--lp-purple-l) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── HERO ── */
+.lp-hero{position:relative;z-index:1;min-height:calc(100vh - 62px);display:flex;align-items:center;padding:5rem 0;overflow:hidden}
+.lp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 30% -10%,rgba(75,120,255,0.10) 0%,transparent 60%);pointer-events:none}
+.lp-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(transparent,var(--lp-bg));pointer-events:none;z-index:2}
+.lp-hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 0.95fr;gap:5rem;align-items:center;width:100%}
+.lp-hero-badge{margin-bottom:1.5rem}
+.lp-hero h1{margin-bottom:1.5rem;line-height:1.06}
+.lp-hero-sub{font-size:1.12rem;color:var(--lp-g1);max-width:510px;margin-bottom:2.5rem;line-height:1.75}
+.lp-hero-ctas{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:3rem}
+.lp-hero-trust{display:flex;gap:1.75rem;flex-wrap:wrap;padding-top:2rem;border-top:1px solid var(--lp-gb)}
+.lp-trust-i{display:flex;align-items:center;gap:0.45rem;font-size:0.8rem;color:var(--lp-g2)}
+.lp-trust-i svg{width:13px;height:13px;fill:var(--lp-green);flex-shrink:0}
+
+/* ── MOCKUP ── */
+.lp-mock-wrap{position:relative}
+.lp-mock-glow{position:absolute;inset:-30px;border-radius:32px;background:linear-gradient(135deg,rgba(75,120,255,0.10),rgba(139,92,246,0.06));filter:blur(40px);z-index:-1}
+.lp-mock{background:var(--lp-bg1);border:1px solid var(--lp-gb);border-radius:20px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04)}
+.lp-mock-bar{background:var(--lp-bg2);padding:0.7rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--lp-gb)}
+.lp-mock-dots{display:flex;gap:5px}
+.lp-mock-dot{width:9px;height:9px;border-radius:50%}
+.lp-mock-url{flex:1;background:var(--lp-glass);border:1px solid var(--lp-gb);border-radius:5px;padding:0.22rem 0.7rem;font-size:0.73rem;color:var(--lp-g3);max-width:300px;margin:0 auto;text-align:center}
+.lp-mock-body{padding:1.1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--lp-gb);min-height:220px}
+.lp-mock-panel{background:var(--lp-bg1);padding:0.9rem}
+.lp-panel-lbl{font-size:0.65rem;color:var(--lp-g2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;font-weight:600}
+.lp-mock-num{font-size:1.35rem;font-weight:800;color:var(--lp-white);letter-spacing:-0.03em}
+.lp-mock-delta{font-size:0.75rem;font-weight:600;margin-top:0.15rem}
+.lp-mock-delta.pos{color:var(--lp-green)}
+.lp-mock-barchart{margin-top:0.6rem;display:flex;align-items:flex-end;gap:3px;height:48px}
+.lp-mock-barchart .b{border-radius:2px 2px 0 0;flex:1}
+.lp-mock-tbl{width:100%;border-collapse:collapse;margin-top:0.5rem}
+.lp-mock-tbl td{font-size:0.7rem;padding:0.28rem 0;border-bottom:1px solid var(--lp-gb);color:var(--lp-g1)}
+.lp-mock-tbl td:last-child{text-align:right}
+.lp-score-ring{width:56px;height:56px;border-radius:50%;border:2px solid var(--lp-blue);display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:700;color:var(--lp-white);margin:0.4rem auto;box-shadow:0 0 18px rgba(75,120,255,0.25)}
+
+/* ── LOGOS ── */
+.lp-logos{padding:2.25rem 0;border-top:1px solid var(--lp-gb);border-bottom:1px solid var(--lp-gb);background:rgba(8,13,26,0.6);position:relative;z-index:1}
+.lp-logos-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+.lp-logos-lbl{font-size:0.7rem;color:var(--lp-g3);white-space:nowrap;font-weight:600;letter-spacing:0.08em;text-transform:uppercase}
+.lp-logos-list{display:flex;gap:2.5rem;flex-wrap:wrap;align-items:center}
+.lp-logos-list span{font-size:0.82rem;font-weight:700;color:var(--lp-g3);letter-spacing:0.02em}
+
+/* ── STATS ── */
+.lp-stats-section{position:relative;z-index:1;padding:5rem 0}
+.lp-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--lp-gb);border-radius:var(--lp-r3);overflow:hidden;background:var(--lp-gb)}
+.lp-stat-cell{background:var(--lp-glass);backdrop-filter:blur(20px);padding:2.25rem 1.75rem;text-align:center;transition:background 0.2s}
+.lp-stat-cell:hover{background:var(--lp-glass2)}
+.lp-stat-n{font-size:2.75rem;font-weight:800;color:var(--lp-white);letter-spacing:-0.05em;line-height:1}
+.lp-stat-n span{color:var(--lp-blue)}
+.lp-stat-l{font-size:0.8rem;color:var(--lp-g2);margin-top:0.4rem}
+
+/* ── PILLAR CARDS ── */
+.lp-pcards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.lp-pcard{position:relative;border-radius:24px;padding:2px;cursor:default;transform-style:preserve-3d;will-change:transform;transition:transform .08s linear}
+.lp-pcard-border{position:absolute;inset:0;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.03) 50%,rgba(75,120,255,0.15) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.lp-pcard-inner{border-radius:22px;background:rgba(13,17,30,0.65);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(255,255,255,0.06);padding:36px 36px 32px;position:relative;overflow:hidden;transition:background .3s}
+.lp-pcard:hover .lp-pcard-inner{background:rgba(18,24,42,0.75)}
+.lp-pcard-shine{position:absolute;inset:0;border-radius:22px;pointer-events:none;opacity:0;transition:opacity .3s}
+.lp-pcard:hover .lp-pcard-shine{opacity:1}
+.lp-pcard-glow{position:absolute;width:300px;height:300px;border-radius:50%;opacity:0;transition:opacity .4s;pointer-events:none;top:-80px;right:-60px;filter:blur(60px)}
+.lp-pcard:hover .lp-pcard-glow{opacity:1}
+.lp-pc1 .lp-pcard-glow{background:rgba(75,120,255,.12)}
+.lp-pc2 .lp-pcard-glow{background:rgba(20,200,160,.09)}
+.lp-pc3 .lp-pcard-glow{background:rgba(160,80,255,.09)}
+.lp-pc4 .lp-pcard-glow{background:rgba(34,197,94,.08)}
+.lp-pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.lp-pcard-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;line-height:1}
+.lp-pc1 .lp-pcard-icon{background:rgba(75,120,255,.15);border:1px solid rgba(75,120,255,.25)}
+.lp-pc2 .lp-pcard-icon{background:rgba(20,200,160,.12);border:1px solid rgba(20,200,160,.2)}
+.lp-pc3 .lp-pcard-icon{background:rgba(160,80,255,.12);border:1px solid rgba(160,80,255,.2)}
+.lp-pc4 .lp-pcard-icon{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.18)}
+.lp-pcard-num{font-size:11px;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.35)}
+.lp-pcard-body h3{font-size:1.25rem;font-weight:700;margin-bottom:8px;letter-spacing:-.02em;color:var(--lp-white)}
+.lp-pcard-body p{font-size:.875rem;color:#7b88aa;line-height:1.65}
+.lp-pmini{margin-top:28px;border-radius:14px;background:rgba(6,9,18,.6);border:1px solid rgba(255,255,255,.07);overflow:hidden}
+.lp-pmini-bar{height:32px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:6px;padding:0 12px}
+.lp-pmini-dot{width:7px;height:7px;border-radius:50%}
+.lp-pmini-body{padding:16px}
+.lp-pmini-chart{display:flex;align-items:flex-end;gap:3px;height:50px;margin-bottom:12px}
+.lp-pmcb{border-radius:3px 3px 0 0;flex:1}
+.lp-pmini-kpis{display:flex;gap:12px}
+.lp-pmkpi{flex:1;background:rgba(75,120,255,.07);border:1px solid rgba(75,120,255,.12);border-radius:8px;padding:8px 10px}
+.lp-pmkpi-l{font-size:10px;color:#5a6a88;margin-bottom:2px}
+.lp-pmkpi-v{font-size:14px;font-weight:700;color:var(--lp-white);letter-spacing:-.02em}
+.lp-pmkpi-v.pos{color:#22c55e}
+.lp-pmini-donut-row{display:flex;gap:12px;align-items:center}
+.lp-pmini-donut{position:relative;width:64px;height:64px;flex-shrink:0}
+.lp-pmini-donut svg{width:64px;height:64px}
+.lp-pmini-donut-c{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--lp-white);letter-spacing:-.02em}
+.lp-pmini-dl{flex:1;display:flex;flex-direction:column;gap:6px}
+.lp-pmdlr{display:flex;align-items:center;gap:7px;font-size:11px;color:#7b88aa}
+.lp-pmdlr-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.lp-pmdlr-val{margin-left:auto;font-weight:600;color:#c8d0e7}
+.lp-pmar{display:flex;flex-direction:column;gap:6px}
+.lp-pmar-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:7px 10px}
+.lp-pmar-l{display:flex;align-items:center;gap:7px;font-size:11px;color:#c8d0e7;font-weight:500}
+.lp-pmar-ic{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.lp-pmsi{display:flex;flex-direction:column;gap:7px}
+.lp-pmsi-row{display:flex;align-items:center;gap:9px;font-size:11px;color:#7b88aa;padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.04);background:rgba(255,255,255,.02)}
+.lp-pmsi-chk{width:18px;height:18px;border-radius:50%;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;font-size:9px;color:#22c55e;flex-shrink:0}
+.lp-pmsi-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.04em}
+.lp-pctag-row{margin-top:20px;display:flex;gap:6px;flex-wrap:wrap}
+.lp-pctag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:5px}
+.lp-pct1{background:rgba(75,120,255,.1);color:#6b9fff}
+.lp-pct2{background:rgba(20,200,160,.1);color:#14c8a0}
+.lp-pct3{background:rgba(160,80,255,.1);color:#b06aff}
+.lp-pct4{background:rgba(34,197,94,.1);color:#22c55e}
 
 /* ── TICKER ── */
-.lp-ticker-wrap{overflow:hidden;position:relative;padding:1.2rem 0;background:var(--lp-bg1);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05)}
-.lp-ticker-wrap::before,.lp-ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2}
+.lp-ticker-wrap{overflow:hidden;position:relative;z-index:1;padding:1.35rem 0;background:var(--lp-bg1);border-top:1px solid var(--lp-gb);border-bottom:1px solid var(--lp-gb)}
+.lp-ticker-wrap::before,.lp-ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2}
 .lp-ticker-wrap::before{left:0;background:linear-gradient(to right,var(--lp-bg1),transparent)}
 .lp-ticker-wrap::after{right:0;background:linear-gradient(to left,var(--lp-bg1),transparent)}
 .lp-ticker{display:flex;gap:0.6rem;animation:lp-tkr 35s linear infinite;width:max-content}
 .lp-ticker:hover{animation-play-state:paused}
 @keyframes lp-tkr{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.lp-tkr-item{display:flex;align-items:center;gap:0.4rem;background:var(--lp-card);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:0.35rem 0.85rem;font-size:0.8rem;color:var(--lp-g1);white-space:nowrap;flex-shrink:0}
+.lp-tkr-item{display:flex;align-items:center;gap:0.4rem;background:var(--lp-glass);border:1px solid var(--lp-gb);border-radius:8px;padding:0.38rem 0.9rem;font-size:0.79rem;color:var(--lp-g1);white-space:nowrap;flex-shrink:0;transition:border-color 0.15s,color 0.15s}
 .lp-tkr-item:hover{border-color:rgba(75,120,255,0.3);color:var(--lp-white)}
-.lp-tkr-dot{width:5px;height:5px;border-radius:50%;background:var(--lp-blue);opacity:0.7;flex-shrink:0}
+.lp-tkr-dot{width:5px;height:5px;border-radius:50%;background:var(--lp-blue);opacity:0.6;flex-shrink:0}
 
 /* ── TOOLS ── */
-.lp-tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);overflow:hidden}
-.lp-tool-card{background:var(--lp-bg1);padding:1.5rem;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:background 0.18s;gap:0.4rem}
-.lp-tool-card:hover{background:var(--lp-bg2)}
+.lp-tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--lp-gb);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);overflow:hidden}
+.lp-tool-card{background:var(--lp-glass);backdrop-filter:blur(20px);padding:1.5rem;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:background 0.18s;gap:0.4rem}
+.lp-tool-card:hover{background:var(--lp-glass2)}
 .lp-tool-card:hover .lp-t-arrow{opacity:1;transform:translate(2px,-2px)}
 .lp-tool-head{display:flex;align-items:flex-start;justify-content:space-between}
-.lp-t-tag{font-size:0.68rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:4px}
+.lp-t-tag{font-size:0.67rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:5px}
 .te{background:rgba(34,197,94,0.1);color:#22c55e}
-.ti{background:rgba(75,120,255,0.1);color:var(--lp-blue)}
-.tf{background:rgba(245,158,11,0.1);color:var(--lp-amber)}
-.tb{background:rgba(167,139,250,0.1);color:#a78bfa}
-.tv{background:rgba(244,63,94,0.12);color:#fb7185}
+.ti{background:rgba(75,120,255,0.1);color:var(--lp-blue-l)}
+.tf{background:rgba(245,158,11,0.1);color:var(--lp-gold-l)}
+.tb{background:rgba(167,139,250,0.1);color:var(--lp-purple-l)}
+.tv{background:rgba(244,63,94,0.1);color:#fb7185}
 .lp-t-arrow{font-size:0.9rem;color:var(--lp-g2);opacity:0;transition:opacity 0.18s,transform 0.18s}
-.lp-tool-card h3{font-size:0.95rem;font-weight:600;margin-top:0.6rem;color:var(--lp-white)}
-.lp-tool-card p{font-size:0.8rem;color:var(--lp-g2);line-height:1.5;margin:0}
+.lp-tool-card h3{font-size:0.92rem;font-weight:600;margin-top:0.6rem;color:var(--lp-white)}
+.lp-tool-card p{font-size:0.79rem;color:var(--lp-g2);line-height:1.5;margin:0}
 
 /* ── PATRIMOINE ── */
-.lp-patri-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.lp-pcol{background:var(--lp-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);overflow:hidden}
-.lp-pcol-hd{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lp-g2)}
-.lp-prow{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.04);text-decoration:none;color:inherit;transition:background 0.15s}
-.lp-prow:hover{background:rgba(75,120,255,0.05)}
+.lp-patri-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.lp-pcol{background:var(--lp-glass);backdrop-filter:blur(20px);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);overflow:hidden}
+.lp-pcol-hd{padding:1rem 1.25rem;border-bottom:1px solid var(--lp-gb);font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lp-g3)}
+.lp-prow{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.03);text-decoration:none;color:inherit;transition:background 0.15s}
+.lp-prow:hover{background:rgba(75,120,255,0.07)}
 .lp-prow:last-child{border-bottom:none}
 .lp-prow-l{display:flex;align-items:center;gap:0.75rem}
-.lp-prow-ic{width:32px;height:32px;border-radius:7px;background:rgba(75,120,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+.lp-prow-ic{width:32px;height:32px;border-radius:8px;background:rgba(75,120,255,0.1);border:1px solid rgba(75,120,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.88rem;flex-shrink:0}
 .lp-prow-nm{font-size:0.875rem;font-weight:500;color:var(--lp-white)}
-.lp-prow-sb{font-size:0.75rem;color:var(--lp-g2)}
+.lp-prow-sb{font-size:0.72rem;color:var(--lp-g2)}
 .lp-prow-arr{font-size:0.8rem;color:var(--lp-g3)}
 
 /* ── TESTIMONIALS ── */
-.lp-testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.lp-testi{background:var(--lp-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
-.lp-testi-stars{color:var(--lp-blue);font-size:0.75rem;letter-spacing:0.12em}
-.lp-testi-q{font-size:0.875rem;color:var(--lp-g1);line-height:1.65;flex:1}
+.lp-testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.lp-testi{background:var(--lp-glass);backdrop-filter:blur(20px);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);padding:1.75rem;display:flex;flex-direction:column;gap:1rem;transition:background 0.2s,border-color 0.2s,transform 0.2s}
+.lp-testi:hover{background:var(--lp-glass2);border-color:rgba(75,120,255,0.18);transform:translateY(-3px)}
+.lp-testi-stars{color:var(--lp-gold);font-size:0.78rem;letter-spacing:0.1em}
+.lp-testi-q{font-size:0.88rem;color:var(--lp-g1);line-height:1.7;flex:1;font-style:italic}
 .lp-testi-auth{display:flex;align-items:center;gap:0.65rem}
-.lp-testi-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;color:var(--lp-white)}
-.lp-testi-nm{font-size:0.83rem;font-weight:600;color:var(--lp-white)}
-.lp-testi-rl{font-size:0.75rem;color:var(--lp-g2)}
+.lp-testi-av{width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;color:var(--lp-white)}
+.lp-testi-nm{font-size:0.83rem;font-weight:700;color:var(--lp-white)}
+.lp-testi-rl{font-size:0.72rem;color:var(--lp-g2)}
 
 /* ── STEPS ── */
-.lp-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);overflow:hidden}
-.lp-step-card{background:var(--lp-bg0);padding:2rem;position:relative}
-.lp-step-n{font-size:3rem;font-weight:800;color:rgba(75,120,255,0.12);position:absolute;top:1.5rem;right:1.5rem;line-height:1;letter-spacing:-0.04em}
-.lp-step-ic{width:44px;height:44px;border-radius:var(--lp-r);background:var(--lp-blue-g);border:1px solid rgba(75,120,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1rem}
-.lp-step-card h3{margin-bottom:0.4rem}
-.lp-step-card p{font-size:0.875rem;line-height:1.6}
+.lp-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.lp-step-card{background:var(--lp-glass);backdrop-filter:blur(20px);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);padding:2.25rem 2rem;position:relative;overflow:hidden;transition:background 0.2s,transform 0.2s}
+.lp-step-card:hover{background:var(--lp-glass2);transform:translateY(-3px)}
+.lp-step-card::before{content:attr(data-step);position:absolute;top:1.25rem;right:1.5rem;font-size:4rem;font-weight:800;color:rgba(75,120,255,0.07);line-height:1;letter-spacing:-0.05em;pointer-events:none}
+.lp-step-ic{width:48px;height:48px;border-radius:12px;background:rgba(75,120,255,0.1);border:1px solid rgba(75,120,255,0.18);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1.25rem}
+.lp-step-card h3{margin-bottom:0.5rem}
+.lp-step-card p{font-size:0.875rem;line-height:1.65;color:var(--lp-g2)}
 
 /* ── PROFILES ── */
-.lp-profiles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.lp-profile{background:var(--lp-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3);padding:1.5rem;transition:border-color 0.2s,background 0.2s}
-.lp-profile:hover{background:rgba(75,120,255,0.04);border-color:rgba(75,120,255,0.25)}
+.lp-profiles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.lp-profile{background:var(--lp-glass);backdrop-filter:blur(20px);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);padding:1.75rem;transition:background 0.2s,border-color 0.2s,transform 0.2s}
+.lp-profile:hover{background:var(--lp-glass2);border-color:rgba(75,120,255,0.2);transform:translateY(-3px)}
 .lp-p-em{font-size:1.75rem;margin-bottom:0.85rem}
-.lp-p-role{font-size:0.72rem;color:var(--lp-g2);margin-bottom:0.75rem;font-weight:500}
-.lp-profile h3{font-size:0.95rem;margin-bottom:0.4rem}
-.lp-profile p{font-size:0.8rem;margin-bottom:1rem;line-height:1.5}
+.lp-p-role{font-size:0.7rem;color:var(--lp-blue-l);margin-bottom:0.75rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.lp-profile h3{font-size:0.95rem;margin-bottom:0.45rem}
+.lp-profile p{font-size:0.8rem;margin-bottom:1rem;line-height:1.55;color:var(--lp-g2)}
 .lp-p-tags{display:flex;flex-wrap:wrap;gap:0.35rem}
-.lp-p-tag{font-size:0.7rem;font-weight:600;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:0.2rem 0.5rem;color:var(--lp-g2)}
+.lp-p-tag{font-size:0.69rem;font-weight:600;background:var(--lp-glass2);border:1px solid var(--lp-gb);border-radius:5px;padding:0.18rem 0.5rem;color:var(--lp-g2)}
 
 /* ── ROADMAP ── */
 .lp-rmap{display:flex;flex-direction:column}
-.lp-rmap-row{display:grid;grid-template-columns:200px 1fr;gap:2.5rem;padding:2rem 0;border-top:1px solid rgba(255,255,255,0.05);align-items:start}
-.lp-rmap-l strong{font-size:0.95rem;font-weight:700;display:block;margin-bottom:0.25rem;color:var(--lp-white)}
-.lp-rmap-l span{font-size:0.75rem}
+.lp-rmap-row{display:grid;grid-template-columns:200px 1fr;gap:2.75rem;padding:2.25rem 0;border-top:1px solid var(--lp-gb);align-items:start}
+.lp-rmap-l strong{font-size:0.92rem;font-weight:700;display:block;margin-bottom:0.25rem;color:var(--lp-white)}
+.lp-rmap-l span{font-size:0.72rem;font-weight:500}
 .lp-s-done{color:var(--lp-green)}
-.lp-s-wip{color:var(--lp-amber)}
-.lp-s-soon{color:var(--lp-g2)}
-.lp-rmap-items{display:flex;flex-wrap:wrap;gap:0.4rem}
-.lp-ri{display:flex;align-items:center;gap:0.35rem;background:var(--lp-card);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:0.3rem 0.65rem;font-size:0.78rem;color:var(--lp-g1)}
-.lp-ri.done{border-color:rgba(34,197,94,0.12)}
-.lp-ri.wip{border-color:rgba(245,158,11,0.15)}
+.lp-s-wip{color:var(--lp-gold)}
+.lp-s-soon{color:var(--lp-g3)}
+.lp-rmap-items{display:flex;flex-wrap:wrap;gap:0.45rem}
+.lp-ri{display:flex;align-items:center;gap:0.38rem;background:var(--lp-glass);border:1px solid var(--lp-gb);border-radius:6px;padding:0.28rem 0.65rem;font-size:0.77rem;color:var(--lp-g1)}
+.lp-ri.done{border-color:rgba(34,197,94,0.14)}
+.lp-ri.wip{border-color:rgba(245,158,11,0.16)}
 .lp-ri-ic{font-size:0.7rem}
 .lp-ri-ic.done{color:var(--lp-green)}
-.lp-ri-ic.wip{color:var(--lp-amber)}
+.lp-ri-ic.wip{color:var(--lp-gold)}
 .lp-ri-ic.soon{color:var(--lp-g3)}
 
 /* ── COMPARE ── */
-.lp-cmp-wrap{overflow-x:auto;border:1px solid rgba(255,255,255,0.06);border-radius:var(--lp-r3)}
+.lp-cmp-wrap{overflow-x:auto;border:1px solid var(--lp-gb);border-radius:var(--lp-r3)}
 .lp-cmp{width:100%;border-collapse:collapse;min-width:520px}
-.lp-cmp thead tr{background:var(--lp-bg2)}
-.lp-cmp th{padding:1rem 1.25rem;font-size:0.8rem;font-weight:700;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);color:var(--lp-white)}
-.lp-cmp th.hl{color:var(--lp-blue)}
-.lp-cmp td{padding:0.8rem 1.25rem;font-size:0.85rem;color:var(--lp-g1);border-bottom:1px solid rgba(255,255,255,0.04)}
-.lp-cmp tr:hover td{background:rgba(255,255,255,0.02)}
+.lp-cmp thead tr{background:var(--lp-glass2)}
+.lp-cmp th{padding:1.1rem 1.25rem;font-size:0.8rem;font-weight:700;text-align:left;border-bottom:1px solid var(--lp-gb);color:var(--lp-white)}
+.lp-cmp th.hl{color:var(--lp-blue-l)}
+.lp-cmp td{padding:0.85rem 1.25rem;font-size:0.85rem;color:var(--lp-g1);border-bottom:1px solid rgba(255,255,255,0.03)}
+.lp-cmp tr:hover td{background:var(--lp-glass)}
 .lp-cmp tr:last-child td{border-bottom:none}
-.lp-tick{color:var(--lp-green)}
-.lp-cross{color:rgba(255,255,255,0.15)}
-.lp-part{color:var(--lp-amber);font-size:0.78rem}
+.lp-tick{color:var(--lp-green);font-weight:700}
+.lp-cross{color:rgba(255,255,255,0.14)}
+.lp-part{color:var(--lp-gold);font-size:0.78rem}
 
 /* ── FAQ ── */
 .lp-faq{max-width:700px;margin:0 auto}
-.lp-fi{border-top:1px solid rgba(255,255,255,0.05)}
-.lp-fq{width:100%;background:none;border:none;text-align:left;padding:1.25rem 0;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.92rem;font-weight:600;color:var(--lp-white);display:flex;justify-content:space-between;align-items:center;gap:1rem}
-.lp-fq:hover{color:var(--lp-blue)}
-.lp-fi-ic{font-size:1rem;color:var(--lp-g2);transition:transform 0.2s;display:inline-block}
-.lp-fi-ic.open{transform:rotate(45deg);color:var(--lp-blue)}
-.lp-fa{font-size:0.875rem;color:var(--lp-g2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.2s;padding-right:2rem}
-.lp-fa.open{max-height:200px;padding-bottom:1.25rem}
+.lp-fi{border-top:1px solid var(--lp-gb)}
+.lp-fq{width:100%;background:none;border:none;text-align:left;padding:1.3rem 0;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.92rem;font-weight:600;color:var(--lp-white);display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:color 0.15s}
+.lp-fq:hover{color:var(--lp-blue-l)}
+.lp-fi-ic{font-size:1rem;color:var(--lp-g3);transition:transform 0.2s,color 0.2s;display:inline-block;flex-shrink:0}
+.lp-fi-ic.open{transform:rotate(45deg);color:var(--lp-blue-l)}
+.lp-fa{font-size:0.875rem;color:var(--lp-g2);line-height:1.75;max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.2s;padding-right:2.5rem}
+.lp-fa.open{max-height:200px;padding-bottom:1.3rem}
 
 /* ── CTA FINAL ── */
-.lp-cta-final{padding:8rem 0;text-align:center;position:relative;overflow:hidden;background:var(--lp-bg1);border-top:1px solid rgba(255,255,255,0.05)}
-.lp-cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 100%,rgba(75,120,255,0.08) 0%,transparent 70%);pointer-events:none}
-.lp-cta-final h2{margin-bottom:0.75rem}
-.lp-cta-final p{max-width:460px;margin:0 auto 2.25rem}
+.lp-cta-final{padding:9rem 0;text-align:center;position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--lp-gb);border-bottom:1px solid var(--lp-gb)}
+.lp-cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(75,120,255,0.08) 0%,rgba(139,92,246,0.04) 60%,transparent 80%);pointer-events:none}
+.lp-cta-final h2{margin-bottom:0.85rem}
+.lp-cta-final p{max-width:480px;margin:0 auto 2.5rem;font-size:1.05rem;color:var(--lp-g2)}
 .lp-cta-acts{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap}
 
 /* ── STICKY ── */
-.lp-sticky{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(13,17,32,0.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.09);border-radius:99px;padding:0.45rem 0.5rem 0.45rem 1.4rem;display:flex;align-items:center;gap:1rem;z-index:99;box-shadow:0 8px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(75,120,255,0.1);animation:lp-sb 0.5s 2.5s ease both}
-@keyframes lp-sb{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.lp-sticky span{font-size:0.82rem;color:var(--lp-g2);white-space:nowrap}
+.lp-sticky{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(8,13,26,0.96);backdrop-filter:blur(24px) saturate(200%);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:0.45rem 0.5rem 0.45rem 1.5rem;display:flex;align-items:center;gap:1rem;z-index:99;box-shadow:0 8px 40px rgba(0,0,0,0.6),0 0 0 1px rgba(75,120,255,0.1);animation:lp-sb 0.5s 2.5s ease both}
+@keyframes lp-sb{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.lp-sticky span{font-size:0.8rem;color:var(--lp-g2);white-space:nowrap}
 
 /* ── FOOTER ── */
-.lp-footer{border-top:1px solid rgba(255,255,255,0.05);padding:3.5rem 0 2.5rem}
+.lp-footer{padding:3.5rem 0 2.5rem;position:relative;z-index:1;border-top:1px solid var(--lp-gb)}
 .lp-ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.lp-ft-brand p{font-size:0.83rem;color:var(--lp-g2);margin-top:0.65rem;max-width:260px;line-height:1.6}
-.lp-ft-col h5{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lp-g3);margin-bottom:0.9rem}
-.lp-ft-col ul{list-style:none;display:flex;flex-direction:column;gap:0.45rem}
-.lp-ft-col a{font-size:0.83rem;color:var(--lp-g2);transition:color 0.15s}
+.lp-ft-brand p{font-size:0.82rem;color:var(--lp-g2);margin-top:0.7rem;max-width:250px;line-height:1.65}
+.lp-ft-col h5{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--lp-g3);margin-bottom:1rem}
+.lp-ft-col ul{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
+.lp-ft-col a{font-size:0.82rem;color:var(--lp-g2);transition:color 0.15s}
 .lp-ft-col a:hover{color:var(--lp-white)}
-.lp-ft-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.04);font-size:0.75rem;color:var(--lp-g3)}
+.lp-ft-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding-top:2rem;border-top:1px solid var(--lp-gb);font-size:0.74rem;color:var(--lp-g3)}
 
-/* ── SCROLL ANIM ── */
-.lp-wrap .fade{opacity:0;transform:translateY(20px);transition:opacity 0.55s ease,transform 0.55s ease}
+/* ── SCROLL FADE ── */
+.lp-wrap .fade{opacity:0;transform:translateY(22px);transition:opacity 0.6s ease,transform 0.6s ease}
 .lp-wrap .fade.in{opacity:1;transform:translateY(0)}
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .lp-feat-grid,.lp-testi-grid,.lp-steps-grid,.lp-profiles-grid{grid-template-columns:1fr}
+@media(max-width:960px){
+  .lp-hero-inner{grid-template-columns:1fr;gap:3rem}
+  .lp-testi-grid,.lp-steps-grid,.lp-profiles-grid{grid-template-columns:1fr}
   .lp-tools-grid{grid-template-columns:1fr 1fr}
   .lp-patri-2col{grid-template-columns:1fr}
   .lp-stats-grid{grid-template-columns:1fr 1fr}
@@ -349,6 +413,7 @@ const CSS = `
   .lp-mock-body{grid-template-columns:1fr}
   .lp-rmap-row{grid-template-columns:1fr;gap:0.75rem}
   .lp-sticky{display:none}
+  .lp-pcards-grid{grid-template-columns:1fr}
 }
 `
 
@@ -370,6 +435,7 @@ export function LandingClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   useEffect(() => {
+    // Scroll fade + counters
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (!e.isIntersecting) return
@@ -381,7 +447,42 @@ export function LandingClient() {
       })
     }, { threshold: 0.08 })
     document.querySelectorAll('.lp-wrap .fade').forEach(el => obs.observe(el))
-    return () => obs.disconnect()
+
+    // Pillar card tilt
+    const MAX = 10
+    const cards = document.querySelectorAll<HTMLElement>('.lp-pcard')
+    const handlers: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = []
+    cards.forEach(card => {
+      const move = (e: MouseEvent) => {
+        const r = card.getBoundingClientRect()
+        const dx = (e.clientX - (r.left + r.width / 2)) / r.width
+        const dy = (e.clientY - (r.top + r.height / 2)) / r.height
+        card.style.transform = `perspective(900px) rotateX(${-dy * MAX}deg) rotateY(${dx * MAX}deg) scale3d(1.015,1.015,1.015)`
+        const shine = card.querySelector<HTMLElement>('.lp-pcard-shine')
+        if (shine) {
+          const px = ((e.clientX - r.left) / r.width * 100).toFixed(1)
+          const py = ((e.clientY - r.top) / r.height * 100).toFixed(1)
+          shine.style.background = `radial-gradient(circle at ${px}% ${py}%,rgba(255,255,255,.07),transparent 55%)`
+          shine.style.opacity = '1'
+        }
+      }
+      const leave = () => {
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
+        const shine = card.querySelector<HTMLElement>('.lp-pcard-shine')
+        if (shine) shine.style.opacity = '0'
+      }
+      card.addEventListener('mousemove', move)
+      card.addEventListener('mouseleave', leave)
+      handlers.push({ el: card, move, leave })
+    })
+
+    return () => {
+      obs.disconnect()
+      handlers.forEach(({ el, move, leave }) => {
+        el.removeEventListener('mousemove', move)
+        el.removeEventListener('mouseleave', leave)
+      })
+    }
   }, [])
 
   return (
@@ -389,11 +490,19 @@ export function LandingClient() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="lp-wrap">
 
+        {/* ── ORBS ── */}
+        <div className="lp-orbs" aria-hidden="true">
+          <div className="lp-orb lp-orb1" />
+          <div className="lp-orb lp-orb2" />
+          <div className="lp-orb lp-orb3" />
+        </div>
+
         {/* ── NAV ── */}
         <nav className="lp-nav">
           <div className="lp-nav-inner">
             <Link href="/" className="lp-logo">
-              <span className="lp-logo-dot" /> PatrImo
+              <span className="lp-logo-mark">P</span>
+              PatrImo
             </Link>
             <ul className="lp-nav-links">
               {[['#simulateurs','Simulateurs'],['#patrimoine','Patrimoine'],['#fonctionnalites','Fonctionnalités'],['#roadmap','Roadmap'],['#faq','FAQ']].map(([h,l]) => (
@@ -409,70 +518,76 @@ export function LandingClient() {
 
         {/* ── HERO ── */}
         <section className="lp-hero">
-          <div className="lp-glow lp-glow-l" />
-          <div className="lp-glow lp-glow-r" />
-          <div className="lp-container lp-hero-content">
-            <div style={{ marginBottom:'1.75rem' }}>
-              <span className="lp-pill"><span className="lp-live" />18 simulateurs · Données 2026 · 100 % gratuit</span>
-            </div>
-            <h1>Le couteau suisse<br />de <em>l&apos;investisseur français.</em></h1>
-            <p className="lp-hero-sub">
-              Simulez, analysez et suivez l&apos;intégralité de votre patrimoine depuis une seule plateforme. Gratuit, sans données bancaires.
-            </p>
-            <div className="lp-hero-ctas">
-              <Link href="/login" className="lp-btn lp-primary lp-lg">Commencer gratuitement →</Link>
-              <a href="#simulateurs" className="lp-btn lp-ghost lp-lg">Voir les simulateurs</a>
-            </div>
-            <div className="lp-hero-trust">
-              {['3 847 utilisateurs actifs','Zéro donnée bancaire','Sans pub · RGPD · Hébergé en Europe','Données temps réel Finnhub & CoinGecko'].map(t => (
-                <div key={t} className="lp-trust-i">
-                  <svg viewBox="0 0 24 24"><path d="M12 2L3 7v10l9 5 9-5V7z" /></svg>
-                  {t}
+          <div className="lp-container">
+            <div className="lp-hero-inner">
+              {/* Left column */}
+              <div>
+                <div className="lp-hero-badge">
+                  <span className="lp-pill"><span className="lp-live" />18 simulateurs · Données 2026 · 100 % gratuit</span>
                 </div>
-              ))}
-            </div>
-
-            {/* Dashboard mockup */}
-            <div className="lp-mock">
-              <div className="lp-mock-bar">
-                <div className="lp-mock-dots">
-                  <div className="lp-mock-dot" style={{ background:'#ff5f57' }} />
-                  <div className="lp-mock-dot" style={{ background:'#febc2e' }} />
-                  <div className="lp-mock-dot" style={{ background:'#28c840' }} />
+                <h1>Le couteau suisse<br />de <span className="lp-grad">l&apos;investisseur français.</span></h1>
+                <p className="lp-hero-sub">
+                  Simulez, analysez et suivez l&apos;intégralité de votre patrimoine depuis une seule plateforme. Gratuit, sans données bancaires.
+                </p>
+                <div className="lp-hero-ctas">
+                  <Link href="/login" className="lp-btn lp-gold-btn lp-lg">Commencer gratuitement →</Link>
+                  <a href="#simulateurs" className="lp-btn lp-ghost lp-lg">Voir les simulateurs</a>
                 </div>
-                <div className="lp-mock-url">finance.digitalstack.cloud/patrimoine</div>
+                <div className="lp-hero-trust">
+                  {['3 847 utilisateurs actifs','Zéro donnée bancaire','RGPD · Hébergé en Europe','Finnhub & CoinGecko'].map(t => (
+                    <div key={t} className="lp-trust-i">
+                      <svg viewBox="0 0 24 24"><path d="M12 2L3 7v10l9 5 9-5V7z" /></svg>
+                      {t}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="lp-mock-body">
-                <div className="lp-mock-panel">
-                  <div className="lp-panel-lbl">Patrimoine net</div>
-                  <div className="lp-mock-num">412 500 €</div>
-                  <div className="lp-mock-delta pos">↑ +8.4% YTD</div>
-                  <div className="lp-mock-barchart">
-                    {[30,45,55,40,65,72,85,78,90].map((h,i) => (
-                      <div key={i} className="b" style={{ height:`${h}%`, background: i===8 ? '#4b78ff' : `rgba(75,120,255,${0.3+i*0.04})` }} />
-                    ))}
+
+              {/* Right column — mockup */}
+              <div className="lp-mock-wrap">
+                <div className="lp-mock-glow" />
+                <div className="lp-mock">
+                  <div className="lp-mock-bar">
+                    <div className="lp-mock-dots">
+                      <div className="lp-mock-dot" style={{ background:'#ff5f57' }} />
+                      <div className="lp-mock-dot" style={{ background:'#febc2e' }} />
+                      <div className="lp-mock-dot" style={{ background:'#28c840' }} />
+                    </div>
+                    <div className="lp-mock-url">finance.digitalstack.cloud/patrimoine</div>
                   </div>
-                </div>
-                <div className="lp-mock-panel">
-                  <div className="lp-panel-lbl">Portefeuille actions</div>
-                  <div className="lp-mock-num">115 500 €</div>
-                  <div className="lp-mock-delta pos">↑ +21.2%</div>
-                  <table className="lp-mock-tbl"><tbody>
-                    <tr><td>MSCI World ETF</td><td style={{ color:'#22c55e' }}>+24.1%</td></tr>
-                    <tr><td>S&amp;P 500 ETF</td><td style={{ color:'#22c55e' }}>+19.8%</td></tr>
-                    <tr><td>Bitcoin</td><td style={{ color:'#ef4444' }}>-4.2%</td></tr>
-                    <tr><td>Livret A</td><td style={{ color:'#7b88aa' }}>+3.0%</td></tr>
-                  </tbody></table>
-                </div>
-                <div className="lp-mock-panel">
-                  <div className="lp-panel-lbl">Score patrimonial</div>
-                  <div className="lp-score-ring">74</div>
-                  <div style={{ fontSize:'0.72rem', color:'#7b88aa', textAlign:'center', marginTop:'0.25rem' }}>sur 100 · 6 piliers</div>
-                  <table className="lp-mock-tbl" style={{ marginTop:'0.75rem' }}><tbody>
-                    <tr><td>Épargne</td><td style={{ color:'#22c55e' }}>85/100</td></tr>
-                    <tr><td>Dettes</td><td style={{ color:'#f59e0b' }}>62/100</td></tr>
-                    <tr><td>Diversification</td><td style={{ color:'#22c55e' }}>78/100</td></tr>
-                  </tbody></table>
+                  <div className="lp-mock-body">
+                    <div className="lp-mock-panel">
+                      <div className="lp-panel-lbl">Patrimoine net</div>
+                      <div className="lp-mock-num">412 500 €</div>
+                      <div className="lp-mock-delta pos">↑ +8.4% YTD</div>
+                      <div className="lp-mock-barchart">
+                        {[30,45,55,40,65,72,85,78,90].map((h,i) => (
+                          <div key={i} className="b" style={{ height:`${h}%`, background: i===8 ? '#4b78ff' : `rgba(75,120,255,${0.3+i*0.04})` }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="lp-mock-panel">
+                      <div className="lp-panel-lbl">Portefeuille</div>
+                      <div className="lp-mock-num">115 500 €</div>
+                      <div className="lp-mock-delta pos">↑ +21.2%</div>
+                      <table className="lp-mock-tbl"><tbody>
+                        <tr><td>MSCI World</td><td style={{ color:'#22c55e' }}>+24.1%</td></tr>
+                        <tr><td>S&amp;P 500</td><td style={{ color:'#22c55e' }}>+19.8%</td></tr>
+                        <tr><td>Bitcoin</td><td style={{ color:'#ef4444' }}>-4.2%</td></tr>
+                        <tr><td>Livret A</td><td style={{ color:'#7b88aa' }}>+3.0%</td></tr>
+                      </tbody></table>
+                    </div>
+                    <div className="lp-mock-panel">
+                      <div className="lp-panel-lbl">Score patrimonial</div>
+                      <div className="lp-score-ring">74</div>
+                      <div style={{ fontSize:'0.65rem', color:'#7b88aa', textAlign:'center', marginTop:'0.25rem' }}>sur 100 · 6 piliers</div>
+                      <table className="lp-mock-tbl" style={{ marginTop:'0.6rem' }}><tbody>
+                        <tr><td>Épargne</td><td style={{ color:'#22c55e' }}>85/100</td></tr>
+                        <tr><td>Dettes</td><td style={{ color:'#f59e0b' }}>62/100</td></tr>
+                        <tr><td>Diversif.</td><td style={{ color:'#22c55e' }}>78/100</td></tr>
+                      </tbody></table>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -494,7 +609,7 @@ export function LandingClient() {
         </div>
 
         {/* ── STATS ── */}
-        <section className="lp-stats-wrap">
+        <section className="lp-stats-section">
           <div className="lp-container">
             <div className="lp-stats-grid fade">
               <div className="lp-stat-cell">
@@ -507,7 +622,7 @@ export function LandingClient() {
               </div>
               <div className="lp-stat-cell">
                 <div className="lp-stat-n"><span>15</span></div>
-                <div className="lp-stat-l">Pages de gestion patrimoine</div>
+                <div className="lp-stat-l">Pages gestion patrimoine</div>
               </div>
               <div className="lp-stat-cell">
                 <div className="lp-stat-n"><span>0</span></div>
@@ -525,19 +640,186 @@ export function LandingClient() {
               <h2>Quatre piliers pour<br />maîtriser votre patrimoine</h2>
               <p>Des outils complets pour simuler, analyser, suivre et sécuriser votre situation financière.</p>
             </div>
-            <div className="lp-feat-grid fade">
-              {[
-                { ic:'⚡', t:'Simulateurs', p:'18 calculateurs couvrant intérêts composés, FI/RE, crédit immobilier, fiscalité, retraite et plus. Résultats instantanés, modèles fiscaux France 2026.' },
-                { ic:'📊', t:'Insights',    p:'Graphiques interactifs, benchmarks CAC 40 / MSCI World et visualisations claires pour révéler la croissance, la répartition et les tendances de votre capital.' },
-                { ic:'🏛', t:'Patrimoine',  p:'Suivi complet — immobilier, actions, livrets, crypto — centralisé en temps réel via Finnhub & CoinGecko. Score 0–100 sur 6 piliers patrimoniaux.' },
-                { ic:'🔒', t:'Sécurité',   p:"Chiffrement AES-256, hébergé en Europe, conformité RGPD. Aucune donnée bancaire, aucun accès à vos comptes, aucune revente. Jamais." },
-              ].map(f => (
-                <div key={f.t} className="lp-feat-card">
-                  <div className="lp-feat-icon">{f.ic}</div>
-                  <h3>{f.t}</h3>
-                  <p>{f.p}</p>
+            <div className="lp-pcards-grid fade">
+
+              {/* Card 1 — Simulateurs */}
+              <div className="lp-pcard lp-pc1">
+                <div className="lp-pcard-border" />
+                <div className="lp-pcard-inner">
+                  <div className="lp-pcard-shine" />
+                  <div className="lp-pcard-glow" />
+                  <div className="lp-pcard-top">
+                    <div className="lp-pcard-icon">⚡</div>
+                    <span className="lp-pcard-num">01</span>
+                  </div>
+                  <div className="lp-pcard-body">
+                    <h3>Simulateurs</h3>
+                    <p>18 calculateurs couvrant intérêts composés, FI/RE, crédit immobilier, fiscalité, retraite et plus. Résultats instantanés.</p>
+                  </div>
+                  <div className="lp-pmini">
+                    <div className="lp-pmini-bar">
+                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Intérêts Composés</span>
+                    </div>
+                    <div className="lp-pmini-body">
+                      <div className="lp-pmini-chart">
+                        {[18,28,35,42,52,63,71,82,95,100].map((h,i) => (
+                          <div key={i} className="lp-pmcb" style={{ height:`${h}%`, background:`rgba(75,120,255,${(0.25+h/100*0.75).toFixed(2)})` }} />
+                        ))}
+                      </div>
+                      <div className="lp-pmini-kpis">
+                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital investi</div><div className="lp-pmkpi-v">72 000 €</div></div>
+                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital final</div><div className="lp-pmkpi-v pos">186 400 €</div></div>
+                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Rendement</div><div className="lp-pmkpi-v pos">+7,0 %</div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lp-pctag-row">
+                    {['FI/RE','DCA','Retraite','Crédit immo'].map(t => <span key={t} className="lp-pctag lp-pct1">{t}</span>)}
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Card 2 — Insights */}
+              <div className="lp-pcard lp-pc2">
+                <div className="lp-pcard-border" />
+                <div className="lp-pcard-inner">
+                  <div className="lp-pcard-shine" />
+                  <div className="lp-pcard-glow" />
+                  <div className="lp-pcard-top">
+                    <div className="lp-pcard-icon">📊</div>
+                    <span className="lp-pcard-num">02</span>
+                  </div>
+                  <div className="lp-pcard-body">
+                    <h3>Insights</h3>
+                    <p>Graphiques interactifs, benchmarks CAC 40 / MSCI World et visualisations claires pour révéler la croissance et les tendances.</p>
+                  </div>
+                  <div className="lp-pmini">
+                    <div className="lp-pmini-bar">
+                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Répartition patrimoine</span>
+                    </div>
+                    <div className="lp-pmini-body">
+                      <div className="lp-pmini-donut-row">
+                        <div className="lp-pmini-donut">
+                          <svg viewBox="0 0 64 64">
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="rgba(255,255,255,.05)" strokeWidth="10"/>
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="#4b78ff" strokeWidth="10" strokeDasharray="60 91" strokeDashoffset="24" strokeLinecap="round"/>
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="#14c8a0" strokeWidth="10" strokeDasharray="28 123" strokeDashoffset="-36" strokeLinecap="round"/>
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="#b06aff" strokeWidth="10" strokeDasharray="18 133" strokeDashoffset="-64" strokeLinecap="round"/>
+                            <circle cx="32" cy="32" r="24" fill="none" stroke="#f59e0b" strokeWidth="10" strokeDasharray="13 138" strokeDashoffset="-82" strokeLinecap="round"/>
+                          </svg>
+                          <div className="lp-pmini-donut-c">412k</div>
+                        </div>
+                        <div className="lp-pmini-dl">
+                          {[['#4b78ff','Immobilier','42 %'],['#14c8a0','Actions','28 %'],['#b06aff','Livrets','18 %'],['#f59e0b','Crypto','12 %']].map(([c,l,v]) => (
+                            <div key={l} className="lp-pmdlr"><div className="lp-pmdlr-dot" style={{ background:c }} />{l}<div className="lp-pmdlr-val">{v}</div></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lp-pctag-row">
+                    {['CAC 40','MSCI World','Benchmark'].map(t => <span key={t} className="lp-pctag lp-pct2">{t}</span>)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3 — Patrimoine */}
+              <div className="lp-pcard lp-pc3">
+                <div className="lp-pcard-border" />
+                <div className="lp-pcard-inner">
+                  <div className="lp-pcard-shine" />
+                  <div className="lp-pcard-glow" />
+                  <div className="lp-pcard-top">
+                    <div className="lp-pcard-icon">🏛</div>
+                    <span className="lp-pcard-num">03</span>
+                  </div>
+                  <div className="lp-pcard-body">
+                    <h3>Patrimoine</h3>
+                    <p>Suivi complet — immobilier, actions, livrets, crypto — centralisé en temps réel via Finnhub & CoinGecko. Score 0–100 sur 6 piliers.</p>
+                  </div>
+                  <div className="lp-pmini">
+                    <div className="lp-pmini-bar">
+                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Mon portefeuille · live</span>
+                      <span style={{ marginLeft:'auto', fontSize:9, background:'rgba(34,197,94,.12)', color:'#22c55e', padding:'2px 7px', borderRadius:99, fontWeight:700 }}>● LIVE</span>
+                    </div>
+                    <div className="lp-pmini-body">
+                      <div className="lp-pmar">
+                        {[
+                          { bg:'rgba(75,120,255,.12)', ic:'📈', nm:'MSCI World ETF', perf:'+24,1 %', pos:true },
+                          { bg:'rgba(245,158,11,.10)', ic:'₿',  nm:'Bitcoin',        perf:'-4,2 %',  pos:false },
+                          { bg:'rgba(20,200,160,.10)', ic:'🏠', nm:'Immo Neuilly',   perf:'+8,4 %',  pos:true },
+                          { bg:'rgba(160,80,255,.10)', ic:'💳', nm:'Livret A',       perf:'+3,0 %',  pos:true },
+                        ].map(r => (
+                          <div key={r.nm} className="lp-pmar-row">
+                            <div className="lp-pmar-l">
+                              <div className="lp-pmar-ic" style={{ background:r.bg }}>{r.ic}</div>
+                              {r.nm}
+                            </div>
+                            <span style={{ fontSize:11, fontWeight:700, color: r.pos ? '#22c55e' : '#ef4444' }}>{r.perf}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lp-pctag-row">
+                    {['Finnhub','CoinGecko','Score 0–100'].map(t => <span key={t} className="lp-pctag lp-pct3">{t}</span>)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 4 — Sécurité */}
+              <div className="lp-pcard lp-pc4">
+                <div className="lp-pcard-border" />
+                <div className="lp-pcard-inner">
+                  <div className="lp-pcard-shine" />
+                  <div className="lp-pcard-glow" />
+                  <div className="lp-pcard-top">
+                    <div className="lp-pcard-icon">🔒</div>
+                    <span className="lp-pcard-num">04</span>
+                  </div>
+                  <div className="lp-pcard-body">
+                    <h3>Sécurité</h3>
+                    <p>Chiffrement AES-256, hébergé en Europe, conformité RGPD. Aucune donnée bancaire requise, aucune revente. Jamais.</p>
+                  </div>
+                  <div className="lp-pmini">
+                    <div className="lp-pmini-bar">
+                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>État de sécurité</span>
+                    </div>
+                    <div className="lp-pmini-body">
+                      <div className="lp-pmsi">
+                        {[
+                          { t:'Chiffrement de bout en bout',   badge:'AES-256', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
+                          { t:'Hébergement certifié UE',       badge:'RGPD',    bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
+                          { t:'0 donnée bancaire collectée',   badge:'Vérifié', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
+                          { t:'OAuth 2.0 Google SSO',          badge:'Sécurisé',bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
+                        ].map(r => (
+                          <div key={r.t} className="lp-pmsi-row">
+                            <div className="lp-pmsi-chk">✓</div>
+                            <span style={{ flex:1 }}>{r.t}</span>
+                            <span className="lp-pmsi-badge" style={{ background:r.bc, color:r.tc }}>{r.badge}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lp-pctag-row">
+                    {['AES-256','RGPD','OAuth 2.0','0 donnée bancaire'].map(t => <span key={t} className="lp-pctag lp-pct4">{t}</span>)}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -639,7 +921,7 @@ export function LandingClient() {
         <section className="lp-section">
           <div className="lp-container">
             <div className="lp-s-head fade" style={{ textAlign:'center' }}>
-              <div className="lp-s-label" style={{ justifyContent:'center' }}>En 3 étapes</div>
+              <div className="lp-s-label" style={{ margin:'0 auto 0.9rem' }}>En 3 étapes</div>
               <h2>Comment ça marche ?</h2>
             </div>
             <div className="lp-steps-grid fade">
@@ -648,8 +930,7 @@ export function LandingClient() {
                 { n:'02', ic:'🎚', t:'Lancez une simulation',   p:"Choisissez parmi 18 simulateurs. Renseignez vos paramètres — résultats instantanés à chaque frappe." },
                 { n:'03', ic:'📈', t:'Visualisez votre avenir', p:"Graphiques interactifs, synthèses détaillées et scénarios comparatifs pour décider plus intelligemment." },
               ].map(s => (
-                <div key={s.n} className="lp-step-card">
-                  <span className="lp-step-n">{s.n}</span>
+                <div key={s.n} className="lp-step-card" data-step={s.n}>
                   <div className="lp-step-ic">{s.ic}</div>
                   <h3>{s.t}</h3>
                   <p>{s.p}</p>
@@ -755,7 +1036,7 @@ export function LandingClient() {
         <section id="faq" className="lp-section">
           <div className="lp-container">
             <div className="lp-s-head fade" style={{ textAlign:'center' }}>
-              <div className="lp-s-label" style={{ justifyContent:'center' }}>FAQ</div>
+              <div className="lp-s-label" style={{ margin:'0 auto 0.9rem' }}>FAQ</div>
               <h2>Questions fréquentes</h2>
             </div>
             <div className="lp-faq fade">
@@ -781,10 +1062,10 @@ export function LandingClient() {
               <span className="lp-pill" style={{ marginBottom:'1.5rem', display:'inline-flex' }}>
                 18 simulateurs · 100 % gratuit · sans carte bancaire
               </span>
-              <h2>Prenez le contrôle total<br />de votre vie financière.</h2>
+              <h2>Prenez le contrôle total<br /><span className="lp-grad">de votre vie financière.</span></h2>
               <p>Impôts, FIRE, patrimoine. Sans carte bancaire, sans engagement.</p>
               <div className="lp-cta-acts">
-                <Link href="/login" className="lp-btn lp-primary lp-lg">Créer un compte gratuit →</Link>
+                <Link href="/login" className="lp-btn lp-gold-btn lp-lg">Créer un compte gratuit →</Link>
                 <Link href="/login" className="lp-btn lp-ghost lp-lg">Se connecter</Link>
               </div>
             </div>
@@ -796,7 +1077,7 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-ft-grid">
               <div className="lp-ft-brand">
-                <Link href="/" className="lp-logo"><span className="lp-logo-dot" /> PatrImo</Link>
+                <Link href="/" className="lp-logo"><span className="lp-logo-mark">P</span> PatrImo</Link>
                 <p>Outils de finance personnelle pour investisseurs français. Simulateurs, patrimoine, fiscalité.</p>
               </div>
               <div className="lp-ft-col">

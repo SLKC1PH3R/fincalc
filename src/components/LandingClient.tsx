@@ -1020,8 +1020,44 @@ export function LandingClient() {
           </div>
         </section>
 
+        {/* ── SECURITY ── */}
+        <section id="securite" className="lp-section">
+          <div className="lp-container">
+            <div className="lp-s-head fade" style={{ textAlign:'center' }}>
+              <div className="lp-s-label" style={{ margin:'0 auto 0.9rem' }}>Confiance & RGPD</div>
+              <h2>Vos données restent<br /><span className="lp-grad">vos données.</span></h2>
+              <p style={{ margin:'0 auto' }}>PatrImo ne demande jamais vos coordonnées bancaires. Aucune revente, aucune publicité ciblée.</p>
+            </div>
+            <div className="fade" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.25rem', marginBottom:'2rem' }}>
+              {[
+                { ic:'🔒', title:'Chiffrement AES-256',     body:"Toutes vos données sont chiffrées au repos et en transit. Même nos équipes ne peuvent pas lire vos informations patrimoniales." },
+                { ic:'🇪🇺', title:'Hébergé en Europe',       body:"Nos serveurs sont situés en Union Européenne, conformes au RGPD. Aucune donnée n'est transférée hors UE sans votre consentement." },
+                { ic:'🚫', title:'Zéro donnée bancaire',    body:"PatrImo ne demande jamais votre RIB, identifiants bancaires ou accès Open Banking. Vous saisissez uniquement ce que vous voulez." },
+                { ic:'🔑', title:'OAuth 2.0 Google SSO',    body:"Authentification déléguée à Google. Vos mots de passe ne nous sont jamais transmis ni stockés. Connexion sécurisée en un clic." },
+                { ic:'📵', title:'Sans publicité',          body:"PatrImo ne vend pas vos données à des annonceurs. Aucun tracking publicitaire, aucun cookie tiers non fonctionnel." },
+                { ic:'📋', title:'Conformité RGPD',         body:"Droit d'accès, de rectification et de suppression garantis. Export de vos données à tout moment depuis votre profil." },
+              ].map(card => (
+                <div key={card.title} style={{ background:'var(--lp-glass)', border:'1px solid var(--lp-gb)', borderRadius:'var(--lp-r3)', padding:'1.75rem', backdropFilter:'blur(20px)' }}>
+                  <div style={{ fontSize:'1.75rem', marginBottom:'0.75rem' }}>{card.ic}</div>
+                  <h3 style={{ fontSize:'0.95rem', marginBottom:'0.45rem' }}>{card.title}</h3>
+                  <p style={{ fontSize:'0.82rem', lineHeight:1.65, color:'var(--lp-g2)' }}>{card.body}</p>
+                </div>
+              ))}
+            </div>
+            <div className="fade" style={{ textAlign:'center' }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:'2rem', background:'var(--lp-glass)', border:'1px solid var(--lp-gb)', borderRadius:'var(--lp-r3)', padding:'1.25rem 2.5rem', flexWrap:'wrap', justifyContent:'center' }}>
+                {['RGPD','AES-256','OAuth 2.0','Hébergé UE','0 donnée bancaire'].map(badge => (
+                  <span key={badge} style={{ fontSize:'0.78rem', fontWeight:700, color:'var(--lp-g2)', display:'flex', alignItems:'center', gap:'0.4rem' }}>
+                    <span style={{ color:'var(--lp-green)' }}>✓</span> {badge}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── FAQ ── */}
-        <section id="faq" className="lp-section">
+        <section id="faq" className="lp-section" style={{ background:'var(--lp-bg1)' }}>
           <div className="lp-container">
             <div className="lp-s-head fade" style={{ textAlign:'center' }}>
               <div className="lp-s-label" style={{ margin:'0 auto 0.9rem' }}>FAQ</div>
@@ -1109,7 +1145,85 @@ export function LandingClient() {
           <Link href="/login" className="lp-btn lp-primary" style={{ borderRadius:'99px' }}>Commencer →</Link>
         </div>
 
+        {/* ── TWEAKS PANEL (dev only) ── */}
+        {process.env.NODE_ENV === 'development' && <TweaksPanel />}
+
       </div>
     </>
   )
 }
+
+// ─── TweaksPanel — dev-only overlay to tweak CSS vars live ───────────────────
+
+function TweaksPanel() {
+  const [open, setOpen] = useState(false)
+  const [tweaks, setTweaks] = useState({
+    '--lp-blue':     '#4b78ff',
+    '--lp-purple':   '#8b5cf6',
+    '--lp-gold':     '#f59e0b',
+    '--lp-bg':       '#05080f',
+  })
+
+  useEffect(() => {
+    Object.entries(tweaks).forEach(([k, v]) => {
+      document.documentElement.style.setProperty(k, v)
+    })
+  }, [tweaks])
+
+  const set = (k: string, v: string) => setTweaks(prev => ({ ...prev, [k]: v }))
+
+  const panelStyle: React.CSSProperties = {
+    position: 'fixed', bottom: '5.5rem', right: '1.5rem', zIndex: 999,
+    background: 'rgba(8,13,26,0.97)', border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: 14, padding: '1rem 1.25rem', minWidth: 220,
+    backdropFilter: 'blur(24px)', boxShadow: '0 8px 40px rgba(0,0,0,0.7)',
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          position:'fixed', bottom:'5.5rem', right:'1.5rem', zIndex:1000,
+          background:'rgba(75,120,255,0.15)', border:'1px solid rgba(75,120,255,0.3)',
+          borderRadius:10, padding:'0.5rem 0.9rem', color:'#7b9fff',
+          fontSize:'0.78rem', fontWeight:700, cursor:'pointer',
+          fontFamily:"'Plus Jakarta Sans',sans-serif",
+          display: open ? 'none' : 'block',
+        }}
+      >
+        🎨 Tweaks
+      </button>
+      {open && (
+        <div style={panelStyle}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.85rem' }}>
+            <span style={{ fontSize:'0.78rem', fontWeight:700, color:'#7b9fff', letterSpacing:'0.08em', textTransform:'uppercase' }}>Dev tweaks</span>
+            <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', color:'#475569', fontSize:'1rem', cursor:'pointer', lineHeight:1 }}>✕</button>
+          </div>
+          {Object.entries(tweaks).map(([key, val]) => (
+            <div key={key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.55rem', gap:'0.75rem' }}>
+              <label style={{ fontSize:'0.72rem', color:'#94a3b8', flex:1, fontFamily:'monospace' }}>{key}</label>
+              <input
+                type="color"
+                value={val}
+                onChange={e => set(key, e.target.value)}
+                style={{ width:32, height:24, border:'none', background:'none', cursor:'pointer', padding:0, borderRadius:4 }}
+              />
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setTweaks({ '--lp-blue':'#4b78ff','--lp-purple':'#8b5cf6','--lp-gold':'#f59e0b','--lp-bg':'#05080f' })
+            }}
+            style={{ marginTop:'0.5rem', width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:7, padding:'0.35rem', fontSize:'0.72rem', color:'#94a3b8', cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+          >
+            Reset
+          </button>
+        </div>
+      )}
+    </>
+  )
+}
+
+export default LandingClient

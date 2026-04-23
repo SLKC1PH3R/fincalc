@@ -1,10 +1,10 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
-import { LandingClient } from '@/components/LandingClient'
+import { LandingPage } from '@/components/landing/LandingPage'
 
-export default async function LandingPage() {
+export default async function Page() {
   const session = await getServerSession(authOptions)
   if (session) redirect('/dashboard/patrimoine')
-  return <LandingClient />
+  return <LandingPage />
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import { PatrimoLogo } from '@/components/PatrimoLogo'
 import type { Metadata } from 'next'
 import { ToolsGrid } from './ToolsGrid'
+import { Nav } from '@/components/landing/Nav'
 
 export const metadata: Metadata = {
   title: 'Simulateurs financiers gratuits — PatrImo',
@@ -15,58 +15,81 @@ export const metadata: Metadata = {
 
 export default function ToolsPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#ffffff', color: '#111827', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="patrimo-landing" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
 
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid #f3f4f6', padding: '16px 0', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-            <PatrimoLogo width={130} uid="tools" />
-          </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/login" style={{ textDecoration: 'none', fontSize: 13, fontWeight: 500, color: '#6b7280', padding: '8px 14px', borderRadius: 10, transition: 'color 0.15s' }}>
-              Se connecter
-            </Link>
-            <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)', color: '#fff', fontSize: 13, fontWeight: 600, boxShadow: '0 2px 12px rgba(124,58,237,0.25)' }}>
-              Créer un compte gratuit →
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(180deg, #f5f3ff 0%, #ede9fe 40%, #ffffff 100%)', padding: '64px 24px 56px', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative orbs */}
-        <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 600, height: 300, background: 'radial-gradient(ellipse, rgba(167,139,250,0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -40, left: -100, width: 400, height: 300, background: 'radial-gradient(ellipse, rgba(124,58,237,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ padding: '80px 24px 64px', position: 'relative', overflow: 'hidden' }}>
+        {/* Dot grid */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'radial-gradient(var(--line-strong) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          maskImage: 'radial-gradient(ellipse 70% 80% at 50% 40%, black, transparent)',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 80% at 50% 40%, black, transparent)',
+        }} />
+        {/* Gold orb */}
+        <div style={{ position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 400, background: 'radial-gradient(ellipse, var(--gold-tint-2) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 100, background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)', fontSize: 11, color: '#7c3aed', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 20 }}>
-            18 simulateurs gratuits
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+          {/* Eyebrow */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <span style={{ width: 6, height: 6, borderRadius: 99, background: 'var(--gold)', display: 'inline-block' }} />
+            <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 10, fontWeight: 600, color: 'var(--gold-deep)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>18 simulateurs gratuits</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', fontWeight: 800, margin: '0 0 16px', letterSpacing: '-0.04em', lineHeight: 1.1, color: '#1e1b4b' }}>
-            Simulateurs financiers
+
+          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(2.4rem, 5vw, 3.6rem)', fontWeight: 400, margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1, color: 'var(--ink)' }}>
+            Simulateurs financiers<br />
+            <em style={{ fontStyle: 'italic', color: 'var(--gold-deep)' }}>pour piloter votre avenir.</em>
           </h1>
-          <p style={{ fontSize: 17, color: '#6b7280', maxWidth: 520, margin: '0 auto 0', lineHeight: 1.65 }}>
+          <p style={{ fontSize: 17, color: 'var(--muted)', maxWidth: 520, margin: '0 auto', lineHeight: 1.65, fontFamily: "'Geist', system-ui" }}>
             Calculez, simulez et optimisez votre patrimoine. Gratuit, sans inscription, sans données bancaires.
           </p>
         </div>
       </div>
 
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px 80px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 100px' }}>
         <ToolsGrid />
 
         {/* CTA */}
-        <div style={{ textAlign: 'center', marginTop: 32, padding: '44px 24px', borderRadius: 24, background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', border: '1px solid rgba(124,58,237,0.15)' }}>
-          <h3 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 10px', color: '#1e1b4b', letterSpacing: '-0.02em' }}>Sauvegardez vos simulations</h3>
-          <p style={{ fontSize: 15, color: '#6b7280', margin: '0 0 24px', maxWidth: 460, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65 }}>
-            Créez un compte gratuit pour accéder à votre historique, votre patrimoine et toutes les fonctionnalités avancées.
-          </p>
-          <Link href="/login" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: 24, background: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)', color: '#fff', fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(124,58,237,0.3)' }}>
-            Démarrer gratuitement →
-          </Link>
+        <div style={{
+          textAlign: 'center', marginTop: 32, padding: '56px 32px',
+          borderRadius: 24,
+          background: 'var(--surface)',
+          border: '1px solid var(--line-strong)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', top: '-30%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '200%', background: 'radial-gradient(ellipse, var(--gold-tint) 0%, transparent 60%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative' }}>
+            {/* Eyebrow */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ width: 5, height: 5, borderRadius: 99, background: 'var(--gold)', display: 'inline-block' }} />
+              <span style={{ fontFamily: "'Geist Mono', monospace", fontSize: 10, fontWeight: 600, color: 'var(--gold-deep)', textTransform: 'uppercase', letterSpacing: '0.16em' }}>Compte gratuit</span>
+            </div>
+            <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 400, margin: '0 0 12px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+              Sauvegardez vos simulations.
+            </h3>
+            <p style={{ fontSize: 15, color: 'var(--muted)', margin: '0 0 28px', maxWidth: 460, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65, fontFamily: "'Geist', system-ui" }}>
+              Créez un compte gratuit pour accéder à votre historique, votre patrimoine et toutes les fonctionnalités avancées.
+            </p>
+            <Link href="/login" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Démarrer gratuitement →
+            </Link>
+          </div>
         </div>
       </main>
+
+      <style>{`
+        .btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 12px 24px; border-radius: 999px;
+          background: var(--ink); color: var(--bg);
+          font-size: 14px; font-weight: 600; text-decoration: none;
+          transition: transform .15s, box-shadow .15s;
+          font-family: 'Geist', system-ui;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,10,10,0.18); }
+      `}</style>
     </div>
   )
 }

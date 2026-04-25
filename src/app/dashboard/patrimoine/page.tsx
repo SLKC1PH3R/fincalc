@@ -157,8 +157,8 @@ function getPercentile(patrimoine: number): number {
 function ChartTip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; color?: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: '#1e2330', border: '1px solid rgba(241,192,134,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 12 }}>
-      <div style={{ color: 'var(--text-muted-c)', marginBottom: 4 }}>{label}</div>
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,10,0.12)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 4px 16px rgba(10,10,10,0.10)' }}>
+      <div style={{ color: '#6B6356', marginBottom: 4 }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} style={{ color: p.color ?? T.gold, fontWeight: 700 }}>{fmtCompact(p.value)}</div>
       ))}
@@ -860,7 +860,21 @@ export default function PatrimoinePage() {
   ]
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '14px 32px 0' }}>
+    <div style={{
+      height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '14px 32px 0',
+      '--card-dark': '#FFFFFF',
+      '--card-dark-border': 'rgba(10,10,10,0.10)',
+      '--text-primary': '#0A0A0A',
+      '--text-em': '#0A0A0A',
+      '--text-muted-c': '#6B6356',
+      '--text-subtle': '#9A907F',
+      '--row-hover': 'rgba(10,10,10,0.03)',
+      '--section-border': 'rgba(10,10,10,0.08)',
+      '--modal-surface': '#FFFFFF',
+      '--modal-surface-border': 'rgba(10,10,10,0.12)',
+      '--sb-text': '#0A0A0A',
+      '--sb-text-strong': '#0A0A0A',
+    } as React.CSSProperties}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
@@ -988,7 +1002,7 @@ export default function PatrimoinePage() {
                 onChange={e => setNewName(e.target.value)}
                 placeholder={`Mon ${ENV_CFG[newType].label}`}
                 onKeyDown={e => e.key === 'Enter' && createEnvelope()}
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--card-dark-border)', color: 'var(--text-primary)' }}
+                style={{ background: '#FBF7EF', border: '1px solid rgba(10,10,10,0.14)', color: '#0A0A0A' }}
               />
             </div>
 

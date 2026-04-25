@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 import { Loader2, Eye, EyeOff, Zap } from 'lucide-react'
+import { DashboardMockup } from '@/components/landing/Mockup'
 
 /* ── Design tokens (mirrored from landing tokens.css) ── */
 const BG       = '#F3EEE4'
@@ -12,7 +12,6 @@ const SURFACE  = '#FFFFFF'
 const SURF2    = '#FBF7EF'
 const SURF3    = '#ECE4D4'
 const INK      = '#0A0A0A'
-const INK2     = '#1F1A12'
 const MUTED    = '#6B6356'
 const MUTED2   = '#9A907F'
 const LINE     = 'rgba(10,10,10,0.08)'
@@ -36,24 +35,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default:            'Une erreur est survenue. Réessayez.',
 }
 
-const DESKTOP_IMGS  = ['/1.png', '/2.png', '/3.png', '/4.png']
-const MOBILE_IMGS   = ['/5.jpeg', '/6.jpeg', '/7.jpeg', '/8.jpeg']
-const SCREEN_LABELS = ["Vue d'ensemble", 'Simulateurs', 'Patrimoine', 'Analytics']
-
 /* ── Helpers ── */
-function useCycle(len: number, ms: number, initial = 0) {
-  const [idx, setIdx]       = useState(initial)
-  const [visible, setVisible] = useState(true)
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setVisible(false)
-      setTimeout(() => { setIdx(i => (i + 1) % len); setVisible(true) }, 300)
-    }, ms)
-    return () => clearInterval(iv)
-  }, [len, ms])
-  return { idx, visible }
-}
-
 function GoogleIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -65,7 +47,6 @@ function GoogleIcon() {
   )
 }
 
-/* ── Logo inline (no dep on PatrimoLogo) ── */
 function Logo() {
   return (
     <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 2, lineHeight: 1, textDecoration: 'none' }}>
@@ -74,97 +55,6 @@ function Logo() {
       <span style={{ fontFamily: F_SERIF, fontSize: 28, color: INK, letterSpacing: '-0.02em' }}>atrimo</span>
       <span style={{ marginLeft: 10, paddingLeft: 10, borderLeft: `1px solid ${LINE_STR}`, fontFamily: F_MONO, fontSize: 10, fontWeight: 500, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.14em' }}>finance</span>
     </Link>
-  )
-}
-
-/* ── Dashboard preview (right panel) ── */
-function DashboardPreview() {
-  const desktop = useCycle(DESKTOP_IMGS.length, 2000)
-  const mobile  = useCycle(MOBILE_IMGS.length,  1700, 1)
-
-  return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 16 }}>
-      {/* Desktop frame */}
-      <div style={{ position: 'relative', width: '78%' }}>
-        <div style={{ borderRadius: 13, overflow: 'hidden', border: `1px solid ${LINE_STR}`, boxShadow: `0 32px 80px rgba(10,10,10,0.18), 0 0 0 1px ${LINE}` }}>
-          {/* Browser chrome */}
-          <div style={{ background: SURF2, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${LINE}` }}>
-            <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
-              {['#ff5f57','#febc2e','#28c840'].map((c,i) => (
-                <span key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block', opacity: 0.7 }} />
-              ))}
-            </div>
-            <div style={{ flex: 1, margin: '0 6px', background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 5, padding: '3px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: 9, color: MUTED2, fontFamily: F_MONO }}>
-                finance.digitalstack.cloud<span style={{ color: GOLD }}>/dashboard</span>
-              </span>
-            </div>
-            <div style={{
-              background: GOLD_T2, border: `1px solid ${GOLD_T2}`,
-              borderRadius: 20, padding: '2px 8px',
-              fontSize: 9, fontWeight: 700, color: GOLD_D,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-              whiteSpace: 'nowrap', fontFamily: F_MONO,
-              transition: 'opacity 0.28s ease', opacity: desktop.visible ? 1 : 0,
-            }}>
-              {SCREEN_LABELS[desktop.idx]}
-            </div>
-          </div>
-          {/* Screenshot */}
-          <div style={{ position: 'relative', background: '#0a0a0a', lineHeight: 0 }}>
-            <Image
-              src={DESKTOP_IMGS[desktop.idx]}
-              alt={`PatrImo — ${SCREEN_LABELS[desktop.idx]}`}
-              width={1200} height={750}
-              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.28s ease', opacity: desktop.visible ? 1 : 0 }}
-              priority={desktop.idx === 0}
-            />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: 'linear-gradient(to top, rgba(10,10,10,0.5), transparent)', pointerEvents: 'none' }} />
-          </div>
-        </div>
-        {/* Progress pills */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginTop: 12 }}>
-          {DESKTOP_IMGS.map((_, i) => (
-            <div key={i} style={{
-              height: 4, borderRadius: 3,
-              width: i === desktop.idx ? 20 : 5,
-              background: i === desktop.idx ? GOLD : LINE_STR,
-              transition: 'all 0.45s cubic-bezier(0.4,0,0.2,1)',
-            }} />
-          ))}
-        </div>
-      </div>
-
-      {/* Mobile frame */}
-      <div style={{ position: 'absolute', right: '0%', bottom: '-2%', width: '22%' }}>
-        <div style={{ borderRadius: 26, overflow: 'hidden', border: `2px solid ${LINE_STR}`, boxShadow: `0 28px 70px rgba(10,10,10,0.25)`, background: '#0a0a0a' }}>
-          <div style={{ background: '#111', height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 48, height: 7, background: '#000', borderRadius: 4 }} />
-          </div>
-          <div style={{ position: 'relative', lineHeight: 0 }}>
-            <Image
-              src={MOBILE_IMGS[mobile.idx]}
-              alt="PatrImo mobile"
-              width={390} height={844}
-              style={{ display: 'block', width: '100%', height: 'auto', transition: 'opacity 0.28s ease', opacity: mobile.visible ? 1 : 0 }}
-            />
-          </div>
-          <div style={{ background: '#111', height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 42, height: 4, background: 'rgba(255,255,255,0.22)', borderRadius: 2 }} />
-          </div>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 10 }}>
-          {MOBILE_IMGS.map((_, i) => (
-            <div key={i} style={{
-              height: 3, borderRadius: 2,
-              width: i === mobile.idx ? 14 : 4,
-              background: i === mobile.idx ? GOLD : LINE_STR,
-              transition: 'all 0.45s cubic-bezier(0.4,0,0.2,1)',
-            }} />
-          ))}
-        </div>
-      </div>
-    </div>
   )
 }
 
@@ -211,7 +101,6 @@ function Field({ id, label, type, placeholder, value, onChange, required, minLen
   )
 }
 
-/* ── Google button ── */
 function GoogleBtn({ onClick, disabled, loading, label }: { onClick: () => void; disabled: boolean; loading: boolean; label: string }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -294,7 +183,6 @@ function AuthForm() {
     }
   }
 
-  /* ── Card face shared ── */
   const faceStyle: React.CSSProperties = {
     position: 'absolute', inset: 0,
     backfaceVisibility: 'hidden',
@@ -307,12 +195,11 @@ function AuthForm() {
     boxShadow: `0 4px 14px ${GOLD_T}, 0 1px 3px rgba(10,10,10,0.06)`,
   }
 
-  /* ── Login face ── */
   const loginFace = (
     <div style={{ ...faceStyle, pointerEvents: isRegister ? 'none' : 'auto' }}>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: INK, letterSpacing: '-0.025em', marginBottom: 4, fontFamily: F_SANS }}>Bienvenue</h1>
-        <p style={{ fontSize: 13, color: MUTED, fontFamily: F_SANS }}>Connectez-vous pour accéder à vos simulations</p>
+        <h2 style={{ fontSize: 20, fontWeight: 600, color: INK, letterSpacing: '-0.02em', marginBottom: 4, fontFamily: F_SANS }}>Connexion</h2>
+        <p style={{ fontSize: 13, color: MUTED, fontFamily: F_SANS }}>Accédez à votre tableau de bord</p>
       </div>
 
       <GoogleBtn onClick={handleGoogle} disabled={loadingGoogle || loading} loading={loadingGoogle} label="Continuer avec Google" />
@@ -364,11 +251,10 @@ function AuthForm() {
     </div>
   )
 
-  /* ── Register face ── */
   const registerFace = (
     <div style={{ ...faceStyle, transform: 'rotateY(180deg)', pointerEvents: isRegister ? 'auto' : 'none' }}>
       <div style={{ marginBottom: 18 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, color: INK, letterSpacing: '-0.025em', marginBottom: 4, fontFamily: F_SANS }}>Créer un compte</h1>
+        <h2 style={{ fontSize: 20, fontWeight: 600, color: INK, letterSpacing: '-0.02em', marginBottom: 4, fontFamily: F_SANS }}>Créer un compte</h2>
         <p style={{ fontSize: 13, color: MUTED, fontFamily: F_SANS }}>Gratuit, sans carte bancaire</p>
       </div>
 
@@ -423,10 +309,10 @@ function AuthForm() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: BG, fontFamily: F_SANS }}>
 
-      {/* ── LEFT: Form ── */}
+      {/* ── LEFT: Eyebrow + Headline + Form ── */}
       <div style={{ width: '100%', maxWidth: 520, flexShrink: 0, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 10, borderRight: `1px solid ${LINE}` }}>
 
-        {/* Subtle grid dot bg */}
+        {/* Dot grid */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
           backgroundImage: `radial-gradient(${LINE} 1px, transparent 1px)`,
           backgroundSize: '24px 24px',
@@ -439,85 +325,93 @@ function AuthForm() {
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1, padding: '40px 44px' }}>
 
           {/* Logo */}
-          <div style={{ marginBottom: 'auto', paddingBottom: 32 }}>
+          <div style={{ marginBottom: 48 }}>
             <Logo />
           </div>
 
-          {/* Form area */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ maxWidth: 380, margin: '0 auto', width: '100%' }}>
+          {/* Eyebrow + Headline */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ width: 6, height: 6, borderRadius: 99, background: GOLD, display: 'inline-block', flexShrink: 0 }} />
+              <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Patrimoine intelligent</span>
+            </div>
+            <h1 style={{ fontFamily: F_SERIF, fontSize: 'clamp(30px, 3.2vw, 44px)', color: INK, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 12 }}>
+              Bienvenue.<br />
+              <em style={{ fontStyle: 'italic', color: GOLD_D }}>Enfin la clarté.</em>
+            </h1>
+            <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.65, fontFamily: F_SANS, maxWidth: 340 }}>
+              Simulateurs, tableau de bord patrimonial et fiscalité — tout en un, gratuitement.
+            </p>
+          </div>
 
-              {/* Demo button */}
-              <button
-                onClick={loginAsDemo}
-                disabled={loading || loadingGoogle}
-                style={{
-                  width: '100%', marginBottom: 16, padding: '12px 16px',
-                  borderRadius: 12, cursor: loading || loadingGoogle ? 'not-allowed' : 'pointer',
-                  border: `1px solid ${GOLD_T2}`,
-                  background: GOLD_T,
-                  textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
-                  opacity: loading || loadingGoogle ? 0.6 : 1,
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { if (!loading && !loadingGoogle) { e.currentTarget.style.background = GOLD_T2; e.currentTarget.style.borderColor = `rgba(176,120,32,0.3)` } }}
-                onMouseLeave={e => { e.currentTarget.style.background = GOLD_T; e.currentTarget.style.borderColor = GOLD_T2 }}
-              >
-                <div style={{ width: 34, height: 34, borderRadius: 8, background: GOLD_T2, border: `1px solid rgba(176,120,32,0.25)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {loading ? <Loader2 style={{ width: 14, height: 14, color: GOLD_D, animation: 'spin 1s linear infinite' }} /> : <Zap style={{ width: 14, height: 14, color: GOLD_D }} />}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: GOLD_D, marginBottom: 2, fontFamily: F_SANS }}>Accéder au compte démo</p>
-                  <p style={{ fontSize: 11, color: MUTED, fontFamily: F_MONO }}>Explorez toutes les fonctionnalités sans inscription</p>
-                </div>
-                <span style={{ fontSize: 14, color: GOLD_S, flexShrink: 0 }}>→</span>
-              </button>
+          {/* Demo button */}
+          <button
+            onClick={loginAsDemo}
+            disabled={loading || loadingGoogle}
+            style={{
+              width: '100%', marginBottom: 16, padding: '12px 16px',
+              borderRadius: 12, cursor: loading || loadingGoogle ? 'not-allowed' : 'pointer',
+              border: `1px solid ${GOLD_T2}`,
+              background: GOLD_T,
+              textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
+              opacity: loading || loadingGoogle ? 0.6 : 1,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { if (!loading && !loadingGoogle) { e.currentTarget.style.background = GOLD_T2; e.currentTarget.style.borderColor = `rgba(176,120,32,0.3)` } }}
+            onMouseLeave={e => { e.currentTarget.style.background = GOLD_T; e.currentTarget.style.borderColor = GOLD_T2 }}
+          >
+            <div style={{ width: 34, height: 34, borderRadius: 8, background: GOLD_T2, border: `1px solid rgba(176,120,32,0.25)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {loading ? <Loader2 style={{ width: 14, height: 14, color: GOLD_D, animation: 'spin 1s linear infinite' }} /> : <Zap style={{ width: 14, height: 14, color: GOLD_D }} />}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: GOLD_D, marginBottom: 2, fontFamily: F_SANS }}>Accéder au compte démo</p>
+              <p style={{ fontSize: 11, color: MUTED, fontFamily: F_MONO }}>Explorez toutes les fonctionnalités sans inscription</p>
+            </div>
+            <span style={{ fontSize: 14, color: GOLD_S, flexShrink: 0 }}>→</span>
+          </button>
 
-              {/* Tab toggle */}
-              <div style={{
-                position: 'relative', display: 'flex',
-                borderRadius: 10, border: `1px solid ${LINE_STR}`,
-                padding: 3, background: SURF2, marginBottom: 20,
+          {/* Tab toggle */}
+          <div style={{
+            position: 'relative', display: 'flex',
+            borderRadius: 10, border: `1px solid ${LINE_STR}`,
+            padding: 3, background: SURF2, marginBottom: 20,
+          }}>
+            <div style={{
+              position: 'absolute', top: 3,
+              left: isRegister ? 'calc(50% + 1.5px)' : '3px',
+              width: 'calc(50% - 4.5px)', bottom: 3,
+              borderRadius: 7, background: SURFACE,
+              border: `1px solid ${LINE_STR}`,
+              boxShadow: `0 1px 3px rgba(10,10,10,0.06)`,
+              transition: 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              pointerEvents: 'none',
+            }} />
+            {(['login', 'register'] as const).map((m) => (
+              <button key={m} onClick={() => switchMode(m)} style={{
+                flex: 1, padding: '9px 0', fontSize: 13, fontWeight: 600,
+                color: mode === m ? INK : MUTED,
+                background: 'none', border: 'none', cursor: 'pointer',
+                borderRadius: 7, position: 'relative', zIndex: 1,
+                transition: 'color 0.25s', letterSpacing: '-0.01em',
+                fontFamily: F_SANS,
               }}>
-                <div style={{
-                  position: 'absolute', top: 3,
-                  left: isRegister ? 'calc(50% + 1.5px)' : '3px',
-                  width: 'calc(50% - 4.5px)', bottom: 3,
-                  borderRadius: 7, background: SURFACE,
-                  border: `1px solid ${LINE_STR}`,
-                  boxShadow: `0 1px 3px rgba(10,10,10,0.06)`,
-                  transition: 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  pointerEvents: 'none',
-                }} />
-                {(['login', 'register'] as const).map((m) => (
-                  <button key={m} onClick={() => switchMode(m)} style={{
-                    flex: 1, padding: '9px 0', fontSize: 13, fontWeight: 600,
-                    color: mode === m ? INK : MUTED,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    borderRadius: 7, position: 'relative', zIndex: 1,
-                    transition: 'color 0.25s', letterSpacing: '-0.01em',
-                    fontFamily: F_SANS,
-                  }}>
-                    {m === 'login' ? 'Connexion' : 'Inscription'}
-                  </button>
-                ))}
-              </div>
+                {m === 'login' ? 'Connexion' : 'Inscription'}
+              </button>
+            ))}
+          </div>
 
-              {/* Flip card */}
-              <div style={{ perspective: '1400px' }}>
-                <div style={{
-                  position: 'relative',
-                  transformStyle: 'preserve-3d',
-                  WebkitTransformStyle: 'preserve-3d',
-                  transition: 'transform 0.65s cubic-bezier(0.45, 0, 0.15, 1)',
-                  transform: isRegister ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                  minHeight: isRegister ? 570 : 510,
-                }}>
-                  {loginFace}
-                  {registerFace}
-                </div>
-              </div>
-
+          {/* Flip card */}
+          <div style={{ perspective: '1400px' }}>
+            <div style={{
+              position: 'relative',
+              transformStyle: 'preserve-3d',
+              WebkitTransformStyle: 'preserve-3d',
+              transition: 'transform 0.65s cubic-bezier(0.45, 0, 0.15, 1)',
+              transform: isRegister ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              minHeight: isRegister ? 570 : 510,
+            }}>
+              {loginFace}
+              {registerFace}
             </div>
           </div>
 
@@ -536,42 +430,81 @@ function AuthForm() {
         </div>
       </div>
 
-      {/* ── RIGHT: Dashboard Preview ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: INK2 }} className="login-right-panel">
-        {/* Warm amber glow */}
-        <div style={{ position: 'absolute', top: '-15%', right: '-10%', width: '60%', height: '60%', background: `radial-gradient(ellipse, ${GOLD_T2} 0%, transparent 65%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '5%', left: '-5%', width: '35%', height: '35%', background: `radial-gradient(ellipse, rgba(176,120,32,0.06) 0%, transparent 70%)`, filter: 'blur(40px)', pointerEvents: 'none' }} />
+      {/* ── RIGHT: Dashboard Mockup ── */}
+      <div className="patrimo-landing login-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: BG }}>
+
         {/* Dot grid */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: `radial-gradient(rgba(243,238,228,0.06) 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(${LINE_STR} 1px, transparent 1px)`,
           backgroundSize: '28px 28px',
         }} />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '25%', background: `linear-gradient(to top, ${INK2}, transparent)`, pointerEvents: 'none' }} />
+        {/* Ambient orb top-right */}
+        <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '55%', height: '55%', background: `radial-gradient(ellipse, ${GOLD_T2} 0%, transparent 65%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
+        {/* Ambient orb bottom-left */}
+        <div style={{ position: 'absolute', bottom: '5%', left: '-5%', width: '35%', height: '35%', background: `radial-gradient(ellipse, rgba(176,120,32,0.08) 0%, transparent 70%)`, filter: 'blur(40px)', pointerEvents: 'none' }} />
 
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 32px 24px', minHeight: 0, position: 'relative' }}>
-          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-            <DashboardPreview />
+        {/* Mockup */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 48px 24px', position: 'relative' }}>
+
+          {/* Section eyebrow */}
+          <div style={{ alignSelf: 'flex-start', marginBottom: 28 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
+              <span style={{ fontFamily: F_MONO, fontSize: 9.5, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Aperçu du tableau de bord</span>
+            </div>
+            <p style={{ fontFamily: F_SERIF, fontSize: 'clamp(20px, 2vw, 28px)', color: INK, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              Votre patrimoine,{' '}
+              <em style={{ fontStyle: 'italic', color: GOLD_D }}>en un coup d&apos;œil.</em>
+            </p>
+          </div>
+
+          {/* 3D Mockup component */}
+          <div style={{ width: '100%', maxWidth: 560 }}>
+            <DashboardMockup />
+          </div>
+
+          {/* Stats strip */}
+          <div style={{
+            display: 'flex', gap: 0, marginTop: 36,
+            border: `1px solid ${LINE_STR}`,
+            borderRadius: 14, overflow: 'hidden',
+            background: SURFACE,
+            width: '100%', maxWidth: 560,
+          }}>
+            {[
+              { val: '18', label: 'simulateurs' },
+              { val: '100%', label: 'gratuit' },
+              { val: '5 min', label: 'pour démarrer' },
+            ].map((s, i) => (
+              <div key={s.label} style={{
+                flex: 1, padding: '16px 0', textAlign: 'center',
+                borderRight: i < 2 ? `1px solid ${LINE}` : 'none',
+              }}>
+                <div style={{ fontFamily: F_SERIF, fontSize: 26, color: INK, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontFamily: F_MONO, fontSize: 9, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 5 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Security trust section */}
-        <div style={{ position: 'relative', padding: '0 48px 48px' }}>
-          <p style={{ fontSize: 10, color: 'rgba(243,238,228,0.3)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 600, marginBottom: 16, fontFamily: F_MONO }}>
+        {/* Security trust */}
+        <div style={{ position: 'relative', padding: '0 48px 40px' }}>
+          <p style={{ fontSize: 10, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 600, marginBottom: 14, fontFamily: F_MONO }}>
             Sécurité &amp; confidentialité
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             {[
-              { title: 'Vos données sont chiffrées', desc: 'Toutes les transmissions sécurisées via HTTPS/TLS.' },
-              { title: 'Aucune donnée bancaire requise', desc: 'Aucun RIB, aucun accès à vos comptes. Zéro risque.' },
-              { title: 'Connexion sécurisée via Google', desc: 'OAuth 2.0 — vos identifiants ne transitent jamais par PatrImo.' },
+              { title: 'Données chiffrées', desc: 'HTTPS/TLS bout en bout' },
+              { title: 'Aucun RIB requis', desc: 'Zéro accès bancaire' },
+              { title: 'OAuth Google', desc: 'Vos identifiants nous restent inconnus' },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <div style={{ width: 16, height: 16, borderRadius: '50%', background: GOLD_T2, border: `1px solid rgba(176,120,32,0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flex: '1 1 160px' }}>
+                <div style={{ width: 14, height: 14, borderRadius: '50%', background: GOLD_T2, border: `1px solid rgba(176,120,32,0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
                   <div style={{ width: 4, height: 4, borderRadius: '50%', background: GOLD_S }} />
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(243,238,228,0.65)', marginBottom: 1, fontFamily: F_SANS }}>{item.title}</p>
-                  <p style={{ fontSize: 11, color: 'rgba(243,238,228,0.3)', lineHeight: 1.5, fontFamily: F_SANS }}>{item.desc}</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: INK, marginBottom: 1, fontFamily: F_SANS }}>{item.title}</p>
+                  <p style={{ fontSize: 11, color: MUTED2, lineHeight: 1.5, fontFamily: F_SANS }}>{item.desc}</p>
                 </div>
               </div>
             ))}

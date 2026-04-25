@@ -21,41 +21,41 @@ const SIM_GROUPS = [
     cat: 'Épargne & Investissement',
     color: '#7c3aed',
     items: [
-      { n: 'Intérêts composés',    sub: "L'effet boule de neige",       href: '/tools/interets-composes' },
-      { n: 'FI/RE',                sub: 'Liberté financière',           href: '/tools/fire' },
-      { n: 'DCA',                  sub: 'Investissement régulier',      href: '/tools/dca' },
-      { n: 'Revenus passifs',      sub: 'Dividendes projetés',          href: '/tools/revenus-passifs' },
-      { n: 'Optimiseur ETF',       sub: 'Comparateur de frais TER',     href: '/tools/optimiseur-etf' },
+      { em: '📈', n: 'Intérêts composés',    sub: "L'effet boule de neige",       href: '/tools/interets-composes' },
+      { em: '🔥', n: 'FI/RE',                sub: 'Liberté financière',           href: '/tools/fire' },
+      { em: '🔄', n: 'DCA',                  sub: 'Investissement régulier',      href: '/tools/dca' },
+      { em: '💸', n: 'Revenus passifs',      sub: 'Dividendes projetés',          href: '/tools/revenus-passifs' },
+      { em: '⚖️', n: 'Optimiseur ETF',       sub: 'Comparateur de frais TER',     href: '/tools/optimiseur-etf' },
     ],
   },
   {
     cat: 'Immobilier',
     color: '#0ea5e9',
     items: [
-      { n: 'Crédit immobilier',    sub: 'Mensualités & amortissement',  href: '/tools/pret-immobilier' },
-      { n: 'Acheter vs Louer',     sub: 'Comparaison patrimoniale',     href: '/tools/acheter-ou-louer' },
-      { n: 'Rentabilité locative', sub: 'Rendement net & cash-flow',    href: '/tools/rentabilite-locative' },
+      { em: '🏠', n: 'Crédit immobilier',    sub: 'Mensualités & amortissement',  href: '/tools/pret-immobilier' },
+      { em: '🔑', n: 'Acheter vs Louer',     sub: 'Comparaison patrimoniale',     href: '/tools/acheter-ou-louer' },
+      { em: '🏢', n: 'Rentabilité locative', sub: 'Rendement net & cash-flow',    href: '/tools/rentabilite-locative' },
     ],
   },
   {
     cat: 'Fiscalité',
     color: '#10b981',
     items: [
-      { n: 'Impôts IR 2026',       sub: 'Calcul IR & TMI',              href: '/tools/impots-ir' },
-      { n: 'Flat Tax vs Barème',   sub: 'PFU 30% vs progressif',        href: '/tools/flat-tax-bareme' },
-      { n: 'PEA vs CTO vs AV',     sub: 'Fiscalité nette par enveloppe',href: '/tools/pea-cto-av' },
-      { n: 'Succession',           sub: 'Droits & abattements',         href: '/tools/succession' },
+      { em: '🧾', n: 'Impôts IR 2026',       sub: 'Calcul IR & TMI',              href: '/tools/impots-ir' },
+      { em: '⚖️', n: 'Flat Tax vs Barème',   sub: 'PFU 30% vs progressif',        href: '/tools/flat-tax-bareme' },
+      { em: '📊', n: 'PEA vs CTO vs AV',     sub: 'Fiscalité nette par enveloppe',href: '/tools/pea-cto-av' },
+      { em: '🏛', n: 'Succession',           sub: 'Droits & abattements',         href: '/tools/succession' },
     ],
   },
   {
     cat: 'Budget & Retraite',
     color: '#f59e0b',
     items: [
-      { n: "Taux d'épargne",       sub: 'Revenus vs dépenses',          href: '/tools/taux-epargne' },
-      { n: 'Budget 50/30/20',      sub: 'Règle budgétaire',             href: '/tools/budget-50-30-20' },
-      { n: "Épargne d'urgence",    sub: 'Matelas de sécurité',          href: '/tools/epargne-urgence' },
-      { n: 'Simulateur retraite',  sub: 'Pension & épargne nécessaire', href: '/tools/retraite' },
-      { n: 'Score patrimonial',    sub: 'Notation 0-100 · 6 piliers',   href: '/tools/score-patrimonial' },
+      { em: '💰', n: "Taux d'épargne",       sub: 'Revenus vs dépenses',          href: '/tools/taux-epargne' },
+      { em: '📋', n: 'Budget 50/30/20',      sub: 'Règle budgétaire',             href: '/tools/budget-50-30-20' },
+      { em: '🛡️', n: "Épargne d'urgence",    sub: 'Matelas de sécurité',          href: '/tools/epargne-urgence' },
+      { em: '🎯', n: 'Simulateur retraite',  sub: 'Pension & épargne nécessaire', href: '/tools/retraite' },
+      { em: '🏆', n: 'Score patrimonial',    sub: 'Notation 0-100 · 6 piliers',   href: '/tools/score-patrimonial' },
     ],
   },
 ];
@@ -136,15 +136,18 @@ function SimulatorsMenu() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {g.items.map(it => (
                 <Link key={it.href} href={it.href} style={{
-                  display: 'flex', flexDirection: 'column', padding: '7px 10px', borderRadius: 8,
+                  display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 10px', borderRadius: 8,
                   transition: 'background .15s',
                   textDecoration: 'none',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.3 }}>{it.n}</span>
-                  <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: "'Geist Mono', monospace", marginTop: 1 }}>{it.sub}</span>
+                  <span style={{ fontSize: 14, lineHeight: 1.3, flexShrink: 0 }}>{it.em}</span>
+                  <span style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.3 }}>{it.n}</span>
+                    <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: "'Geist Mono', monospace", marginTop: 1 }}>{it.sub}</span>
+                  </span>
                 </Link>
               ))}
             </div>

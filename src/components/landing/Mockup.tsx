@@ -4,17 +4,6 @@ import * as React from 'react';
 import { I } from './icons';
 
 export function DashboardMockup() {
-  const [t, setT] = React.useState(0);
-  React.useEffect(() => {
-    let raf = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      setT((now - start) / 1000);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   const points = React.useMemo(() => {
     const pts: Array<[number, number]> = [];
@@ -102,7 +91,7 @@ export function DashboardMockup() {
                 <div style={{ fontFamily: 'var(--f-mono)', fontSize: 10, color: 'var(--muted)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Patrimoine net</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                   <div className="mono" style={{ fontSize: 36, fontWeight: 600, letterSpacing: '-0.035em', color: 'var(--ink)' }}>
-                    412 <AnimatedDigit base={500} t={t} />&nbsp;€
+                    412 483&nbsp;€
                   </div>
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -231,11 +220,6 @@ export function DashboardMockup() {
       `}</style>
     </div>
   );
-}
-
-function AnimatedDigit({ base, t }: { base: number; t: number }) {
-  const delta = Math.round(Math.sin(t * 0.8) * 40 + Math.sin(t * 1.7) * 20);
-  return <span>{(base + delta).toString().padStart(3, '0')}</span>;
 }
 
 export function ScoreRing({ value = 74 }: { value?: number }) {

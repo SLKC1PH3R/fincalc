@@ -433,14 +433,7 @@ export default async function ToolSlugPage({ params }: Props) {
 
         {/* Back link */}
         <div style={{ paddingTop: 40, marginBottom: 48 }}>
-          <Link href="/tools" style={{
-            textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5,
-            color: MUTED2, fontSize: 13, fontWeight: 500, fontFamily: F_MONO,
-            transition: 'color 0.15s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.color = INK)}
-            onMouseLeave={e => (e.currentTarget.style.color = MUTED2)}
-          >
+          <Link href="/tools" className="tool-back-link">
             <ChevronLeft style={{ width: 14, height: 14 }} />
             Tous les simulateurs
           </Link>
@@ -470,27 +463,11 @@ export default async function ToolSlugPage({ params }: Props) {
           </p>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link href={href} style={{
-              textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '13px 26px', borderRadius: 999,
-              background: INK, color: BG,
-              fontWeight: 600, fontSize: 14, fontFamily: F_SANS,
-              transition: 'transform .15s, box-shadow .15s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(10,10,10,0.18)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}
-            >
+            <Link href={href} className="tool-btn-primary">
               Essayer maintenant
               <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
-            <Link href="/tools" style={{
-              textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '13px 26px', borderRadius: 999,
-              background: SURFACE, border: `1px solid ${LINE_STR}`,
-              color: MUTED, fontWeight: 500, fontSize: 14, fontFamily: F_SANS,
-            }}>
+            <Link href="/tools" className="tool-btn-ghost">
               Voir tous les simulateurs
             </Link>
           </div>
@@ -590,15 +567,7 @@ export default async function ToolSlugPage({ params }: Props) {
             <p style={{ fontSize: 15, color: MUTED, margin: '0 0 28px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65, fontFamily: F_SANS }}>
               Créez un compte gratuit pour sauvegarder vos simulations, suivre votre patrimoine et accéder à toutes les fonctionnalités.
             </p>
-            <Link href="/login" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              textDecoration: 'none', padding: '13px 28px', borderRadius: 999,
-              background: INK, color: BG, fontWeight: 600, fontSize: 14, fontFamily: F_SANS,
-              transition: 'transform .15s, box-shadow .15s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(10,10,10,0.18)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}
-            >
+            <Link href="/login" className="tool-btn-primary">
               Commencer gratuitement
               <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
@@ -606,6 +575,31 @@ export default async function ToolSlugPage({ params }: Props) {
         </section>
 
       </main>
+
+      <style>{`
+        .tool-btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          text-decoration: none; padding: 13px 26px; border-radius: 999px;
+          background: #0A0A0A; color: #F3EEE4;
+          font-weight: 600; font-size: 14px; font-family: 'Geist', system-ui;
+          transition: transform .15s, box-shadow .15s;
+        }
+        .tool-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,10,10,0.18); }
+        .tool-btn-ghost {
+          display: inline-flex; align-items: center; gap: 6px;
+          text-decoration: none; padding: 13px 26px; border-radius: 999px;
+          background: #FFFFFF; border: 1px solid rgba(10,10,10,0.14);
+          color: #6B6356; font-weight: 500; font-size: 14px; font-family: 'Geist', system-ui;
+          transition: background .15s;
+        }
+        .tool-btn-ghost:hover { background: #FBF7EF; }
+        .tool-back-link {
+          text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+          color: #9A907F; font-size: 13px; font-weight: 500;
+          font-family: 'Geist Mono', monospace; transition: color 0.15s;
+        }
+        .tool-back-link:hover { color: #0A0A0A; }
+      `}</style>
     </div>
   )
 }

@@ -580,11 +580,11 @@ export default async function ToolSlugPage({ params }: Props) {
         .tool-btn-primary {
           display: inline-flex; align-items: center; gap: 8px;
           text-decoration: none; padding: 13px 26px; border-radius: 999px;
-          background: #0A0A0A; color: #F3EEE4;
+          background: #8B5E18; color: #FFFFFF !important;
           font-weight: 600; font-size: 14px; font-family: 'Geist', system-ui;
           transition: transform .15s, box-shadow .15s;
         }
-        .tool-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,10,10,0.18); }
+        .tool-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,94,24,0.35); background: #B07820; }
         .tool-btn-ghost {
           display: inline-flex; align-items: center; gap: 6px;
           text-decoration: none; padding: 13px 26px; border-radius: 999px;

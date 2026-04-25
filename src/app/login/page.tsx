@@ -307,7 +307,7 @@ function AuthForm() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: BG, fontFamily: F_SANS }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'flex-start', background: BG, fontFamily: F_SANS }}>
 
       {/* ── LEFT: Eyebrow + Headline + Form ── */}
       <div style={{ width: '100%', maxWidth: 520, flexShrink: 0, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 10, borderRight: `1px solid ${LINE}` }}>
@@ -430,46 +430,39 @@ function AuthForm() {
         </div>
       </div>
 
-      {/* ── RIGHT: Dashboard Mockup ── */}
-      <div className="patrimo-landing login-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: BG }}>
+      {/* ── RIGHT: Dashboard Mockup — sticky, full-height ── */}
+      <div className="patrimo-landing login-right-panel" style={{
+        flex: 1,
+        position: 'sticky', top: 0,
+        height: '100vh', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        background: BG,
+      }}>
 
         {/* Dot grid */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
           backgroundImage: `radial-gradient(${LINE_STR} 1px, transparent 1px)`,
           backgroundSize: '28px 28px',
         }} />
-        {/* Ambient orb top-right */}
+        {/* Ambient orbs */}
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '55%', height: '55%', background: `radial-gradient(ellipse, ${GOLD_T2} 0%, transparent 65%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
-        {/* Ambient orb bottom-left */}
         <div style={{ position: 'absolute', bottom: '5%', left: '-5%', width: '35%', height: '35%', background: `radial-gradient(ellipse, rgba(176,120,32,0.08) 0%, transparent 70%)`, filter: 'blur(40px)', pointerEvents: 'none' }} />
 
-        {/* Mockup */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 48px 24px', position: 'relative' }}>
+        {/* Inner layout */}
+        <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', padding: '28px 40px 20px', height: '100%', minHeight: 0 }}>
 
-          {/* Section eyebrow */}
-          <div style={{ alignSelf: 'flex-start', marginBottom: 28 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
-              <span style={{ fontFamily: F_MONO, fontSize: 9.5, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Aperçu du tableau de bord</span>
+          {/* Mockup — fills available vertical space, clipped */}
+          <div style={{ flex: 1, overflow: 'hidden', minHeight: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+            <div style={{ transform: 'scale(0.72)', transformOrigin: 'top center', width: '139%', marginLeft: '-19.5%', flexShrink: 0 }}>
+              <DashboardMockup />
             </div>
-            <p style={{ fontFamily: F_SERIF, fontSize: 'clamp(20px, 2vw, 28px)', color: INK, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-              Votre patrimoine,{' '}
-              <em style={{ fontStyle: 'italic', color: GOLD_D }}>en un coup d&apos;œil.</em>
-            </p>
           </div>
 
-          {/* 3D Mockup component */}
-          <div style={{ width: '100%', maxWidth: 560 }}>
-            <DashboardMockup />
-          </div>
-
-          {/* Stats strip */}
+          {/* Stats strip — compact */}
           <div style={{
-            display: 'flex', gap: 0, marginTop: 36,
-            border: `1px solid ${LINE_STR}`,
-            borderRadius: 14, overflow: 'hidden',
+            display: 'flex', flexShrink: 0, marginTop: 14,
+            border: `1px solid ${LINE_STR}`, borderRadius: 12, overflow: 'hidden',
             background: SURFACE,
-            width: '100%', maxWidth: 560,
           }}>
             {[
               { val: '18', label: 'simulateurs' },
@@ -477,35 +470,25 @@ function AuthForm() {
               { val: '5 min', label: 'pour démarrer' },
             ].map((s, i) => (
               <div key={s.label} style={{
-                flex: 1, padding: '16px 0', textAlign: 'center',
+                flex: 1, padding: '10px 0', textAlign: 'center',
                 borderRight: i < 2 ? `1px solid ${LINE}` : 'none',
               }}>
-                <div style={{ fontFamily: F_SERIF, fontSize: 26, color: INK, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.val}</div>
-                <div style={{ fontFamily: F_MONO, fontSize: 9, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.12em', marginTop: 5 }}>{s.label}</div>
+                <div style={{ fontFamily: F_SERIF, fontSize: 20, color: INK, letterSpacing: '-0.03em', lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontFamily: F_MONO, fontSize: 8.5, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 3 }}>{s.label}</div>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Security trust */}
-        <div style={{ position: 'relative', padding: '0 48px 40px' }}>
-          <p style={{ fontSize: 10, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 600, marginBottom: 14, fontFamily: F_MONO }}>
-            Sécurité &amp; confidentialité
-          </p>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          {/* Security trust — single compact row */}
+          <div style={{ flexShrink: 0, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${LINE}`, display: 'flex', gap: 20, justifyContent: 'center' }}>
             {[
-              { title: 'Données chiffrées', desc: 'HTTPS/TLS bout en bout' },
-              { title: 'Aucun RIB requis', desc: 'Zéro accès bancaire' },
-              { title: 'OAuth Google', desc: 'Vos identifiants nous restent inconnus' },
+              { icon: '🔒', label: 'Données chiffrées' },
+              { icon: '🚫', label: 'Aucun RIB requis' },
+              { icon: '🔑', label: 'OAuth Google' },
             ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flex: '1 1 160px' }}>
-                <div style={{ width: 14, height: 14, borderRadius: '50%', background: GOLD_T2, border: `1px solid rgba(176,120,32,0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: GOLD_S }} />
-                </div>
-                <div>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: INK, marginBottom: 1, fontFamily: F_SANS }}>{item.title}</p>
-                  <p style={{ fontSize: 11, color: MUTED2, lineHeight: 1.5, fontFamily: F_SANS }}>{item.desc}</p>
-                </div>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ fontSize: 11 }}>{item.icon}</span>
+                <span style={{ fontSize: 10, color: MUTED2, fontFamily: F_MONO }}>{item.label}</span>
               </div>
             ))}
           </div>

@@ -208,7 +208,7 @@ function AuthForm() {
   const proof = PROOFS[proofIdx]
 
   return (
-    <div style={{
+    <div className="login-root" style={{
       width: '100%', minHeight: '100dvh',
       display: 'grid', gridTemplateColumns: '1fr 1fr',
       background: BG, color: INK, fontFamily: F_SANS,
@@ -216,7 +216,7 @@ function AuthForm() {
     }}>
 
       {/* ── LEFT: form ── */}
-      <div style={{
+      <div className="login-left" style={{
         display: 'flex', flexDirection: 'column',
         padding: '36px 56px',
         borderRight: `1px solid ${LINE}`,
@@ -428,7 +428,7 @@ function AuthForm() {
       </div>
 
       {/* ── RIGHT: editorial animated panel ── */}
-      <div style={{ position: 'relative', overflow: 'hidden', background: BG, padding: '48px 56px', display: 'flex', flexDirection: 'column' }}>
+      <div className="login-right" style={{ position: 'relative', overflow: 'hidden', background: BG, padding: '48px 56px', display: 'flex', flexDirection: 'column' }}>
         <AnimatedCurves />
 
         {/* Warm orb */}
@@ -517,8 +517,15 @@ function AuthForm() {
       </div>
 
       <style>{`
-        @media (max-width: 900px) { .login-right { display: none !important; } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (max-width: 860px) {
+          .login-root { grid-template-columns: 1fr !important; }
+          .login-right { display: none !important; }
+          .login-left { padding: 28px 24px !important; border-right: none !important; }
+        }
+        @media (max-width: 480px) {
+          .login-left { padding: 22px 18px !important; }
+        }
       `}</style>
     </div>
   )

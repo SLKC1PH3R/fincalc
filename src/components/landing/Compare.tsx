@@ -24,7 +24,8 @@ export function Compare() {
           title={<>La combinaison <span className="serif-i" style={{ color: 'var(--gold-deep)' }}>qui n'existait pas.</span></>}
           sub="Il manquait un outil à la fois complet, souverain et gratuit. Nous l'avons construit."
         />
-        <div style={{ marginTop: 48, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--line)' }}>
+        <div className="compare-scroll" style={{ marginTop: 48 }}>
+        <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--line)', minWidth: 560 }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '2.4fr repeat(4, 1fr)',
             padding: '16px 20px', background: 'var(--surface-2)',
@@ -66,10 +67,15 @@ export function Compare() {
             </div>
           ))}
         </div>
+        </div>
         <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'var(--muted-2)', fontFamily: 'var(--f-mono)' }}>
           Comparatif illustratif · avril 2026
         </div>
       </div>
+      <style>{`
+        .compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .compare-scroll::-webkit-scrollbar { display: none; }
+      `}</style>
     </section>
   );
 }

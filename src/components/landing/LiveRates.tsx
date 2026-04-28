@@ -109,6 +109,7 @@ export function LiveRates() {
           })}
         </div>
 
+        <div className="rates-table">
         <div style={{
           borderRadius: 16, overflow: 'hidden', border: '1px solid var(--line)',
           background: 'var(--surface)',
@@ -151,6 +152,7 @@ export function LiveRates() {
           ))}
         </div>
 
+        </div>
         <div style={{
           marginTop: 14, fontFamily: 'var(--f-mono)', fontSize: 10.5,
           color: 'var(--muted-2)', letterSpacing: '0.1em', textTransform: 'uppercase',
@@ -159,7 +161,13 @@ export function LiveRates() {
         </div>
       </div>
 
-      <style>{`.rate-row:hover { background: var(--surface-2); }`}</style>
+      <style>{`
+        .rate-row:hover { background: var(--surface-2); }
+        @media (max-width: 600px) {
+          .rates-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .rates-table > div { min-width: 480px; }
+        }
+      `}</style>
     </section>
   );
 }

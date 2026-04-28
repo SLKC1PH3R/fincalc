@@ -209,7 +209,7 @@ function AuthForm() {
 
   return (
     <div style={{
-      width: '100%', minHeight: '100%',
+      width: '100%', minHeight: '100dvh',
       display: 'grid', gridTemplateColumns: '1fr 1fr',
       background: BG, color: INK, fontFamily: F_SANS,
       fontFeatureSettings: '"ss01","cv11"',

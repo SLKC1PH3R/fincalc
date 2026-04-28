@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { TrendingUp, TrendingDown, Camera, Loader2 } from 'lucide-react'
 
-const GOLD = '#f1c086'
+const GOLD = '#B07820'
 
 interface Snapshot { id: string; date: string; totalValue: number }
 interface ChartPoint { label: string; value: number }
@@ -92,11 +92,11 @@ export function PatrimoineHistoryChart() {
   const isUp = delta !== null && delta >= 0
 
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
+    <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, padding: 20 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
         <div>
-          <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>
+          <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>
             Évolution patrimoniale
           </p>
           {snapshots.length > 0 && (
@@ -108,7 +108,7 @@ export function PatrimoineHistoryChart() {
                 <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 600, color: isUp ? '#34d399' : '#f87171', background: isUp ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)', border: `1px solid ${isUp ? 'rgba(52,211,153,0.25)' : 'rgba(248,113,113,0.25)'}`, borderRadius: 8, padding: '2px 8px' }}>
                   {isUp ? <TrendingUp style={{ width: 11, height: 11 }} /> : <TrendingDown style={{ width: 11, height: 11 }} />}
                   {isUp ? '+' : ''}{delta.toFixed(1)}%
-                  <span style={{ fontWeight: 400, color: 'var(--text-subtle)', fontSize: 11 }}>
+                  <span style={{ fontWeight: 400, color: 'var(--p-text-faint)', fontSize: 11 }}>
                     sur {snapshots.length > 1 ? `${snapshots.length} points` : '1 point'}
                   </span>
                 </span>
@@ -138,10 +138,10 @@ export function PatrimoineHistoryChart() {
 
       {/* Chart or empty state */}
       {snapshots.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '28px 0', color: 'var(--text-muted-c)' }}>
+        <div style={{ textAlign: 'center', padding: '28px 0', color: 'var(--p-text-dim)' }}>
           <Camera style={{ width: 28, height: 28, margin: '0 auto 8px', opacity: 0.3 }} />
           <p style={{ fontSize: 13 }}>Aucun historique</p>
-          <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 4 }}>
             Enregistrez votre premier snapshot pour démarrer la courbe d&apos;évolution.
           </p>
         </div>
@@ -157,7 +157,7 @@ export function PatrimoineHistoryChart() {
             <CartesianGrid stroke="rgba(255,255,255,0.04)" strokeDasharray="4 4" vertical={false} />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: 'var(--text-subtle)' }}
+              tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }}
               axisLine={false}
               tickLine={false}
               interval="preserveStartEnd"

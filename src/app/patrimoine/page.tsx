@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 const GROUPS = [
   {
     label: 'Patrimoine',
-    color: '#f1c086',
+    color: '#B07820',
     pages: [
       {
         slug: 'vue-ensemble',
@@ -166,7 +166,7 @@ export default function PatrimoinePage() {
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <PatrimoLogo width={130} uid="patrimo-pub" />
           </Link>
-          <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
+          <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(176,120,32,0.10)', border: '1px solid rgba(176,120,32,0.25)', color: '#B07820', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →
           </Link>
         </div>
@@ -175,7 +175,7 @@ export default function PatrimoinePage() {
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px 80px' }}>
         {/* Hero */}
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 20, background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.2)', fontSize: 12, color: '#f1c086', fontWeight: 600, letterSpacing: '0.06em', marginBottom: 16 }}>
+          <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 20, background: 'rgba(176,120,32,0.08)', border: '1px solid rgba(176,120,32,0.2)', fontSize: 12, color: '#B07820', fontWeight: 600, letterSpacing: '0.06em', marginBottom: 16 }}>
             15 PAGES DE GESTION
           </div>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, margin: '0 0 16px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
@@ -225,12 +225,12 @@ export default function PatrimoinePage() {
         ))}
 
         {/* CTA */}
-        <div style={{ textAlign: 'center', marginTop: 24, padding: '40px 24px', borderRadius: 20, background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.15)' }}>
+        <div style={{ textAlign: 'center', marginTop: 24, padding: '40px 24px', borderRadius: 20, background: 'rgba(176,120,32,0.05)', border: '1px solid rgba(176,120,32,0.15)' }}>
           <h3 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 10px' }}>Commencez à piloter votre patrimoine</h3>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', margin: '0 0 24px' }}>
             Créez un compte gratuit pour accéder à toutes les pages de gestion, synchroniser vos actifs et suivre votre score patrimonial.
           </p>
-          <Link href="/login" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: 24, background: 'linear-gradient(135deg, #c8922a, #f1c086)', color: '#000', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
+          <Link href="/login" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: 24, background: 'linear-gradient(135deg, #8B5E18, #B07820)', color: '#000', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
             Démarrer gratuitement →
           </Link>
         </div>

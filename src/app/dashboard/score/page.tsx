@@ -33,7 +33,7 @@ interface ScoreData {
 const PYRAMID_LEVELS = [
   { key: 'risk',            level: 5, label: 'Spéculatif',       sublabel: 'Crypto, alternatif',           color: '#f87171', width: '40%'  },
   { key: 'diversification', level: 4, label: 'Dynamique',        sublabel: 'PEA, CTO, Locatif',            color: '#fb923c', width: '56%'  },
-  { key: 'longterm',        level: 3, label: 'Long terme',        sublabel: 'AV, PEA, PER',                 color: '#f1c086', width: '68%'  },
+  { key: 'longterm',        level: 3, label: 'Long terme',        sublabel: 'AV, PEA, PER',                 color: '#B07820', width: '68%'  },
   { key: 'realestate',      level: 2, label: 'Immobilier',        sublabel: 'Résidence principale',         color: '#34d399', width: '82%'  },
   { key: 'security',        level: 1, label: 'Sécurité',          sublabel: 'Livrets, épargne précaution',  color: '#38bdf8', width: '100%' },
 ]
@@ -51,7 +51,7 @@ function PyramidBar({
   }, [])
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-subtle)', width: 12, textAlign: 'right', flexShrink: 0 }}>{level}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--p-text-faint)', width: 12, textAlign: 'right', flexShrink: 0 }}>{level}</span>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div style={{ width, position: 'relative', height: 28, borderRadius: 8, overflow: 'hidden', background: `${color}12`, border: `1px solid ${color}28` }}>
@@ -59,7 +59,7 @@ function PyramidBar({
             <div style={{ position: 'absolute', inset: 0, width: anim ? `${Math.round(pct * 100)}%` : '0%', background: `linear-gradient(90deg, ${color}35, ${color}20)`, transition: 'width 0.8s ease' }} />
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color }}>{label}</span>
-              <span style={{ fontSize: 10, color: 'var(--text-muted-c)' }}>{sublabel}</span>
+              <span style={{ fontSize: 10, color: 'var(--p-text-dim)' }}>{sublabel}</span>
               <span style={{ fontSize: 10, fontWeight: 600, color, marginLeft: 4 }}>{score}/{max}</span>
             </div>
           </div>
@@ -74,7 +74,7 @@ function PyramidBar({
 const PILLAR_META = {
   security:        { label: 'Niveau 1 — Sécurité de base',       icon: Shield,        color: '#38bdf8', href: '/dashboard/patrimoine/livrets', desc: 'Épargne de précaution (LIVRET + CASH) · Objectif : 3-6 mois de dépenses' },
   realestate:      { label: 'Niveau 2 — Immobilier',             icon: Building2,     color: '#34d399', href: '/dashboard/patrimoine/immobilier', desc: 'Résidence principale · LTV (dette / valeur du bien)' },
-  longterm:        { label: 'Niveau 3 — Enveloppes long terme',  icon: TrendingUp,    color: '#f1c086', href: '/dashboard/patrimoine', desc: 'Assurance-vie · PEA · PER' },
+  longterm:        { label: 'Niveau 3 — Enveloppes long terme',  icon: TrendingUp,    color: '#B07820', href: '/dashboard/patrimoine', desc: 'Assurance-vie · PEA · PER' },
   diversification: { label: 'Niveau 4 — Diversification',        icon: LayoutGrid,    color: '#fb923c', href: '/dashboard/patrimoine', desc: 'Variété d\'enveloppes · Mix immobilier + financier' },
   risk:            { label: 'Niveau 5 — Maîtrise du risque',     icon: AlertTriangle, color: '#f87171', href: '/dashboard/patrimoine', desc: 'Exposition crypto · Sommet de la pyramide' },
 }
@@ -83,7 +83,7 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
   const meta = PILLAR_META[pillarKey as keyof typeof PILLAR_META]
   if (!meta) return null
   const pct = detail.score / detail.max
-  const barColor = pct >= 0.75 ? '#34d399' : pct >= 0.50 ? '#f1c086' : '#f87171'
+  const barColor = pct >= 0.75 ? '#34d399' : pct >= 0.50 ? '#B07820' : '#f87171'
   const StatusIcon = pct >= 0.75 ? CheckCircle2 : pct >= 0.50 ? Minus : AlertCircle
   const Icon = meta.icon
   const [anim, setAnim] = useState(false)
@@ -100,13 +100,13 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{meta.label}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{meta.label}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{detail.label}</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: barColor }}>{detail.score}<span style={{ color: 'var(--text-subtle)', fontWeight: 400, fontSize: 11 }}>/{detail.max}</span></span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{detail.label}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: barColor }}>{detail.score}<span style={{ color: 'var(--p-text-faint)', fontWeight: 400, fontSize: 11 }}>/{detail.max}</span></span>
             </div>
           </div>
-          <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8 }}>{meta.desc}</p>
+          <p style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8 }}>{meta.desc}</p>
           <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: anim ? `${Math.round(pct * 100)}%` : '0%', background: barColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
           </div>
@@ -127,9 +127,9 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
 // ── Score label ───────────────────────────────────────────────────────────────
 
 function scoreLabel(s: number) {
-  if (s >= 90) return { label: 'Excellent', color: '#f1c086' }
+  if (s >= 90) return { label: 'Excellent', color: '#B07820' }
   if (s >= 80) return { label: 'Très bien',  color: '#34d399' }
-  if (s >= 60) return { label: 'Bien',        color: '#f1c086' }
+  if (s >= 60) return { label: 'Bien',        color: '#B07820' }
   if (s >= 40) return { label: 'En progression', color: '#fb923c' }
   return { label: 'À améliorer', color: '#f87171' }
 }
@@ -146,7 +146,7 @@ export default function ScorePage() {
   }, [])
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--text-muted-c)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: 'var(--p-text-dim)' }}>
       Calcul en cours…
     </div>
   )
@@ -160,18 +160,18 @@ export default function ScorePage() {
 
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Patrimoine</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+        <p style={{ fontSize: 12, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Patrimoine</p>
+        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text)', letterSpacing: '-0.03em' }}>
           Score Patrimonial PatrImo
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 8 }}>
-          Calculé exclusivement à partir de votre <Link href="/dashboard/patrimoine" style={{ color: '#f1c086', textDecoration: 'none' }}>tableau patrimonial</Link>, selon les 5 niveaux de la pyramide d'investissement.
+        <p style={{ fontSize: 14, color: 'var(--p-text-dim)', marginTop: 8 }}>
+          Calculé exclusivement à partir de votre <Link href="/dashboard/patrimoine" style={{ color: '#B07820', textDecoration: 'none' }}>tableau patrimonial</Link>, selon les 5 niveaux de la pyramide d'investissement.
           Se met à jour à chaque consultation.
         </p>
       </div>
 
       {/* Score hero + quick actions */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 24, alignItems: 'center', marginBottom: 28, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 24, alignItems: 'center', marginBottom: 28, background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: 28 }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <ScoreGauge score={score} />
           <div style={{ marginTop: -16, textAlign: 'center' }}>
@@ -179,7 +179,7 @@ export default function ScorePage() {
           </div>
         </div>
         <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', marginBottom: 14 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 14 }}>
             {quickActions.length > 0 ? `${quickActions.reduce((a, q) => a + q.pts, 0)} points disponibles rapidement` : 'Patrimoine bien structuré — bravo !'}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -189,8 +189,8 @@ export default function ScorePage() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#34d399', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 8, padding: '2px 8px', flexShrink: 0 }}>+{qa.pts} pts</span>
-                <span style={{ fontSize: 13, color: 'var(--text-em)', flex: 1 }}>{qa.label}</span>
-                <ArrowRight style={{ width: 13, height: 13, color: 'var(--text-subtle)', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: 'var(--p-text-em)', flex: 1 }}>{qa.label}</span>
+                <ArrowRight style={{ width: 13, height: 13, color: 'var(--p-text-faint)', flexShrink: 0 }} />
               </Link>
             ))}
           </div>
@@ -198,10 +198,10 @@ export default function ScorePage() {
       </div>
 
       {/* Pyramid visual */}
-      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: '20px 24px', marginBottom: 20 }}>
+      <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: '20px 24px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Pyramide d'investissement</p>
-          <a href="https://blog.maslow.immo/pyramide-investissement/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: 'var(--text-subtle)', textDecoration: 'none' }}>
+          <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Pyramide d'investissement</p>
+          <a href="https://blog.maslow.immo/pyramide-investissement/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: 'var(--p-text-faint)', textDecoration: 'none' }}>
             En savoir plus →
           </a>
         </div>
@@ -223,8 +223,8 @@ export default function ScorePage() {
       </div>
 
       {/* Pillar detail breakdown */}
-      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: '20px 24px', marginBottom: 24 }}>
-        <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Détail par niveau</p>
+      <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: '20px 24px', marginBottom: 24 }}>
+        <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Détail par niveau</p>
         {Object.entries(details).map(([k, d]) => (
           <PillarRow key={k} pillarKey={k} detail={d as PillarDetail} />
         ))}
@@ -232,14 +232,14 @@ export default function ScorePage() {
 
       {/* History chart */}
       {history.length > 1 && (
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: '20px 24px' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Évolution du score</p>
+        <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: '20px 24px' }}>
+          <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Évolution du score</p>
           <ResponsiveContainer width="100%" height={120}>
             <LineChart data={history} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
               <XAxis dataKey="createdAt" tickFormatter={(v) => new Date(v).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} tick={{ fontSize: 10, fill: chartTheme.tick }} />
               <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: chartTheme.tick }} />
               <Tooltip contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 11, color: chartTheme.tooltip.color }} formatter={(v: number) => [`${v}/100`, 'Score']} />
-              <Line type="monotone" dataKey="score" stroke="#f1c086" strokeWidth={2} dot={{ fill: '#f1c086', r: 3 }} />
+              <Line type="monotone" dataKey="score" stroke="#B07820" strokeWidth={2} dot={{ fill: '#B07820', r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

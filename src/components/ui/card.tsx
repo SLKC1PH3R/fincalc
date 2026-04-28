@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, style, ...props }, ref) => (
     <div ref={ref} className={cn("rounded-lg text-card-foreground shadow-sm", className)}
-      style={{ background: 'radial-gradient(ellipse at top left, rgba(241,192,134,0.07), transparent 70%)', border: '1px solid rgba(241,192,134,0.15)', ...style }}
+      style={{ background: 'radial-gradient(ellipse at top left, rgba(176,120,32,0.07), transparent 70%)', border: '1px solid rgba(176,120,32,0.15)', ...style }}
       {...props} />
   )
 )

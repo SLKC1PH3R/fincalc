@@ -36,7 +36,7 @@ export function FinTip({ term, className }: FinTipProps) {
   return (
     <span className={`relative inline-flex ml-1 align-middle ${className ?? ''}`} style={{ verticalAlign: 'middle' }}>
       <HelpCircle
-        style={{ width: 13, height: 13, color: 'var(--text-subtle)', cursor: 'pointer', flexShrink: 0 }}
+        style={{ width: 13, height: 13, color: 'var(--p-text-faint)', cursor: 'pointer', flexShrink: 0 }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen(v => !v)}
@@ -45,8 +45,8 @@ export function FinTip({ term, className }: FinTipProps) {
         <span style={{
           position: 'absolute', zIndex: 60, left: 18, top: -4,
           width: 260, padding: '10px 13px', borderRadius: 10,
-          background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-          fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55,
+          background: 'var(--p-card)', border: '1px solid var(--p-line)',
+          fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55,
           boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
           whiteSpace: 'normal',
           pointerEvents: 'none',

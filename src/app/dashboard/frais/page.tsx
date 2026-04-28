@@ -33,7 +33,7 @@ function FeesPageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Impact des Frais</span>
@@ -44,8 +44,8 @@ function FeesPageInner() {
               <TrendingDown style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Impact des Frais</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>ETF 0.2% vs fonds actif 2% · Effet sur 20 ans</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Impact des Frais</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>ETF 0.2% vs fonds actif 2% · Effet sur 20 ans</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -82,10 +82,10 @@ function FeesPageInner() {
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Carte Paramètres */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 7 }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 7 }}>
               <Settings2 style={{ width: 13, height: 13, color: COLOR }} />
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
             </div>
             <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
@@ -96,13 +96,13 @@ function FeesPageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.fmt(inputs[s.k])}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.fmt(inputs[s.k])}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k]]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
               ))}
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               {[
                 { label: 'Frais ETF (A)', k: 'feeA' as const, min: 0.05, max: 1, step: 0.05, fmt: (v: number) => `${v}%` },
@@ -112,23 +112,23 @@ function FeesPageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.fmt(inputs[s.k])}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.fmt(inputs[s.k])}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k]]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
               ))}
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               {/* Presets */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Presets courants</p>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Presets courants</p>
                 {[
                   { label: 'ETF MSCI World', feeA: 0.2, feeB: 1.5 },
                   { label: 'ETF vs OPCVM', feeA: 0.35, feeB: 2.5 },
                 ].map(p => (
                   <button key={p.label} onClick={() => setInputs(prev => ({ ...prev, feeA: p.feeA, feeB: p.feeB }))}
-                    style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', textAlign: 'left' }}>
+                    style={{ fontSize: 11, color: 'var(--p-text-dim)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', textAlign: 'left' }}>
                     {p.label} — A:{p.feeA}% / B:{p.feeB}%
                   </button>
                 ))}
@@ -146,7 +146,7 @@ function FeesPageInner() {
               { label: 'Perte frais B', value: `${r.pctLostB.toFixed(1)}%`, color: '#fb923c' },
             ].map(item => (
               <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.value}</span>
               </div>
             ))}
@@ -160,26 +160,26 @@ function FeesPageInner() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
             <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${COLOR}10, transparent)`, border: `1px solid ${COLOR}30`, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${COLOR}14, transparent)`, pointerEvents: 'none' }} />
-              <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>ETF {inputs.feeA}% (A)</p>
+              <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>ETF {inputs.feeA}% (A)</p>
               <p style={{ fontSize: 20, fontWeight: 800, color: COLOR, letterSpacing: '-0.5px', lineHeight: 1 }}>{fmt(r.finalA)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>{(inputs.grossRate - inputs.feeA).toFixed(2)}% net</p>
+              <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>{(inputs.grossRate - inputs.feeA).toFixed(2)}% net</p>
             </div>
             {[
               { label: `Fonds ${inputs.feeB}% (B)`, value: fmt(r.finalB), sub: `${(inputs.grossRate - inputs.feeB).toFixed(2)}% net`, color: '#f87171' },
               { label: 'Différence A–B', value: fmt(r.difference), sub: 'économisé avec ETF', color: '#34d399' },
               { label: 'Capital perdu en frais B', value: `${r.pctLostB.toFixed(1)}%`, sub: 'du potentiel brut', color: '#fb923c' },
             ].map(k => (
-              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
+              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+                <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
                 <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', lineHeight: 1 }}>{k.value}</p>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>{k.sub}</p>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>{k.sub}</p>
               </div>
             ))}
           </div>
 
           {/* Chart principal */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 14 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Divergence des deux scénarios sur {inputs.years} ans</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: 14 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Divergence des deux scénarios sur {inputs.years} ans</p>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
@@ -194,8 +194,8 @@ function FeesPageInner() {
           </div>
 
           {/* Résultats comparés — barres */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '16px 20px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Résultats comparés à {inputs.years} ans</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '16px 20px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 14 }}>Résultats comparés à {inputs.years} ans</p>
             {[
               { label: `Scénario A — ETF ${inputs.feeA}%/an`, value: r.finalA, color: COLOR, pct: 100 },
               { label: `Scénario B — Fonds ${inputs.feeB}%/an`, value: r.finalB, color: '#f87171', pct: r.finalA > 0 ? r.finalB / r.finalA * 100 : 0 },
@@ -203,7 +203,7 @@ function FeesPageInner() {
             ].map(row => (
               <div key={row.label} style={{ marginBottom: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>{row.label}</span>
                   <span style={{ fontSize: 14, fontWeight: 700, color: row.color }}>{fmt(row.value)}</span>
                 </div>
                 <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
@@ -218,13 +218,13 @@ function FeesPageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Analyse */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Analyse</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Analyse</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ background: `${COLOR}0a`, border: `1px solid ${COLOR}20`, borderRadius: 10, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Impact frais B sur {inputs.years} ans</p>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Impact frais B sur {inputs.years} ans</p>
                 <p style={{ fontSize: 22, fontWeight: 800, color: '#f87171', letterSpacing: '-0.5px' }}>{r.pctLostB.toFixed(1)}%</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>du capital brut absorbé par les frais</p>
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>du capital brut absorbé par les frais</p>
               </div>
               {[
                 { label: 'Coût annuel frais A', value: `~${fmt(Math.round(inputs.capital * inputs.feeA / 100))}` },
@@ -234,16 +234,16 @@ function FeesPageInner() {
                 { label: 'Rendement net B', value: `${(inputs.grossRate - inputs.feeB).toFixed(2)}%` },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{item.value}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)' }}>{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* ETF vs Fonds actifs — comparaison type */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Frais typiques par catégorie</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Frais typiques par catégorie</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
                 { label: 'ETF indiciel', pct: 0.15, max: 4, color: COLOR },
@@ -254,7 +254,7 @@ function FeesPageInner() {
               ].map(row => (
                 <div key={row.label}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{row.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: row.color }}>{row.pct}%/an</span>
                   </div>
                   <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
@@ -270,7 +270,7 @@ function FeesPageInner() {
             {tips.map((tip, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: `${COLOR}06`, border: `1px solid ${COLOR}18`, borderRadius: 12, padding: '12px 14px', animation: i === 0 ? 'glow-pulse 2.5s ease-in-out infinite' : undefined }}>
                 <span style={{ fontSize: 12, flexShrink: 0 }}>✦</span>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

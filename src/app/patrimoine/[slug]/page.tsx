@@ -19,7 +19,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   'vue-ensemble': {
     title: "Vue d'ensemble patrimoine",
     tag: 'Patrimoine',
-    color: '#f1c086',
+    color: '#B07820',
     desc: "Votre bilan patrimonial complet en un coup d'œil : actifs, passifs, répartition par classe d'actifs et évolution dans le temps avec carte monde géographique.",
     why: [
       "Visualiser instantanément votre patrimoine net (actifs − passifs) en temps réel",
@@ -334,7 +334,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   'score-patrimonial': {
     title: 'Score Patrimonial',
     tag: 'Analyse & Fiscal',
-    color: '#f1c086',
+    color: '#B07820',
     desc: "Notation 0-100 de votre santé financière sur 6 piliers : épargne, dettes, diversification, optimisation fiscale, prévoyance et progression vers le FIRE.",
     why: [
       "Avoir une vision synthétique et objective de votre santé financière globale",
@@ -410,7 +410,7 @@ export default async function PatrimoineSlugPage({ params }: Props) {
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <PatrimoLogo width={130} uid="patrimo-slug" />
           </Link>
-          <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', fontSize: 13, fontWeight: 600 }}>
+          <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(176,120,32,0.10)', border: '1px solid rgba(176,120,32,0.25)', color: '#B07820', fontSize: 13, fontWeight: 600 }}>
             Créer un compte gratuit →
           </Link>
         </div>
@@ -436,7 +436,7 @@ export default async function PatrimoineSlugPage({ params }: Props) {
             {page.desc}
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 24, background: 'linear-gradient(135deg, #c8922a, #f1c086)', color: '#000', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
+            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 24, background: 'linear-gradient(135deg, #8B5E18, #B07820)', color: '#000', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
               Accéder à cette page <ArrowRight style={{ width: 16, height: 16 }} />
             </Link>
             <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 24, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, textDecoration: 'none' }}>
@@ -499,14 +499,14 @@ export default async function PatrimoineSlugPage({ params }: Props) {
         </section>
 
         {/* CTA final */}
-        <section style={{ textAlign: 'center', padding: '48px 32px', borderRadius: 24, background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.15)' }}>
+        <section style={{ textAlign: 'center', padding: '48px 32px', borderRadius: 24, background: 'rgba(176,120,32,0.05)', border: '1px solid rgba(176,120,32,0.15)' }}>
           <h3 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 12px', letterSpacing: '-0.03em' }}>
             Accédez à cette page gratuitement
           </h3>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', margin: '0 0 32px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
             Créez un compte PatrImo pour gérer votre patrimoine, suivre vos actifs et accéder aux 18 simulateurs.
           </p>
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '13px 30px', borderRadius: 24, background: 'linear-gradient(135deg, #c8922a, #f1c086)', color: '#000', fontWeight: 700, fontSize: 15 }}>
+          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '13px 30px', borderRadius: 24, background: 'linear-gradient(135deg, #8B5E18, #B07820)', color: '#000', fontWeight: 700, fontSize: 15 }}>
             Commencer gratuitement
             <ArrowRight style={{ width: 16, height: 16 }} />
           </Link>

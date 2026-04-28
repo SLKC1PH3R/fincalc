@@ -116,7 +116,7 @@ function CustomSankeyLink(props: {
 
 function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>; inputs: RentalInputs; label: string }) {
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--card-dark-border)' }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--p-line)' }}>
       {[
         { label: 'Loyers annuels bruts', value: fmt(r.annualRent), positive: true },
         { label: `Vacance locative (${inputs.vacancy}%)`, value: `− \u00a0${fmt(r.annualVacancyLoss)}`, negative: true },
@@ -131,19 +131,19 @@ function CashflowTable({ r, inputs, label }: { r: ReturnType<typeof calcRental>;
       ].map((row, i, arr) => (
         <div key={i} className="flex items-center justify-between px-4 py-3"
           style={{
-            borderBottom: i < arr.length - 1 ? '1px solid var(--section-border)' : 'none',
+            borderBottom: i < arr.length - 1 ? '1px solid var(--p-line)' : 'none',
             background: row.cashflow
               ? (r.cashflowAnnual >= 0 ? 'rgba(52,211,153,0.05)' : 'rgba(239,68,68,0.05)')
-              : row.bold ? 'var(--row-hover)' : 'transparent',
-            borderTop: row.separator ? '1px solid var(--card-dark-border)' : 'none',
+              : row.bold ? 'var(--p-row-hover)' : 'transparent',
+            borderTop: row.separator ? '1px solid var(--p-line)' : 'none',
           }}>
-          <span style={{ fontSize: 13, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
+          <span style={{ fontSize: 13, color: row.bold ? 'var(--p-text-em)' : 'var(--p-text-dim)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
           <span style={{
             fontSize: 13, fontWeight: row.bold ? 700 : 500,
             fontVariantNumeric: 'tabular-nums',
             color: row.cashflow
               ? (r.cashflowAnnual >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)')
-              : row.negative ? 'var(--text-muted-c)' : 'var(--text-em)',
+              : row.negative ? 'var(--p-text-dim)' : 'var(--p-text-em)',
           }}>{row.value}</span>
         </div>
       ))}
@@ -163,7 +163,7 @@ function GlobalCashflowTable({ apartments, results }: { apartments: Apartment[];
   const totalCashflow = results.reduce((s, r) => s + r.cashflowAnnual, 0)
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--card-dark-border)' }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--p-line)' }}>
       {[
         { label: 'Loyers annuels bruts', value: fmt(totalAnnualRent), positive: true },
         { label: 'Vacance locative totale', value: `− \u00a0${fmt(totalVacancyLoss)}`, negative: true },
@@ -177,19 +177,19 @@ function GlobalCashflowTable({ apartments, results }: { apartments: Apartment[];
       ].map((row, i, arr) => (
         <div key={i} className="flex items-center justify-between px-4 py-3"
           style={{
-            borderBottom: i < arr.length - 1 ? '1px solid var(--section-border)' : 'none',
+            borderBottom: i < arr.length - 1 ? '1px solid var(--p-line)' : 'none',
             background: row.cashflow
               ? (totalCashflow >= 0 ? 'rgba(52,211,153,0.05)' : 'rgba(239,68,68,0.05)')
-              : row.bold ? 'var(--row-hover)' : 'transparent',
-            borderTop: row.separator ? '1px solid var(--card-dark-border)' : 'none',
+              : row.bold ? 'var(--p-row-hover)' : 'transparent',
+            borderTop: row.separator ? '1px solid var(--p-line)' : 'none',
           }}>
-          <span style={{ fontSize: 13, color: row.bold ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
+          <span style={{ fontSize: 13, color: row.bold ? 'var(--p-text-em)' : 'var(--p-text-dim)', fontWeight: row.bold ? 600 : 400 }}>{row.label}</span>
           <span style={{
             fontSize: 13, fontWeight: row.bold ? 700 : 500,
             fontVariantNumeric: 'tabular-nums',
             color: row.cashflow
               ? (totalCashflow >= 0 ? 'hsl(160 84% 39%)' : 'hsl(0 72% 51%)')
-              : row.negative ? 'var(--text-muted-c)' : 'var(--text-em)',
+              : row.negative ? 'var(--p-text-dim)' : 'var(--p-text-em)',
           }}>{row.value}</span>
         </div>
       ))}
@@ -337,7 +337,7 @@ function RentalPageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Rentabilité Locative</span>
@@ -348,8 +348,8 @@ function RentalPageInner() {
               <Wallet style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Cashflow net · Rendement brut/net · ROI</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Rentabilité Locative</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Cashflow net · Rendement brut/net · ROI</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -385,7 +385,7 @@ function RentalPageInner() {
               setApartments([{ id: '1', name: 'Appartement 1', inputs: { ...DEFAULT_INPUTS } }])
               setActiveAptId('1')
               setResultTab('global')
-            }} style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+            }} style={{ borderColor: 'var(--p-line)', color: 'var(--p-text-dim)' }}>
               Réinitialiser
             </Button>
           </div>
@@ -396,19 +396,19 @@ function RentalPageInner() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
         <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}10, transparent)`, border: `1px solid ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}30`, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${globalCashflowMonthly >= 0 ? '#34d399' : '#f87171'}14, transparent)`, pointerEvents: 'none' }} />
-          <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>Cashflow mensuel</div>
+          <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>Cashflow mensuel</div>
           <div style={{ fontSize: 20, fontWeight: 800, color: globalCashflowMonthly >= 0 ? '#34d399' : '#f87171', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{fmt(globalCashflowMonthly)}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmt(globalCashflowAnnual)}/an</div>
+          <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{fmt(globalCashflowAnnual)}/an</div>
         </div>
         {[
           { label: 'Rendement brut', value: fmtPct(globalGrossYield), sub: 'loyers / investissement' },
           { label: 'Rendement net', value: fmtPct(globalNetYield), sub: 'après charges & fiscalité' },
           { label: 'ROI fonds propres', value: fmtPct(globalROI), sub: 'cashflow / apport' },
         ].map((k, i) => (
-          <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-            <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>{k.label}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{k.value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>
+          <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+            <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500, marginBottom: 6 }}>{k.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 4 }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{k.sub}</div>
           </div>
         ))}
       </div>
@@ -431,7 +431,7 @@ function RentalPageInner() {
                     transition: 'all 0.15s',
                     ...(activeAptId === apt.id
                       ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
-                      : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                      : { border: '1px solid transparent', color: 'var(--p-text-dim)', background: 'transparent' })
                   }}
                 >
                   {apt.name}
@@ -450,7 +450,7 @@ function RentalPageInner() {
             {apartments.length < 6 && (
               <button
                 onClick={addApartment}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, fontSize: 12, border: '1px dashed var(--card-dark-border)', color: 'var(--text-subtle)', background: 'transparent' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, fontSize: 12, border: '1px dashed var(--p-line)', color: 'var(--p-text-faint)', background: 'transparent' }}
               >
                 <Plus className="h-3 w-3" />Ajouter
               </button>
@@ -459,105 +459,105 @@ function RentalPageInner() {
 
           {/* Apartment name */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Nom du bien</label>
+            <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Nom du bien</label>
             <Input value={activeApt.name} onChange={e => setAptName(e.target.value)} style={{ height: 36, fontSize: 13 }} />
           </div>
 
           {/* Acquisition panel */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Settings2 style={{ width: 13, height: 13, color: 'var(--text-muted-c)' }} />
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
+              <Settings2 style={{ width: 13, height: 13, color: 'var(--p-text-dim)' }} />
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Acquisition</p>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Prix d&apos;achat (€)<FieldTooltip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Prix d&apos;achat (€)<FieldTooltip text="Prix FAI. Les frais de notaire s'ajoutent en pourcentage ci-dessous." /></label>
               <Input type="number" value={inputs.price} onChange={e => setApt('price')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Frais de notaire<FieldTooltip text="~8% dans l'ancien, ~3% dans le neuf." /></label>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.notaryFees}%</span>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Frais de notaire<FieldTooltip text="~8% dans l'ancien, ~3% dans le neuf." /></label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text-em)' }}>{inputs.notaryFees}%</span>
               </div>
               <Slider min={2} max={10} step={0.5} value={[inputs.notaryFees]} onValueChange={([v]) => setApt('notaryFees')(v)} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Travaux (€)<FieldTooltip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Travaux (€)<FieldTooltip text="Budget travaux/rénovation initial. Inclus dans l'investissement total." /></label>
               <Input type="number" value={inputs.works} onChange={e => setApt('works')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Montant emprunté (€)<FieldTooltip text="Capital emprunté. Laissez 0 pour un achat cash." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Montant emprunté (€)<FieldTooltip text="Capital emprunté. Laissez 0 pour un achat cash." /></label>
               <Input type="number" value={inputs.loanAmount} onChange={e => setApt('loanAmount')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Taux crédit</label>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanRate}%</span>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Taux crédit</label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text-em)' }}>{inputs.loanRate}%</span>
               </div>
               <Slider min={0.5} max={8} step={0.05} value={[inputs.loanRate]} onValueChange={([v]) => setApt('loanRate')(v)} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Durée crédit</label>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.loanYears} ans</span>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Durée crédit</label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text-em)' }}>{inputs.loanYears} ans</span>
               </div>
               <Slider min={5} max={30} step={1} value={[inputs.loanYears]} onValueChange={([v]) => setApt('loanYears')(v)} />
             </div>
           </div>
 
           {/* Exploitation & Fiscalité panel */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}18`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}18`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exploitation &amp; Fiscalité</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Loyer mensuel HC (€)<FieldTooltip text="Loyer hors charges. Base de calcul du rendement." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Loyer mensuel HC (€)<FieldTooltip text="Loyer hors charges. Base de calcul du rendement." /></label>
               <Input type="number" value={inputs.rent} onChange={e => setApt('rent')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Charges mensuelles (€)<FieldTooltip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Charges mensuelles (€)<FieldTooltip text="Charges non récupérables sur le locataire : copropriété, entretien..." /></label>
               <Input type="number" value={inputs.charges} onChange={e => setApt('charges')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Taxe foncière (€/an)<FieldTooltip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Taxe foncière (€/an)<FieldTooltip text="Taxe foncière annuelle — à votre charge en tant que propriétaire." /></label>
               <Input type="number" value={inputs.taxeFonciere} onChange={e => setApt('taxeFonciere')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Assurance PNO (€/an)<FieldTooltip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Assurance PNO (€/an)<FieldTooltip text="Assurance Propriétaire Non Occupant — obligatoire en copropriété." /></label>
               <Input type="number" value={inputs.insurance} onChange={e => setApt('insurance')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Taux de vacance<FieldTooltip text="Pourcentage du temps sans locataire. 4-8% est réaliste." /></label>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.vacancy}%</span>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Taux de vacance<FieldTooltip text="Pourcentage du temps sans locataire. 4-8% est réaliste." /></label>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text-em)' }}>{inputs.vacancy}%</span>
               </div>
               <Slider min={0} max={20} step={0.5} value={[inputs.vacancy]} onValueChange={([v]) => setApt('vacancy')(v)} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>Régime fiscal<FieldTooltip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement." /></label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>Régime fiscal<FieldTooltip text="Nu : revenus fonciers. Meublé micro-BIC : 50% abattement. LMNP réel : amortissement." /></label>
               <Select value={inputs.regime} onValueChange={v => setApt('regime')(v as RentalInputs['regime'])}>
                 <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -571,8 +571,8 @@ function RentalPageInner() {
             {inputs.regime !== 'lmnp' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Votre TMI</label>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-em)' }}>{inputs.marginalRate}%</span>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Votre TMI</label>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text-em)' }}>{inputs.marginalRate}%</span>
                 </div>
                 <Slider min={0} max={45} step={1} value={[inputs.marginalRate]} onValueChange={([v]) => setApt('marginalRate')(v)} />
               </div>
@@ -584,11 +584,11 @@ function RentalPageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Result tabs + Sankey */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, gap: 8, flexWrap: 'wrap' }}>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Décomposition du cashflow annuel</p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>Décomposition du cashflow annuel</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 2 }}>
                   {resultTab === 'global'
                     ? `Global — ${apartments.length} appartement${apartments.length > 1 ? 's' : ''} — ${fmt(globalTotalInvestment)}`
                     : `${activeTabApt?.name} — ${fmt(activeTabResult?.totalInvestment ?? 0)}`}
@@ -601,7 +601,7 @@ function RentalPageInner() {
                     padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
                     ...(resultTab === 'global'
                       ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
-                      : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                      : { border: '1px solid transparent', color: 'var(--p-text-dim)', background: 'transparent' })
                   }}
                 >Global</button>
                 {apartments.map((apt) => (
@@ -612,7 +612,7 @@ function RentalPageInner() {
                       padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 500, transition: 'all 0.15s',
                       ...(resultTab === apt.id
                         ? { background: `${COLOR}14`, border: `1px solid ${COLOR}28`, color: 'var(--sb-text-strong)' }
-                        : { border: '1px solid transparent', color: 'var(--text-muted-c)', background: 'transparent' })
+                        : { border: '1px solid transparent', color: 'var(--p-text-dim)', background: 'transparent' })
                     }}
                   >{apt.name}</button>
                 ))}
@@ -633,14 +633,14 @@ function RentalPageInner() {
                   <Tooltip
                     formatter={(v: number) => [fmt(v), '']}
                     contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '6px', fontSize: 12, color: 'hsl(var(--foreground))' }}
-                    itemStyle={{ color: 'var(--text-primary)' }}
-                    labelStyle={{ color: 'var(--text-muted-c)' }}
+                    itemStyle={{ color: 'var(--p-text)' }}
+                    labelStyle={{ color: 'var(--p-text-dim)' }}
                   />
                 </Sankey>
               </ResponsiveContainer>
             ) : (
               <div style={{ height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 13, color: 'var(--text-muted-c)' }}>Chargement du graphique…</span>
+                <span style={{ fontSize: 13, color: 'var(--p-text-dim)' }}>Chargement du graphique…</span>
               </div>
             )}
           </div>
@@ -655,16 +655,16 @@ function RentalPageInner() {
           {/* Per-apartment mini KPIs when global */}
           {resultTab === 'global' && apartments.length > 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-subtle)' }}>Par appartement</p>
+              <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--p-text-faint)' }}>Par appartement</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {apartments.map((apt, idx) => {
                   const r = results[idx]
                   return (
-                    <div key={apt.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 10, background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)' }}>
+                    <div key={apt.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 10, background: 'var(--p-row-hover)', border: '1px solid var(--p-line)' }}>
                       <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--sb-text)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(r.grossYield)} brut</span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtPct(r.netYield)} net</span>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{fmtPct(r.grossYield)} brut</span>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{fmtPct(r.netYield)} net</span>
                         <span style={{ fontSize: 12, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: r.cashflowMonthly >= 0 ? '#34d399' : '#f87171' }}>
                           {fmt(r.cashflowMonthly)}/mois
                         </span>
@@ -689,7 +689,7 @@ function RentalPageInner() {
               <scoreConf.Icon style={{ width: 14, height: 14, color: scoreConf.color, flexShrink: 0 }} />
               <span style={{ fontSize: 12, fontWeight: 700, color: scoreConf.color }}>Analyse — Cashflow {scoreConf.label}</span>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, marginBottom: apartments.length === 1 && activeResult.analysis.tips.length > 0 ? 12 : 0 }}>
+            <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, marginBottom: apartments.length === 1 && activeResult.analysis.tips.length > 0 ? 12 : 0 }}>
               {apartments.length === 1
                 ? activeResult.analysis.message
                 : `Votre portefeuille de ${apartments.length} biens génère ${fmt(globalCashflowMonthly)}/mois (${fmt(globalCashflowAnnual)}/an) pour ${fmt(globalTotalInvestment)} investis. Rendement brut : ${fmtPct(globalGrossYield)}, net : ${fmtPct(globalNetYield)}, ROI : ${fmtPct(globalROI)}.`}
@@ -701,7 +701,7 @@ function RentalPageInner() {
                     <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${scoreConf.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                       <span style={{ fontSize: 9, fontWeight: 700, color: scoreConf.color }}>{i + 1}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>{tip}</p>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>{tip}</p>
                   </div>
                 ))}
               </div>
@@ -710,8 +710,8 @@ function RentalPageInner() {
 
           {/* Donut revenu/charges/remboursement */}
           {donutData.length > 0 && (
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 8 }}>
                 Répartition annuelle — {activeApt.name}
               </p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -726,9 +726,9 @@ function RentalPageInner() {
                   <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 9999, background: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
                   </div>
                 ))}
               </div>
@@ -737,7 +737,7 @@ function RentalPageInner() {
 
           {/* Conseils investissement locatif */}
           <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils investisseur</p>
+            <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils investisseur</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { color: COLOR, text: 'Un rendement brut > 7% est nécessaire pour viser un cashflow positif avec crédit.' },
@@ -747,7 +747,7 @@ function RentalPageInner() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>{item.text}</span>
                 </div>
               ))}
             </div>

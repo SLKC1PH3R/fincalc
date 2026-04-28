@@ -194,7 +194,7 @@ export default function EnvelopeDetailPage() {
   // ── Loading / error states ─────────────────────────────────────────────────
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: 'var(--text-subtle)', fontSize: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, color: 'var(--p-text-faint)', fontSize: 14 }}>
         Chargement…
       </div>
     )
@@ -202,7 +202,7 @@ export default function EnvelopeDetailPage() {
   if (!envelope) {
     return (
       <div style={{ textAlign: 'center', padding: 48 }}>
-        <div style={{ color: 'var(--text-subtle)', fontSize: 14, marginBottom: 16 }}>Enveloppe introuvable</div>
+        <div style={{ color: 'var(--p-text-faint)', fontSize: 14, marginBottom: 16 }}>Enveloppe introuvable</div>
         <Link href="/dashboard/patrimoine"><Button variant="outline" size="sm">← Retour</Button></Link>
       </div>
     )
@@ -219,16 +219,16 @@ export default function EnvelopeDetailPage() {
   const showPL = !['LIVRET','CASH'].includes(envelope.type) && pl !== null && envInvested > 0
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--content-bg)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--p-bg)' }}>
 
       {/* ── Header ── */}
-      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--section-border)', flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Link href="/dashboard/patrimoine" style={{ color: 'var(--text-subtle)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
           <span style={{ opacity: 0.4 }}>›</span>
           <Link href={cat.href} style={{ color: cat.color, textDecoration: 'none', fontWeight: 600 }}>{cat.label}</Link>
           <span style={{ opacity: 0.4 }}>›</span>
-          <span style={{ color: 'var(--text-muted-c)' }}>{envelope.name}</span>
+          <span style={{ color: 'var(--p-text-dim)' }}>{envelope.name}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -243,15 +243,15 @@ export default function EnvelopeDetailPage() {
                 <button onClick={handleRename} style={{ padding: 4, borderRadius: 6, background: cfg.color + '20', border: `1px solid ${cfg.color}40`, cursor: 'pointer' }}>
                   <Check style={{ width: 13, height: 13, color: cfg.color }} />
                 </button>
-                <button onClick={() => setEditingName(false)} style={{ padding: 4, borderRadius: 6, background: 'none', border: '1px solid var(--card-dark-border)', cursor: 'pointer' }}>
-                  <X style={{ width: 13, height: 13, color: 'var(--text-subtle)' }} />
+                <button onClick={() => setEditingName(false)} style={{ padding: 4, borderRadius: 6, background: 'none', border: '1px solid var(--p-line)', cursor: 'pointer' }}>
+                  <X style={{ width: 13, height: 13, color: 'var(--p-text-faint)' }} />
                 </button>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{envelope.name}</h1>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.label}</span>
-                <button onClick={() => setEditingName(true)} style={{ padding: 3, borderRadius: 5, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--p-text)', margin: 0 }}>{envelope.name}</h1>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{cfg.label}</span>
+                <button onClick={() => setEditingName(true)} style={{ padding: 3, borderRadius: 5, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                   <Pencil style={{ width: 12, height: 12 }} />
                 </button>
               </div>
@@ -295,21 +295,21 @@ export default function EnvelopeDetailPage() {
                   <Link key={sib.id} href={`/dashboard/patrimoine/${sib.id}`} style={{ textDecoration: 'none' }}>
                     <div style={{
                       padding: '10px 12px', borderRadius: 11, cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
-                      background: isCurrent ? cat.color + '12' : 'var(--card-dark)',
-                      border: `1px solid ${isCurrent ? cat.color + '50' : 'var(--card-dark-border)'}`,
+                      background: isCurrent ? cat.color + '12' : 'var(--p-card)',
+                      border: `1px solid ${isCurrent ? cat.color + '50' : 'var(--p-line)'}`,
                     }}
-                      onMouseEnter={e => { if (!isCurrent) { (e.currentTarget as HTMLElement).style.borderColor = cat.color + '40'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' } }}
-                      onMouseLeave={e => { if (!isCurrent) { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' } }}
+                      onMouseEnter={e => { if (!isCurrent) { (e.currentTarget as HTMLElement).style.borderColor = cat.color + '40'; (e.currentTarget as HTMLElement).style.background = 'var(--p-row-hover)' } }}
+                      onMouseLeave={e => { if (!isCurrent) { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'var(--p-card)' } }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <div style={{ width: 26, height: 26, borderRadius: 7, background: sibCfg.color + '18', border: `1px solid ${sibCfg.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <SibIcon style={{ width: 11, height: 11, color: sibCfg.color }} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: isCurrent ? cat.color : 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.name}</div>
-                          <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{sibCfg.label}</div>
+                          <div style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: isCurrent ? cat.color : 'var(--p-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.name}</div>
+                          <div style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{sibCfg.label}</div>
                         </div>
-                        {sibVal > 0 && <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted-c)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(sibVal)}</span>}
+                        {sibVal > 0 && <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-dim)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(sibVal)}</span>}
                       </div>
                     </div>
                   </Link>
@@ -319,14 +319,14 @@ export default function EnvelopeDetailPage() {
               {/* Add sibling */}
               <Link href={cat.href} style={{ textDecoration: 'none' }}>
                 <div
-                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--card-dark-border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
+                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--p-line)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = cat.color + '55'; (e.currentTarget as HTMLElement).style.background = cat.color + '05' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                 >
-                  <div style={{ width: 26, height: 26, borderRadius: 7, border: '1.5px dashed var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Plus style={{ width: 11, height: 11, color: 'var(--text-subtle)' }} />
+                  <div style={{ width: 26, height: 26, borderRadius: 7, border: '1.5px dashed var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus style={{ width: 11, height: 11, color: 'var(--p-text-faint)' }} />
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Ajouter une enveloppe</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>Ajouter une enveloppe</span>
                 </div>
               </Link>
             </div>
@@ -366,21 +366,21 @@ export default function EnvelopeDetailPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {envValue > 0 && (
                     <div>
-                      <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>
+                      <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>
                         {envelope.type === 'IMMOBILIER' ? 'Valeur estimée' : envelope.type === 'LIVRET' || envelope.type === 'CASH' ? 'Solde' : 'Valeur actuelle'}
                       </div>
                       <div style={{ fontSize: 22, fontWeight: 800, color: cfg.color, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(envValue)}</div>
                     </div>
                   )}
                   {envInvested > 0 && envInvested !== envValue && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid var(--section-border)' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Capital investi</span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(envInvested)}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid var(--p-line)' }}>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Capital investi</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(envInvested)}</span>
                     </div>
                   )}
                   {showPL && pl !== null && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{pl >= 0 ? 'Plus-value' : 'Moins-value'}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{pl >= 0 ? 'Plus-value' : 'Moins-value'}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                         <span style={{ fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>{pl >= 0 ? '+' : ''}{fmtCompact(pl)}</span>
                         {plPct !== null && <span style={{ fontSize: 10, color: pl >= 0 ? '#34d399' : '#f87171' }}>({pl >= 0 ? '+' : ''}{plPct.toFixed(1)}%)</span>}
@@ -400,12 +400,12 @@ export default function EnvelopeDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {insights.map((ins, i) => (
                   <div key={i}>
-                    {i > 0 && <div style={{ height: 1, background: 'var(--section-border)', marginBottom: 12 }} />}
+                    {i > 0 && <div style={{ height: 1, background: 'var(--p-line)', marginBottom: 12 }} />}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                       <span style={{ fontSize: 13 }}>{ins.icon}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{ins.title}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>{ins.title}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>{ins.tip}</p>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>{ins.tip}</p>
                   </div>
                 ))}
               </div>

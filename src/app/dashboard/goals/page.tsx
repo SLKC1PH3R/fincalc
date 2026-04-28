@@ -28,7 +28,7 @@ interface Envelope {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const PRESET_COLORS = [
-  { value: '#f1c086', label: 'Orange' },
+  { value: '#B07820', label: 'Orange' },
   { value: '#818cf8', label: 'Violet' },
   { value: '#34d399', label: 'Vert' },
   { value: '#38bdf8', label: 'Bleu' },
@@ -68,17 +68,17 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
     }}>
       <div style={{
         width: 64, height: 64, borderRadius: 20,
-        background: 'rgba(241,192,134,0.09)',
-        border: '1px solid rgba(241,192,134,0.17)',
+        background: 'rgba(176,120,32,0.09)',
+        border: '1px solid rgba(176,120,32,0.17)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <Flag style={{ width: 28, height: 28, color: '#f1c086' }} />
+        <Flag style={{ width: 28, height: 28, color: '#B07820' }} />
       </div>
       <div>
-        <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>
+        <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)', margin: '0 0 8px' }}>
           Aucun objectif pour l'instant
         </p>
-        <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: 0, maxWidth: 380 }}>
+        <p style={{ fontSize: 13, color: 'var(--p-text-dim)', margin: 0, maxWidth: 380 }}>
           Définissez votre premier objectif — remboursement de crédit, apport immobilier, retraite à 50 ans…
         </p>
       </div>
@@ -87,7 +87,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 20px', borderRadius: 10, border: 'none',
-          background: '#f1c086', color: '#fff', cursor: 'pointer',
+          background: '#B07820', color: '#fff', cursor: 'pointer',
           fontSize: 13, fontWeight: 600,
         }}
       >
@@ -102,7 +102,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 function SkeletonCard() {
   return (
     <div style={{
-      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+      background: 'var(--p-card)', border: '1px solid var(--p-line)',
       borderRadius: 14, padding: 20,
     }}>
       <div className="animate-pulse" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -128,7 +128,7 @@ interface FormState {
 }
 
 const DEFAULT_FORM: FormState = {
-  title: '', description: '', targetAmount: '', targetDate: '', envelopeId: '', color: '#f1c086',
+  title: '', description: '', targetAmount: '', targetDate: '', envelopeId: '', color: '#B07820',
 }
 
 function GoalForm({
@@ -156,14 +156,14 @@ function GoalForm({
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '8px 12px', borderRadius: 8,
-    border: '1px solid var(--card-dark-border)',
+    border: '1px solid var(--p-line)',
     background: 'rgba(255,255,255,0.04)',
-    color: 'var(--text-primary)', fontSize: 13, outline: 'none',
+    color: 'var(--p-text)', fontSize: 13, outline: 'none',
     boxSizing: 'border-box', colorScheme: 'dark',
   }
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 600, color: 'var(--text-muted-c)',
+    fontSize: 11, fontWeight: 600, color: 'var(--p-text-dim)',
     textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4, display: 'block',
   }
 
@@ -267,7 +267,7 @@ function GoalForm({
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '8px 16px', borderRadius: 8, border: 'none',
-            background: '#f1c086', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
+            background: '#B07820', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
             fontSize: 13, fontWeight: 600, opacity: loading ? 0.7 : 1,
           }}
         >
@@ -280,8 +280,8 @@ function GoalForm({
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '8px 16px', borderRadius: 8,
-            border: '1px solid var(--card-dark-border)',
-            background: 'transparent', color: 'var(--text-muted-c)',
+            border: '1px solid var(--p-line)',
+            background: 'transparent', color: 'var(--p-text-dim)',
             cursor: 'pointer', fontSize: 13, fontWeight: 500,
           }}
         >
@@ -335,14 +335,14 @@ function GoalCard({
       )
     } else {
       dateLabel = (
-        <span style={{ fontSize: 11, color: '#f1c086' }}>Ce mois-ci</span>
+        <span style={{ fontSize: 11, color: '#B07820' }}>Ce mois-ci</span>
       )
     }
   }
 
   return (
     <div style={{
-      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+      background: 'var(--p-card)', border: '1px solid var(--p-line)',
       borderRadius: 14, padding: 20,
     }}>
       {/* Header */}
@@ -353,11 +353,11 @@ function GoalCard({
             background: goal.color, flexShrink: 0,
           }} />
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--p-text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {goal.title}
             </p>
             {goal.description && (
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: '2px 0 0' }}>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: '2px 0 0' }}>
                 {goal.description}
               </p>
             )}
@@ -368,10 +368,10 @@ function GoalCard({
             onClick={onEdit}
             title="Modifier"
             style={{
-              width: 28, height: 28, borderRadius: 7, border: '1px solid var(--card-dark-border)',
+              width: 28, height: 28, borderRadius: 7, border: '1px solid var(--p-line)',
               background: 'transparent', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--text-muted-c)',
+              color: 'var(--p-text-dim)',
             }}
           >
             <Pencil style={{ width: 12, height: 12 }} />
@@ -407,17 +407,17 @@ function GoalCard({
         {/* Amount row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
               {fmtCompact(currentAmount)}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
+            <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>
               / {fmtCompact(goal.targetAmount)} — {pct.toFixed(0)}%
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {dateLabel}
             {goal.targetDate && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-subtle)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--p-text-faint)' }}>
                 <Calendar style={{ width: 10, height: 10 }} />
                 Objectif : {formatDate(goal.targetDate)}
               </span>
@@ -428,8 +428,8 @@ function GoalCard({
 
       {/* Manual progress input (when no envelope linked) */}
       {!isLinked && (
-        <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--section-border)' }}>
-          <label style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4, display: 'block', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--p-line)' }}>
+          <label style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 4, display: 'block', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Montant actuel (manuel)
           </label>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -441,12 +441,12 @@ function GoalCard({
               onChange={e => onProgressChange(goal.id, Number(e.target.value))}
               style={{
                 width: 120, padding: '6px 10px', borderRadius: 7,
-                border: '1px solid var(--card-dark-border)',
+                border: '1px solid var(--p-line)',
                 background: 'rgba(255,255,255,0.04)',
-                color: 'var(--text-primary)', fontSize: 13, outline: 'none',
+                color: 'var(--p-text)', fontSize: 13, outline: 'none',
               }}
             />
-            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>€</span>
+            <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>€</span>
           </div>
         </div>
       )}
@@ -457,10 +457,10 @@ function GoalCard({
           marginTop: 8,
           display: 'inline-flex', alignItems: 'center', gap: 5,
           padding: '3px 9px', borderRadius: 6,
-          background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.13)',
+          background: 'rgba(176,120,32,0.07)', border: '1px solid rgba(176,120,32,0.13)',
         }}>
-          <TrendingUp style={{ width: 10, height: 10, color: '#f1c086' }} />
-          <span style={{ fontSize: 11, color: '#f1c086', fontWeight: 600 }}>{linkedEnvelope.name}</span>
+          <TrendingUp style={{ width: 10, height: 10, color: '#B07820' }} />
+          <span style={{ fontSize: 11, color: '#B07820', fontWeight: 600 }}>{linkedEnvelope.name}</span>
         </div>
       )}
     </div>
@@ -578,11 +578,11 @@ export default function GoalsPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Target style={{ width: 22, height: 22, color: '#f1c086' }} />
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--p-text)', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Target style={{ width: 22, height: 22, color: '#B07820' }} />
             Mes Objectifs
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted-c)', margin: '4px 0 0' }}>
+          <p style={{ fontSize: 13, color: 'var(--p-text-dim)', margin: '4px 0 0' }}>
             Suivez la progression de vos projets financiers
           </p>
         </div>
@@ -592,7 +592,7 @@ export default function GoalsPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 7,
               padding: '9px 18px', borderRadius: 10, border: 'none',
-              background: '#f1c086', color: '#fff', cursor: 'pointer',
+              background: '#B07820', color: '#fff', cursor: 'pointer',
               fontSize: 13, fontWeight: 600,
             }}
           >
@@ -604,10 +604,10 @@ export default function GoalsPage() {
 
       {/* Add form */}
       {showAddForm && (
-        <Card style={{ marginBottom: 20, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14 }}>
+        <Card style={{ marginBottom: 20, background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14 }}>
           <CardContent style={{ padding: 20 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Flag style={{ width: 15, height: 15, color: '#f1c086' }} />
+            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Flag style={{ width: 15, height: 15, color: '#B07820' }} />
               Nouvel objectif
             </p>
             <GoalForm
@@ -631,7 +631,7 @@ export default function GoalsPage() {
 
       {/* Empty state */}
       {!loading && goals.length === 0 && !showAddForm && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14 }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14 }}>
           <CardContent style={{ padding: 0 }}>
             <EmptyState onAdd={() => setShowAddForm(true)} />
           </CardContent>
@@ -644,10 +644,10 @@ export default function GoalsPage() {
           {goals.map(goal => {
             if (editingId === goal.id) {
               return (
-                <Card key={goal.id} style={{ background: 'var(--card-dark)', border: `1px solid ${goal.color}44`, borderRadius: 14 }}>
+                <Card key={goal.id} style={{ background: 'var(--p-card)', border: `1px solid ${goal.color}44`, borderRadius: 14 }}>
                   <CardContent style={{ padding: 20 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Pencil style={{ width: 14, height: 14, color: '#f1c086' }} />
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Pencil style={{ width: 14, height: 14, color: '#B07820' }} />
                       Modifier l'objectif
                     </p>
                     <GoalForm

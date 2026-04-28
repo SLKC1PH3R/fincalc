@@ -116,7 +116,7 @@ function fmtUpdated(ts: number | null): string {
 }
 
 function ChangeChip({ v }: { v: number | null | undefined }) {
-  if (v == null) return <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: 'Geist Mono, monospace' }}>—</span>
+  if (v == null) return <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontFamily: 'Geist Mono, monospace' }}>—</span>
   const pos = v > 0
   const col = v === 0 ? '#9ca3af' : pos ? '#34d399' : '#f87171'
   return (
@@ -277,19 +277,19 @@ export default function MarchePage() {
     : tab === 'crypto' ? CRYPTO.filter(c => (livePrices.get(c.yahooTicker)?.changePercent ?? c.change) < -1).length : 0
 
   return (
-    <div style={{ background: 'var(--content-bg)', minHeight: '100vh', padding: '28px 24px 56px' }}>
+    <div style={{ background: 'var(--p-bg)', minHeight: '100vh', padding: '28px 24px 56px' }}>
 
       {/* ── Header ── */}
       <div style={{ marginBottom: 24 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 4 }}>Explorer</p>
+        <p style={{ fontSize: 12, color: 'var(--p-text-faint)', marginBottom: 4 }}>Explorer</p>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
-          <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', margin: 0 }}>
+          <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.04em', margin: 0 }}>
             Marchés & Actifs
           </h1>
           {/* Live status + refresh */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {hasLive && (
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                 MAJ {fmtUpdated(updatedAt)}
               </span>
             )}
@@ -299,9 +299,9 @@ export default function MarchePage() {
                 onClick={() => fetchPrices(tab)}
                 disabled={loading}
                 title="Rafraîchir les cours"
-                style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'transparent', cursor: loading ? 'not-allowed' : 'pointer', color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
-                onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--row-hover)'; e.currentTarget.style.color = 'var(--text-em)' } }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted-c)' }}
+                style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--p-line)', background: 'transparent', cursor: loading ? 'not-allowed' : 'pointer', color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+                onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--p-row-hover)'; e.currentTarget.style.color = 'var(--p-text-em)' } }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--p-text-dim)' }}
               >
                 <RefreshCw style={{ width: 13, height: 13, animation: loading ? 'spin 1s linear infinite' : 'none' }} />
               </button>
@@ -311,7 +311,7 @@ export default function MarchePage() {
 
         {/* Big search bar */}
         <div style={{ position: 'relative', maxWidth: 640 }}>
-          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--text-subtle)', pointerEvents: 'none' }} />
+          <Search style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'var(--p-text-faint)', pointerEvents: 'none' }} />
           <input
             type="text"
             value={query}
@@ -320,37 +320,37 @@ export default function MarchePage() {
               : tab === 'actions' ? 'Rechercher une action (nom, ticker, secteur)…'
               : tab === 'crypto' ? 'Rechercher une crypto (nom, ticker)…'
               : 'Rechercher une SCPI (nom, type)…'}
-            style={{ width: '100%', padding: '12px 16px 12px 44px', borderRadius: 12, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', fontSize: 14, color: 'var(--text-em)', outline: 'none', transition: 'border-color 0.15s', boxSizing: 'border-box' }}
-            onFocus={e => (e.target.style.borderColor = 'rgba(241,192,134,0.4)')}
-            onBlur={e => (e.target.style.borderColor = 'var(--card-dark-border)')}
+            style={{ width: '100%', padding: '12px 16px 12px 44px', borderRadius: 12, border: '1px solid var(--p-line)', background: 'var(--p-card)', fontSize: 14, color: 'var(--p-text-em)', outline: 'none', transition: 'border-color 0.15s', boxSizing: 'border-box' }}
+            onFocus={e => (e.target.style.borderColor = 'rgba(176,120,32,0.4)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--p-line)')}
           />
           {query && (
             <button onClick={() => setQuery('')}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 18, lineHeight: 1 }}>×</button>
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', fontSize: 18, lineHeight: 1 }}>×</button>
           )}
         </div>
       </div>
 
       {/* ── Tabs ── */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 16, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 0, marginBottom: 16, background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
         {TAB_LIST.map(t => (
           <button key={t.key} onClick={() => { setTab(t.key); setQuery(''); setSortBy('name'); setLivePrices(new Map()) }}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: tab === t.key ? 600 : 400, transition: 'all 0.15s', background: tab === t.key ? 'var(--modal-surface)' : 'transparent', color: tab === t.key ? 'var(--text-em)' : 'var(--text-muted-c)', boxShadow: tab === t.key ? '0 1px 4px rgba(0,0,0,0.15)' : 'none', whiteSpace: 'nowrap' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: tab === t.key ? 600 : 400, transition: 'all 0.15s', background: tab === t.key ? 'var(--modal-surface)' : 'transparent', color: tab === t.key ? 'var(--p-text-em)' : 'var(--p-text-dim)', boxShadow: tab === t.key ? '0 1px 4px rgba(0,0,0,0.15)' : 'none', whiteSpace: 'nowrap' }}>
             <span style={{ fontSize: 14 }}>{t.emoji}</span>
             {t.label}
-            <span style={{ fontSize: 10, fontWeight: 600, color: tab === t.key ? '#f1c086' : 'var(--text-subtle)', background: tab === t.key ? 'rgba(241,192,134,0.1)' : 'var(--mini-card-bg)', borderRadius: 5, padding: '1px 5px' }}>{t.count}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: tab === t.key ? '#B07820' : 'var(--p-text-faint)', background: tab === t.key ? 'rgba(176,120,32,0.1)' : 'var(--p-card-2)', borderRadius: 5, padding: '1px 5px' }}>{t.count}</span>
           </button>
         ))}
       </div>
 
       {/* ── Toolbar ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '4px 8px' }}>
-          <Filter style={{ width: 12, height: 12, color: 'var(--text-subtle)' }} />
-          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Trier par</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '4px 8px' }}>
+          <Filter style={{ width: 12, height: 12, color: 'var(--p-text-faint)' }} />
+          <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Trier par</span>
           {sortOptions.map(o => (
             <button key={o.key} onClick={() => setSortBy(o.key)}
-              style={{ padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: sortBy === o.key ? 700 : 400, background: sortBy === o.key ? 'rgba(241,192,134,0.12)' : 'transparent', color: sortBy === o.key ? '#f1c086' : 'var(--text-muted-c)', transition: 'all 0.15s' }}>
+              style={{ padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: sortBy === o.key ? 700 : 400, background: sortBy === o.key ? 'rgba(176,120,32,0.12)' : 'transparent', color: sortBy === o.key ? '#B07820' : 'var(--p-text-dim)', transition: 'all 0.15s' }}>
               {o.label}
             </button>
           ))}
@@ -358,14 +358,14 @@ export default function MarchePage() {
 
         {(tab === 'actions' || tab === 'crypto' || tab === 'scpi') && (
           <button onClick={() => setOnlyPopular(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: `1px solid ${onlyPopular ? 'rgba(241,192,134,0.4)' : 'var(--card-dark-border)'}`, background: onlyPopular ? 'rgba(241,192,134,0.08)' : 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: onlyPopular ? '#f1c086' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: `1px solid ${onlyPopular ? 'rgba(176,120,32,0.4)' : 'var(--p-line)'}`, background: onlyPopular ? 'rgba(176,120,32,0.08)' : 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: onlyPopular ? '#B07820' : 'var(--p-text-faint)', transition: 'all 0.15s' }}>
             <Star style={{ width: 12, height: 12 }} />
             Populaires
           </button>
         )}
 
         {!hasLive && tab !== 'scpi' && !loading && (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--text-subtle)', marginLeft: 'auto' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--p-text-faint)', marginLeft: 'auto' }}>
             <Wifi style={{ width: 11, height: 11, opacity: 0.4 }} />
             Données statiques
           </span>
@@ -385,7 +385,7 @@ export default function MarchePage() {
 
       {/* ── Loading skeleton ── */}
       {loading && livePrices.size === 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 12, color: 'var(--text-subtle)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 12, color: 'var(--p-text-faint)' }}>
           <RefreshCw style={{ width: 12, height: 12, animation: 'spin 1s linear infinite' }} />
           Chargement des cours en temps réel…
         </div>
@@ -394,45 +394,45 @@ export default function MarchePage() {
       {/* ── ETF Tab ── */}
       {tab === 'etf' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--p-line)', background: 'var(--p-card-2)' }}>
             {['Nom / Ticker', 'Indice de réf.', 'Cours', 'TER', 'AUM', 'Réplication', ''].map((h, i) => (
-              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
+              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {etfFiltered.length === 0 && (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Aucun ETF trouvé pour «&nbsp;{query}&nbsp;»</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>Aucun ETF trouvé pour «&nbsp;{query}&nbsp;»</div>
           )}
           {etfFiltered.map((etf, i) => {
             const yahoo = ETF_YAHOO[etf.ticker]
             const live = yahoo ? livePrices.get(yahoo) : undefined
             return (
               <Link key={etf.isin} href={`/dashboard/marche/etf/${etf.ticker}`}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: i < etfFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, textDecoration: 'none', alignItems: 'center', transition: 'background 0.12s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: i < etfFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, textDecoration: 'none', alignItems: 'center', transition: 'background 0.12s' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(176,120,32,0.08)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
                     {etf.distributing && <span style={{ fontSize: 9, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '1px 5px' }}>DIST</span>}
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
+                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
+                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
                 {/* Live price */}
                 <div style={{ textAlign: 'right' }}>
                   {live ? (
                     <>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(live.price)}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(live.price)}</p>
                       <ChangeChip v={live.changePercent} />
                     </>
                   ) : (
-                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>—</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>—</span>
                   )}
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#f1c086' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
-                <span style={{ fontSize: 11, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#B07820' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
                 <span style={{ fontSize: 10, fontWeight: 600, color: etf.replication === 'physical' ? '#38bdf8' : '#a78bfa', background: etf.replication === 'physical' ? 'rgba(56,189,248,0.1)' : 'rgba(167,139,250,0.1)', borderRadius: 5, padding: '2px 6px', textAlign: 'right', whiteSpace: 'nowrap' }}>{etf.replication === 'physical' ? 'Physique' : 'Synthétique'}</span>
-                <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
+                <ChevronRight style={{ width: 14, height: 14, color: 'var(--p-text-faint)', flexShrink: 0 }} />
               </Link>
             )
           })}
@@ -442,13 +442,13 @@ export default function MarchePage() {
       {/* ── Actions Tab ── */}
       {tab === 'actions' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--p-line)', background: 'var(--p-card-2)' }}>
             {['Société', 'Secteur', 'Prix', 'Var. 1j', 'P/E'].map((h, i) => (
-              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
+              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {actionsFiltered.length === 0 && (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Aucune action trouvée</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>Aucune action trouvée</div>
           )}
           {actionsFiltered.map((stock, i) => {
             const live = livePrices.get(stock.yahooTicker)
@@ -456,21 +456,21 @@ export default function MarchePage() {
             const change = live?.changePercent ?? stock.change
             return (
               <div key={stock.ticker}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '13px 20px', borderBottom: i < actionsFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '13px 20px', borderBottom: i < actionsFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
-                    {stock.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
-                    <span style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'var(--mini-card-bg)', border: '1px solid var(--card-dark-border)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
+                    {stock.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
+                    <span style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'var(--p-card-2)', border: '1px solid var(--p-line)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
+                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
                 </div>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--text-em)') : 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}</span>
                 <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
+                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
               </div>
             )
           })}
@@ -480,9 +480,9 @@ export default function MarchePage() {
       {/* ── Crypto Tab ── */}
       {tab === 'crypto' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--p-line)', background: 'var(--p-card-2)' }}>
             {['Actif', 'Cap. de marché', 'Prix', 'Var. 24h'].map((h, i) => (
-              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
+              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {cryptoFiltered.map((c, i) => {
@@ -491,21 +491,21 @@ export default function MarchePage() {
             const change = live?.changePercent ?? c.change
             return (
               <div key={c.ticker}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '13px 20px', borderBottom: i < cryptoFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '13px 20px', borderBottom: i < cryptoFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c' }}>{c.ticker.slice(0, 3)}</span>
                   </div>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>{c.name}</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{c.ticker}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>{c.name}</p>
+                    <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{c.ticker}</p>
                   </div>
-                  {c.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
+                  {c.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--text-em)') : 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}&nbsp;$</span>
+                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}&nbsp;$</span>
                 <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
               </div>
             )
@@ -516,34 +516,34 @@ export default function MarchePage() {
       {/* ── SCPI Tab ── */}
       {tab === 'scpi' && (
         <div className="na-card" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 90px 90px 90px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--mini-card-bg)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 130px 90px 90px 90px', gap: 12, padding: '10px 20px', borderBottom: '1px solid var(--p-line)', background: 'var(--p-card-2)' }}>
             {['SCPI', 'Stratégie', 'Prix part', 'Rend. dist.', 'AUM'].map((h, i) => (
-              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
+              <span key={i} style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
           {scpiFiltered.map((s, i) => (
             <div key={s.ticker}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 130px 90px 90px 90px', gap: 12, padding: '13px 20px', borderBottom: i < scpiFiltered.length - 1 ? '1px solid var(--section-border)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 130px 90px 90px 90px', gap: 12, padding: '13px 20px', borderBottom: i < scpiFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 5, padding: '1px 7px' }}>{s.ticker}</span>
-                  {s.popular && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 5, padding: '1px 7px' }}>{s.ticker}</span>
+                  {s.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>{s.name}</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>{s.name}</p>
               </div>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{s.type}</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{s.price.toFixed(0)}&nbsp;€</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{s.type}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{s.price.toFixed(0)}&nbsp;€</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{s.yield.toFixed(2)}%</span>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{s.aum}</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{s.aum}</span>
             </div>
           ))}
         </div>
       )}
 
       {/* ── Disclaimer ── */}
-      <p style={{ marginTop: 20, fontSize: 11, color: 'var(--text-subtle)', lineHeight: 1.5 }}>
+      <p style={{ marginTop: 20, fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.5 }}>
         Données indicatives à titre éducatif uniquement. Les cours en temps réel proviennent de Yahoo Finance et peuvent présenter un délai de 15 minutes.
         Pas de conseil en investissement.
       </p>

@@ -14,15 +14,15 @@ interface PaletteItem {
 }
 
 const ITEMS: PaletteItem[] = [
-  { label: 'Tableau de bord',       href: '/dashboard',                  icon: BarChart3,  color: '#f1c086' },
-  { label: 'Score Patrimonial',     href: '/dashboard/score',            icon: Award,      color: '#f1c086' },
-  { label: 'Mon patrimoine',        href: '/dashboard/patrimoine',       icon: BarChart3,  color: '#f1c086', keywords: 'patrimoine enveloppes actifs' },
+  { label: 'Tableau de bord',       href: '/dashboard',                  icon: BarChart3,  color: '#B07820' },
+  { label: 'Score Patrimonial',     href: '/dashboard/score',            icon: Award,      color: '#B07820' },
+  { label: 'Mon patrimoine',        href: '/dashboard/patrimoine',       icon: BarChart3,  color: '#B07820', keywords: 'patrimoine enveloppes actifs' },
   { label: 'Mon profil',            href: '/dashboard/profil',           icon: User,       color: '#94a3b8' },
   { label: 'Historique',            href: '/dashboard/history',          icon: History,    color: '#94a3b8' },
   { label: 'Intérêts Composés',     sub: 'Effet boule de neige',         href: '/dashboard/compound',         icon: TrendingUp, color: '#34d399', keywords: 'intérêts composés épargne' },
   { label: 'DCA',                   sub: 'Dollar Cost Averaging',        href: '/dashboard/dca',              icon: RefreshCw,  color: '#38bdf8', keywords: 'dca investissement régulier' },
   { label: 'FI/RE',                 sub: 'Indépendance financière',      href: '/dashboard/fire',             icon: Flame,      color: '#fb923c', keywords: 'fire liberté financière retraite anticipée feu' },
-  { label: 'Retraite',              sub: 'Pension & trimestres',         href: '/dashboard/retirement',       icon: PiggyBank,  color: '#f1c086', keywords: 'retraite pension trimestres' },
+  { label: 'Retraite',              sub: 'Pension & trimestres',         href: '/dashboard/retirement',       icon: PiggyBank,  color: '#B07820', keywords: 'retraite pension trimestres' },
   { label: 'Budget 50/30/20',       sub: 'Besoins · Envies · Épargne',   href: '/dashboard/budget',           icon: Calculator, color: '#a3e635', keywords: 'budget dépenses' },
   { label: "Taux d'épargne",        sub: 'Sankey revenus / dépenses',    href: '/dashboard/savings-rate',     icon: Percent,    color: '#818cf8', keywords: 'épargne taux revenus' },
   { label: 'Épargne de précaution', sub: "Fonds d'urgence",              href: '/dashboard/emergency-fund',  icon: Shield,     color: '#34d399', keywords: 'urgence précaution fonds' },
@@ -92,27 +92,27 @@ export function CommandPalette() {
       <div style={{
         position: 'fixed', top: '16%', left: '50%', transform: 'translateX(-50%)',
         width: 'min(560px, calc(100vw - 32px))',
-        background: 'var(--card-dark)', border: '1px solid rgba(255,255,255,0.1)',
+        background: 'var(--p-card)', border: '1px solid rgba(255,255,255,0.1)',
         borderRadius: 18, boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
         zIndex: 9001, overflow: 'hidden',
       }}>
         {/* Input */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
-          <Search style={{ width: 15, height: 15, color: 'var(--text-muted-c)', flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', borderBottom: '1px solid var(--p-line)' }}>
+          <Search style={{ width: 15, height: 15, color: 'var(--p-text-dim)', flexShrink: 0 }} />
           <input
             ref={inputRef}
             value={query}
             onChange={e => { setQuery(e.target.value); setSelected(0) }}
             placeholder="Rechercher un simulateur, une page..."
-            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 14, color: 'var(--text-primary)', caretColor: '#f1c086' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 14, color: 'var(--p-text)', caretColor: '#B07820' }}
           />
-          <kbd style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 5, padding: '2px 6px', flexShrink: 0 }}>ESC</kbd>
+          <kbd style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 5, padding: '2px 6px', flexShrink: 0 }}>ESC</kbd>
         </div>
 
         {/* Results */}
         <div style={{ maxHeight: 380, overflowY: 'auto', padding: '5px 0' }}>
           {filtered.length === 0 ? (
-            <p style={{ textAlign: 'center', padding: '28px', fontSize: 13, color: 'var(--text-muted-c)' }}>
+            <p style={{ textAlign: 'center', padding: '28px', fontSize: 13, color: 'var(--p-text-dim)' }}>
               Aucun résultat pour « {query} »
             </p>
           ) : filtered.map((item, i) => {
@@ -135,25 +135,25 @@ export function CommandPalette() {
                   <Icon style={{ width: 13, height: 13, color: item.color }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: active ? 'var(--text-primary)' : 'var(--text-em)', margin: 0 }}>{item.label}</p>
-                  {item.sub && <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>{item.sub}</p>}
+                  <p style={{ fontSize: 13, fontWeight: 500, color: active ? 'var(--p-text)' : 'var(--p-text-em)', margin: 0 }}>{item.label}</p>
+                  {item.sub && <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>{item.sub}</p>}
                 </div>
-                {active && <kbd style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px', flexShrink: 0 }}>↵</kbd>}
+                {active && <kbd style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px', flexShrink: 0 }}>↵</kbd>}
               </button>
             )
           })}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '7px 14px', borderTop: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ padding: '7px 14px', borderTop: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 14 }}>
           {[['↑↓', 'naviguer'], ['↵', 'ouvrir'], ['ESC', 'fermer']].map(([key, lbl]) => (
-            <span key={key} style={{ fontSize: 10, color: 'var(--text-subtle)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span key={key} style={{ fontSize: 10, color: 'var(--p-text-faint)', display: 'flex', alignItems: 'center', gap: 4 }}>
               <kbd style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px' }}>{key}</kbd>
               {lbl}
             </span>
           ))}
           <span style={{ flex: 1 }} />
-          <span style={{ fontSize: 10, color: 'var(--text-subtle)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 10, color: 'var(--p-text-faint)', display: 'flex', alignItems: 'center', gap: 4 }}>
             Ouvrir avec
             <kbd style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px' }}>⌘K</kbd>
           </span>

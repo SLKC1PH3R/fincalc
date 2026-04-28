@@ -97,7 +97,7 @@ function DCAPageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>DCA</span>
@@ -108,8 +108,8 @@ function DCAPageInner() {
               <RefreshCw style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>DCA</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Dollar Cost Averaging · Investissement régulier</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>DCA</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Dollar Cost Averaging · Investissement régulier</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -180,13 +180,13 @@ function DCAPageInner() {
           {/* LEFT — sticky */}
           <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Paramètres */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <RefreshCw style={{ width: 12, height: 12, color: COLOR }} />
                   </div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Paramètres</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Paramètres</p>
                 </div>
                 <ProfileFillButton onFill={p => {
                   if (p.monthlySavings) set('monthly')(p.monthlySavings)
@@ -196,64 +196,64 @@ function DCAPageInner() {
               <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>
                     Versement mensuel<FieldTooltip text="Montant investi chaque mois, quel que soit le prix du marché. La régularité est l'essence du DCA." />
                   </label>
                   <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)} style={{ height: 36, fontSize: 13 }} />
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       Durée<FieldTooltip text="Le DCA est surtout efficace sur 10+ ans — la volatilité se lisse sur la durée." />
                     </label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.years} ans</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{inputs.years} ans</span>
                   </div>
                   <Slider min={1} max={40} step={1} value={[inputs.years]} onValueChange={([v]) => set('years')(v)} />
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       Rendement annuel<FieldTooltip text="Rendement attendu à long terme. ETF MSCI World : ~8% historique sur 30 ans." />
                     </label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.targetRate}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{inputs.targetRate}%</span>
                   </div>
                   <Slider min={1} max={20} step={0.5} value={[inputs.targetRate]} onValueChange={([v]) => set('targetRate')(v)} />
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       Volatilité annuelle<FieldTooltip text="Amplitude des fluctuations. ETF World : ~15%. Plus la volatilité est haute, plus le DCA est avantageux vs achat unique." />
                     </label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{inputs.volatility}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{inputs.volatility}%</span>
                   </div>
                   <Slider min={0} max={50} step={1} value={[inputs.volatility]} onValueChange={([v]) => set('volatility')(v)} />
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
-                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(15)}>ETF 15%</button>
-                    <button style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(30)}>Actions 30%</button>
+                    <button style={{ fontSize: 11, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(5)}>Obligations 5%</button>
+                    <button style={{ fontSize: 11, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(15)}>ETF 15%</button>
+                    <button style={{ fontSize: 11, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => set('volatility')(30)}>Actions 30%</button>
                   </div>
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <label style={{ fontSize: 11, color: 'var(--text-muted-c)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <label style={{ fontSize: 11, color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       Capital de départ<FieldTooltip text="Montant déjà investi au lancement de la simulation." />
                     </label>
                     <button
                       onClick={importPatrimoine}
                       disabled={loadingPatrimoine}
-                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                       <Wallet style={{ width: 12, height: 12 }} />
                       {loadingPatrimoine ? 'Chargement…' : 'Importer'}
                     </button>
@@ -271,8 +271,8 @@ function DCAPageInner() {
                 { label: 'vs Achat unique', value: `${r.vsLumpSum >= 0 ? '+' : ''}${fmt(r.vsLumpSum)}` },
               ].map((k, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: i < 2 ? 8 : 0 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{k.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{k.value}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{k.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>{k.value}</span>
                 </div>
               ))}
             </div>
@@ -284,20 +284,20 @@ function DCAPageInner() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
               {[
                 { label: 'Capital final', value: fmt(r.estimatedValue), color: COLOR },
-                { label: 'Total versé', value: fmt(r.totalInvested), color: 'var(--text-primary)' },
-                { label: 'Intérêts générés', value: fmt(r.gain), color: r.gain > 0 ? '#34d399' : 'var(--text-primary)' },
-                { label: 'Rendement total', value: `${r.gainPct.toFixed(1)}%`, color: r.gainPct > 0 ? '#34d399' : 'var(--text-primary)' },
+                { label: 'Total versé', value: fmt(r.totalInvested), color: 'var(--p-text)' },
+                { label: 'Intérêts générés', value: fmt(r.gain), color: r.gain > 0 ? '#34d399' : 'var(--p-text)' },
+                { label: 'Rendement total', value: `${r.gainPct.toFixed(1)}%`, color: r.gainPct > 0 ? '#34d399' : 'var(--p-text)' },
               ].map((kpi, i) => (
-                <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4, letterSpacing: '0.04em' }}>{kpi.label}</p>
+                <div key={i} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '12px 14px' }}>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 4, letterSpacing: '0.04em' }}>{kpi.label}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.5px', margin: 0 }}>{kpi.value}</p>
                 </div>
               ))}
             </div>
 
             {/* Chart capital versé vs valeur */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 12 }}>Évolution du portefeuille — {inputs.years} ans</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 12 }}>Évolution du portefeuille — {inputs.years} ans</p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
@@ -318,24 +318,24 @@ function DCAPageInner() {
             </div>
 
             {/* Table par an */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
-              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Tableau par année</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--p-line)' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Tableau par année</p>
               </div>
               <div style={{ overflowX: 'auto', maxHeight: 220, overflowY: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead>
                     <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
                       {['Année', 'Capital versé', 'Valeur', 'Gain'].map((h, i) => (
-                        <th key={i} style={{ padding: '7px 12px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, fontWeight: 500, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--card-dark-border)' }}>{h}</th>
+                        <th key={i} style={{ padding: '7px 12px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, fontWeight: 500, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--p-line)' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {annualTable.filter(d => d.year > 0 && d.year % 5 === 0).map(d => (
-                      <tr key={d.year} style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
-                        <td style={{ padding: '7px 12px', color: 'var(--text-em)', fontWeight: 500 }}>{d.year} ans</td>
-                        <td style={{ padding: '7px 12px', textAlign: 'right', color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.invested)}</td>
+                      <tr key={d.year} style={{ borderBottom: '1px solid var(--p-line)' }}>
+                        <td style={{ padding: '7px 12px', color: 'var(--p-text-em)', fontWeight: 500 }}>{d.year} ans</td>
+                        <td style={{ padding: '7px 12px', textAlign: 'right', color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.invested)}</td>
                         <td style={{ padding: '7px 12px', textAlign: 'right', color: COLOR, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</td>
                         <td style={{ padding: '7px 12px', textAlign: 'right', color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.gain)}</td>
                       </tr>
@@ -349,16 +349,16 @@ function DCAPageInner() {
           {/* RIGHT */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {/* Analyse */}
-            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <TrendingUp style={{ width: 15, height: 15, color: COLOR }} />
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Analyse DCA</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Analyse DCA</p>
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 8 }}>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6, marginBottom: 8 }}>
                 Sur {inputs.years} ans à {inputs.targetRate}%/an, vos {fmt(inputs.monthly)}/mois génèrent <strong style={{ color: COLOR }}>{fmt(r.estimatedValue)}</strong> — soit {r.gainPct.toFixed(0)}% de plus que votre mise initiale.
               </p>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>DCA vs Achat unique</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>DCA vs Achat unique</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: r.vsLumpSum >= 0 ? '#34d399' : '#f87171' }}>
                   {r.vsLumpSum >= 0 ? '+' : ''}{fmt(r.vsLumpSum)}
                 </span>
@@ -366,8 +366,8 @@ function DCAPageInner() {
             </div>
 
             {/* Donut versements/intérêts */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 10 }}>Composition du capital final</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 10 }}>Composition du capital final</p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <PieChart width={160} height={120}>
                   <Pie data={donutData} cx={80} cy={60} innerRadius={38} outerRadius={55} paddingAngle={3} dataKey="value">
@@ -381,13 +381,13 @@ function DCAPageInner() {
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)' }}>{fmt(d.value)}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)' }}>{fmt(d.value)}</span>
                   </div>
                 ))}
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--section-border)' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Total final</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid var(--p-line)' }}>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Total final</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: COLOR }}>{fmt(r.estimatedValue)}</span>
                 </div>
               </div>
@@ -397,8 +397,8 @@ function DCAPageInner() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {tips.map((tip, i) => (
                 <div key={i} style={{ background: `${COLOR}07`, border: `1px solid ${COLOR}20`, borderRadius: 10, padding: '10px 12px', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                  <Info style={{ width: 13, height: 13, color: 'var(--text-muted-c)', flexShrink: 0, marginTop: 2 }} />
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                  <Info style={{ width: 13, height: 13, color: 'var(--p-text-dim)', flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>
@@ -408,18 +408,18 @@ function DCAPageInner() {
 
       {/* Comparateur A/B */}
       {compareMode && !guidedMode && (
-        <div style={{ marginTop: 32, borderTop: '1px solid var(--card-dark-border)', paddingTop: 32 }}>
+        <div style={{ marginTop: 32, borderTop: '1px solid var(--p-line)', paddingTop: 32 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
             <GitCompare style={{ width: 16, height: 16, color: '#818cf8' }} />
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Comparateur de scénarios</h2>
-            <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Scénario A vs Scénario B côte à côte</span>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)', margin: 0 }}>Comparateur de scénarios</h2>
+            <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>Scénario A vs Scénario B côte à côte</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
             {([
-              { label: 'Scénario A', color: '#f1c086', inp: inputs, setFn: set },
+              { label: 'Scénario A', color: '#B07820', inp: inputs, setFn: set },
               { label: 'Scénario B', color: '#818cf8', inp: inputsB, setFn: setB },
             ] as const).map(({ label, color, inp, setFn }) => (
-              <div key={label} style={{ background: 'var(--card-dark)', border: `1px solid ${color}25`, borderRadius: 16, padding: 20 }}>
+              <div key={label} style={{ background: 'var(--p-card)', border: `1px solid ${color}25`, borderRadius: 16, padding: 20 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 16 }}>{label}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 14 }}>
                   {([
@@ -429,7 +429,7 @@ function DCAPageInner() {
                     { key: 'startingCapital' as keyof DCAInputs, label: 'Capital de départ (€)', type: 'input', min: 0, max: 1000000, step: 1000 },
                   ]).map(({ key, label: l, type: ft, min, max, step }) => (
                     <div key={String(key)}>
-                      <div style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6 }}>{l}</div>
+                      <div style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 6 }}>{l}</div>
                       {ft === 'input'
                         ? <Input type="number" value={inp[key] as number} onChange={e => setFn(key)(+e.target.value)} style={{ height: 34, fontSize: 13 }} />
                         : <Slider min={min} max={max} step={step} value={[inp[key] as number]} onValueChange={([v]) => setFn(key)(v)} />}
@@ -441,19 +441,19 @@ function DCAPageInner() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
             {[
-              { label: 'Valeur finale A', value: fmt(r.estimatedValue), color: '#f1c086' },
+              { label: 'Valeur finale A', value: fmt(r.estimatedValue), color: '#B07820' },
               { label: 'Valeur finale B', value: fmt(rB.estimatedValue), color: '#818cf8' },
               { label: 'Différence', value: fmt(Math.abs(rB.estimatedValue - r.estimatedValue)), color: rB.estimatedValue > r.estimatedValue ? '#34d399' : '#f87171' },
               { label: 'B vs A', value: `${rB.estimatedValue >= r.estimatedValue ? '+' : ''}${((rB.estimatedValue - r.estimatedValue) / (r.estimatedValue || 1) * 100).toFixed(1)}%`, color: rB.estimatedValue > r.estimatedValue ? '#34d399' : '#f87171' },
             ].map(kpi => (
-              <div key={kpi.label} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-                <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 4 }}>{kpi.label}</div>
+              <div key={kpi.label} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase' as const, letterSpacing: '0.08em', marginBottom: 4 }}>{kpi.label}</div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
               </div>
             ))}
           </div>
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, padding: 20 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Évolution comparée</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, padding: 20 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)', marginBottom: 16 }}>Évolution comparée</p>
             {(() => {
               const yearsMax = Math.max(inputs.years, inputsB.years)
               const dataA = calcDCA({ ...inputs, years: yearsMax }).chartData
@@ -467,11 +467,11 @@ function DCAPageInner() {
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => `${Math.round(v / 12)}a`} />
-                    <YAxis tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => `${Math.round(v / 12)}a`} />
+                    <YAxis tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
                     <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Line type="monotone" dataKey="Scénario A" stroke="#f1c086" strokeWidth={2.5} dot={false} animationDuration={800} />
+                    <Line type="monotone" dataKey="Scénario A" stroke="#B07820" strokeWidth={2.5} dot={false} animationDuration={800} />
                     <Line type="monotone" dataKey="Scénario B" stroke="#818cf8" strokeWidth={2.5} dot={false} animationDuration={800} />
                   </LineChart>
                 </ResponsiveContainer>

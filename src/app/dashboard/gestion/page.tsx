@@ -28,7 +28,7 @@ interface Envelope {
 }
 
 const ASSET_CLASSES = [
-  { key: 'actions',  label: 'Actions & Fonds', types: ['PEA', 'CTO', 'AV', 'PER'], color: '#f1c086', icon: TrendingUp },
+  { key: 'actions',  label: 'Actions & Fonds', types: ['PEA', 'CTO', 'AV', 'PER'], color: '#B07820', icon: TrendingUp },
   { key: 'immo',    label: 'Immobilier',       types: ['IMMOBILIER'],              color: '#3b82f6', icon: Building2  },
   { key: 'livrets', label: 'Livrets',           types: ['LIVRET'],                  color: '#22c55e', icon: PiggyBank  },
   { key: 'crypto',  label: 'Crypto',            types: ['CRYPTO'],                  color: '#a855f7', icon: Bitcoin    },
@@ -155,7 +155,7 @@ export default function GestionPage() {
             label: 'Objectifs',
             value: goals.length > 0 ? `${avgGoalPct}%` : '—',
             sub: goals.length > 0 ? `${goals.length} objectif${goals.length > 1 ? 's' : ''} · avancement moyen` : 'Aucun objectif défini',
-            color: '#f1c086',
+            color: '#B07820',
             href: '/dashboard/goals',
           },
           {
@@ -177,19 +177,19 @@ export default function GestionPage() {
             <div
               style={{
                 padding: '14px 16px', borderRadius: 14,
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                background: 'var(--p-card)', border: '1px solid var(--p-line)',
                 cursor: 'pointer', transition: 'border-color 0.15s',
               }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = stat.color + '55')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--card-dark-border)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--p-line)')}
             >
               <div style={{ fontSize: 22, fontWeight: 800, color: stat.color, fontVariantNumeric: 'tabular-nums', lineHeight: 1.2 }}>
                 {stat.value}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginTop: 3 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', marginTop: 3 }}>
                 {stat.label}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 2 }}>
                 {stat.sub}
               </div>
             </div>
@@ -202,11 +202,11 @@ export default function GestionPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Flag style={{ width: 14, height: 14, color: '#f1c086' }} />
+              <Flag style={{ width: 14, height: 14, color: '#B07820' }} />
               Mes Objectifs
             </CardTitle>
             <Link href="/dashboard/goals"
-              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#B07820', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Gérer <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -214,11 +214,11 @@ export default function GestionPage() {
         <CardContent>
           {goalsWithPct.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8 }}>
+              <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucun objectif défini. Fixez-vous des cibles pour suivre votre progression.
               </p>
               <Link href="/dashboard/goals"
-                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Créer mon premier objectif →
               </Link>
             </div>
@@ -235,7 +235,7 @@ export default function GestionPage() {
                           width: 7, height: 7, borderRadius: '50%',
                           background: g.color, flexShrink: 0, display: 'inline-block',
                         }} />
-                        <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 13, color: 'var(--p-text)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {g.title}
                         </span>
                         {overdue && (
@@ -244,16 +244,16 @@ export default function GestionPage() {
                           </span>
                         )}
                         {urgent && !overdue && (
-                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(241,192,134,0.10)', color: '#f1c086', fontWeight: 600, flexShrink: 0 }}>
+                          <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: 'rgba(176,120,32,0.10)', color: '#B07820', fontWeight: 600, flexShrink: 0 }}>
                             Urgent
                           </span>
                         )}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                           {fmtK(g.current)} / {fmtK(g.targetAmount)}
                         </span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: g.pct >= 100 ? '#22c55e' : 'var(--text-em)', width: 34, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: g.pct >= 100 ? '#22c55e' : 'var(--p-text-em)', width: 34, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                           {Math.round(g.pct)}%
                         </span>
                       </div>
@@ -271,7 +271,7 @@ export default function GestionPage() {
                 )
               })}
               {goalsWithPct.length > 4 && (
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textAlign: 'center', paddingTop: 4 }}>
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textAlign: 'center', paddingTop: 4 }}>
                   +{goalsWithPct.length - 4} autres objectifs
                 </p>
               )}
@@ -289,7 +289,7 @@ export default function GestionPage() {
               Allocation actuelle
             </CardTitle>
             <Link href="/dashboard/rebalancing"
-              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#B07820', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Rééquilibrer <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -297,11 +297,11 @@ export default function GestionPage() {
         <CardContent>
           {totalWealth === 0 ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8 }}>
+              <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucun actif enregistré dans le patrimoine.
               </p>
               <Link href="/dashboard/patrimoine"
-                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
             </div>
@@ -312,10 +312,10 @@ export default function GestionPage() {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <a.icon style={{ width: 12, height: 12, color: a.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{a.label}</span>
+                      <span style={{ fontSize: 13, color: 'var(--p-text)' }}>{a.label}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{fmtK(a.value)}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{fmtK(a.value)}</span>
                       <span style={{
                         fontSize: 12, fontWeight: 700,
                         color: a.color, width: 38, textAlign: 'right',
@@ -334,7 +334,7 @@ export default function GestionPage() {
                   </div>
                 </div>
               ))}
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', paddingTop: 4 }}>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', paddingTop: 4 }}>
                 Définissez vos cibles d'allocation sur la page Rééquilibrage pour identifier les écarts.
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function GestionPage() {
               Situation fiscale
             </CardTitle>
             <Link href="/dashboard/tax-report"
-              style={{ fontSize: 12, color: '#f1c086', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+              style={{ fontSize: 12, color: '#B07820', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
               Rapport complet <ChevronRight style={{ width: 12, height: 12 }} />
             </Link>
           </div>
@@ -359,11 +359,11 @@ export default function GestionPage() {
         <CardContent>
           {fiscalEnvelopes.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 8 }}>
+              <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucune enveloppe fiscale (PEA, Assurance-Vie, PER) enregistrée.
               </p>
               <Link href="/dashboard/patrimoine"
-                style={{ fontSize: 12, color: '#f1c086', fontWeight: 600 }}>
+                style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
             </div>
@@ -378,27 +378,27 @@ export default function GestionPage() {
                       {e.reached
                         ? <CheckCircle2 style={{ width: 14, height: 14, color: '#22c55e' }} />
                         : e.monthsLeft <= 12
-                          ? <Clock style={{ width: 14, height: 14, color: '#f1c086' }} />
-                          : <AlertTriangle style={{ width: 14, height: 14, color: 'var(--text-subtle)' }} />
+                          ? <Clock style={{ width: 14, height: 14, color: '#B07820' }} />
+                          : <AlertTriangle style={{ width: 14, height: 14, color: 'var(--p-text-faint)' }} />
                       }
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="flex items-center justify-between mb-0.5">
                         <div className="flex items-center gap-2">
-                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+                          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--p-text)' }}>
                             {e.name}
                           </span>
                           <span style={{
                             fontSize: 9, padding: '1px 6px', borderRadius: 4,
                             background: 'rgba(255,255,255,0.06)',
-                            color: 'var(--text-muted-c)', fontWeight: 700, letterSpacing: '0.05em',
+                            color: 'var(--p-text-dim)', fontWeight: 700, letterSpacing: '0.05em',
                           }}>
                             {e.type}
                           </span>
                         </div>
                         <span style={{
                           fontSize: 11, fontWeight: 600,
-                          color: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#f1c086' : 'var(--text-muted-c)',
+                          color: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#B07820' : 'var(--p-text-dim)',
                         }}>
                           {e.reached ? 'Atteint ✓'
                             : e.type === 'PER' ? 'Active'
@@ -406,10 +406,10 @@ export default function GestionPage() {
                                 : `Dans ${e.monthsLeft} mois`}
                         </span>
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 5 }}>
+                      <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 5 }}>
                         {e.milestone}
                         {e.type !== 'PER' && (
-                          <span style={{ marginLeft: 6, color: 'var(--text-subtle)' }}>
+                          <span style={{ marginLeft: 6, color: 'var(--p-text-faint)' }}>
                             · {Math.floor(e.ageMonths / 12)}a {e.ageMonths % 12}m
                           </span>
                         )}
@@ -420,7 +420,7 @@ export default function GestionPage() {
                             height: '100%',
                             width: `${progressPct}%`,
                             borderRadius: 99,
-                            background: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#f1c086' : '#3b82f6',
+                            background: e.reached ? '#22c55e' : e.monthsLeft <= 12 ? '#B07820' : '#3b82f6',
                             transition: 'width 0.6s ease',
                           }} />
                         </div>

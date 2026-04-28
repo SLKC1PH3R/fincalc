@@ -29,13 +29,13 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
 
   if (!etfInfo) {
     return (
-      <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--row-hover)', border: '1px solid var(--section-border)' }}>
+      <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--p-row-hover)', border: '1px solid var(--p-line)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{pos.symbol}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)', marginLeft: 8 }}>{pos.name}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{pos.symbol}</span>
+            <span style={{ fontSize: 12, color: 'var(--p-text-faint)', marginLeft: 8 }}>{pos.name}</span>
           </div>
-          <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontStyle: 'italic' }}>ETF non référencé — ajoutez l'ISIN pour l'analyser</span>
+          <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontStyle: 'italic' }}>ETF non référencé — ajoutez l'ISIN pour l'analyser</span>
         </div>
       </div>
     )
@@ -72,8 +72,8 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
             background: isOptimal ? '#34d399' : '#f59e0b', flexShrink: 0,
           }} />
           <div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{pos.symbol}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)', marginLeft: 8 }}>{etfInfo.name}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>{pos.symbol}</span>
+            <span style={{ fontSize: 12, color: 'var(--p-text-faint)', marginLeft: 8 }}>{etfInfo.name}</span>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
@@ -86,7 +86,7 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
               {(etfInfo.ter * 100).toFixed(2)} % TER
             </span>
           </div>
-          <ChevronRight style={{ width: 14, height: 14, color: 'var(--text-subtle)', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+          <ChevronRight style={{ width: 14, height: 14, color: 'var(--p-text-faint)', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
         </div>
       </button>
 
@@ -100,8 +100,8 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
               { label: 'Frais annuels sur', value: fmtEur(posValue), sub: `${fmtEur(posValue * etfInfo.ter)} / an` },
             ].map(item => (
               <div key={item.label} style={{ minWidth: 120 }}>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 2 }}>{item.label}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{item.value}</div>
+                <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 2 }}>{item.label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{item.value}</div>
                 {item.sub && <div style={{ fontSize: 11, color: '#f59e0b' }}>{item.sub}</div>}
               </div>
             ))}
@@ -109,7 +109,7 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
 
           {alternatives.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', marginBottom: 8 }}>
                 {isOptimal ? '✅ Vous avez déjà un bon ETF' : '💡 Alternatives moins chères sur le même benchmark'}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -117,17 +117,17 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
                   <div key={alt.isin} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 8,
-                    background: alt.ter < etfInfo.ter ? '#34d39910' : 'var(--row-hover)',
-                    border: `1px solid ${alt.ter < etfInfo.ter ? '#34d39930' : 'var(--section-border)'}`,
+                    background: alt.ter < etfInfo.ter ? '#34d39910' : 'var(--p-row-hover)',
+                    border: `1px solid ${alt.ter < etfInfo.ter ? '#34d39930' : 'var(--p-line)'}`,
                   }}>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{alt.ticker} — {alt.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)' }}>{alt.ticker} — {alt.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                         {alt.replication === 'synthetic' ? 'Synthétique' : 'Physique'} • {alt.aum.toLocaleString('fr-FR')} M€
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: alt.ter < etfInfo.ter ? '#34d399' : 'var(--text-primary)' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: alt.ter < etfInfo.ter ? '#34d399' : 'var(--p-text)' }}>
                         {(alt.ter * 100).toFixed(2)} % TER
                       </div>
                       {alt.ter < etfInfo.ter && (
@@ -144,7 +144,7 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
 
           {feeImpact && bestAlternative && !isOptimal && (
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', marginBottom: 8 }}>
                 Impact des frais sur {years} ans (rendement brut {(returnRate * 100).toFixed(0)} %)
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
@@ -153,10 +153,10 @@ function EtfCard({ pos, prices, years, returnRate, chartTheme }: {
                   { label: `${bestAlternative.ticker} (alternative)`, value: fmtCompact(feeImpact.value2), color: '#34d399' },
                   { label: 'Moins-value frais', value: `+${fmtCompact(feeImpact.feeDrag)}`, color: '#f59e0b', sub: 'Gain si tu migres' },
                 ].map(k => (
-                  <div key={k.label} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--row-hover)' }}>
-                    <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: 4 }}>{k.label}</div>
+                  <div key={k.label} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--p-row-hover)' }}>
+                    <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: 4 }}>{k.label}</div>
                     <div style={{ fontSize: 16, fontWeight: 800, color: k.color, fontVariantNumeric: 'tabular-nums' }}>{k.value}</div>
-                    {k.sub && <div style={{ fontSize: 10, color: 'var(--text-muted-c)', marginTop: 2 }}>{k.sub}</div>}
+                    {k.sub && <div style={{ fontSize: 10, color: 'var(--p-text-dim)', marginTop: 2 }}>{k.sub}</div>}
                   </div>
                 ))}
               </div>
@@ -192,13 +192,13 @@ export function EtfOptimizerSection({ positions, prices, chartTheme }: {
   const [returnRate, setReturnRate] = useState(8)
 
   return (
-    <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+    <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
       <CardContent style={{ padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <Zap style={{ width: 16, height: 16, color: '#f97316' }} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Optimisation ETF</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)' }}>Optimisation ETF</span>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: 'var(--p-text-faint)', marginBottom: 16 }}>
           Analyse des frais de gestion et impact sur votre patrimoine à long terme
         </div>
 

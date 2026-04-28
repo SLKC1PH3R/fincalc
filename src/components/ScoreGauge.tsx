@@ -7,7 +7,7 @@ interface ScoreGaugeProps {
 }
 
 export function ScoreGauge({ score, size = 180, strokeWidth, color, showLabel }: ScoreGaugeProps) {
-  const autoColor = score >= 80 ? '#34d399' : score >= 60 ? '#f1c086' : score >= 40 ? '#fb923c' : '#f87171'
+  const autoColor = score >= 80 ? '#34d399' : score >= 60 ? '#B07820' : score >= 40 ? '#fb923c' : '#f87171'
   const c = color ?? autoColor
   const sw = strokeWidth ?? Math.round(size * 0.055)
   const r = size * 0.4

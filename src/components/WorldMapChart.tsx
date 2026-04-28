@@ -207,7 +207,7 @@ export const WorldMapChart = memo(function WorldMapChart({
               alignItems: 'center',
               gap: 10,
               padding: '6px 0',
-              borderBottom: '1px solid var(--section-border)',
+              borderBottom: '1px solid var(--p-line)',
               opacity: row.pct === 0 ? 0.45 : 1,
             }}
           >
@@ -216,18 +216,18 @@ export const WorldMapChart = memo(function WorldMapChart({
               background: row.pct === 0 ? '#9ca3af' : row.color,
             }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>
+              <div style={{ fontSize: 12, color: 'var(--p-text)', fontWeight: 500 }}>
                 {row.label}
               </div>
               {totalValue > 0 && row.value > 0 && (
-                <div style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <div style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                   {fmt(row.value)}
                 </div>
               )}
             </div>
             <div style={{
               fontSize: 12, fontWeight: 700,
-              color: row.pct === 0 ? 'var(--text-subtle)' : 'var(--text-em)',
+              color: row.pct === 0 ? 'var(--p-text-faint)' : 'var(--p-text-em)',
               fontVariantNumeric: 'tabular-nums',
             }}>
               {(row.pct * 100).toFixed(2)} %
@@ -238,13 +238,13 @@ export const WorldMapChart = memo(function WorldMapChart({
         {totalValue > 0 && (
           <div style={{
             marginTop: 6, paddingTop: 8,
-            borderTop: '1px solid var(--section-border)',
+            borderTop: '1px solid var(--p-line)',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
-            <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Analysé
             </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>
               {fmt(totalValue)}
             </span>
           </div>

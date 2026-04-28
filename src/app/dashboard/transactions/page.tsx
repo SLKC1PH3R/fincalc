@@ -48,7 +48,7 @@ interface FormState {
 const TYPE_BADGE: Record<TxType, { label: string; bg: string; color: string }> = {
   BUY:      { label: 'Achat',     bg: 'rgba(74,222,128,0.15)',  color: '#4ade80' },
   SELL:     { label: 'Vente',     bg: 'rgba(248,113,113,0.15)', color: '#f87171' },
-  DIVIDEND: { label: 'Dividende', bg: 'rgba(241,192,134,0.15)', color: '#f1c086' },
+  DIVIDEND: { label: 'Dividende', bg: 'rgba(176,120,32,0.15)', color: '#B07820' },
   SPLIT:    { label: 'Split',     bg: 'rgba(96,165,250,0.15)',  color: '#60a5fa' },
   TRANSFER: { label: 'Transfert', bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
 }
@@ -225,8 +225,8 @@ export default function TransactionsPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   const cardStyle = {
-    background: 'var(--card-dark)',
-    border: '1px solid var(--card-dark-border)',
+    background: 'var(--p-card)',
+    border: '1px solid var(--p-line)',
     borderRadius: 16,
   }
 
@@ -236,11 +236,11 @@ export default function TransactionsPage() {
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Suivi des opérations</p>
-          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
+          <p style={{ fontSize: 12, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Suivi des opérations</p>
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text)', letterSpacing: '-0.03em' }}>
             Carnet d'ordres
           </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginTop: 6 }}>
+          <p style={{ fontSize: 14, color: 'var(--p-text-dim)', marginTop: 6 }}>
             Historique de vos achats, ventes, dividendes et autres opérations.
           </p>
         </div>
@@ -248,7 +248,7 @@ export default function TransactionsPage() {
           onClick={openAdd}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 7,
-            background: '#f1c086', color: '#1a1005', border: 'none',
+            background: '#B07820', color: '#1a1005', border: 'none',
             borderRadius: 10, padding: '9px 18px', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', flexShrink: 0,
           }}
@@ -262,15 +262,15 @@ export default function TransactionsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 24 }}>
         {[
           { icon: TrendingUp,   label: 'Total investi',            value: kpis.investi,      color: '#60a5fa' },
-          { icon: DollarSign,   label: 'Dividendes reçus',         value: kpis.dividendes,   color: '#f1c086' },
+          { icon: DollarSign,   label: 'Dividendes reçus',         value: kpis.dividendes,   color: '#B07820' },
           { icon: TrendingDown, label: 'Plus-values réalisées',    value: kpis.pvRealisees,  color: kpis.pvRealisees >= 0 ? '#4ade80' : '#f87171' },
         ].map(({ icon: Icon, label, value, color }) => (
           <div key={label} style={{ ...cardStyle, padding: '16px 20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Icon style={{ width: 15, height: 15, color }} />
-              <span style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
             </div>
-            <p style={{ fontSize: 'clamp(1rem,2.5vw,1.4rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            <p style={{ fontSize: 'clamp(1rem,2.5vw,1.4rem)', fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.02em' }}>
               {fmt(value)}
             </p>
           </div>
@@ -279,7 +279,7 @@ export default function TransactionsPage() {
 
       {/* ── Filter bar ── */}
       <div style={{ ...cardStyle, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-        <Filter style={{ width: 14, height: 14, color: 'var(--text-muted-c)', flexShrink: 0 }} />
+        <Filter style={{ width: 14, height: 14, color: 'var(--p-text-dim)', flexShrink: 0 }} />
 
         <div style={{ minWidth: 180 }}>
           <Select value={filterEnvelope} onValueChange={setFilterEnvelope}>
@@ -317,7 +317,7 @@ export default function TransactionsPage() {
         {(filterEnvelope !== 'all' || filterType !== 'all' || filterSymbol) && (
           <button
             onClick={() => { setFilterEnvelope('all'); setFilterType('all'); setFilterSymbol('') }}
-            style={{ fontSize: 12, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+            style={{ fontSize: 12, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
           >
             <X style={{ width: 12, height: 12 }} /> Réinitialiser
           </button>
@@ -327,14 +327,14 @@ export default function TransactionsPage() {
       {/* ── Table ── */}
       <div style={{ ...cardStyle, overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted-c)', fontSize: 14 }}>Chargement…</div>
+          <div style={{ padding: 48, textAlign: 'center', color: 'var(--p-text-dim)', fontSize: 14 }}>Chargement…</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: 64, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <BookOpen style={{ width: 36, height: 36, color: 'var(--text-muted-c)', opacity: 0.5 }} />
-            <p style={{ fontSize: 14, color: 'var(--text-muted-c)' }}>Aucune transaction trouvée.</p>
+            <BookOpen style={{ width: 36, height: 36, color: 'var(--p-text-dim)', opacity: 0.5 }} />
+            <p style={{ fontSize: 14, color: 'var(--p-text-dim)' }}>Aucune transaction trouvée.</p>
             <button
               onClick={openAdd}
-              style={{ fontSize: 13, color: '#f1c086', background: 'none', border: '1px solid rgba(241,192,134,0.3)', borderRadius: 8, padding: '7px 16px', cursor: 'pointer' }}
+              style={{ fontSize: 13, color: '#B07820', background: 'none', border: '1px solid rgba(176,120,32,0.3)', borderRadius: 8, padding: '7px 16px', cursor: 'pointer' }}
             >
               Ajouter une première transaction
             </button>
@@ -342,9 +342,9 @@ export default function TransactionsPage() {
         ) : (
           <div style={{ overflowX: 'auto' }}>
             {/* Header row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 90px 100px 80px 100px 90px', padding: '10px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 90px 100px 80px 100px 90px', padding: '10px 16px', borderBottom: '1px solid var(--p-line)' }}>
               {['Date', 'Actif', 'Type', 'Quantité', 'Prix unit.', 'Frais', 'Total', 'Actions'].map(h => (
-                <span key={h} style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</span>
               ))}
             </div>
             {filtered.map(tx => {
@@ -358,30 +358,30 @@ export default function TransactionsPage() {
                   key={tx.id}
                   style={{
                     display: 'grid', gridTemplateColumns: '100px 1fr 100px 90px 100px 80px 100px 90px',
-                    padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)',
+                    padding: '12px 16px', borderBottom: '1px solid var(--p-line)',
                     alignItems: 'center', transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
-                  <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{fmtDate(tx.date)}</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>{fmtDate(tx.date)}</span>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {tx.symbol}
                     </p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: 11, color: 'var(--p-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {tx.name}{envName ? ` · ${envName}` : ''}
                     </p>
                   </div>
                   <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: badge.bg, color: badge.color, borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, width: 'fit-content' }}>
                     {badge.label}
                   </span>
-                  <span style={{ fontSize: 13, color: 'var(--text-em)' }}>{tx.quantity.toLocaleString('fr-FR')}</span>
-                  <span style={{ fontSize: 13, color: 'var(--text-em)' }}>{fmt(tx.price)}</span>
-                  <span style={{ fontSize: 12, color: tx.fees > 0 ? '#f87171' : 'var(--text-muted-c)' }}>
+                  <span style={{ fontSize: 13, color: 'var(--p-text-em)' }}>{tx.quantity.toLocaleString('fr-FR')}</span>
+                  <span style={{ fontSize: 13, color: 'var(--p-text-em)' }}>{fmt(tx.price)}</span>
+                  <span style={{ fontSize: 12, color: tx.fees > 0 ? '#f87171' : 'var(--p-text-dim)' }}>
                     {tx.fees > 0 ? fmt(tx.fees) : '—'}
                   </span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{fmt(total)}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{fmt(total)}</span>
 
                   {/* Actions */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -397,7 +397,7 @@ export default function TransactionsPage() {
                         <button
                           onClick={() => setConfirmDeleteId(null)}
                           title="Annuler"
-                          style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--text-muted-c)' }}
+                          style={{ background: 'none', border: '1px solid var(--p-line)', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--p-text-dim)' }}
                         >
                           <X style={{ width: 13, height: 13 }} />
                         </button>
@@ -407,14 +407,14 @@ export default function TransactionsPage() {
                         <button
                           onClick={() => openEdit(tx)}
                           title="Modifier"
-                          style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6, padding: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--text-muted-c)' }}
+                          style={{ background: 'none', border: '1px solid var(--p-line)', borderRadius: 6, padding: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--p-text-dim)' }}
                         >
                           <Pencil style={{ width: 12, height: 12 }} />
                         </button>
                         <button
                           onClick={() => setConfirmDeleteId(tx.id)}
                           title="Supprimer"
-                          style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6, padding: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#f87171' }}
+                          style={{ background: 'none', border: '1px solid var(--p-line)', borderRadius: 6, padding: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#f87171' }}
                         >
                           <Trash2 style={{ width: 12, height: 12 }} />
                         </button>
@@ -434,13 +434,13 @@ export default function TransactionsPage() {
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
           onClick={e => { if (e.target === e.currentTarget) closeModal() }}
         >
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' }}>
             {/* Modal header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--p-text)' }}>
                 {editId ? 'Modifier la transaction' : 'Nouvelle transaction'}
               </h2>
-              <button onClick={closeModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)', padding: 4 }}>
+              <button onClick={closeModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)', padding: 4 }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>
@@ -495,7 +495,7 @@ export default function TransactionsPage() {
                   <Label style={{ fontSize: 12 }}>
                     Prix unitaire (€) <span style={{ color: '#f87171' }}>*</span>
                     {formPRU > 0 && (
-                      <span style={{ marginLeft: 6, fontSize: 10, color: '#f1c086', fontWeight: 400 }}>
+                      <span style={{ marginLeft: 6, fontSize: 10, color: '#B07820', fontWeight: 400 }}>
                         PRU actuel: {fmt(formPRU)}
                       </span>
                     )}
@@ -555,9 +555,9 @@ export default function TransactionsPage() {
                   value={form.notes}
                   onChange={e => setField('notes', e.target.value)}
                   style={{
-                    background: 'transparent', border: '1px solid var(--card-dark-border)',
+                    background: 'transparent', border: '1px solid var(--p-line)',
                     borderRadius: 8, padding: '8px 12px', fontSize: 13,
-                    color: 'var(--text-primary)', resize: 'vertical', fontFamily: 'inherit',
+                    color: 'var(--p-text)', resize: 'vertical', fontFamily: 'inherit',
                     outline: 'none',
                   }}
                 />
@@ -565,9 +565,9 @@ export default function TransactionsPage() {
 
               {/* Total preview */}
               {form.quantity && form.price && (
-                <div style={{ background: 'rgba(241,192,134,0.07)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Total opération</span>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: '#f1c086' }}>
+                <div style={{ background: 'rgba(176,120,32,0.07)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 10, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>Total opération</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: '#B07820' }}>
                     {fmt((parseFloat(form.quantity) || 0) * (parseFloat(form.price) || 0) + (parseFloat(form.fees) || 0))}
                   </span>
                 </div>
@@ -577,7 +577,7 @@ export default function TransactionsPage() {
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
                 <button
                   onClick={closeModal}
-                  style={{ fontSize: 13, color: 'var(--text-muted-c)', background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '8px 16px', cursor: 'pointer' }}
+                  style={{ fontSize: 13, color: 'var(--p-text-dim)', background: 'none', border: '1px solid var(--p-line)', borderRadius: 8, padding: '8px 16px', cursor: 'pointer' }}
                 >
                   Annuler
                 </button>
@@ -586,7 +586,7 @@ export default function TransactionsPage() {
                   disabled={saving}
                   style={{
                     fontSize: 13, fontWeight: 600, color: '#1a1005',
-                    background: saving ? 'rgba(241,192,134,0.5)' : '#f1c086',
+                    background: saving ? 'rgba(176,120,32,0.5)' : '#B07820',
                     border: 'none', borderRadius: 8, padding: '8px 20px',
                     cursor: saving ? 'not-allowed' : 'pointer',
                   }}

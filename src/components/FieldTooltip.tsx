@@ -21,9 +21,9 @@ export function FieldTooltip({ text, side = 'right', width = 240 }: FieldTooltip
     zIndex: 50,
     width,
     borderRadius: 10,
-    border: '1px solid var(--card-dark-border)',
-    background: 'var(--card-dark)',
-    color: 'var(--text-muted-c)',
+    border: '1px solid var(--p-line)',
+    background: 'var(--p-card)',
+    color: 'var(--p-text-dim)',
     padding: '10px 12px',
     fontSize: 12,
     lineHeight: 1.55,
@@ -49,7 +49,7 @@ export function FieldTooltip({ text, side = 'right', width = 240 }: FieldTooltip
     <span className="relative inline-flex ml-1 align-middle" style={{ verticalAlign: 'middle' }}>
       <HelpCircle
         className="h-3.5 w-3.5 cursor-pointer transition-colors"
-        style={{ color: 'var(--text-subtle)' }}
+        style={{ color: 'var(--p-text-faint)' }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen(v => !v)}

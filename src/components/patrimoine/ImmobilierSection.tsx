@@ -24,7 +24,7 @@ function ToggleSwitch({ on, color, onChange }: { on: boolean; color: string; onC
       onClick={onChange}
       style={{
         width: 36, height: 20, borderRadius: 10, border: 'none', cursor: 'pointer',
-        background: on ? color : 'var(--section-border)',
+        background: on ? color : 'var(--p-line)',
         transition: 'background 0.2s', position: 'relative', flexShrink: 0,
       }}
     >
@@ -145,7 +145,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
   if (!subType) {
     return (
       <div>
-        <div style={{ fontSize: 13, color: 'var(--text-subtle)', marginBottom: 20 }}>
+        <div style={{ fontSize: 13, color: 'var(--p-text-faint)', marginBottom: 20 }}>
           Quel type de bien immobilier souhaitez-vous ajouter ?
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -158,15 +158,15 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
               onClick={() => setSubType(card.key)}
               style={{
                 textAlign: 'left', padding: 24, borderRadius: 16, cursor: 'pointer',
-                background: 'var(--card-dark)', border: `1.5px solid ${card.color}30`,
+                background: 'var(--p-card)', border: `1.5px solid ${card.color}30`,
                 transition: 'border-color 0.2s, background 0.2s',
                 display: 'flex', flexDirection: 'column', gap: 10,
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = card.color; e.currentTarget.style.background = `${card.color}0a` }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = `${card.color}30`; e.currentTarget.style.background = 'var(--card-dark)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = `${card.color}30`; e.currentTarget.style.background = 'var(--p-card)' }}
             >
-              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{card.title}</div>
-              <div style={{ fontSize: 12, color: 'var(--text-subtle)', lineHeight: 1.6, flex: 1 }}>{card.desc}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--p-text)' }}>{card.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--p-text-faint)', lineHeight: 1.6, flex: 1 }}>{card.desc}</div>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', border: `1.5px solid ${card.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <ChevronRight style={{ width: 14, height: 14, color: card.color }} />
@@ -188,13 +188,13 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
 
     return (
       <div className="space-y-4">
-        <button onClick={() => setSubType(null)} style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
+        <button onClick={() => setSubType(null)} style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
           ← Changer de type
         </button>
 
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: 24 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>Informations SCPI</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)', marginBottom: 16 }}>Informations SCPI</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
               <div style={{ gridColumn: '1 / -1' }}>
                 <Label style={{ marginBottom: 6, display: 'block' }}>Nom de la SCPI</Label>
@@ -233,10 +233,10 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
                 { label: 'Revenu mensuel estimé', value: fmtEur(scpiCurrentValue * scpiYield / 100 / 12), color: '#34d399' },
               ] : []),
             ].map(kpi => (
-              <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
+              <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+                <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-                {kpi.sub && <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>}
+                {kpi.sub && <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 4 }}>{kpi.sub}</div>}
               </div>
             ))}
           </div>
@@ -250,13 +250,13 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
 
   return (
     <div className="space-y-4">
-      <button onClick={() => setSubType(null)} style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
+      <button onClick={() => setSubType(null)} style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
         ← Changer de type
       </button>
 
-      <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+      <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
         <CardContent style={{ padding: 24 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Type de bien</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)', marginBottom: 12 }}>Type de bien</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
             {PROPERTY_TYPES.map(pt => (
               <button
@@ -264,9 +264,9 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
                 onClick={() => setForm(p => ({ ...p, propertyType: pt.id }))}
                 style={{
                   padding: '6px 16px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                  border: `1.5px solid ${form.propertyType === pt.id ? '#f472b6' : 'var(--card-dark-border)'}`,
+                  border: `1.5px solid ${form.propertyType === pt.id ? '#f472b6' : 'var(--p-line)'}`,
                   background: form.propertyType === pt.id ? '#f472b620' : 'transparent',
-                  color: form.propertyType === pt.id ? '#f472b6' : 'var(--text-muted-c)',
+                  color: form.propertyType === pt.id ? '#f472b6' : 'var(--p-text-dim)',
                   transition: 'all 0.15s',
                 }}
               >
@@ -275,10 +275,10 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             ))}
           </div>
 
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Informations du bien</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)', marginBottom: 12 }}>Informations du bien</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div style={{ gridColumn: '1 / -1' }}>
-              <Label style={{ marginBottom: 6, display: 'block' }}>Localisation <span style={{ fontWeight: 400, color: 'var(--text-subtle)', fontSize: 11 }}>Pour la carte géographique</span></Label>
+              <Label style={{ marginBottom: 6, display: 'block' }}>Localisation <span style={{ fontWeight: 400, color: 'var(--p-text-faint)', fontSize: 11 }}>Pour la carte géographique</span></Label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {[
                   { id: 'france',          label: '🇫🇷 France' },
@@ -293,9 +293,9 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
                     onClick={() => setForm(p => ({ ...p, country: opt.id }))}
                     style={{
                       padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                      border: `1.5px solid ${form.country === opt.id ? '#f472b6' : 'var(--card-dark-border)'}`,
+                      border: `1.5px solid ${form.country === opt.id ? '#f472b6' : 'var(--p-line)'}`,
                       background: form.country === opt.id ? '#f472b620' : 'transparent',
-                      color: form.country === opt.id ? '#f472b6' : 'var(--text-muted-c)',
+                      color: form.country === opt.id ? '#f472b6' : 'var(--p-text-dim)',
                       transition: 'all 0.15s',
                     }}
                   >
@@ -305,7 +305,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
               </div>
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
-              <Label style={{ marginBottom: 6, display: 'block' }}>Adresse <span style={{ fontWeight: 400, color: 'var(--text-subtle)', fontSize: 11 }}>Optionnel</span></Label>
+              <Label style={{ marginBottom: 6, display: 'block' }}>Adresse <span style={{ fontWeight: 400, color: 'var(--p-text-faint)', fontSize: 11 }}>Optionnel</span></Label>
               <Input value={form.address} onChange={f('address')} placeholder="12 rue de la Paix, Paris 75001" />
             </div>
             <div>
@@ -330,7 +330,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: form.isRental ? 12 : 16 }}>
                 <ToggleSwitch on={form.isRental} color="#f472b6" onChange={() => setForm(p => ({ ...p, isRental: !p.isRental }))} />
-                <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>Bien locatif</span>
+                <span style={{ fontSize: 13, color: 'var(--p-text)', fontWeight: 500 }}>Bien locatif</span>
               </div>
               {form.isRental && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
@@ -343,7 +343,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
                       Charges &amp; taxes annuelles / 12 (€)
                       <span
                         title="Somme de : taxe foncière, assurance PNO, charges de copropriété, frais de gestion — le tout divisé par 12"
-                        style={{ marginLeft: 6, cursor: 'help', fontSize: 11, color: 'var(--text-subtle)', borderBottom: '1px dotted var(--text-subtle)' }}
+                        style={{ marginLeft: 6, cursor: 'help', fontSize: 11, color: 'var(--p-text-faint)', borderBottom: '1px dotted var(--p-text-faint)' }}
                       >
                         ℹ
                       </span>
@@ -355,10 +355,10 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             </>
           )}
 
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: '16px 0 12px' }}>Crédit immobilier</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)', margin: '16px 0 12px' }}>Crédit immobilier</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: form.hasCredit ? 16 : 0 }}>
             <ToggleSwitch on={form.hasCredit} color="#818cf8" onChange={() => setForm(p => ({ ...p, hasCredit: !p.hasCredit }))} />
-            <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>J'ai un crédit en cours</span>
+            <span style={{ fontSize: 13, color: 'var(--p-text)', fontWeight: 500 }}>J'ai un crédit en cours</span>
           </div>
           {form.hasCredit && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
@@ -395,10 +395,10 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             { label: 'Plus-value latente', value: `${latentGain >= 0 ? '+' : ''}${fmtEur(latentGain)}`, color: latentGain >= 0 ? '#34d399' : '#ef4444', sub: purchasePrice > 0 ? `${((latentGain / purchasePrice) * 100).toFixed(1)} %` : '' },
             ...(form.hasCredit && ltv > 0 ? [{ label: 'LTV (dette/valeur)', value: `${ltv.toFixed(1)} %`, color: ltv > 80 ? '#f59e0b' : '#818cf8', sub: ltv > 80 ? 'LTV élevé' : 'LTV sain' }] : []),
           ].map(kpi => (
-            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
+            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
               <div style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>}
+              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 4 }}>{kpi.sub}</div>}
             </div>
           ))}
         </div>
@@ -415,10 +415,10 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
         const netYield   = ((annualRent - annualCharges) / currentValue) * 100
         const cashflow   = mRent - mCharges - mCredit
         return (
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
             <CardContent style={{ padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Rendement locatif</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>Rendement locatif</div>
                 <a
                   href={`/dashboard/rental?restore=${encodeURIComponent(JSON.stringify({ propertyValue: currentValue, monthlyRent: mRent, monthlyCharges: mCharges, creditMonthly: mCredit }))}`}
                   style={{ fontSize: 11, color: '#f472b6', textDecoration: 'none', border: '1px solid #f472b630', borderRadius: 8, padding: '4px 10px' }}
@@ -428,23 +428,23 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)' }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement brut</div>
+                  <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement brut</div>
                   <div style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', fontVariantNumeric: 'tabular-nums' }}>{grossYield.toFixed(2)} %</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{fmtEur(annualRent)} / an</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 4 }}>{fmtEur(annualRent)} / an</div>
                 </div>
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: netYield >= 0 ? 'rgba(52,211,153,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${netYield >= 0 ? 'rgba(52,211,153,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement net</div>
+                  <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Rendement net</div>
                   <div style={{ fontSize: 22, fontWeight: 800, color: netYield >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{netYield.toFixed(2)} %</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{fmtEur(annualRent - annualCharges)} / an net</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 4 }}>{fmtEur(annualRent - annualCharges)} / an net</div>
                 </div>
                 <div style={{ padding: '14px 16px', borderRadius: 10, background: cashflow >= 0 ? 'rgba(52,211,153,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${cashflow >= 0 ? 'rgba(52,211,153,0.2)' : 'rgba(239,68,68,0.2)'}` }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Cashflow mensuel</div>
+                  <div style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>Cashflow mensuel</div>
                   <div style={{ fontSize: 22, fontWeight: 800, color: cashflow >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{cashflow >= 0 ? '+' : ''}{fmtEur(cashflow)}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 4 }}>{cashflow >= 0 ? 'Effort positif' : 'Effort d\'épargne'}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 4 }}>{cashflow >= 0 ? 'Effort positif' : 'Effort d\'épargne'}</div>
                 </div>
               </div>
               {mCharges === 0 && (
-                <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-subtle)', fontStyle: 'italic' }}>
+                <div style={{ marginTop: 12, fontSize: 11, color: 'var(--p-text-faint)', fontStyle: 'italic' }}>
                   Saisissez les charges mensuelles (taxe foncière, assurance, copropriété / 12) pour obtenir le rendement net.
                 </div>
               )}
@@ -454,9 +454,9 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
       })()}
 
       {isSetup && equityData.length > 0 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)', marginBottom: 16 }}>
               Évolution du patrimoine net (projection)
             </div>
             <ResponsiveContainer width="100%" height={220}>

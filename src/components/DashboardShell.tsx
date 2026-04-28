@@ -97,9 +97,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
       {/* ── Mobile top bar ── */}
       <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0"
-        style={{ background: 'var(--card-dark)', borderBottom: '1px solid var(--section-border)' }}>
+        style={{ background: 'var(--p-bg)', borderBottom: '1px solid var(--p-line)' }}>
         <div className="flex items-center gap-3">
-          <button onClick={toggle} style={{ color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
+          <button onClick={toggle} style={{ color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <PanelLeftOpen className="h-5 w-5" />
           </button>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
@@ -109,27 +109,28 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <NotificationCenter />
       </div>
 
-      {/* ── Desktop top bar — NextAdmin style ── */}
+      {/* ── Desktop top bar ── */}
       <header className="hidden md:flex flex-shrink-0 items-center justify-between px-6"
         style={{
           height: 65,
-          background: 'var(--card-dark)',
-          borderBottom: '1px solid var(--section-border)',
+          background: 'var(--p-card)',
+          borderBottom: '1px solid var(--p-line)',
           position: 'sticky',
           top: 0,
           zIndex: 50,
           gap: 16,
+          boxShadow: '0 1px 0 var(--p-line)',
         }}>
 
         {/* Left: page title */}
         <div className="flex items-center gap-3 min-w-0">
           <button onClick={toggle}
-            style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'transparent', cursor: 'pointer', color: 'var(--text-muted-c)', flexShrink: 0 }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--row-hover)'; e.currentTarget.style.color = 'var(--text-em)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted-c)' }}>
+            style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid var(--p-line-2)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', flexShrink: 0 }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--p-row-hover)'; e.currentTarget.style.color = 'var(--p-text)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--p-text-dim)' }}>
             <PanelLeftOpen className="h-4 w-4" />
           </button>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--p-text-em)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "'Geist', system-ui, sans-serif" }}>
             {pageTitle}
           </h2>
         </div>
@@ -144,22 +145,22 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             style={{
               height: 36, padding: '0 12px',
               borderRadius: 8,
-              border: '1px solid var(--card-dark-border)',
-              background: 'var(--mini-card-bg)',
+              border: '1px solid var(--p-line-2)',
+              background: 'var(--p-card-2)',
               cursor: 'pointer', gap: 8,
-              color: 'var(--text-muted-c)',
+              color: 'var(--p-text-dim)',
               fontSize: 13,
               transition: 'all 0.15s',
               minWidth: 180,
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(241,192,134,0.30)'; e.currentTarget.style.color = 'var(--text-em)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-muted-c)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--p-gold-30)'; e.currentTarget.style.color = 'var(--p-text)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line-2)'; e.currentTarget.style.color = 'var(--p-text-dim)' }}
           >
             <Search className="h-3.5 w-3.5 flex-shrink-0" />
             <span style={{ flex: 1, textAlign: 'left' }}>Recherche rapide…</span>
             <span className="flex gap-1">
               {['⌘', 'K'].map(k => (
-                <kbd key={k} style={{ fontSize: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 4, padding: '0 4px', fontFamily: 'inherit' }}>{k}</kbd>
+                <kbd key={k} style={{ fontSize: 10, background: 'var(--p-card-2)', border: '1px solid var(--p-line-2)', borderRadius: 4, padding: '0 4px', fontFamily: 'inherit', color: 'var(--p-text-faint)' }}>{k}</kbd>
               ))}
             </span>
           </button>
@@ -171,14 +172,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             style={{
               width: 36, height: 36,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 8, border: '1px solid var(--card-dark-border)',
+              borderRadius: 8, border: '1px solid var(--p-line-2)',
               background: 'transparent', cursor: 'pointer',
-              color: 'var(--text-muted-c)',
+              color: 'var(--p-text-dim)',
               transition: 'all 0.15s',
               flexShrink: 0,
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--row-hover)'; e.currentTarget.style.color = 'var(--text-em)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted-c)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--p-row-hover)'; e.currentTarget.style.color = 'var(--p-text)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--p-text-dim)' }}
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -187,29 +188,29 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <NotificationCenter />
 
           {/* Divider */}
-          <div style={{ width: 1, height: 28, background: 'var(--section-border)' }} />
+          <div style={{ width: 1, height: 28, background: 'var(--p-line)' }} />
 
           {/* User avatar */}
           <Link href="/dashboard/profil" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 9 }}>
             {session?.user?.image ? (
               <img src={session.user.image} alt={userName}
-                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(241,192,134,0.25)' }} />
+                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(176,120,32,0.25)' }} />
             ) : (
               <div style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c8922a, #f1c086)',
+                background: 'linear-gradient(135deg, #8B5E18, #D4A24C)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: '2px solid rgba(241,192,134,0.25)',
+                border: '2px solid var(--p-gold-30)',
                 flexShrink: 0,
               }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a' }}>{userInitial}</span>
               </div>
             )}
             <div className="hidden xl:block" style={{ minWidth: 0 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', margin: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)', margin: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {session?.user?.name || 'Utilisateur'}
               </p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Membre</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>Membre</p>
             </div>
           </Link>
         </div>

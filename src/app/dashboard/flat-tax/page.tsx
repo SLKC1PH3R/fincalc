@@ -110,7 +110,7 @@ function FlatTaxInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Flat Tax vs Barème</span>
@@ -121,8 +121,8 @@ function FlatTaxInner() {
               <Scale style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Flat Tax vs Barème</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>PFU 30% vs barème progressif · Dividendes &amp; plus-values</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Flat Tax vs Barème</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>PFU 30% vs barème progressif · Dividendes &amp; plus-values</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -130,7 +130,7 @@ function FlatTaxInner() {
               onClick={() => { setGuidedMode(g => !g); setGuidedStep(0) }}
               style={guidedMode
                 ? { background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.4)', color: '#34d399' }
-                : { borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+                : { borderColor: 'var(--p-line)', color: 'var(--p-text-dim)' }}>
               <BookOpen className="h-3.5 w-3.5 mr-1.5" />Mode guidé
             </Button>
             <Button variant="outline" size="sm" onClick={() => printReport({
@@ -147,7 +147,7 @@ function FlatTaxInner() {
             </Button>
             <SaveSimulation type="flat-tax" name="Flat Tax vs Barème" inputs={inputs as unknown as Record<string, unknown>} results={res as unknown as Record<string, unknown>} />
             <Button variant="outline" size="sm" onClick={handleReset}
-              style={{ borderColor: 'var(--card-dark-border)', color: 'var(--text-muted-c)' }}>
+              style={{ borderColor: 'var(--p-line)', color: 'var(--p-text-dim)' }}>
               Réinitialiser
             </Button>
           </div>
@@ -172,24 +172,24 @@ function FlatTaxInner() {
 
           {/* LEFT — sticky inputs */}
           <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Settings2 style={{ width: 13, height: 13, color: 'var(--text-muted-c)' }} />
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+                <Settings2 style={{ width: 13, height: 13, color: 'var(--p-text-dim)' }} />
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                   Revenus du capital (€)
                   <FieldTooltip text="Dividendes, plus-values mobilières, intérêts, coupons… Le montant brut avant toute fiscalité." />
                 </label>
                 <Input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} min={0} step={1000} style={{ height: 36, fontSize: 13 }} />
               </div>
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                   Type de revenu
                   <FieldTooltip text="Dividendes : abattement 40% au barème. Plus-values et intérêts : pas d'abattement." />
                 </label>
@@ -203,20 +203,20 @@ function FlatTaxInner() {
                 </Select>
               </div>
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                   Revenus d&apos;activité annuels (€)
                   <FieldTooltip text="Vos salaires, BIC, BNC… Permet de calculer le bon taux marginal et l'IR au barème." />
                 </label>
                 <Input type="number" value={revenuTravail} onChange={e => setRevenuTravail(Number(e.target.value))} min={0} step={5000} style={{ height: 36, fontSize: 13 }} />
               </div>
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>
                   TMI estimé (barème)
                   <FieldTooltip text="Taux Marginal d'Imposition. Votre tranche la plus haute dans le barème progressif." />
                 </label>
@@ -228,10 +228,10 @@ function FlatTaxInner() {
                 </Select>
               </div>
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Nombre de parts fiscales</label>
+                <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Nombre de parts fiscales</label>
                 <Select value={String(parts)} onValueChange={v => setParts(Number(v))}>
                   <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -240,11 +240,11 @@ function FlatTaxInner() {
                 </Select>
               </div>
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#f1c086' }} />
-                <label htmlFor="couple" style={{ fontSize: 11, color: 'var(--text-muted-c)', cursor: 'pointer' }}>
+                <input type="checkbox" id="couple" checked={isCouple} onChange={e => setIsCouple(e.target.checked)} style={{ width: 14, height: 14, accentColor: '#B07820' }} />
+                <label htmlFor="couple" style={{ fontSize: 11, color: 'var(--p-text-dim)', cursor: 'pointer' }}>
                   Déclaration en couple
                   <FieldTooltip text="Abattement AV de 9 200€ au lieu de 4 600€ pour un couple marié ou pacsé." />
                 </label>
@@ -252,13 +252,13 @@ function FlatTaxInner() {
             </div>
 
             {/* Mini KPI summary */}
-            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}20`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Recommandation</p>
+            <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}20`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Recommandation</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircle2 style={{ width: 14, height: 14, color: recColor, flexShrink: 0 }} />
                 <span style={{ fontSize: 13, fontWeight: 700, color: recColor }}>{recLabel}</span>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Économie : <span style={{ color: '#34d399', fontWeight: 600 }}>{fmt(res.saving)}</span></p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Économie : <span style={{ color: '#34d399', fontWeight: 600 }}>{fmt(res.saving)}</span></p>
             </div>
           </div>
 
@@ -274,13 +274,13 @@ function FlatTaxInner() {
                 { label: 'Recommandé', value: res.recommended === 'flat_tax' ? 'Flat Tax' : 'Barème', sub: 'régime optimal', color: recColor, highlight: false },
               ].map((k, i) => (
                 <div key={i} style={{
-                  background: k.highlight ? `${k.color}10` : 'var(--card-dark)',
-                  border: `1px solid ${k.highlight ? k.color + '40' : 'var(--card-dark-border)'}`,
+                  background: k.highlight ? `${k.color}10` : 'var(--p-card)',
+                  border: `1px solid ${k.highlight ? k.color + '40' : 'var(--p-line)'}`,
                   borderRadius: 12, padding: '14px 16px',
                 }}>
-                  <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+                  <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{k.value}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>{k.sub}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>{k.sub}</p>
                 </div>
               ))}
             </div>
@@ -289,15 +289,15 @@ function FlatTaxInner() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {/* Flat Tax card */}
               <div style={{
-                background: 'var(--card-dark)',
-                border: '1px solid var(--card-dark-border)',
+                background: 'var(--p-card)',
+                border: '1px solid var(--p-line)',
                 borderTop: `3px solid ${COLOR}`,
                 borderRadius: 14, overflow: 'hidden'
               }}>
-                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: COLOR }}>Flat Tax</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>PFU 30% fixe</p>
+                    <p style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>PFU 30% fixe</p>
                   </div>
                   {res.recommended === 'flat_tax' && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, background: `${COLOR}18`, border: `1px solid ${COLOR}35` }}>
@@ -310,7 +310,7 @@ function FlatTaxInner() {
                   <p style={{ fontSize: 26, fontWeight: 800, color: COLOR, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>
                     {fmt(res.flatTax.total)}
                   </p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 12 }}>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 12 }}>
                     Taux effectif : {res.flatTax.effectiveRate.toFixed(1)}%
                   </p>
                   {[
@@ -319,9 +319,9 @@ function FlatTaxInner() {
                     { label: 'Impôt sur le revenu', value: fmt(res.flatTax.ir) },
                     { label: 'Prélèvements sociaux', value: fmt(res.flatTax.ps) },
                   ].map((row, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < 3 ? '1px solid var(--section-border)' : 'none' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < 3 ? '1px solid var(--p-line)' : 'none' }}>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{row.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
@@ -329,15 +329,15 @@ function FlatTaxInner() {
 
               {/* Barème card */}
               <div style={{
-                background: 'var(--card-dark)',
-                border: '1px solid var(--card-dark-border)',
+                background: 'var(--p-card)',
+                border: '1px solid var(--p-line)',
                 borderTop: '3px solid #fb923c',
                 borderRadius: 14, overflow: 'hidden'
               }}>
-                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#fb923c' }}>Barème progressif</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>TMI {tmi}%</p>
+                    <p style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>TMI {tmi}%</p>
                   </div>
                   {res.recommended === 'bareme' && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.25)' }}>
@@ -350,7 +350,7 @@ function FlatTaxInner() {
                   <p style={{ fontSize: 26, fontWeight: 800, color: '#fb923c', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.04em' }}>
                     {fmt(res.bareme.total)}
                   </p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 12 }}>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 12 }}>
                     Taux effectif : {res.bareme.effectiveRate.toFixed(1)}%
                   </p>
                   {[
@@ -359,14 +359,14 @@ function FlatTaxInner() {
                     { label: 'Impôt sur le revenu', value: fmt(res.bareme.ir) },
                     { label: 'Prélèvements sociaux', value: fmt(res.bareme.ps) },
                   ].map((row, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < 3 ? '1px solid var(--section-border)' : 'none' }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{row.label}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < 3 ? '1px solid var(--p-line)' : 'none' }}>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{row.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value}</span>
                     </div>
                   ))}
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0' }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>CSG déductible</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(res.bareme.csgDed)}</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>CSG déductible</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(res.bareme.csgDed)}</span>
                   </div>
                 </div>
               </div>
@@ -374,15 +374,15 @@ function FlatTaxInner() {
 
             {/* Info box for dividends */}
             {incomeType === 'dividends' && (
-              <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '12px 16px', fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-                <span style={{ color: '#f1c086', fontWeight: 600 }}>Dividendes : </span>
+              <div style={{ background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 12, padding: '12px 16px', fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>
+                <span style={{ color: '#B07820', fontWeight: 600 }}>Dividendes : </span>
                 l&apos;abattement de 40% ne s&apos;applique qu&apos;au barème. La Flat Tax taxe le montant brut sans abattement — mais à seulement 30% fixe.
               </div>
             )}
 
             {/* Line chart */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Charge fiscale comparée selon le montant</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Charge fiscale comparée selon le montant</p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={res.chartData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                   <XAxis dataKey="amount" tickFormatter={v => v >= 1000 ? `${v / 1000}k€` : `${v}€`} tick={{ fontSize: 10, fill: chartTheme.tick }} />
@@ -412,19 +412,19 @@ function FlatTaxInner() {
             }}>
               <CheckCircle2 style={{ width: 18, height: 18, color: recColor, flexShrink: 0, marginTop: 1 }} />
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', marginBottom: 4 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 4 }}>
                   Quelle option choisir ?
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-                  Avec un TMI de <strong style={{ color: 'var(--text-em)' }}>{tmi}%</strong>, le régime <strong style={{ color: recColor }}>{recLabel}</strong> est optimal.
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>
+                  Avec un TMI de <strong style={{ color: 'var(--p-text-em)' }}>{tmi}%</strong>, le régime <strong style={{ color: recColor }}>{recLabel}</strong> est optimal.
                   Vous économisez <strong style={{ color: '#34d399' }}>{fmt(res.saving)}</strong> par rapport à l&apos;autre régime.
                 </p>
               </div>
             </div>
 
             {/* Donut répartition */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>Charge fiscale comparative</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 8 }}>Charge fiscale comparative</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <PieChart width={100} height={100}>
                   <Pie data={donutData} cx={46} cy={46} innerRadius={28} outerRadius={46} dataKey="value" strokeWidth={0}>
@@ -435,8 +435,8 @@ function FlatTaxInner() {
                   {donutData.map((d, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 9999, background: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -444,18 +444,18 @@ function FlatTaxInner() {
             </div>
 
             {/* Règles clés */}
-            <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils clés</p>
+            <div style={{ background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils clés</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
                   { color: COLOR, text: 'La Flat Tax (PFU) est avantageuse pour les TMI ≥ 30%.' },
                   { color: '#fb923c', text: 'Le barème est souvent meilleur pour les TMI 0% et 11%, surtout sur les dividendes (abattement 40%).' },
                   { color: '#34d399', text: 'Vous pouvez choisir le régime chaque année lors de votre déclaration.' },
-                  { color: '#f1c086', text: "La CSG déductible (6,8%) ne s'applique qu'au barème et réduit le revenu imposable N+1." },
+                  { color: '#B07820', text: "La CSG déductible (6,8%) ne s'applique qu'au barème et réduit le revenu imposable N+1." },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>{item.text}</span>
                   </div>
                 ))}
               </div>

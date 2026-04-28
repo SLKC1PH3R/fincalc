@@ -54,7 +54,7 @@ function ViagerPageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Viager</span>
@@ -65,8 +65,8 @@ function ViagerPageInner() {
               <Users style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Viager</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Bouquet · Rente · Seuil d&apos;équilibre actuariel</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Viager</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Bouquet · Rente · Seuil d&apos;équilibre actuariel</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -117,7 +117,7 @@ function ViagerPageInner() {
           { val: 'libre', label: 'Viager libre', desc: 'Acheteur dispose du bien immédiatement' },
         ] as const).map(opt => (
           <button key={opt.val} onClick={() => set('type')(opt.val)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 10, cursor: 'pointer', border: `1px solid ${inputs.type === opt.val ? COLOR : 'rgba(255,255,255,0.1)'}`, background: inputs.type === opt.val ? `${COLOR}15` : 'transparent', color: inputs.type === opt.val ? COLOR : 'var(--text-subtle)', transition: 'all 0.15s', gap: 2 }}>
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 10, cursor: 'pointer', border: `1px solid ${inputs.type === opt.val ? COLOR : 'rgba(255,255,255,0.1)'}`, background: inputs.type === opt.val ? `${COLOR}15` : 'transparent', color: inputs.type === opt.val ? COLOR : 'var(--p-text-faint)', transition: 'all 0.15s', gap: 2 }}>
             <span>{opt.label}</span>
             <span style={{ fontSize: 10, fontWeight: 400, opacity: 0.7 }}>{opt.desc}</span>
           </button>
@@ -131,10 +131,10 @@ function ViagerPageInner() {
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Carte Paramètres */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 7 }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 7 }}>
               <Settings2 style={{ width: 13, height: 13, color: COLOR }} />
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
             </div>
             <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
@@ -144,13 +144,13 @@ function ViagerPageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k] as number]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
               ))}
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               {[
                 { label: 'Part du bouquet', k: 'bouquetPct' as const, min: 0, max: 50, step: 5, disp: (v: number) => `${v}%` },
@@ -159,13 +159,13 @@ function ViagerPageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k] as number]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
               ))}
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               {/* Barème CGI 669 */}
               <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 10, padding: '10px 12px' }}>
@@ -174,8 +174,8 @@ function ViagerPageInner() {
                   [60, 50], [65, 40], [70, 40], [75, 30], [80, 20], [85, 20], [90, 10],
                 ].map(([age, coeff]) => (
                   <div key={age} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', background: inputs.ageVendeur === age ? `${COLOR}10` : 'transparent' }}>
-                    <span style={{ fontSize: 11, color: inputs.ageVendeur === age ? COLOR : 'var(--text-muted-c)' }}>{age} ans</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: inputs.ageVendeur === age ? COLOR : 'var(--text-subtle)' }}>{coeff}%</span>
+                    <span style={{ fontSize: 11, color: inputs.ageVendeur === age ? COLOR : 'var(--p-text-dim)' }}>{age} ans</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: inputs.ageVendeur === age ? COLOR : 'var(--p-text-faint)' }}>{coeff}%</span>
                   </div>
                 ))}
               </div>
@@ -187,12 +187,12 @@ function ViagerPageInner() {
             <p style={{ fontSize: 10, fontWeight: 700, color: COLOR, textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Résumé actuariel</p>
             {[
               { label: 'Bouquet', value: fmt(r.bouquet), color: COLOR },
-              { label: 'Rente/mois', value: fmt(r.renteMensuelle), color: 'var(--text-primary)' },
-              { label: 'Valeur nette', value: fmt(r.valeurNette), color: 'var(--text-muted-c)' },
+              { label: 'Rente/mois', value: fmt(r.renteMensuelle), color: 'var(--p-text)' },
+              { label: 'Valeur nette', value: fmt(r.valeurNette), color: 'var(--p-text-dim)' },
               { label: 'Seuil équilibre', value: `${r.seuilEquilibre} ans`, color: r.seuilEquilibre > r.esperanceVie ? '#34d399' : '#fb923c' },
             ].map(item => (
               <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.value}</span>
               </div>
             ))}
@@ -206,42 +206,42 @@ function ViagerPageInner() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
             <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${COLOR}10, transparent)`, border: `1px solid ${COLOR}30`, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${COLOR}14, transparent)`, pointerEvents: 'none' }} />
-              <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>Bouquet</p>
+              <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>Bouquet</p>
               <p style={{ fontSize: 20, fontWeight: 800, color: COLOR, letterSpacing: '-0.5px', lineHeight: 1 }}>{fmt(r.bouquet)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>{inputs.bouquetPct}% de la valeur nette</p>
+              <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>{inputs.bouquetPct}% de la valeur nette</p>
             </div>
             {[
-              { label: 'Rente mensuelle', value: fmt(r.renteMensuelle), sub: `${fmt(r.renteAnnuelle)}/an`, color: 'var(--text-primary)' },
+              { label: 'Rente mensuelle', value: fmt(r.renteMensuelle), sub: `${fmt(r.renteAnnuelle)}/an`, color: 'var(--p-text)' },
               { label: 'Seuil d\'équilibre', value: `${r.seuilEquilibre} ans`, sub: `espérance : ${r.esperanceVie.toFixed(0)} ans`, color: r.seuilEquilibre > r.esperanceVie ? '#34d399' : '#fb923c' },
               { label: 'Total versements', value: fmt(r.totalVersementsEsperance), sub: `sur ${r.esperanceVie.toFixed(0)} ans d'espérance`, color: 'rgba(255,255,255,0.55)' },
             ].map(k => (
-              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
+              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+                <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
                 <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', lineHeight: 1 }}>{k.value}</p>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>{k.sub}</p>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>{k.sub}</p>
               </div>
             ))}
           </div>
 
           {/* Calcul détaillé */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '16px 20px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Calcul actuariel détaillé</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '16px 20px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 14 }}>Calcul actuariel détaillé</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
-                { label: 'Valeur vénale', value: fmt(inputs.valeurVenale), color: 'var(--text-primary)' },
+                { label: 'Valeur vénale', value: fmt(inputs.valeurVenale), color: 'var(--p-text)' },
                 ...(inputs.type === 'occupe' ? [
                   { label: `Droit d'usage et d'habitation (${(r.coefficientUsufruit * 100).toFixed(0)}% × 60%)`, value: `− ${fmt(Math.round(inputs.valeurVenale * r.coefficientUsufruit * 0.6))}`, color: '#f87171' },
                 ] : []),
                 { label: 'Valeur nette (base de calcul)', value: fmt(r.valeurNette), color: COLOR, bold: true },
                 { label: `Bouquet (${inputs.bouquetPct}%)`, value: `− ${fmt(r.bouquet)}`, color: '#fb923c' },
-                { label: 'Base de rente', value: fmt(r.baseRente), color: 'var(--text-primary)' },
+                { label: 'Base de rente', value: fmt(r.baseRente), color: 'var(--p-text)' },
                 { label: `Espérance de vie résiduelle`, value: `${r.esperanceVie.toFixed(1)} ans`, color: 'rgba(255,255,255,0.6)' },
                 { label: `Taux technique (${inputs.taux}%)`, value: 'formule actuarielle', color: 'rgba(255,255,255,0.4)', small: true },
                 { label: 'Rente annuelle', value: fmt(r.renteAnnuelle), color: COLOR, bold: true },
                 { label: 'Rente mensuelle', value: fmt(r.renteMensuelle), color: COLOR, bold: true },
               ].map((row, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 'small' in row && row.small ? 10 : 12.5, color: 'var(--text-muted-c)' }}>{row.label}</span>
+                  <span style={{ fontSize: 'small' in row && row.small ? 10 : 12.5, color: 'var(--p-text-dim)' }}>{row.label}</span>
                   <span style={{ fontSize: 'bold' in row && row.bold ? 15 : 13, fontWeight: 'bold' in row && row.bold ? 800 : 600, color: row.color }}>{row.value}</span>
                 </div>
               ))}
@@ -249,8 +249,8 @@ function ViagerPageInner() {
           </div>
 
           {/* Chart cumul acheteur */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 14 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Cumul acheteur vs valeur du bien</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: 14 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Cumul acheteur vs valeur du bien</p>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
@@ -269,11 +269,11 @@ function ViagerPageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Analyse espérance vs point mort */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Analyse actuarielle</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Analyse actuarielle</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ background: `${COLOR}0a`, border: `1px solid ${COLOR}20`, borderRadius: 10, padding: '10px 12px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>
                   {r.seuilEquilibre > r.esperanceVie ? 'Favorable au vendeur' : 'Favorable à l\'acheteur'}
                 </p>
                 <p style={{ fontSize: 18, fontWeight: 800, color: r.seuilEquilibre > r.esperanceVie ? '#34d399' : '#fb923c', letterSpacing: '-0.3px' }}>
@@ -281,7 +281,7 @@ function ViagerPageInner() {
                     ? `+${Math.round(r.seuilEquilibre - r.esperanceVie)} ans marge`
                     : `−${Math.round(r.esperanceVie - r.seuilEquilibre)} ans risque`}
                 </p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>
                   Équilibre à {r.seuilEquilibre} ans, espérance {r.esperanceVie.toFixed(0)} ans
                 </p>
               </div>
@@ -294,16 +294,16 @@ function ViagerPageInner() {
                 { label: 'Point mort acheteur', value: `${r.seuilEquilibre} ans` },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)' }}>{item.value}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text)' }}>{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Timeline versements */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Versements cumulés acheteur</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Versements cumulés acheteur</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {timelineData.map(d => {
                 const pct = Math.min((d.cumul / (inputs.valeurVenale * 1.5)) * 100, 100)
@@ -311,12 +311,12 @@ function ViagerPageInner() {
                 return (
                   <div key={d.yr}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                      <span style={{ fontSize: 10, color: d.yr === Math.round(r.esperanceVie) ? COLOR : 'var(--text-muted-c)' }}>
+                      <span style={{ fontSize: 10, color: d.yr === Math.round(r.esperanceVie) ? COLOR : 'var(--p-text-dim)' }}>
                         {d.yr === 0 ? 'Jour 1' : `Année ${d.yr}`}
                         {d.yr === r.seuilEquilibre ? ' ← équilibre' : ''}
                         {d.yr === Math.round(r.esperanceVie) ? ' ← espérance' : ''}
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: isBreakeven ? '#34d399' : 'var(--text-primary)' }}>{fmt(d.cumul)}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: isBreakeven ? '#34d399' : 'var(--p-text)' }}>{fmt(d.cumul)}</span>
                     </div>
                     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, borderRadius: 2, background: isBreakeven ? '#34d399' : COLOR, transition: 'width 0.4s ease' }} />
@@ -325,7 +325,7 @@ function ViagerPageInner() {
                 )
               })}
             </div>
-            <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 8 }}>
+            <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 8 }}>
               Au-delà de {r.seuilEquilibre} ans, le viager devient défavorable pour l&apos;acheteur.
             </p>
           </div>
@@ -335,7 +335,7 @@ function ViagerPageInner() {
             {tips.map((tip, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: `${COLOR}06`, border: `1px solid ${COLOR}18`, borderRadius: 12, padding: '12px 14px', animation: i === 0 ? 'glow-pulse 2.5s ease-in-out infinite' : undefined }}>
                 <span style={{ fontSize: 12, flexShrink: 0 }}>✦</span>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

@@ -104,10 +104,10 @@ function IconBox({ icon: Icon, active, size = 30 }: { icon: Icon; active: boolea
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
-      background: active ? 'rgba(241,192,134,0.12)' : 'transparent',
+      background: active ? 'rgba(176,120,32,0.12)' : 'transparent',
       transition: 'all 0.15s',
     }}>
-      <Icon style={{ width: 16, height: 16, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
+      <Icon style={{ width: 16, height: 16, color: active ? '#B07820' : 'var(--sb-text-dim)' }} />
     </div>
   )
 }
@@ -222,7 +222,6 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
     try { await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' }) } catch {}
   }
 
-  const dark = theme !== 'light'
   const W = collapsed ? 64 : 290
   const [sbTooltip, setSbTooltip] = useState<{ label: string; y: number } | null>(null)
 
@@ -293,8 +292,8 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             </span>
             {badge != null && badge > 0 && (
               <span style={{
-                fontSize: 10, color: '#f1c086',
-                background: 'rgba(241,192,134,0.12)',
+                fontSize: 10, color: '#B07820',
+                background: 'rgba(176,120,32,0.12)',
                 padding: '1px 7px', borderRadius: 20,
                 fontWeight: 700, flexShrink: 0,
               }}>
@@ -329,14 +328,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors"
       style={{
         textDecoration: 'none', fontSize: 12,
-        color: active ? '#f1c086' : 'var(--sb-text)',
+        color: active ? '#B07820' : 'var(--sb-text)',
         fontWeight: active ? 600 : 400,
-        background: active ? 'rgba(241,192,134,0.06)' : 'none',
+        background: active ? 'rgba(176,120,32,0.06)' : 'none',
       }}
       onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'none' }}
     >
-      <Icon style={{ width: 12, height: 12, flexShrink: 0, color: active ? '#f1c086' : 'var(--sb-text-dim)' }} />
+      <Icon style={{ width: 12, height: 12, flexShrink: 0, color: active ? '#B07820' : 'var(--sb-text-dim)' }} />
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
     </Link>
   )
@@ -395,10 +394,10 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             left: W + 10,
             top: sbTooltip.y,
             transform: 'translateY(-50%)',
-            background: dark ? '#1c1f2e' : '#ffffff',
-            color: dark ? '#e2e8f0' : '#111111',
-            border: `1px solid ${dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.10)'}`,
-            boxShadow: dark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.12)',
+            background: '#FFFFFF',
+            color: '#0A0A0A',
+            border: '1px solid rgba(10,10,10,0.10)',
+            boxShadow: '0 4px 16px rgba(10,10,10,0.12)',
             padding: '5px 10px',
             borderRadius: 8,
             fontSize: 12,
@@ -414,7 +413,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {/* ── Subtle top gold accent ── */}
         <div aria-hidden style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-          background: 'linear-gradient(90deg, #c8922a, #f1c086, transparent)',
+          background: 'linear-gradient(90deg, #8B5E18, #B07820, transparent)',
           opacity: 0.55,
           pointerEvents: 'none', zIndex: 2,
         }} />
@@ -456,21 +455,20 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           <div style={{ padding: '10px 10px 0', flexShrink: 0 }}>
             {/* Patrimoine widget */}
             {patrimoineTotal !== null && (() => {
-                const isDark = theme === 'dark'
-                const cardBg = isDark ? '#1e2738' : '#fffbf2'
-                const cardBorder = isDark ? 'rgba(241,192,134,0.18)' : 'rgba(184,118,10,0.22)'
-                const cardBorderHover = isDark ? 'rgba(241,192,134,0.40)' : 'rgba(184,118,10,0.48)'
-                const cardShadow = isDark ? '0 2px 14px rgba(0,0,0,0.40)' : '0 2px 12px rgba(184,118,10,0.10)'
-                const labelColor = isDark ? '#f1c086' : '#b8760a'
-                const valueColor = isDark ? '#ffffff' : '#1a1208'
-                const subColor = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.32)'
-                const miniCardBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'
-                const miniLabelColor = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.38)'
-                const miniValueColor = isDark ? 'rgba(255,255,255,0.80)' : 'rgba(0,0,0,0.75)'
-                const fireBgColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'
-                const fireBarBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
-                const fireLabelColor = isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.35)'
-                const fireTargetColor = isDark ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.55)'
+                const cardBg = '#FBF7EF'
+                const cardBorder = 'rgba(176,120,32,0.20)'
+                const cardBorderHover = 'rgba(176,120,32,0.40)'
+                const cardShadow = '0 1px 6px rgba(176,120,32,0.08)'
+                const labelColor = '#8B5E18'
+                const valueColor = '#0A0A0A'
+                const subColor = 'rgba(0,0,0,0.32)'
+                const miniCardBg = 'rgba(10,10,10,0.04)'
+                const miniLabelColor = 'rgba(0,0,0,0.38)'
+                const miniValueColor = 'rgba(0,0,0,0.75)'
+                const fireBgColor = 'rgba(10,10,10,0.06)'
+                const fireBarBg = 'rgba(10,10,10,0.08)'
+                const fireLabelColor = 'rgba(0,0,0,0.35)'
+                const fireTargetColor = 'rgba(0,0,0,0.55)'
                 return (
                 <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}>
                   <div
@@ -559,15 +557,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
               {/* Score widget */}
               {score !== null && (() => {
-                const isDark = theme === 'dark'
-                const cardBg = isDark ? '#1e2738' : '#fffbf2'
-                const cardBorder = isDark ? 'rgba(241,192,134,0.18)' : 'rgba(184,118,10,0.22)'
-                const cardBorderHover = isDark ? 'rgba(241,192,134,0.40)' : 'rgba(184,118,10,0.48)'
-                const cardShadow = isDark ? '0 2px 14px rgba(0,0,0,0.40)' : '0 2px 12px rgba(184,118,10,0.10)'
-                const labelColor = isDark ? '#f1c086' : '#b8760a'
-                const valueColor = isDark ? '#ffffff' : '#1a1208'
-                const valueMutedColor = isDark ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.32)'
-                const barBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'
+                const cardBg = '#FBF7EF'
+                const cardBorder = 'rgba(176,120,32,0.20)'
+                const cardBorderHover = 'rgba(176,120,32,0.40)'
+                const cardShadow = '0 1px 6px rgba(176,120,32,0.08)'
+                const labelColor = '#8B5E18'
+                const valueColor = '#0A0A0A'
+                const valueMutedColor = 'rgba(0,0,0,0.32)'
+                const barBg = 'rgba(10,10,10,0.08)'
                 return (
                 <Link
                   href="/dashboard/score"
@@ -601,7 +598,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                         background: score >= 70
                           ? 'linear-gradient(90deg, #22c55e, #4ade80)'
                           : score >= 40
-                            ? 'linear-gradient(90deg, #c8922a, #f1c086)'
+                            ? 'linear-gradient(90deg, #8B5E18, #B07820)'
                             : 'linear-gradient(90deg, #ef4444, #f87171)',
                         transition: 'width 0.6s ease',
                       }} />
@@ -645,12 +642,12 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           <div style={{ padding: collapsed ? '4px 8px' : '0 10px 8px', display: 'flex', justifyContent: 'center' }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
-              background: 'rgba(241,192,134,0.05)', border: '1px solid rgba(241,192,134,0.12)',
+              background: 'rgba(176,120,32,0.05)', border: '1px solid rgba(176,120,32,0.12)',
               borderRadius: 8, padding: '4px 10px', width: '100%',
             }}>
               <span style={{ fontSize: 11, flexShrink: 0 }}>🔒</span>
               {!collapsed && (
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#f1c086', letterSpacing: '0.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#B07820', letterSpacing: '0.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
                   Mode démo · Lecture seule
                 </span>
               )}
@@ -774,7 +771,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                     <div className="flex items-center gap-0.5">
                                       <SubItem href={item.href} label={item.label} icon={item.icon} active={isActive} />
                                       {itemSims.length > 0 && !isActive && (
-                                        <span style={{ fontSize: 9, color: '#f1c086', background: 'rgba(241,192,134,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
+                                        <span style={{ fontSize: 9, color: '#B07820', background: 'rgba(176,120,32,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
                                           {itemSims.length}
                                         </span>
                                       )}
@@ -795,18 +792,18 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
                                           const isActiveSim = activeSimId === sim.id
                                           return (
                                             <div key={sim.id} className="group flex items-center rounded-lg"
-                                              style={{ background: isActiveSim ? 'rgba(241,192,134,0.06)' : 'transparent' }}
+                                              style={{ background: isActiveSim ? 'rgba(176,120,32,0.06)' : 'transparent' }}
                                               onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
                                               onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                                             >
                                               <Link
                                                 href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
                                                 className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
-                                                style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#f1c086' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
+                                                style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#B07820' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
                                                 onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
                                                 onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
                                               >
-                                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#f1c086' }} />}
+                                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#B07820' }} />}
                                                 <span className="truncate">{sim.name}</span>
                                               </Link>
                                               <button
@@ -878,14 +875,14 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               {/* User card */}
               <div
                 className="flex items-center gap-2.5 px-2 py-2 rounded-xl mb-1"
-                style={{ background: 'var(--sb-profile-bg)', border: '1px solid rgba(241,192,134,0.06)' }}
+                style={{ background: 'var(--sb-profile-bg)', border: '1px solid rgba(176,120,32,0.06)' }}
               >
                 {user.image ? (
-                  <img src={user.image} alt="" style={{ height: 28, width: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid rgba(241,192,134,0.20)' }} />
+                  <img src={user.image} alt="" style={{ height: 28, width: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid rgba(176,120,32,0.20)' }} />
                 ) : (
                   <div style={{
                     height: 28, width: 28, borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg, #c8922a 0%, #f1c086 100%)',
+                    background: 'linear-gradient(135deg, #8B5E18 0%, #D4A24C 100%)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a' }}>

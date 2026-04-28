@@ -1,5 +1,5 @@
 const GOLD = '#c4922a'
-const GOLD_LIGHT = '#f1c086'
+const GOLD_LIGHT = '#B07820'
 
 export interface PrintKPI {
   label: string
@@ -96,7 +96,7 @@ export function printReport(config: PrintConfig) {
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand-icon {
       width: 34px; height: 34px;
-      background: linear-gradient(135deg, #c8922a, ${GOLD_LIGHT});
+      background: linear-gradient(135deg, #8B5E18, ${GOLD_LIGHT});
       border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 12px rgba(196,146,42,0.30);

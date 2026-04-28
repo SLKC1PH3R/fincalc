@@ -65,21 +65,21 @@ function JsonModal({ title, value, onSave, onClose }: {
   }
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 16, width: '100%', maxWidth: 660, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--section-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>{title}</span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)' }}><X size={18} /></button>
+      <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, width: '100%', maxWidth: 660, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontWeight: 600, color: 'var(--p-text)', fontSize: 14 }}>{title}</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)' }}><X size={18} /></button>
         </div>
         <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
           <textarea value={text} onChange={e => setText(e.target.value)} style={{
             width: '100%', minHeight: 320, fontFamily: 'monospace', fontSize: 12,
-            background: 'rgba(0,0,0,0.3)', color: 'var(--text-primary)',
-            border: `1px solid ${err ? '#ef4444' : 'var(--section-border)'}`, borderRadius: 8, padding: 12, resize: 'vertical', outline: 'none',
+            background: 'rgba(0,0,0,0.3)', color: 'var(--p-text)',
+            border: `1px solid ${err ? '#ef4444' : 'var(--p-line)'}`, borderRadius: 8, padding: 12, resize: 'vertical', outline: 'none',
           }} />
           {err && <p style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{err}</p>}
         </div>
-        <div style={{ padding: '12px 16px', borderTop: '1px solid var(--section-border)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button onClick={onClose} style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid var(--section-border)', background: 'none', color: 'var(--text-muted-c)', cursor: 'pointer', fontSize: 13 }}>Annuler</button>
+        <div style={{ padding: '12px 16px', borderTop: '1px solid var(--p-line)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid var(--p-line)', background: 'none', color: 'var(--p-text-dim)', cursor: 'pointer', fontSize: 13 }}>Annuler</button>
           <button onClick={handleSave} style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: '#818cf8', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
             <Check size={14} />Sauvegarder
           </button>
@@ -97,26 +97,26 @@ function EnvRow({ env, onDelete, onEdit }: { env: DemoEnvelope; onDelete: () => 
   const val = meta.currentValue ?? meta.surrenderValue ?? meta.balance ?? null
 
   return (
-    <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--section-border)' }}>
+    <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--p-line)' }}>
       <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-white/[0.02] transition-colors"
         style={{ background: 'rgba(255,255,255,0.01)' }} onClick={() => setOpen(p => !p)}>
-        {open ? <ChevronDown size={13} style={{ color: 'var(--text-muted-c)', flexShrink: 0 }} />
-          : <ChevronRight size={13} style={{ color: 'var(--text-muted-c)', flexShrink: 0 }} />}
+        {open ? <ChevronDown size={13} style={{ color: 'var(--p-text-dim)', flexShrink: 0 }} />
+          : <ChevronRight size={13} style={{ color: 'var(--p-text-dim)', flexShrink: 0 }} />}
         <span style={{ fontSize: 10, fontWeight: 700, color, background: `${color}18`, border: `1px solid ${color}30`, borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>{env.type}</span>
-        <span className="flex-1 text-sm truncate" style={{ color: 'var(--text-primary)' }}>{env.name}</span>
+        <span className="flex-1 text-sm truncate" style={{ color: 'var(--p-text)' }}>{env.name}</span>
         {typeof val === 'number' && <span style={{ fontSize: 12, color, fontWeight: 600, flexShrink: 0 }}>{val.toLocaleString('fr-FR')} €</span>}
-        <span className="text-xs ml-2" style={{ color: 'var(--text-muted-c)', flexShrink: 0 }}>{env.positions.length} pos.</span>
-        <button onClick={e => { e.stopPropagation(); onEdit() }} className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)' }} title="Éditer metadata"><Edit3 size={13} /></button>
+        <span className="text-xs ml-2" style={{ color: 'var(--p-text-dim)', flexShrink: 0 }}>{env.positions.length} pos.</span>
+        <button onClick={e => { e.stopPropagation(); onEdit() }} className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)' }} title="Éditer metadata"><Edit3 size={13} /></button>
         <button onClick={e => { e.stopPropagation(); onDelete() }} className="p-1 rounded" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }} title="Supprimer"><Trash2 size={13} /></button>
       </div>
       {open && env.positions.length > 0 && (
         <div className="px-3 pb-2" style={{ background: 'rgba(0,0,0,0.2)' }}>
           {env.positions.map(pos => (
             <div key={pos.id} className="flex gap-2 py-1 text-xs border-b last:border-0" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
-              <span style={{ color: 'var(--text-muted-c)', width: 48, flexShrink: 0 }}>{pos.assetType}</span>
+              <span style={{ color: 'var(--p-text-dim)', width: 48, flexShrink: 0 }}>{pos.assetType}</span>
               <span style={{ color: '#818cf8', width: 64, flexShrink: 0, fontWeight: 600 }}>{pos.symbol}</span>
-              <span className="flex-1 truncate" style={{ color: 'var(--text-primary)' }}>{pos.name}</span>
-              <span style={{ color: 'var(--text-muted-c)' }}>{pos.quantity} × {pos.pru.toLocaleString('fr-FR')} €</span>
+              <span className="flex-1 truncate" style={{ color: 'var(--p-text)' }}>{pos.name}</span>
+              <span style={{ color: 'var(--p-text-dim)' }}>{pos.quantity} × {pos.pru.toLocaleString('fr-FR')} €</span>
             </div>
           ))}
         </div>
@@ -321,8 +321,8 @@ export default function AdminPage() {
                         <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">
                           <div>{new Date(user.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                           {user.lastLoginAt
-                            ? <div className="mt-0.5" style={{ color: 'var(--text-subtle)' }}>↩ {new Date(user.lastLoginAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
-                            : <div className="mt-0.5" style={{ color: 'var(--text-subtle)' }}>↩ —</div>
+                            ? <div className="mt-0.5" style={{ color: 'var(--p-text-faint)' }}>↩ {new Date(user.lastLoginAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                            : <div className="mt-0.5" style={{ color: 'var(--p-text-faint)' }}>↩ —</div>
                           }
                         </td>
                         <td className="px-4 py-3 text-center"><span className="text-sm font-medium">{user._count.simulations}</span></td>
@@ -364,7 +364,7 @@ export default function AdminPage() {
               </CardDescription>
             </div>
             <div className="flex gap-2 items-center">
-              <button onClick={loadDemo} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)', padding: 6 }}><RefreshCw size={14} /></button>
+              <button onClick={loadDemo} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)', padding: 6 }}><RefreshCw size={14} /></button>
               {confirmReset ? (
                 <>
                   <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setConfirmReset(false)}>Annuler</Button>
@@ -386,7 +386,7 @@ export default function AdminPage() {
               <button key={tab} onClick={() => setActiveTab(tab)} style={{
                 padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500,
                 background: activeTab === tab ? 'rgba(129,140,248,0.15)' : 'none',
-                color: activeTab === tab ? '#818cf8' : 'var(--text-muted-c)',
+                color: activeTab === tab ? '#818cf8' : 'var(--p-text-dim)',
               }}>
                 {tab === 'simulations' ? `Simulations (${demo?.simulations.length ?? '…'})` : `Patrimoine (${demo?.envelopes.length ?? '…'})`}
               </button>
@@ -403,11 +403,11 @@ export default function AdminPage() {
               {demo.simulations.map(sim => {
                 const color = SIM_COLORS[sim.type] ?? '#94a3b8'
                 return (
-                  <div key={sim.id} className="flex items-center gap-2 px-3 py-2 rounded-lg border" style={{ borderColor: 'var(--section-border)', background: 'rgba(255,255,255,0.01)' }}>
+                  <div key={sim.id} className="flex items-center gap-2 px-3 py-2 rounded-lg border" style={{ borderColor: 'var(--p-line)', background: 'rgba(255,255,255,0.01)' }}>
                     <span style={{ fontSize: 10, fontWeight: 700, color, background: `${color}18`, border: `1px solid ${color}30`, borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>{SIM_LABELS[sim.type] ?? sim.type}</span>
-                    <span className="flex-1 text-sm truncate" style={{ color: 'var(--text-primary)' }}>{sim.name}</span>
-                    <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted-c)' }}>{fmtDate(sim.createdAt)}</span>
-                    <button onClick={() => setModal({ kind: 'sim', id: sim.id, title: `Inputs — ${sim.name}`, field: 'inputs', value: sim.inputs })} title="Éditer inputs" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)', padding: 4 }}><Edit3 size={13} /></button>
+                    <span className="flex-1 text-sm truncate" style={{ color: 'var(--p-text)' }}>{sim.name}</span>
+                    <span className="text-xs flex-shrink-0" style={{ color: 'var(--p-text-dim)' }}>{fmtDate(sim.createdAt)}</span>
+                    <button onClick={() => setModal({ kind: 'sim', id: sim.id, title: `Inputs — ${sim.name}`, field: 'inputs', value: sim.inputs })} title="Éditer inputs" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)', padding: 4 }}><Edit3 size={13} /></button>
                     <button onClick={() => handleDeleteSim(sim.id)} title="Supprimer" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: 4 }}><Trash2 size={13} /></button>
                   </div>
                 )

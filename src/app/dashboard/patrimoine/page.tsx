@@ -20,12 +20,12 @@ import { calcPortfolioGeo, estimatePositionIncome, type GeoAllocation } from '@/
 
 const WorldMapChart = dynamic(
   () => import('@/components/WorldMapChart').then(m => m.WorldMapChart),
-  { ssr: false, loading: () => <div style={{ height: 340, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>Chargement de la carte…</div> }
+  { ssr: false, loading: () => <div style={{ height: 340, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>Chargement de la carte…</div> }
 )
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const T = {
-  gold:   '#f1c086',
+  gold:   '#B07820',
   green:  '#34d399',
   red:    '#f87171',
   purple: '#a78bfa',
@@ -168,20 +168,20 @@ function ChartTip({ active, payload, label }: { active?: boolean; payload?: Arra
 
 function StatCard({ label, value, sub, color = T.gold }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px' }}>
-      <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{label}</div>
+    <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 10, padding: '10px 14px' }}>
+      <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 18, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      {sub && <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 2 }}>{sub}</div>}
     </div>
   )
 }
 
 function SectionCard({ title, children, action }: { title?: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 14 }}>
+    <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: 14 }}>
       {title && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{title}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>{title}</div>
           {action}
         </div>
       )}
@@ -196,8 +196,8 @@ function BarProgress({ label, value, max, color, fmt: fmtFn = fmtCompact }: {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-      <span style={{ fontSize: 10, color: 'var(--text-muted-c)', width: 90, flexShrink: 0 }}>{label}</span>
-      <div style={{ flex: 1, height: 5, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden' }}>
+      <span style={{ fontSize: 10, color: 'var(--p-text-dim)', width: 90, flexShrink: 0 }}>{label}</span>
+      <div style={{ flex: 1, height: 5, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 99, transition: 'width 0.4s' }} />
       </div>
       <span style={{ fontSize: 10, fontWeight: 700, color, width: 52, textAlign: 'right' }}>{fmtFn(value)}</span>
@@ -252,8 +252,8 @@ function TabOverview({ envelopes, snapshots, router }: {
       <SectionCard>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Évolution du patrimoine</div>
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Données simulées · mise à jour automatique</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Évolution du patrimoine</div>
+            <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Données simulées · mise à jour automatique</div>
           </div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             {/* Category pills */}
@@ -261,9 +261,9 @@ function TabOverview({ envelopes, snapshots, router }: {
               {Object.keys(CHART_CATS).map(cat => (
                 <button key={cat} onClick={() => setChartCat(cat)} style={{
                   padding: '3px 9px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                  border: `1px solid ${chartCat === cat ? T.gold : 'var(--card-dark-border)'}`,
-                  background: chartCat === cat ? 'rgba(241,192,134,0.12)' : 'transparent',
-                  color: chartCat === cat ? T.gold : 'var(--text-muted-c)',
+                  border: `1px solid ${chartCat === cat ? T.gold : 'var(--p-line)'}`,
+                  background: chartCat === cat ? 'rgba(176,120,32,0.12)' : 'transparent',
+                  color: chartCat === cat ? T.gold : 'var(--p-text-dim)',
                 }}>{cat}</button>
               ))}
             </div>
@@ -271,9 +271,9 @@ function TabOverview({ envelopes, snapshots, router }: {
             {(['1m', '3m', '6m', '1a', 'max'] as TimeRange[]).map(r => (
               <button key={r} onClick={() => setRange(r)} style={{
                 padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                border: `1px solid ${range === r ? T.gold : 'var(--card-dark-border)'}`,
-                background: range === r ? 'rgba(241,192,134,0.12)' : 'transparent',
-                color: range === r ? T.gold : 'var(--text-muted-c)',
+                border: `1px solid ${range === r ? T.gold : 'var(--p-line)'}`,
+                background: range === r ? 'rgba(176,120,32,0.12)' : 'transparent',
+                color: range === r ? T.gold : 'var(--p-text-dim)',
               }}>{r}</button>
             ))}
           </div>
@@ -286,8 +286,8 @@ function TabOverview({ envelopes, snapshots, router }: {
                 <stop offset="100%" stopColor={T.gold} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} width={62} />
+            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={62} />
             <RTooltip content={<ChartTip />} />
             <Area type="monotone" dataKey="value" stroke={T.gold} strokeWidth={2} fill="url(#gradOv)" dot={false} />
           </AreaChart>
@@ -298,7 +298,7 @@ function TabOverview({ envelopes, snapshots, router }: {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* Pyramid */}
         <SectionCard title="Pyramide patrimoniale française">
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 14 }}>
+          <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 14 }}>
             Votre position : <span style={{ color: pctColor, fontWeight: 700 }}>{pct}ème percentile</span> sur {fmtCompact(patrimoineNet)}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
@@ -313,20 +313,20 @@ function TabOverview({ envelopes, snapshots, router }: {
                   transition: 'all 0.2s',
                 }}>
                   <div>
-                    <span style={{ fontSize: 11, fontWeight: isUser ? 700 : 500, color: isUser ? tier.color : 'var(--text-muted-c)' }}>
+                    <span style={{ fontSize: 11, fontWeight: isUser ? 700 : 500, color: isUser ? tier.color : 'var(--p-text-dim)' }}>
                       {tier.label}
                     </span>
                     {isUser && <span style={{ fontSize: 10, color: tier.color, marginLeft: 6 }}>◀ vous</span>}
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 10, color: isUser ? tier.color : 'var(--text-subtle)', fontWeight: isUser ? 700 : 400 }}>{tier.threshold}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text-subtle)' }}>{tier.sub}</div>
+                    <div style={{ fontSize: 10, color: isUser ? tier.color : 'var(--p-text-faint)', fontWeight: isUser ? 700 : 400 }}>{tier.threshold}</div>
+                    <div style={{ fontSize: 9, color: 'var(--p-text-faint)' }}>{tier.sub}</div>
                   </div>
                 </div>
               )
             })}
           </div>
-          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-subtle)' }}>Sources : INSEE 2021 · Banque de France 2024</div>
+          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--p-text-faint)' }}>Sources : INSEE 2021 · Banque de France 2024</div>
         </SectionCard>
 
         {/* Right col */}
@@ -340,7 +340,7 @@ function TabOverview({ envelopes, snapshots, router }: {
                     <Cell key={idx} fill={DONUT_COLORS[idx % DONUT_COLORS.length]} />
                   ))}
                 </Pie>
-                <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 11, color: 'var(--text-muted-c)' }} />
+                <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 11, color: 'var(--p-text-dim)' }} />
                 <RTooltip formatter={(v: number) => fmtCompact(v)} />
               </PieChart>
             </ResponsiveContainer>
@@ -356,7 +356,7 @@ function TabOverview({ envelopes, snapshots, router }: {
             ].map(b => (
               <BarProgress key={b.label} label={b.label} value={Math.min(patrimoineNet, b.value)} max={b.value} color={b.color} />
             ))}
-            <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text-subtle)' }}>
+            <div style={{ marginTop: 6, fontSize: 11, color: 'var(--p-text-faint)' }}>
               Prochain palier : {fmtCompact(Math.max(0, (PYRAMID_TIERS.find((_, i) => i === Math.max(0, userTierIdx - 1))?.minPct ?? 100)))} pct
             </div>
           </SectionCard>
@@ -403,16 +403,16 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         <button onClick={() => setFilter('ALL')} style={{
           padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-          border: `1px solid ${filter === 'ALL' ? T.gold : 'var(--card-dark-border)'}`,
-          background: filter === 'ALL' ? 'rgba(241,192,134,0.12)' : 'transparent',
-          color: filter === 'ALL' ? T.gold : 'var(--text-muted-c)',
+          border: `1px solid ${filter === 'ALL' ? T.gold : 'var(--p-line)'}`,
+          background: filter === 'ALL' ? 'rgba(176,120,32,0.12)' : 'transparent',
+          color: filter === 'ALL' ? T.gold : 'var(--p-text-dim)',
         }}>Tout ({envelopes.length})</button>
         {(Object.keys(byType) as EnvelopeType[]).map(t => (
           <button key={t} onClick={() => setFilter(t)} style={{
             padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-            border: `1px solid ${filter === t ? ENV_CFG[t].color : 'var(--card-dark-border)'}`,
+            border: `1px solid ${filter === t ? ENV_CFG[t].color : 'var(--p-line)'}`,
             background: filter === t ? `${ENV_CFG[t].color}18` : 'transparent',
-            color: filter === t ? ENV_CFG[t].color : 'var(--text-muted-c)',
+            color: filter === t ? ENV_CFG[t].color : 'var(--p-text-dim)',
           }}>{ENV_CFG[t].label}</button>
         ))}
       </div>
@@ -421,9 +421,9 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
       <SectionCard>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
+            <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
               {['Enveloppe', 'Type', 'Capital investi', 'Valeur actuelle', 'P&L', 'Poids', ''].map(h => (
-                <th key={h} style={{ fontSize: 11, color: 'var(--text-muted-c)', textAlign: 'left', padding: '0 8px 10px', fontWeight: 600 }}>{h}</th>
+                <th key={h} style={{ fontSize: 11, color: 'var(--p-text-dim)', textAlign: 'left', padding: '0 8px 10px', fontWeight: 600 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -439,15 +439,15 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
                 <tr key={env.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer' }}
                   onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}>
                   <td style={{ padding: '12px 8px' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{env.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{env.positions.length} position{env.positions.length !== 1 ? 's' : ''}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{env.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{env.positions.length} position{env.positions.length !== 1 ? 's' : ''}</div>
                   </td>
                   <td style={{ padding: '12px 8px' }}>
                     <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: `${cfg.color}18`, color: cfg.color, fontWeight: 600 }}>
                       {cfg.label}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 8px', fontSize: 13, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
+                  <td style={{ padding: '12px 8px', fontSize: 13, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>
                     {cap > 0 ? fmtCompact(cap) : '—'}
                   </td>
                   <td style={{ padding: '12px 8px', fontSize: 13, fontWeight: 700, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>
@@ -458,14 +458,14 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
                   </td>
                   <td style={{ padding: '12px 8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 50, height: 4, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: 50, height: 4, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
                         <div style={{ width: `${poids}%`, height: '100%', background: cfg.color, borderRadius: 99 }} />
                       </div>
-                      <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{poids}%</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{poids}%</span>
                     </div>
                   </td>
                   <td style={{ padding: '12px 8px' }}>
-                    <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Détail →</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Détail →</span>
                   </td>
                 </tr>
               )
@@ -473,7 +473,7 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
           </tbody>
         </table>
         {displayed.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--p-text-faint)', fontSize: 13 }}>
             Aucune enveloppe dans cette catégorie
           </div>
         )}
@@ -525,8 +525,8 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
       <SectionCard title="Projection mensuelle">
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={monthlyData}>
-            <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} width={52} />
+            <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} />
+            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={52} />
             <RTooltip content={<ChartTip />} />
             <Bar dataKey="revenus" fill={T.green} radius={[4, 4, 0, 0]} />
           </BarChart>
@@ -535,7 +535,7 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
 
       <SectionCard title="Revenus par enveloppe">
         {incomes.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--p-text-faint)', fontSize: 13 }}>
             Aucun revenu estimé — ajoutez des taux ou des loyers dans vos enveloppes
           </div>
         ) : (
@@ -545,9 +545,9 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
               return (
                 <div key={env.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
                   <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: `${cfg.color}18`, color: cfg.color, fontWeight: 600, flexShrink: 0 }}>{cfg.label}</span>
-                  <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)' }}>{env.name}</span>
+                  <span style={{ flex: 1, fontSize: 13, color: 'var(--p-text)' }}>{env.name}</span>
                   <span style={{ fontSize: 13, color: T.green, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(annual)}/an</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(monthly)}/mois</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(monthly)}/mois</span>
                 </div>
               )
             })}
@@ -605,13 +605,13 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
             { label: 'Épargne annuelle (€)', value: epargneAnnuelle, setter: setEpargneAnnuelle, step: 1000 },
           ].map(({ label, value, setter, step, isPercent }) => (
             <div key={label}>
-              <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 6 }}>{label}</div>
+              <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 6 }}>{label}</div>
               <Input
                 type="number"
                 value={value}
                 step={step}
                 onChange={e => setter(Number(e.target.value))}
-                style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', color: 'var(--text-primary)' }}
+                style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', color: 'var(--p-text)' }}
               />
             </div>
           ))}
@@ -629,10 +629,10 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
       {/* Progress bar */}
       <SectionCard>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Progression vers FIRE</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Progression vers FIRE</span>
           <span style={{ fontSize: 13, color: T.gold, fontWeight: 700 }}>{fmtCompact(patrimoineNet)} / {fmtCompact(fireTarget)}</span>
         </div>
-        <div style={{ height: 12, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden', marginBottom: 16 }}>
+        <div style={{ height: 12, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden', marginBottom: 16 }}>
           <div style={{
             width: `${progress}%`, height: '100%', borderRadius: 99, transition: 'width 0.5s',
             background: progress >= 100 ? T.green : `linear-gradient(90deg, ${T.red}, ${T.orange}, ${T.gold}, ${T.green})`,
@@ -647,16 +647,16 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
           ].map(ms => {
             const pct = fireTarget > 0 ? Math.min(100, (patrimoineNet / ms.target) * 100) : 0
             return (
-              <div key={ms.label} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${pct >= 100 ? ms.color : 'var(--card-dark-border)'}` }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: pct >= 100 ? ms.color : 'var(--text-primary)', marginBottom: 4 }}>
+              <div key={ms.label} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${pct >= 100 ? ms.color : 'var(--p-line)'}` }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: pct >= 100 ? ms.color : 'var(--p-text)', marginBottom: 4 }}>
                   {pct >= 100 ? '✓ ' : ''}{ms.label}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8 }}>{ms.desc}</div>
+                <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8 }}>{ms.desc}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: ms.color }}>{fmtCompact(ms.target)}</div>
-                <div style={{ marginTop: 6, height: 4, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden' }}>
+                <div style={{ marginTop: 6, height: 4, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
                   <div style={{ width: `${pct}%`, height: '100%', background: ms.color, borderRadius: 99 }} />
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 3 }}>{pct.toFixed(0)}%</div>
+                <div style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 3 }}>{pct.toFixed(0)}%</div>
               </div>
             )
           })}
@@ -673,8 +673,8 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
                 <stop offset="100%" stopColor={T.gold} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} interval={4} />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--text-subtle)' }} axisLine={false} tickLine={false} width={62} />
+            <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} interval={4} />
+            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={62} />
             <RTooltip content={<ChartTip />} />
             <Area type="monotone" dataKey="target" stroke={T.red} strokeDasharray="4 4" strokeWidth={1.5} fill="none" dot={false} />
             <Area type="monotone" dataKey="value" stroke={T.gold} strokeWidth={2} fill="url(#gradFire)" dot={false} />
@@ -736,7 +736,7 @@ function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
       {/* World map */}
       <SectionCard title="Répartition géographique">
         {allPositions.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--p-text-faint)', fontSize: 13 }}>
             Ajoutez des ETFs ou actions à vos enveloppes pour voir la répartition géographique
           </div>
         ) : (
@@ -757,14 +757,14 @@ function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
         </SectionCard>
         <SectionCard title="Top 5 positions">
           {topSorted.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-subtle)', fontSize: 13 }}>Aucune position détaillée</div>
+            <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--p-text-faint)', fontSize: 13 }}>Aucune position détaillée</div>
           ) : (
             topSorted.map((asset, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)', width: 16, textAlign: 'center' }}>#{i + 1}</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)', width: 16, textAlign: 'center' }}>#{i + 1}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}>{asset.name}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>
+                  <div style={{ fontSize: 12, color: 'var(--p-text)', fontWeight: 600 }}>{asset.name}</div>
+                  <div style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>
                     {totalPositionsValue > 0 ? ((asset.value / totalPositionsValue) * 100).toFixed(1) : '0'}% du portefeuille
                   </div>
                 </div>
@@ -878,36 +878,36 @@ export default function PatrimoinePage() {
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Mon Patrimoine</h1>
-          <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text)', margin: 0 }}>Mon Patrimoine</h1>
+          <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>
             {envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''} · {pct}ème percentile français
           </span>
         </div>
-        <Button onClick={() => setShowModal(true)} style={{ background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: T.gold, gap: 6, fontSize: 12, padding: '6px 12px', height: 'auto' }}>
+        <Button onClick={() => setShowModal(true)} style={{ background: 'rgba(176,120,32,0.12)', border: '1px solid rgba(176,120,32,0.25)', color: T.gold, gap: 6, fontSize: 12, padding: '6px 12px', height: 'auto' }}>
           <Plus size={14} /> Ajouter
         </Button>
       </div>
 
       {/* 3 KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 10, flexShrink: 0 }}>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
-          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine net</div>
+        <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine net</div>
           <div style={{ fontSize: 24, fontWeight: 800, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(patrimoineNet)}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''}</div>
+          <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''}</div>
         </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
-          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Percentile France</div>
+        <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Percentile France</div>
           <div style={{ fontSize: 24, fontWeight: 800, color: pctColor, fontVariantNumeric: 'tabular-nums' }}>{pct}ème</div>
-          <div style={{ height: 3, background: 'var(--card-dark-border)', borderRadius: 99, overflow: 'hidden', marginTop: 6 }}>
+          <div style={{ height: 3, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden', marginTop: 6 }}>
             <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${T.red}, ${T.orange}, ${T.gold}, ${T.green}, ${T.purple})`, borderRadius: 99 }} />
           </div>
         </div>
-        <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '10px 16px' }}>
-          <div style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>FIRE (règle 4%)</div>
+        <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
+          <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>FIRE (règle 4%)</div>
           <div style={{ fontSize: 24, fontWeight: 800, color: T.blue, fontVariantNumeric: 'tabular-nums' }}>
             {patrimoineNet > 0 ? `${Math.min(100, ((patrimoineNet / (36_000 * 25)) * 100)).toFixed(0)}%` : '0%'}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>Objectif : {fmtCompact(36_000 * 25)}</div>
+          <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>Objectif : {fmtCompact(36_000 * 25)}</div>
         </div>
       </div>
 
@@ -919,15 +919,15 @@ export default function PatrimoinePage() {
           return (
             <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10,
+                background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 10,
                 padding: '8px 6px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.15s',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = cat.color)}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--card-dark-border)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--p-line)')}
               >
                 <Icon style={{ color: cat.color, width: 16, height: 16 }} />
-                <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-primary)' }}>{cat.label}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text)' }}>{cat.label}</div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: cat.color, fontVariantNumeric: 'tabular-nums' }}>
                   {cat.types.length > 0 && catTotal > 0 ? fmtCompact(catTotal) : cat.types.length === 0 ? 'Voir' : '—'}
                 </div>
@@ -938,15 +938,15 @@ export default function PatrimoinePage() {
       </div>
 
       {/* Tab nav */}
-      <div style={{ display: 'flex', gap: 2, marginBottom: 10, background: 'var(--card-dark)', padding: 3, borderRadius: 10, border: '1px solid var(--card-dark-border)', width: 'fit-content', flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap: 2, marginBottom: 10, background: 'var(--p-card)', padding: 3, borderRadius: 10, border: '1px solid var(--p-line)', width: 'fit-content', flexShrink: 0 }}>
         {tabs.map(t => {
           const Icon = t.icon
           return (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 7, fontSize: 12, fontWeight: 600,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s',
-              background: tab === t.id ? 'rgba(241,192,134,0.12)' : 'transparent',
-              color: tab === t.id ? T.gold : 'var(--text-muted-c)',
+              background: tab === t.id ? 'rgba(176,120,32,0.12)' : 'transparent',
+              color: tab === t.id ? T.gold : 'var(--p-text-dim)',
             }}>
               <Icon size={13} />{t.label}
             </button>
@@ -957,7 +957,7 @@ export default function PatrimoinePage() {
       {/* Tab content — scrollable zone */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 16 }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-subtle)', fontSize: 14 }}>Chargement…</div>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--p-text-faint)', fontSize: 14 }}>Chargement…</div>
         ) : (
           <>
             {tab === 'overview' && <TabOverview envelopes={envelopes} snapshots={snapshots} router={router} />}
@@ -974,21 +974,21 @@ export default function PatrimoinePage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: 'var(--modal-surface)', border: '1px solid var(--modal-surface-border)', borderRadius: 20, padding: 28, width: 460, boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>Nouvelle enveloppe</h2>
-              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted-c)' }}><X size={20} /></button>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: 'var(--p-text)' }}>Nouvelle enveloppe</h2>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-dim)' }}><X size={20} /></button>
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6, display: 'block' }}>Type d'enveloppe</label>
+              <label style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 6, display: 'block' }}>Type d'enveloppe</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {ENVELOPE_TYPES_LIST.map(t => {
                   const cfg = ENV_CFG[t]
                   return (
                     <button key={t} onClick={() => setNewType(t)} style={{
                       padding: '8px 4px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                      border: `1px solid ${newType === t ? cfg.color : 'var(--card-dark-border)'}`,
+                      border: `1px solid ${newType === t ? cfg.color : 'var(--p-line)'}`,
                       background: newType === t ? `${cfg.color}18` : 'transparent',
-                      color: newType === t ? cfg.color : 'var(--text-muted-c)',
+                      color: newType === t ? cfg.color : 'var(--p-text-dim)',
                     }}>{cfg.label}</button>
                   )
                 })}
@@ -996,7 +996,7 @@ export default function PatrimoinePage() {
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <label style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 6, display: 'block' }}>Nom</label>
+              <label style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 6, display: 'block' }}>Nom</label>
               <Input
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
@@ -1007,8 +1007,8 @@ export default function PatrimoinePage() {
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <Button variant="ghost" onClick={() => setShowModal(false)} style={{ color: 'var(--text-muted-c)' }}>Annuler</Button>
-              <Button onClick={createEnvelope} disabled={!newName.trim() || creating} style={{ background: 'rgba(241,192,134,0.15)', border: '1px solid rgba(241,192,134,0.3)', color: T.gold }}>
+              <Button variant="ghost" onClick={() => setShowModal(false)} style={{ color: 'var(--p-text-dim)' }}>Annuler</Button>
+              <Button onClick={createEnvelope} disabled={!newName.trim() || creating} style={{ background: 'rgba(176,120,32,0.15)', border: '1px solid rgba(176,120,32,0.3)', color: T.gold }}>
                 {creating ? 'Création…' : 'Créer'}
               </Button>
             </div>

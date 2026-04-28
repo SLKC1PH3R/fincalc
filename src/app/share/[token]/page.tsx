@@ -58,7 +58,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <PatrimoLogo width={120} uid="share" />
         </Link>
-        <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', color: '#f1c086', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
+        <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 10, background: 'rgba(176,120,32,0.12)', border: '1px solid rgba(176,120,32,0.25)', color: '#B07820', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
           Créer mon compte gratuit →
         </Link>
       </nav>
@@ -72,7 +72,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             Simulation partagée · {createdAt}
           </p>
           <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, letterSpacing: '-0.03em', marginBottom: 6 }}>{sim.name}</h1>
-          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#f1c086', background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.22)', borderRadius: 6, padding: '3px 10px' }}>
+          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#B07820', background: 'rgba(176,120,32,0.12)', border: '1px solid rgba(176,120,32,0.22)', borderRadius: 6, padding: '3px 10px' }}>
             {typeLabel}
           </span>
         </div>
@@ -90,14 +90,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         </div>
 
         {/* CTA */}
-        <div style={{ background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
+        <div style={{ background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
             Lancez votre propre simulation
           </p>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', marginBottom: 20 }}>
             PatrImo est 100% gratuit. 9 calculateurs financiers, historique illimité, partage de simulations.
           </p>
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, background: '#f1c086', color: '#111', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
+          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, background: '#B07820', color: '#111', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
             Créer mon compte PatrImo gratuit →
           </Link>
         </div>

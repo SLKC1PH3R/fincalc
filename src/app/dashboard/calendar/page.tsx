@@ -116,15 +116,15 @@ export default function CalendarPage() {
   const important = filtered.filter(e => e.important && !isPast(e.date))
 
   return (
-    <div style={{ background: 'var(--content-bg)', minHeight: '100vh', padding: '28px 24px 56px' }}>
+    <div style={{ background: 'var(--p-bg)', minHeight: '100vh', padding: '28px 24px 56px' }}>
 
       {/* ── Header ── */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 4 }}>
+          <p style={{ fontSize: 12, color: 'var(--p-text-faint)', marginBottom: 4 }}>
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
           </p>
-          <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.04em', margin: 0 }}>
+          <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.04em', margin: 0 }}>
             Calendrier financier
           </h1>
         </div>
@@ -132,12 +132,12 @@ export default function CalendarPage() {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {[
             { label: 'À venir', value: upcoming.length, color: '#34d399' },
-            { label: 'Importants', value: important.length, color: '#f1c086' },
-            { label: 'Passés', value: past.length, color: 'var(--text-subtle)' },
+            { label: 'Importants', value: important.length, color: '#B07820' },
+            { label: 'Passés', value: past.length, color: 'var(--p-text-faint)' },
           ].map(s => (
-            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 8 }}>
+            <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: s.color, fontFamily: 'Geist Mono, monospace' }}>{s.value}</span>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{s.label}</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -146,13 +146,13 @@ export default function CalendarPage() {
       {/* ── Filters ── */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         {/* Category tabs */}
-        <div style={{ display: 'flex', background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: 3, gap: 2 }}>
+        <div style={{ display: 'flex', background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 10, padding: 3, gap: 2 }}>
           {TABS.map(t => {
             const Icon = t.icon
             const active = tab === t.key
             return (
               <button key={t.key} onClick={() => setTab(t.key)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s', background: active ? 'var(--modal-surface)' : 'transparent', color: active ? 'var(--text-em)' : 'var(--text-muted-c)', boxShadow: active ? '0 1px 4px rgba(0,0,0,0.15)' : 'none' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s', background: active ? 'var(--modal-surface)' : 'transparent', color: active ? 'var(--p-text-em)' : 'var(--p-text-dim)', boxShadow: active ? '0 1px 4px rgba(0,0,0,0.15)' : 'none' }}>
                 <Icon style={{ width: 13, height: 13 }} />
                 {t.label}
               </button>
@@ -164,7 +164,7 @@ export default function CalendarPage() {
         <div style={{ display: 'flex', gap: 4 }}>
           {(['ALL', 'FR', 'US', 'EU'] as const).map(m => (
             <button key={m} onClick={() => setMarket(m)}
-              style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${market === m ? 'rgba(241,192,134,0.4)' : 'var(--card-dark-border)'}`, background: market === m ? 'rgba(241,192,134,0.08)' : 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: market === m ? '#f1c086' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+              style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${market === m ? 'rgba(176,120,32,0.4)' : 'var(--p-line)'}`, background: market === m ? 'rgba(176,120,32,0.08)' : 'transparent', cursor: 'pointer', fontSize: 11, fontWeight: 600, color: market === m ? '#B07820' : 'var(--p-text-faint)', transition: 'all 0.15s' }}>
               {m === 'ALL' ? 'Tous' : m}
             </button>
           ))}
@@ -173,14 +173,14 @@ export default function CalendarPage() {
 
       {/* ── Important events banner ── */}
       {important.length > 0 && (
-        <div style={{ marginBottom: 20, padding: '14px 18px', background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.2)', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ marginBottom: 20, padding: '14px 18px', background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.2)', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-            <Star style={{ width: 14, height: 14, color: '#f1c086' }} />
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#f1c086' }}>Événements importants</span>
+            <Star style={{ width: 14, height: 14, color: '#B07820' }} />
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#B07820' }}>Événements importants</span>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {important.map(e => (
-              <span key={e.id} style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', background: 'rgba(241,192,134,0.08)', border: '1px solid rgba(241,192,134,0.15)', borderRadius: 6, padding: '3px 10px' }}>
+              <span key={e.id} style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', background: 'rgba(176,120,32,0.08)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 6, padding: '3px 10px' }}>
                 {e.ticker} — {formatDate(e.date)}
               </span>
             ))}
@@ -191,9 +191,9 @@ export default function CalendarPage() {
       {/* ── Events by date ── */}
       {grouped.length === 0 && (
         <div className="na-card" style={{ padding: 48, textAlign: 'center' }}>
-          <Calendar style={{ width: 40, height: 40, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 6 }}>Aucun événement</p>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Modifiez les filtres pour voir plus d'événements.</p>
+          <Calendar style={{ width: 40, height: 40, color: 'var(--p-text-faint)', margin: '0 auto 12px' }} />
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 6 }}>Aucun événement</p>
+          <p style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>Modifiez les filtres pour voir plus d'événements.</p>
         </div>
       )}
 
@@ -207,43 +207,43 @@ export default function CalendarPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {today && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />}
-                  <span style={{ fontSize: 13, fontWeight: 700, color: today ? '#34d399' : past ? 'var(--text-subtle)' : 'var(--text-em)', letterSpacing: '-0.02em' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: today ? '#34d399' : past ? 'var(--p-text-faint)' : 'var(--p-text-em)', letterSpacing: '-0.02em' }}>
                     {today ? "Aujourd'hui" : new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' })}
                   </span>
                 </div>
-                <div style={{ flex: 1, height: 1, background: 'var(--section-border)' }} />
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{events.length} événement{events.length > 1 ? 's' : ''}</span>
+                <div style={{ flex: 1, height: 1, background: 'var(--p-line)' }} />
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{events.length} événement{events.length > 1 ? 's' : ''}</span>
               </div>
 
               {/* Events */}
               <div className="na-card" style={{ overflow: 'hidden' }}>
                 {events.map((event, i) => (
                   <div key={event.id}
-                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < events.length - 1 ? '1px solid var(--section-border)' : undefined, opacity: past ? 0.65 : 1, transition: 'background 0.12s' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: i < events.length - 1 ? '1px solid var(--p-line)' : undefined, opacity: past ? 0.65 : 1, transition: 'background 0.12s' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
 
                     {/* Ticker + market */}
                     <div style={{ minWidth: 80, flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace' }}>{event.ticker}</span>
-                        {event.important && <Star style={{ width: 11, height: 11, color: '#f1c086' }} />}
+                        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace' }}>{event.ticker}</span>
+                        {event.important && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
                       </div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: MARKET_COLORS[event.market], background: MARKET_COLORS[event.market] + '18', borderRadius: 4, padding: '1px 5px' }}>{event.market}</span>
                     </div>
 
                     {/* Name */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-em)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.name}</p>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--p-text-em)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.name}</p>
 
                       {/* Category-specific details */}
                       {event.category === 'resultats' && (
                         <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                            BPA est. <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--text-muted-c)', fontWeight: 600 }}>${event.epsEst?.toFixed(2)}</span>
+                          <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
+                            BPA est. <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--p-text-dim)', fontWeight: 600 }}>${event.epsEst?.toFixed(2)}</span>
                           </span>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                            CA est. <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--text-muted-c)', fontWeight: 600 }}>{event.revenueEst}</span>
+                          <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
+                            CA est. <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--p-text-dim)', fontWeight: 600 }}>{event.revenueEst}</span>
                           </span>
                           {event.epsActual != null && (
                             <span style={{ fontSize: 11, fontWeight: 600, color: event.epsActual >= (event.epsEst ?? 0) ? '#34d399' : '#f87171' }}>
@@ -255,11 +255,11 @@ export default function CalendarPage() {
                       )}
                       {event.category === 'dividendes' && (
                         <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                            Détachement <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--text-muted-c)', fontWeight: 600 }}>{event.exDate && new Date(event.exDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
+                          <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
+                            Détachement <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--p-text-dim)', fontWeight: 600 }}>{event.exDate && new Date(event.exDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
                           </span>
-                          <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
-                            Paiement <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--text-muted-c)', fontWeight: 600 }}>{event.payDate && new Date(event.payDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
+                          <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
+                            Paiement <span style={{ fontFamily: 'Geist Mono, monospace', color: 'var(--p-text-dim)', fontWeight: 600 }}>{event.payDate && new Date(event.payDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
                           </span>
                           <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399' }}>{event.frequency}</span>
                         </div>
@@ -276,7 +276,7 @@ export default function CalendarPage() {
                     {/* Right: value / date */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                       {event.category === 'dividendes' && event.amount != null && (
-                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'Geist Mono, monospace' }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace' }}>
                           {event.currency}{event.amount.toFixed(2)}
                         </span>
                       )}
@@ -284,17 +284,17 @@ export default function CalendarPage() {
                         <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399' }}>{event.yield}% yield</span>
                       )}
                       {event.category === 'resultats' && (
-                        <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                           {past ? 'Publié' : 'Prévu'} · {formatDate(date)}
                         </span>
                       )}
                       {event.category === 'splits' && (
-                        <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                           {formatDate(date)}
                         </span>
                       )}
                       {event.epsActual != null && (
-                        <span style={{ fontSize: 10, color: 'var(--text-subtle)', background: 'rgba(52,211,153,0.08)', borderRadius: 5, padding: '1px 6px' }}>Publié</span>
+                        <span style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'rgba(52,211,153,0.08)', borderRadius: 5, padding: '1px 6px' }}>Publié</span>
                       )}
                     </div>
                   </div>
@@ -306,9 +306,9 @@ export default function CalendarPage() {
       </div>
 
       {/* ── Footer note ── */}
-      <div style={{ marginTop: 32, padding: '14px 18px', background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <ExternalLink style={{ width: 14, height: 14, color: 'var(--text-subtle)', flexShrink: 0 }} />
-        <p style={{ fontSize: 11, color: 'var(--text-subtle)', margin: 0, lineHeight: 1.5 }}>
+      <div style={{ marginTop: 32, padding: '14px 18px', background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <ExternalLink style={{ width: 14, height: 14, color: 'var(--p-text-faint)', flexShrink: 0 }} />
+        <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0, lineHeight: 1.5 }}>
           Les données affichées sont indicatives. Les dates et estimations peuvent varier.
           {' '}Sources : rapports d&apos;entreprises, consensus analystes.
         </p>

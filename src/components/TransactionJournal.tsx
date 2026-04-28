@@ -178,11 +178,11 @@ export function TransactionJournal({
     }, 0)
 
   return (
-    <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+    <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
       <CardContent style={{ padding: 20 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{title}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>{title}</div>
           {!showForm && (
             <Button
               size="sm"
@@ -203,9 +203,9 @@ export function TransactionJournal({
             padding: 16,
             borderRadius: 12,
             background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--section-border)',
+            border: '1px solid var(--p-line)',
           }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)', marginBottom: 12 }}>
               Nouvelle transaction
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
@@ -216,8 +216,8 @@ export function TransactionJournal({
                   onChange={f('type')}
                   style={{
                     width: '100%', height: 36, borderRadius: 8, padding: '0 10px',
-                    background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-                    color: 'var(--text-primary)', fontSize: 13,
+                    background: 'var(--p-card)', border: '1px solid var(--p-line)',
+                    color: 'var(--p-text)', fontSize: 13,
                   }}
                 >
                   <option value="BUY">Achat</option>
@@ -277,23 +277,23 @@ export function TransactionJournal({
 
         {/* Table */}
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13, padding: '20px 0' }}>
+          <div style={{ textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13, padding: '20px 0' }}>
             Chargement…
           </div>
         ) : transactions.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13, padding: '24px 0' }}>
+          <div style={{ textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13, padding: '24px 0' }}>
             Aucune transaction enregistrée.
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--section-border)' }}>
+                <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
                   {['Date', 'Type', 'Titre', 'Qté', 'Prix unit.', 'Total', 'Frais', 'Notes', ''].map(h => (
                     <th key={h} style={{
                       textAlign: h === '' ? 'center' : 'left',
                       padding: '6px 8px',
-                      color: 'var(--text-subtle)',
+                      color: 'var(--p-text-faint)',
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: 'uppercase',
@@ -307,33 +307,33 @@ export function TransactionJournal({
                 {transactions.map(t => (
                   <tr
                     key={t.id}
-                    style={{ borderBottom: '1px solid var(--section-border)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                    style={{ borderBottom: '1px solid var(--p-line)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <td style={{ padding: '8px 8px', color: 'var(--text-subtle)', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 8px', color: 'var(--p-text-faint)', whiteSpace: 'nowrap' }}>
                       {fmtDate(t.date)}
                     </td>
                     <td style={{ padding: '8px 8px' }}>
                       <TypeBadge type={t.type} />
                     </td>
                     <td style={{ padding: '8px 8px' }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.symbol}</div>
-                      {t.name && <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{t.name}</div>}
+                      <div style={{ fontWeight: 600, color: 'var(--p-text)' }}>{t.symbol}</div>
+                      {t.name && <div style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{t.name}</div>}
                     </td>
-                    <td style={{ padding: '8px 8px', color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>
+                    <td style={{ padding: '8px 8px', color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>
                       {t.quantity % 1 === 0 ? t.quantity : t.quantity.toFixed(4)}
                     </td>
-                    <td style={{ padding: '8px 8px', color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
+                    <td style={{ padding: '8px 8px', color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>
                       {fmt(t.price)}
                     </td>
                     <td style={{ padding: '8px 8px', fontWeight: 600, color: t.type === 'SELL' ? '#ef4444' : '#34d399', fontVariantNumeric: 'tabular-nums' }}>
                       {t.type === 'SELL' ? '-' : '+'}{fmt(t.quantity * t.price)}
                     </td>
-                    <td style={{ padding: '8px 8px', color: 'var(--text-subtle)', fontVariantNumeric: 'tabular-nums' }}>
+                    <td style={{ padding: '8px 8px', color: 'var(--p-text-faint)', fontVariantNumeric: 'tabular-nums' }}>
                       {t.fees > 0 ? fmt(t.fees) : '—'}
                     </td>
-                    <td style={{ padding: '8px 8px', color: 'var(--text-subtle)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '8px 8px', color: 'var(--p-text-faint)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {t.notes ?? '—'}
                     </td>
                     <td style={{ padding: '8px 8px', textAlign: 'center' }}>
@@ -343,11 +343,11 @@ export function TransactionJournal({
                         title="Supprimer"
                         style={{
                           background: 'none', border: 'none', cursor: 'pointer',
-                          color: 'var(--text-subtle)', padding: 4, borderRadius: 6,
+                          color: 'var(--p-text-faint)', padding: 4, borderRadius: 6,
                           transition: 'color 0.15s',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
                       >
                         <Trash2 style={{ width: 12, height: 12 }} />
                       </button>
@@ -367,7 +367,7 @@ export function TransactionJournal({
             gap: 10,
             marginTop: 16,
             paddingTop: 16,
-            borderTop: '1px solid var(--section-border)',
+            borderTop: '1px solid var(--p-line)',
           }}>
             {[
               {
@@ -403,12 +403,12 @@ export function TransactionJournal({
                   padding: '12px 14px',
                   borderRadius: 10,
                   background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid var(--section-border)',
+                  border: '1px solid var(--p-line)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                   <span style={{ color: s.color }}>{s.icon}</span>
-                  <span style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
                     {s.label}
                   </span>
                 </div>

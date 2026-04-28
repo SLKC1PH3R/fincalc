@@ -39,7 +39,7 @@ const Slider = React.forwardRef<
             transform: 'translateX(-50%)',
             background: '#1a1a1a',
             border: '1px solid rgba(249,115,22,0.35)',
-            color: '#f1c086',
+            color: '#B07820',
             boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
           }}
         >

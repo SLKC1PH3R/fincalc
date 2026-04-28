@@ -36,12 +36,12 @@ export function PatrimoLogo({
         <linearGradient id={gId} x1="0" y1="0" x2="0" y2="1">
           {dark ? (
             <>
-              <stop offset="0%" stopColor="#f1c086" />
-              <stop offset="100%" stopColor="#c8922a" />
+              <stop offset="0%" stopColor="#B07820" />
+              <stop offset="100%" stopColor="#8B5E18" />
             </>
           ) : (
             <>
-              <stop offset="0%" stopColor="#c8922a" />
+              <stop offset="0%" stopColor="#8B5E18" />
               <stop offset="100%" stopColor="#a07020" />
             </>
           )}
@@ -85,7 +85,7 @@ export function PatrimoLogo({
         fontFamily="Geist, Inter, sans-serif"
         fontWeight="400"
         fontSize="11"
-        fill={dark ? 'rgba(241,192,134,0.45)' : 'rgba(160,112,32,0.55)'}
+        fill={dark ? 'rgba(176,120,32,0.45)' : 'rgba(160,112,32,0.55)'}
         letterSpacing="0.04em"
       >finance</text>
     </svg>
@@ -115,8 +115,8 @@ export function PatrimoPIcon({
     >
       <defs>
         <linearGradient id={gId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f1c086" />
-          <stop offset="100%" stopColor="#c8922a" />
+          <stop offset="0%" stopColor="#B07820" />
+          <stop offset="100%" stopColor="#8B5E18" />
         </linearGradient>
       </defs>
       <circle cx="9" cy="5" r="4" fill={`url(#${gId})`} />

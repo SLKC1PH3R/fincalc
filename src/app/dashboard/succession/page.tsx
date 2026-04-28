@@ -9,7 +9,7 @@ import { Users, Info, RefreshCw, CheckCircle2, Settings2, ArrowRight } from 'luc
 import { SaveSimulation } from '@/components/SaveSimulation'
 
 const COLOR = '#f59e0b'
-const GOLD = '#f1c086'
+const GOLD = '#B07820'
 
 const RELATIONSHIPS: { value: SuccessionRelationship; label: string; abattement: string }[] = [
   { value: 'enfant', label: 'Enfant (ou conjoint)', abattement: '100 000 €' },
@@ -45,7 +45,7 @@ export default function SuccessionPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Succession &amp; Donations</span>
@@ -56,8 +56,8 @@ export default function SuccessionPage() {
               <Users style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Succession &amp; Donations</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Droits de succession · Abattements · Optimisation</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Succession &amp; Donations</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Droits de succession · Abattements · Optimisation</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -76,10 +76,10 @@ export default function SuccessionPage() {
 
         {/* LEFT — sticky inputs */}
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Settings2 style={{ width: 13, height: 13, color: 'var(--text-muted-c)' }} />
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
+              <Settings2 style={{ width: 13, height: 13, color: 'var(--p-text-dim)' }} />
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Paramètres</p>
             </div>
 
             {/* Toggle Succession / Donation */}
@@ -88,23 +88,23 @@ export default function SuccessionPage() {
                 <button key={String(opt.v)} onClick={() => setIsDonation(opt.v)} style={{
                   flex: 1, padding: '6px 0', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
                   background: isDonation === opt.v ? GOLD : 'transparent',
-                  color: isDonation === opt.v ? '#0a0a0a' : 'var(--text-muted-c)',
+                  color: isDonation === opt.v ? '#0a0a0a' : 'var(--p-text-dim)',
                   transition: 'all 0.15s',
                 }}>{opt.l}</button>
               ))}
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Montant {isDonation ? 'donné' : 'hérité'} (€)</label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Montant {isDonation ? 'donné' : 'hérité'} (€)</label>
               <Input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} min={0} step={10000} style={{ height: 36, fontSize: 13 }} />
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Lien de parenté</label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Lien de parenté</label>
               <Select value={relationship} onValueChange={v => setRelationship(v as SuccessionRelationship)}>
                 <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -117,20 +117,20 @@ export default function SuccessionPage() {
               </Select>
             </div>
 
-            <div style={{ height: 1, background: 'var(--section-border)' }} />
+            <div style={{ height: 1, background: 'var(--p-line)' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Donations déjà faites sur 15 ans (€)</label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Donations déjà faites sur 15 ans (€)</label>
               <Input type="number" value={donationsLast15Years} onChange={e => setDonationsLast15Years(Number(e.target.value))} min={0} step={10000} style={{ height: 36, fontSize: 13 }} />
-              <span style={{ fontSize: 10, color: 'var(--text-muted-c)', lineHeight: 1.4 }}>Donations antérieures au même bénéficiaire sur 15 ans</span>
+              <span style={{ fontSize: 10, color: 'var(--p-text-dim)', lineHeight: 1.4 }}>Donations antérieures au même bénéficiaire sur 15 ans</span>
             </div>
           </div>
 
           {/* Abattement disponible */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}20`, borderRadius: 14, padding: 14 }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Abattement disponible</p>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}20`, borderRadius: 14, padding: 14 }}>
+            <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Abattement disponible</p>
             <p style={{ fontSize: 20, fontWeight: 800, color: GOLD, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{fmt(res.abattementRemaining)}</p>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>sur {fmt(res.abattementMax)} pour {relInfo.label.toLowerCase()}</p>
+            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>sur {fmt(res.abattementMax)} pour {relInfo.label.toLowerCase()}</p>
           </div>
         </div>
 
@@ -145,10 +145,10 @@ export default function SuccessionPage() {
               { label: 'Net transmis', value: fmt(res.netTransmitted), sub: `sur ${fmt(amount)} ${isDonation ? 'donnés' : 'hérités'}`, color: '#4ade80' },
               { label: 'Base imposable', value: fmt(res.taxableBase), sub: 'après abattement', color: res.taxableBase > 0 ? '#fb923c' : '#4ade80' },
             ].map((k, i) => (
-              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+              <div key={i} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+                <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
                 <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{k.value}</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>{k.sub}</p>
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>{k.sub}</p>
               </div>
             ))}
           </div>
@@ -159,12 +159,12 @@ export default function SuccessionPage() {
               ? <CheckCircle2 style={{ width: 18, height: 18, color: '#4ade80', flexShrink: 0 }} />
               : <Users style={{ width: 18, height: 18, color: taxColor, flexShrink: 0 }} />}
             <div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>
                 {isTaxFree
                   ? "Aucun droit de mutation — transfert exonéré d'impôt"
                   : `${fmt(res.dmtg)} de droits à payer — taux effectif ${res.effectiveRate.toFixed(1)}%`}
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 2 }}>
                 {isTaxFree
                   ? `Le montant est inférieur à l'abattement de ${fmt(res.abattementMax)} pour un(e) ${relInfo.label.toLowerCase()}.`
                   : `Base taxable : ${fmt(res.taxableBase)} après abattement de ${fmt(Math.min(amount, res.abattementRemaining))}`}
@@ -174,47 +174,47 @@ export default function SuccessionPage() {
 
           {/* Slab breakdown */}
           {res.slabs.length > 0 && res.taxableBase > 0 && (
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Barème par tranche — {relInfo.label}</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)' }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)' }}>Barème par tranche — {relInfo.label}</p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', borderBottom: '1px solid var(--card-dark-border)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', borderBottom: '1px solid var(--p-line)' }}>
                 {['Tranche', 'Taux', 'Droits'].map((h, i) => (
-                  <div key={i} style={{ padding: '8px 14px', fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', borderLeft: i > 0 ? '1px solid var(--card-dark-border)' : undefined }}>{h}</div>
+                  <div key={i} style={{ padding: '8px 14px', fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', borderLeft: i > 0 ? '1px solid var(--p-line)' : undefined }}>{h}</div>
                 ))}
               </div>
               {res.slabs.map((slab, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', borderBottom: i < res.slabs.length - 1 ? '1px solid var(--section-border)' : undefined }}>
-                  <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--text-muted-c)' }}>{slab.tranche}</div>
-                  <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 600, color: GOLD, borderLeft: '1px solid var(--card-dark-border)', whiteSpace: 'nowrap' }}>{slab.taux}%</div>
-                  <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: 'var(--text-em)', borderLeft: '1px solid var(--card-dark-border)', whiteSpace: 'nowrap' }}>{fmt(slab.impot)}</div>
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', borderBottom: i < res.slabs.length - 1 ? '1px solid var(--p-line)' : undefined }}>
+                  <div style={{ padding: '9px 14px', fontSize: 12, color: 'var(--p-text-dim)' }}>{slab.tranche}</div>
+                  <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 600, color: GOLD, borderLeft: '1px solid var(--p-line)', whiteSpace: 'nowrap' }}>{slab.taux}%</div>
+                  <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', borderLeft: '1px solid var(--p-line)', whiteSpace: 'nowrap' }}>{fmt(slab.impot)}</div>
                 </div>
               ))}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', background: 'rgba(255,255,255,0.02)' }}>
-                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: 'var(--text-em)' }}>Total</div>
-                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: GOLD, borderLeft: '1px solid var(--card-dark-border)' }}>{res.effectiveRate.toFixed(1)}% eff.</div>
-                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 800, color: '#f87171', borderLeft: '1px solid var(--card-dark-border)' }}>{fmt(res.dmtg)}</div>
+                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)' }}>Total</div>
+                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 700, color: GOLD, borderLeft: '1px solid var(--p-line)' }}>{res.effectiveRate.toFixed(1)}% eff.</div>
+                <div style={{ padding: '9px 14px', fontSize: 12, fontWeight: 800, color: '#f87171', borderLeft: '1px solid var(--p-line)' }}>{fmt(res.dmtg)}</div>
               </div>
             </div>
           )}
 
           {/* Abattements légaux référence */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Info style={{ width: 13, height: 13, color: 'var(--text-muted-c)' }} />
-                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Abattements légaux (tous les 15 ans)</p>
+                <Info style={{ width: 13, height: 13, color: 'var(--p-text-dim)' }} />
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)' }}>Abattements légaux (tous les 15 ans)</p>
               </div>
             </div>
             {RELATIONSHIPS.map((r, i) => (
               <div key={r.value} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '9px 14px',
-                borderBottom: i < RELATIONSHIPS.length - 1 ? '1px solid var(--section-border)' : undefined,
+                borderBottom: i < RELATIONSHIPS.length - 1 ? '1px solid var(--p-line)' : undefined,
                 background: r.value === relationship ? `${GOLD}08` : undefined,
               }}>
-                <span style={{ fontSize: 12, color: r.value === relationship ? 'var(--text-em)' : 'var(--text-muted-c)', fontWeight: r.value === relationship ? 600 : 400 }}>{r.label}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: r.value === relationship ? GOLD : 'var(--text-muted-c)' }}>{r.abattement}</span>
+                <span style={{ fontSize: 12, color: r.value === relationship ? 'var(--p-text-em)' : 'var(--p-text-dim)', fontWeight: r.value === relationship ? 600 : 400 }}>{r.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: r.value === relationship ? GOLD : 'var(--p-text-dim)' }}>{r.abattement}</span>
               </div>
             ))}
           </div>
@@ -224,8 +224,8 @@ export default function SuccessionPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Donut répartition */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>Répartition du montant transmis</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 8 }}>Répartition du montant transmis</p>
             {/* Barre */}
             <div style={{ height: 12, borderRadius: 99, overflow: 'hidden', display: 'flex', marginBottom: 8 }}>
               <div style={{ width: `${(res.netTransmitted / Math.max(amount, 1)) * 100}%`, background: 'linear-gradient(90deg, #4ade8099, #4ade80)', transition: 'width 0.5s ease' }} />
@@ -253,9 +253,9 @@ export default function SuccessionPage() {
               <RefreshCw style={{ width: 14, height: 14, color: GOLD, flexShrink: 0, marginTop: 1 }} />
               <div>
                 <p style={{ fontSize: 12, fontWeight: 600, color: GOLD, marginBottom: 6 }}>Optimisation : renouvellement tous les 15 ans</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
-                  L&apos;abattement de <strong style={{ color: 'var(--text-em)' }}>{fmt(res.abattementMax)}</strong> par bénéficiaire se renouvelle tous les 15 ans.
-                  En anticipant les donations par tranches, vous pouvez transmettre <strong style={{ color: 'var(--text-em)' }}>200 000 €</strong> à un enfant sans droit sur 30 ans.
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>
+                  L&apos;abattement de <strong style={{ color: 'var(--p-text-em)' }}>{fmt(res.abattementMax)}</strong> par bénéficiaire se renouvelle tous les 15 ans.
+                  En anticipant les donations par tranches, vous pouvez transmettre <strong style={{ color: 'var(--p-text-em)' }}>200 000 €</strong> à un enfant sans droit sur 30 ans.
                   {isDonation && res.abattementRemaining > 0 && (
                     <span> Vous disposez encore de <strong style={{ color: GOLD }}>{fmt(res.abattementRemaining)}</strong> d&apos;abattement disponible.</span>
                   )}
@@ -265,8 +265,8 @@ export default function SuccessionPage() {
           </div>
 
           {/* Conseils généraux */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils patrimoniaux</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils patrimoniaux</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { color: COLOR, text: 'Commencez à donner tôt — l\'abattement de 100 000€ par enfant se renouvelle tous les 15 ans.' },
@@ -276,7 +276,7 @@ export default function SuccessionPage() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>{item.text}</span>
                 </div>
               ))}
             </div>

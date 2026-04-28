@@ -4,7 +4,7 @@ import { useUserProfile } from '@/lib/use-profile'
 import type { FinancialProfile } from '@/lib/profile-types'
 import { UserCircle, Check } from 'lucide-react'
 
-const GOLD = '#f1c086'
+const GOLD = '#B07820'
 
 interface Props {
   onFill: (profile: FinancialProfile) => void

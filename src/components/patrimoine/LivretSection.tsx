@@ -46,15 +46,15 @@ export function LivretSection({ envelope, onSave }: {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <Info style={{ width: 16, height: 16, color: '#34d399' }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Première saisie</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>Première saisie</span>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--text-subtle)', margin: 0 }}>
+          <p style={{ fontSize: 13, color: 'var(--p-text-faint)', margin: 0 }}>
             Renseignez les informations de votre livret pour commencer à le suivre.
           </p>
         </div>
       )}
 
-      <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+      <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
         <CardContent style={{ padding: 24 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
             <div>
@@ -94,28 +94,28 @@ export function LivretSection({ envelope, onSave }: {
             { label: 'Intérêts annuels estimés', value: fmtEur(projectedInterest), color: '#818cf8' },
             ...(maxBalance ? [{ label: 'Plafond légal', value: fmtEur(maxBalance), color: '#94a3b8', sub: `Reste ${fmtEur(Math.max(0, maxBalance - balanceNum))}` }] : []),
           ].map(kpi => (
-            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
+            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>}
+              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 4 }}>{kpi.sub}</div>}
             </div>
           ))}
         </div>
       )}
 
       {pct !== null && balanceNum > 0 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Utilisation du plafond</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>Utilisation du plafond</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>{pct.toFixed(1)} %</span>
             </div>
-            <div style={{ height: 8, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
+            <div style={{ height: 8, borderRadius: 999, background: 'var(--p-line)', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${pct}%`, background: pct >= 90 ? '#f59e0b' : '#34d399', borderRadius: 999, transition: 'width 0.5s' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmtEur(balanceNum)}</span>
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Plafond : {fmtEur(maxBalance!)}</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{fmtEur(balanceNum)}</span>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Plafond : {fmtEur(maxBalance!)}</span>
             </div>
             {pct >= 90 && (
               <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#f59e0b' }}>

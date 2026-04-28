@@ -52,7 +52,7 @@ function PlusValuePageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Plus-value Immobilière</span>
@@ -63,8 +63,8 @@ function PlusValuePageInner() {
               <MapPin style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Abattements IR/PS · Surtaxe · Durée optimale</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Abattements IR/PS · Surtaxe · Durée optimale</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -117,7 +117,7 @@ function PlusValuePageInner() {
           { val: 'locatif', label: 'Bien locatif' },
         ] as const).map(opt => (
           <button key={opt.val} onClick={() => set('type')(opt.val)}
-            style={{ fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 8, cursor: 'pointer', border: `1px solid ${inputs.type === opt.val ? COLOR : 'rgba(255,255,255,0.1)'}`, background: inputs.type === opt.val ? `${COLOR}18` : 'transparent', color: inputs.type === opt.val ? COLOR : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+            style={{ fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 8, cursor: 'pointer', border: `1px solid ${inputs.type === opt.val ? COLOR : 'rgba(255,255,255,0.1)'}`, background: inputs.type === opt.val ? `${COLOR}18` : 'transparent', color: inputs.type === opt.val ? COLOR : 'var(--p-text-faint)', transition: 'all 0.15s' }}>
             {opt.label}
           </button>
         ))}
@@ -130,10 +130,10 @@ function PlusValuePageInner() {
         <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Carte Paramètres */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', gap: 7 }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 7 }}>
               <Settings2 style={{ width: 13, height: 13, color: COLOR }} />
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>Paramètres</p>
             </div>
             <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
@@ -144,13 +144,13 @@ function PlusValuePageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k] as number]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
               ))}
 
-              <div style={{ height: 1, background: 'var(--section-border)' }} />
+              <div style={{ height: 1, background: 'var(--p-line)' }} />
 
               {[
                 { label: 'Frais d\'agence (vente)', k: 'fraisCessionPct' as const, min: 0, max: 8, step: 0.5, disp: (v: number) => `${v}%` },
@@ -159,7 +159,7 @@ function PlusValuePageInner() {
                 <div key={s.k}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Label style={{ fontSize: 12 }}>{s.label}</Label>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{s.disp(inputs[s.k] as number)}</span>
                   </div>
                   <Slider min={s.min} max={s.max} step={s.step} value={[inputs[s.k] as number]} onValueChange={([v]) => set(s.k)(v)} />
                 </div>
@@ -168,11 +168,11 @@ function PlusValuePageInner() {
               {/* Travaux */}
               {inputs.type !== 'residence_principale' && (
                 <>
-                  <div style={{ height: 1, background: 'var(--section-border)' }} />
+                  <div style={{ height: 1, background: 'var(--p-line)' }} />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Label style={{ fontSize: 12 }}>Travaux</Label>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>
                         {inputs.useForfaitTravaux ? `forfait ${fmt(inputs.acquisitionPrice * 0.15)}` : fmt(inputs.travaux)}
                       </span>
                     </div>
@@ -181,7 +181,7 @@ function PlusValuePageInner() {
                     )}
                     {inputs.duration >= 5 && (
                       <button onClick={() => set('useForfaitTravaux')(!inputs.useForfaitTravaux)}
-                        style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: `1px solid ${inputs.useForfaitTravaux ? COLOR : 'rgba(255,255,255,0.12)'}`, background: inputs.useForfaitTravaux ? `${COLOR}15` : 'transparent', color: inputs.useForfaitTravaux ? COLOR : 'var(--text-subtle)', cursor: 'pointer', textAlign: 'left' }}>
+                        style={{ fontSize: 11, padding: '5px 10px', borderRadius: 7, border: `1px solid ${inputs.useForfaitTravaux ? COLOR : 'rgba(255,255,255,0.12)'}`, background: inputs.useForfaitTravaux ? `${COLOR}15` : 'transparent', color: inputs.useForfaitTravaux ? COLOR : 'var(--p-text-faint)', cursor: 'pointer', textAlign: 'left' }}>
                         {inputs.useForfaitTravaux ? '✓' : '○'} Forfait 15% (sans justificatifs)
                       </button>
                     )}
@@ -201,7 +201,7 @@ function PlusValuePageInner() {
               { label: 'Profit net', value: fmt(r.netProfit), color: '#34d399' },
             ].map(item => (
               <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.value}</span>
               </div>
             ))}
@@ -215,35 +215,35 @@ function PlusValuePageInner() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
             <div style={{ padding: '14px 18px', borderRadius: 12, background: `linear-gradient(135deg, ${COLOR}10, transparent)`, border: `1px solid ${COLOR}30`, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -24, right: -12, width: 72, height: 72, borderRadius: '50%', background: `radial-gradient(ellipse, ${COLOR}14, transparent)`, pointerEvents: 'none' }} />
-              <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>Plus-value brute</p>
+              <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>Plus-value brute</p>
               <p style={{ fontSize: 20, fontWeight: 800, color: COLOR, letterSpacing: '-0.5px', lineHeight: 1 }}>{fmt(r.grossPV)}</p>
-              <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>Prix revient : {fmt(r.prixRevientCorrige)}</p>
+              <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>Prix revient : {fmt(r.prixRevientCorrige)}</p>
             </div>
             {[
               { label: 'Impôt total', value: fmt(r.totalTax), sub: r.grossPV > 0 ? `${((r.totalTax/r.grossPV)*100).toFixed(1)}% de la PV` : '—', color: '#f87171' },
               { label: 'Profit net', value: fmt(r.netProfit), sub: 'après impôts', color: '#34d399' },
               { label: 'Abattement IR', value: `${r.abatIR}%`, sub: r.exonereIR ? '✓ Exonéré IR' : `Exo. IR dans ${22 - inputs.duration} ans`, color: r.exonereIR ? '#34d399' : 'rgba(255,255,255,0.55)' },
             ].map(k => (
-              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-                <p style={{ fontSize: 9, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
+              <div key={k.label} style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+                <p style={{ fontSize: 9, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 4 }}>{k.label}</p>
                 <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', lineHeight: 1 }}>{k.value}</p>
-                <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>{k.sub}</p>
+                <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>{k.sub}</p>
               </div>
             ))}
           </div>
 
           {inputs.type === 'residence_principale' ? (
-            <div style={{ background: 'var(--card-dark)', border: `1px solid #34d39930`, borderRadius: 12, padding: '32px 24px', textAlign: 'center' }}>
+            <div style={{ background: 'var(--p-card)', border: `1px solid #34d39930`, borderRadius: 12, padding: '32px 24px', textAlign: 'center' }}>
               <p style={{ fontSize: 32, marginBottom: 8 }}>✓</p>
               <p style={{ fontSize: 18, fontWeight: 800, color: '#34d399', marginBottom: 8 }}>Exonération totale</p>
-              <p style={{ fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>La plus-value sur résidence principale est entièrement exonérée d'IR et de prélèvements sociaux, sans condition de durée de détention.</p>
+              <p style={{ fontSize: 13, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>La plus-value sur résidence principale est entièrement exonérée d'IR et de prélèvements sociaux, sans condition de durée de détention.</p>
               <p style={{ fontSize: 13, fontWeight: 700, color: '#34d399', marginTop: 16 }}>Profit net : {fmt(r.netProfit)}</p>
             </div>
           ) : (
             <>
               {/* Décomposition fiscale */}
-              <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '16px 20px' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Décomposition fiscale</p>
+              <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '16px 20px' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 14 }}>Décomposition fiscale</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
                     { label: 'Prix de revient corrigé', value: fmt(r.prixRevientCorrige), sub: `achat + frais + travaux` },
@@ -258,18 +258,18 @@ function PlusValuePageInner() {
                   ].map((row, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                       <div>
-                        <span style={{ fontSize: 12.5, color: 'var(--text-muted-c)' }}>{row.label}</span>
-                        {'sub' in row && row.sub && <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>{row.sub}</p>}
+                        <span style={{ fontSize: 12.5, color: 'var(--p-text-dim)' }}>{row.label}</span>
+                        {'sub' in row && row.sub && <p style={{ fontSize: 10, color: 'var(--p-text-faint)', margin: 0 }}>{row.sub}</p>}
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: ('bold' in row && row.bold) ? 800 : 600, color: ('color' in row && row.color) ? row.color : 'highlight' in row && row.highlight ? COLOR : 'var(--text-primary)' }}>{row.value}</span>
+                      <span style={{ fontSize: 13, fontWeight: ('bold' in row && row.bold) ? 800 : 600, color: ('color' in row && row.color) ? row.color : 'highlight' in row && row.highlight ? COLOR : 'var(--p-text)' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Abattements chart */}
-              <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: 14 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Abattements progressifs selon la durée</p>
+              <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: 14 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Abattements progressifs selon la durée</p>
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={abatData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
@@ -289,7 +289,7 @@ function PlusValuePageInner() {
                   ].map(b => (
                     <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 4, background: `${b.color}10`, border: `1px solid ${b.color}25`, borderRadius: 6, padding: '3px 8px' }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: b.color }} />
-                      <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{b.label}</span>
+                      <span style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{b.label}</span>
                     </div>
                   ))}
                 </div>
@@ -302,8 +302,8 @@ function PlusValuePageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Seuils clés */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Seuils clés de détention</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Seuils clés de détention</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
                 { dur: '< 5 ans', ir: '0%', ps: '0%', note: 'Aucun abattement', color: '#f87171' },
@@ -316,11 +316,11 @@ function PlusValuePageInner() {
                 <div key={s.dur} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', background: inputs.duration >= parseInt(s.dur) || s.dur === '< 5 ans' ? 'transparent' : 'transparent' }}>
                   <div>
                     <span style={{ fontSize: 12, fontWeight: 600, color: s.color }}>{s.dur}</span>
-                    <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>{s.note}</p>
+                    <p style={{ fontSize: 10, color: 'var(--p-text-faint)', margin: 0 }}>{s.note}</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>IR: {s.ir}</p>
-                    <p style={{ fontSize: 10, color: 'var(--text-subtle)', margin: 0 }}>PS: {s.ps}</p>
+                    <p style={{ fontSize: 10, color: 'var(--p-text-faint)', margin: 0 }}>IR: {s.ir}</p>
+                    <p style={{ fontSize: 10, color: 'var(--p-text-faint)', margin: 0 }}>PS: {s.ps}</p>
                   </div>
                 </div>
               ))}
@@ -334,11 +334,11 @@ function PlusValuePageInner() {
               {[
                 { label: 'Abattement IR', value: `${r.abatIR}%`, color: r.exonereIR ? '#34d399' : COLOR },
                 { label: 'Abattement PS', value: `${r.abatPS.toFixed(1)}%`, color: r.exonerePS ? '#34d399' : COLOR },
-                { label: 'Exo. IR complète dans', value: r.exonereIR ? 'Acquise ✓' : `${22 - inputs.duration} ans`, color: r.exonereIR ? '#34d399' : 'var(--text-muted-c)' },
-                { label: 'Exo. PS complète dans', value: r.exonerePS ? 'Acquise ✓' : `${30 - inputs.duration} ans`, color: r.exonerePS ? '#34d399' : 'var(--text-muted-c)' },
+                { label: 'Exo. IR complète dans', value: r.exonereIR ? 'Acquise ✓' : `${22 - inputs.duration} ans`, color: r.exonereIR ? '#34d399' : 'var(--p-text-dim)' },
+                { label: 'Exo. PS complète dans', value: r.exonerePS ? 'Acquise ✓' : `${30 - inputs.duration} ans`, color: r.exonerePS ? '#34d399' : 'var(--p-text-dim)' },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{item.label}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{item.label}</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: item.color }}>{item.value}</span>
                 </div>
               ))}
@@ -350,7 +350,7 @@ function PlusValuePageInner() {
             {tips.map((tip, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: `${COLOR}06`, border: `1px solid ${COLOR}18`, borderRadius: 12, padding: '12px 14px' }}>
                 <span style={{ fontSize: 12, flexShrink: 0 }}>✦</span>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55, margin: 0 }}>{tip}</p>
               </div>
             ))}
           </div>

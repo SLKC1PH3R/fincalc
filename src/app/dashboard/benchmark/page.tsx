@@ -24,7 +24,7 @@ interface Snapshot {
 }
 
 const COLORS = {
-  portfolio: '#f1c086',
+  portfolio: '#B07820',
   'MSCI World': '#818cf8',
   'CAC 40': '#38bdf8',
   'S&P 500': '#34d399',
@@ -119,7 +119,7 @@ export default function BenchmarkPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Placements</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Benchmarks</span>
@@ -130,8 +130,8 @@ export default function BenchmarkPage() {
               <BarChart3 style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Benchmarks</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Performance vs indices · CAC 40 · MSCI World · S&P 500</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Benchmarks</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Performance vs indices · CAC 40 · MSCI World · S&P 500</p>
             </div>
           </div>
 
@@ -140,9 +140,9 @@ export default function BenchmarkPage() {
             {RANGE_OPTIONS.map(o => (
               <button key={o.label} onClick={() => setDays(o.days)} style={{
                 padding: '6px 14px', borderRadius: 8, border: '1px solid',
-                borderColor: days === o.days ? COLOR : 'var(--card-dark-border)',
-                background: days === o.days ? `${COLOR}18` : 'var(--card-dark)',
-                color: days === o.days ? COLOR : 'var(--text-muted-c)',
+                borderColor: days === o.days ? COLOR : 'var(--p-line)',
+                background: days === o.days ? `${COLOR}18` : 'var(--p-card)',
+                color: days === o.days ? COLOR : 'var(--p-text-dim)',
                 fontSize: 12, fontWeight: days === o.days ? 700 : 400,
                 cursor: 'pointer', transition: 'all 0.15s',
               }}>
@@ -161,17 +161,17 @@ export default function BenchmarkPage() {
 
           {/* Portfolio note */}
           {!hasPortfolio && !loading && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.17)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>
-              <Info style={{ width: 16, height: 16, color: '#f1c086', flexShrink: 0, marginTop: 1 }} />
-              <span>Aucun snapshot de patrimoine disponible. La courbe <span style={{ color: '#f1c086', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.</span>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.17)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>
+              <Info style={{ width: 16, height: 16, color: '#B07820', flexShrink: 0, marginTop: 1 }} />
+              <span>Aucun snapshot de patrimoine disponible. La courbe <span style={{ color: '#B07820', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.</span>
             </div>
           )}
 
           {/* Chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px', opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, padding: '14px 16px', opacity: loading ? 0.5 : 1, transition: 'opacity 0.2s' }}>
             <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Performance indexée (base 100)</p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>Comparaison normalisée sur la période sélectionnée</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Performance indexée (base 100)</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>Comparaison normalisée sur la période sélectionnée</p>
             </div>
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={280}>
@@ -200,7 +200,7 @@ export default function BenchmarkPage() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+              <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
                 {loading ? 'Chargement des données…' : 'Aucune donnée disponible'}
               </div>
             )}
@@ -213,18 +213,18 @@ export default function BenchmarkPage() {
               const color = isPos ? '#4ade80' : '#f87171'
               return (
                 <div key={line.key} style={{
-                  background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                  background: 'var(--p-card)', border: '1px solid var(--p-line)',
                   borderRadius: 12, padding: '12px 14px', borderTop: `3px solid ${line.color}`,
                   opacity: line.hasData ? 1 : 0.4,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: line.color, display: 'inline-block' }} />
-                    <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>{line.key}</p>
+                    <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.07em', margin: 0 }}>{line.key}</p>
                   </div>
                   <p style={{ fontSize: 20, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums', margin: 0, letterSpacing: '-0.5px' }}>
                     {isPos ? '+' : ''}{line.perf.toFixed(2)}%
                   </p>
-                  {!line.hasData && <p style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>Pas de données</p>}
+                  {!line.hasData && <p style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>Pas de données</p>}
                 </div>
               )
             })}
@@ -246,17 +246,17 @@ export default function BenchmarkPage() {
                   ? <TrendingUp style={{ width: 14, height: 14, color: '#34d399' }} />
                   : <TrendingDown style={{ width: 14, height: 14, color: '#f87171' }} />
                 }
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Votre Portfolio</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Votre Portfolio</p>
               </div>
               <p style={{ fontSize: 24, fontWeight: 800, color: portfolioPerf >= 0 ? '#34d399' : '#f87171', margin: '0 0 4px', fontVariantNumeric: 'tabular-nums' }}>
                 {portfolioPerf >= 0 ? '+' : ''}{portfolioPerf.toFixed(2)}%
               </p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: '0 0 12px' }}>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: '0 0 12px' }}>
                 sur {RANGE_OPTIONS.find(o => o.days === days)?.label ?? `${days}j`}
               </p>
               {portfolioVsBest !== null && (
-                <div style={{ padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-dark-border)' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>
+                <div style={{ padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--p-line)' }}>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>
                     vs {bestLine?.key} :{' '}
                     <span style={{ fontWeight: 700, color: portfolioVsBest >= 0 ? '#34d399' : '#f87171' }}>
                       {portfolioVsBest >= 0 ? '+' : ''}{portfolioVsBest.toFixed(2)}%
@@ -268,19 +268,19 @@ export default function BenchmarkPage() {
           )}
 
           {/* Indices résumé */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--card-dark-border)' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Indices de référence</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--p-line)' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Indices de référence</p>
             </div>
             <div style={{ padding: '8px 0' }}>
               {allLines.filter(l => l.key !== 'Portfolio').map(line => (
-                <div key={line.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', borderBottom: '1px solid var(--section-border)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                <div key={line.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px', borderBottom: '1px solid var(--p-line)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ width: 10, height: 10, borderRadius: '50%', background: line.color, display: 'inline-block', flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, color: 'var(--text-em)' }}>{line.key}</span>
+                    <span style={{ fontSize: 12, color: 'var(--p-text-em)' }}>{line.key}</span>
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 700, color: line.perf >= 0 ? '#4ade80' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
                     {line.perf >= 0 ? '+' : ''}{line.perf.toFixed(2)}%
@@ -291,8 +291,8 @@ export default function BenchmarkPage() {
           </div>
 
           {/* Tips */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: '0 0 10px' }}>À savoir</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: '0 0 10px' }}>À savoir</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
                 'La base 100 normalise les performances pour une comparaison équitable quelle que soit la valeur initiale',
@@ -300,18 +300,18 @@ export default function BenchmarkPage() {
                 'Un portefeuille diversifié sur ETF MSCI World bat ~80% des gérants actifs sur 10 ans',
                 'Les snapshots du patrimoine sont pris quotidiennement pour construire la courbe Portfolio',
               ].map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--card-dark-border)' }}>
+                <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--p-line)' }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                     <span style={{ fontSize: 8, fontWeight: 800, color: COLOR }}>{i + 1}</span>
                   </div>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, margin: 0 }}>{tip}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5, margin: 0 }}>{tip}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Disclaimer */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--section-border)', fontSize: 11, color: 'var(--text-subtle)', lineHeight: 1.5 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--p-line)', fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.5 }}>
             <Info style={{ width: 12, height: 12, flexShrink: 0, marginTop: 1 }} />
             <span>Les performances passées ne préjugent pas des futures. Données via Yahoo Finance (cache 1h).</span>
           </div>

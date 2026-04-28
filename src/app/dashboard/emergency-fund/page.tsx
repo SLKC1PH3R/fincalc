@@ -13,7 +13,7 @@ import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { useChartTheme } from '@/lib/chart-theme'
 import { SaveSimulation } from '@/components/SaveSimulation'
 
-const GOLD = '#f1c086'
+const GOLD = '#B07820'
 const COLOR = '#fbbf24'
 
 export default function EmergencyFundPage() {
@@ -58,7 +58,7 @@ export default function EmergencyFundPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Épargne de Précaution</span>
@@ -69,8 +69,8 @@ export default function EmergencyFundPage() {
               <ShieldCheck style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Épargne de Précaution</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Coussin de sécurité · 3 à 6 mois de dépenses</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Épargne de Précaution</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Coussin de sécurité · 3 à 6 mois de dépenses</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -108,13 +108,13 @@ export default function EmergencyFundPage() {
 
           {/* LEFT — sticky */}
           <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, background: `${COLOR}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ShieldCheck style={{ width: 12, height: 12, color: COLOR }} />
                   </div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Paramètres</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Paramètres</p>
                 </div>
                 <ProfileFillButton onFill={p => {
                   if (p.monthlyExpenses) setMonthlyExpenses(p.monthlyExpenses)
@@ -124,15 +124,15 @@ export default function EmergencyFundPage() {
               <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Charges mensuelles fixes (€)</label>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Charges mensuelles fixes (€)</label>
                   <Input type="number" value={monthlyExpenses} onChange={e => setMonthlyExpenses(Number(e.target.value))} min={0} step={100} style={{ height: 36, fontSize: 13 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Loyer, crédits, abonnements…</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Loyer, crédits, abonnements…</span>
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Situation professionnelle</label>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Situation professionnelle</label>
                   <Select value={employmentType} onValueChange={v => setEmploymentType(v as EmergencyFundInputs['employmentType'])}>
                     <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -144,10 +144,10 @@ export default function EmergencyFundPage() {
                   </Select>
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Situation familiale</label>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Situation familiale</label>
                   <Select value={familySituation} onValueChange={v => setFamilySituation(v as EmergencyFundInputs['familySituation'])}>
                     <SelectTrigger style={{ height: 36, fontSize: 13 }}><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -158,18 +158,18 @@ export default function EmergencyFundPage() {
                   </Select>
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Épargne liquide actuelle (€)</label>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Épargne liquide actuelle (€)</label>
                   <Input type="number" value={currentSavings} onChange={e => setCurrentSavings(Number(e.target.value))} min={0} step={500} style={{ height: 36, fontSize: 13 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Livret A, compte courant, LEP…</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Livret A, compte courant, LEP…</span>
                 </div>
 
-                <div style={{ height: 1, background: 'var(--section-border)' }} />
+                <div style={{ height: 1, background: 'var(--p-line)' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>Capacité d&apos;épargne mensuelle (€)</label>
+                  <label style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>Capacité d&apos;épargne mensuelle (€)</label>
                   <Input type="number" value={monthlySavings} onChange={e => setMonthlySavings(Number(e.target.value))} min={0} step={50} style={{ height: 36, fontSize: 13 }} />
                 </div>
               </div>
@@ -189,8 +189,8 @@ export default function EmergencyFundPage() {
                 { label: res.monthsToReach ? `Atteint dans` : 'Délai', value: res.monthsToReach ? `${res.monthsToReach} mois` : '—' },
               ].map((k, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: i < 2 ? 6 : 0 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{k.label}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{k.value}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{k.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)' }}>{k.value}</span>
                 </div>
               ))}
             </div>
@@ -204,10 +204,10 @@ export default function EmergencyFundPage() {
                 { label: 'Objectif fonds urgence', value: fmt(res.targetAmount), color: COLOR },
                 { label: 'Déjà couvert', value: fmt(currentSavings), color: statusColor },
                 { label: 'Reste à épargner', value: fmt(res.isReached ? 0 : res.gap), color: res.isReached ? '#4ade80' : '#f87171' },
-                { label: 'Mois pour y arriver', value: res.isReached ? 'Atteint !' : res.monthsToReach !== null ? `${res.monthsToReach} mois` : '—', color: res.isReached ? '#4ade80' : 'var(--text-primary)' },
+                { label: 'Mois pour y arriver', value: res.isReached ? 'Atteint !' : res.monthsToReach !== null ? `${res.monthsToReach} mois` : '—', color: res.isReached ? '#4ade80' : 'var(--p-text)' },
               ].map((kpi, i) => (
-                <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 14px' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginBottom: 4, letterSpacing: '0.04em' }}>{kpi.label}</p>
+                <div key={i} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '12px 14px' }}>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 4, letterSpacing: '0.04em' }}>{kpi.label}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.5px', margin: 0 }}>{kpi.value}</p>
                 </div>
               ))}
@@ -217,33 +217,33 @@ export default function EmergencyFundPage() {
             <div style={{ background: statusColor + '12', border: `1px solid ${statusColor}30`, borderRadius: 12, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
               <StatusIcon style={{ width: 20, height: 20, color: statusColor, flexShrink: 0 }} />
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)', margin: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)', margin: 0 }}>
                   {res.isReached
                     ? 'Objectif atteint — votre épargne de précaution est constituée'
                     : `Il vous manque ${fmt(res.gap)} pour atteindre votre objectif`}
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 2 }}>{res.recommendation}</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 2 }}>{res.recommendation}</p>
               </div>
             </div>
 
             {/* Progress bar */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Progression vers l&apos;objectif</span>
+                <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>Progression vers l&apos;objectif</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{coveragePct}%</span>
               </div>
               <div style={{ height: 10, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${Math.min(coveragePct, 100)}%`, borderRadius: 99, background: `linear-gradient(90deg, ${statusColor}99, ${statusColor})`, transition: 'width 0.6s ease' }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'var(--text-muted-c)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'var(--p-text-dim)' }}>
                 <span>{fmt(currentSavings)} actuels</span>
                 <span>Objectif {fmt(res.targetAmount)}</span>
               </div>
             </div>
 
             {/* BarChart progression par mois de couverture */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 12 }}>Objectif par palier de charges</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 12 }}>Objectif par palier de charges</p>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={res.chartData} barSize={28}>
                   <XAxis dataKey="label" tick={{ fontSize: 11, fill: chartTheme.mutedColor }} axisLine={false} tickLine={false} />
@@ -266,31 +266,31 @@ export default function EmergencyFundPage() {
           {/* RIGHT */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {/* Analyse adéquation */}
-            <div style={{ background: 'var(--card-dark)', border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ background: 'var(--p-card)', border: `1px solid ${COLOR}25`, borderRadius: 12, padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <ShieldCheck style={{ width: 15, height: 15, color: COLOR }} />
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', margin: 0 }}>Analyse d&apos;adéquation</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Analyse d&apos;adéquation</p>
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 8 }}>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6, marginBottom: 8 }}>
                 {res.isReached
                   ? `Votre épargne de ${fmt(currentSavings)} couvre ${res.targetMonths} mois de charges. Vous êtes bien protégé(e) face aux imprévus.`
                   : `Avec ${fmt(currentSavings)}, vous couvrez ${(currentSavings / monthlyExpenses).toFixed(1)} mois sur les ${res.targetMonths} recommandés. Priorité : atteindre ${fmt(res.targetAmount)}.`}
               </p>
               {res.monthsToReach !== null && !res.isReached && (
                 <div style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>À {fmt(monthlySavings)}/mois : objectif atteint en </span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>À {fmt(monthlySavings)}/mois : objectif atteint en </span>
                   <span style={{ fontSize: 11, fontWeight: 700, color: COLOR }}>{res.monthsToReach} mois</span>
                 </div>
               )}
             </div>
 
             {/* Radar risque liquidité */}
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 8 }}>Profil liquidité épargne précaution</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 8 }}>Profil liquidité épargne précaution</p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <RadarChart cx={100} cy={80} outerRadius={60} width={200} height={160} data={radarData}>
                   <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: 'var(--text-muted-c)' }} />
+                  <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: 'var(--p-text-dim)' }} />
                   <Radar name="Profil" dataKey="value" stroke={COLOR} fill={COLOR} fillOpacity={0.15} strokeWidth={1.5} />
                 </RadarChart>
               </div>
@@ -303,8 +303,8 @@ export default function EmergencyFundPage() {
                   <ShieldCheck style={{ width: 14, height: 14, color: GOLD, flexShrink: 0, marginTop: 1 }} />
                   <div>
                     <p style={{ fontSize: 11, fontWeight: 700, color: GOLD, marginBottom: 4 }}>Où placer votre fonds urgence ?</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.65 }}>
-                      L&apos;épargne de précaution doit rester <strong style={{ color: 'var(--text-em)' }}>liquide et sécurisée</strong> : Livret A (3%), LDDS ou LEP si éligible.
+                    <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.65 }}>
+                      L&apos;épargne de précaution doit rester <strong style={{ color: 'var(--p-text-em)' }}>liquide et sécurisée</strong> : Livret A (3%), LDDS ou LEP si éligible.
                       Ne jamais immobiliser ces fonds en placements long terme (PEA, assurance-vie…).
                     </p>
                   </div>
@@ -317,7 +317,7 @@ export default function EmergencyFundPage() {
               ].map((item, i) => (
                 <div key={i} style={{ background: `${item.color}07`, border: `1px solid ${item.color}20`, borderRadius: 10, padding: '8px 12px' }}>
                   <p style={{ fontSize: 11, fontWeight: 700, color: item.color, marginBottom: 2 }}>{item.title}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>{item.desc}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -325,7 +325,7 @@ export default function EmergencyFundPage() {
             {/* CTA */}
             <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 12, padding: '12px 14px' }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: COLOR, marginBottom: 4 }}>Une fois l&apos;objectif atteint</p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5, marginBottom: 6 }}>Chaque euro supplémentaire peut être investi via le DCA ou les intérêts composés.</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5, marginBottom: 6 }}>Chaque euro supplémentaire peut être investi via le DCA ou les intérêts composés.</p>
               <a href="/dashboard/dca" style={{ fontSize: 11, color: COLOR, textDecoration: 'none', fontWeight: 600 }}>→ Simulateur DCA</a>
             </div>
           </div>

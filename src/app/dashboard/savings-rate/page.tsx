@@ -253,8 +253,8 @@ function SavingsRatePageInner() {
   }
 
   const panelStyle = {
-    background: 'var(--card-dark)',
-    border: '1px solid var(--card-dark-border)',
+    background: 'var(--p-card)',
+    border: '1px solid var(--p-line)',
     borderRadius: 14,
     padding: 14,
     display: 'flex',
@@ -273,7 +273,7 @@ function SavingsRatePageInner() {
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Taux d&apos;épargne</span>
@@ -284,8 +284,8 @@ function SavingsRatePageInner() {
               <Percent style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>Taux d&apos;épargne</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', margin: 0 }}>Capacité d&apos;épargne · Trajectoire vers l&apos;indépendance</p>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Taux d&apos;épargne</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Capacité d&apos;épargne · Trajectoire vers l&apos;indépendance</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -324,7 +324,7 @@ function SavingsRatePageInner() {
           {/* Revenus */}
           <div style={panelStyle}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Revenus</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Revenus</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: INCOME_COLOR, fontVariantNumeric: 'tabular-nums' }}>{fmt(totalRevenu)}</span>
             </div>
             {revenus.map(r => (
@@ -349,7 +349,7 @@ function SavingsRatePageInner() {
           {/* Investissements */}
           <div style={panelStyle}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Investissements</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Investissements</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalInvest)}</span>
             </div>
             {investCats.map(cat => {
@@ -405,7 +405,7 @@ function SavingsRatePageInner() {
           {/* Dépenses */}
           <div style={panelStyle}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Dépenses</p>
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Dépenses</p>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</span>
             </div>
             {depenseCats.map(cat => {
@@ -470,19 +470,19 @@ function SavingsRatePageInner() {
               { label: 'Dépenses courantes', value: fmt(totalDepense), sub: `${totalRevenu > 0 ? (totalDepense / totalRevenu * 100).toFixed(1) : 0}% des revenus`, color: '#fb923c' },
               { label: 'Surplus / Balance', value: fmt(balance), sub: balance >= 0 ? 'épargne disponible' : 'déficit mensuel', color: balance >= 0 ? '#34d399' : '#ef4444' },
             ].map((k, i) => (
-              <div key={i} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-                <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
+              <div key={i} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+                <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</p>
                 <p style={{ fontSize: 20, fontWeight: 800, color: k.color, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>{k.value}</p>
-                <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3 }}>{k.sub}</p>
+                <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3 }}>{k.sub}</p>
               </div>
             ))}
           </div>
 
           {/* Barre de progression */}
           {totalRevenu > 0 && (
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>Répartition mensuelle</span>
+                <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>Répartition mensuelle</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: balance >= 0 ? '#34d399' : '#ef4444', fontVariantNumeric: 'tabular-nums' }}>{fmt(balance)} balance</span>
               </div>
               <div style={{ height: 10, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
@@ -503,8 +503,8 @@ function SavingsRatePageInner() {
           )}
 
           {/* Sankey chart */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', marginBottom: 10 }}>Flux financier mensuel</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 10 }}>Flux financier mensuel</p>
             {!mounted ? (
               <div style={{ height: 280 }} />
             ) : sankeyData.nodes.length > 0 ? (
@@ -527,30 +527,30 @@ function SavingsRatePageInner() {
                 </Sankey>
               </ResponsiveContainer>
             ) : (
-              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--text-muted-c)' }}>
+              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--p-text-dim)' }}>
                 Ajoutez des revenus pour afficher le graphique
               </div>
             )}
           </div>
 
           {/* Table postes par catégorie */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--card-dark-border)' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)' }}>Détail par poste</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)' }}>Détail par poste</p>
             </div>
             {[...investCats, ...depenseCats].map((cat, ci) => {
               const catTotal = cat.items.reduce((s, i) => s + i.value, 0)
               if (catTotal <= 0) return null
               return (
                 <div key={cat.id}>
-                  <div style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--section-border)', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{cat.name}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(catTotal)}</span>
+                  <div style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{cat.name}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(catTotal)}</span>
                   </div>
                   {cat.items.filter(i => i.value > 0).sort((a, b) => b.value - a.value).map((item, ii, arr) => (
-                    <div key={item.id} style={{ padding: '7px 14px 7px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: ii < arr.length - 1 ? '1px solid var(--section-border)' : ci < [...investCats, ...depenseCats].length - 1 ? '1px solid var(--card-dark-border)' : undefined }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{item.name}</span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(item.value)}</span>
+                    <div key={item.id} style={{ padding: '7px 14px 7px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: ii < arr.length - 1 ? '1px solid var(--p-line)' : ci < [...investCats, ...depenseCats].length - 1 ? '1px solid var(--p-line)' : undefined }}>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{item.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(item.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -563,22 +563,22 @@ function SavingsRatePageInner() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Score analyse */}
-          <div style={{ background: 'var(--card-dark)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 12, padding: '14px 16px' }}>
+          <div style={{ background: 'var(--p-card)', border: `1px solid ${scoreConf.borderColor}`, borderRadius: 12, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <scoreConf.Icon style={{ width: 16, height: 16, color: scoreConf.color, flexShrink: 0 }} />
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>
                 Score épargne — {scoreConf.label}
               </p>
             </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.6, marginBottom: 12 }}>{scoreConf.msg}</p>
+            <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6, marginBottom: 12 }}>{scoreConf.msg}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
               {[
                 { label: 'Balance', value: fmt(balance), color: balance >= 0 ? '#34d399' : '#ef4444' },
-                { label: '% épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'var(--text-primary)' },
-                { label: '% dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'var(--text-primary)' },
+                { label: '% épargnés', value: `${savingsRate.toFixed(1)}%`, color: 'var(--p-text)' },
+                { label: '% dépensés', value: totalRevenu > 0 ? `${(totalDepense / totalRevenu * 100).toFixed(1)}%` : '—', color: 'var(--p-text)' },
               ].map((m, i) => (
                 <div key={i} style={{ borderRadius: 10, padding: '10px 8px', textAlign: 'center', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize: 10, color: 'var(--text-muted-c)', marginBottom: 4 }}>{m.label}</p>
+                  <p style={{ fontSize: 10, color: 'var(--p-text-dim)', marginBottom: 4 }}>{m.label}</p>
                   <p style={{ fontSize: 13, fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.color }}>{m.value}</p>
                 </div>
               ))}
@@ -587,8 +587,8 @@ function SavingsRatePageInner() {
 
           {/* Donut répartition */}
           {donutData.length > 0 && (
-            <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 8 }}>Répartition des revenus</p>
+            <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 8 }}>Répartition des revenus</p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <PieChart width={130} height={130}>
                   <Pie data={donutData} cx={61} cy={61} innerRadius={34} outerRadius={58} dataKey="value" strokeWidth={0}>
@@ -601,9 +601,9 @@ function SavingsRatePageInner() {
                   <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 9999, background: d.color, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.value)}</span>
                   </div>
                 ))}
               </div>
@@ -611,8 +611,8 @@ function SavingsRatePageInner() {
           )}
 
           {/* Objectifs recommandés */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Objectifs recommandés</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
+            <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Objectifs recommandés</p>
             {[
               { target: 10, label: 'Minimum conseillé', color: '#fbbf24' },
               { target: 20, label: 'Sain', color: '#60a5fa' },
@@ -620,7 +620,7 @@ function SavingsRatePageInner() {
             ].map((obj, i) => (
               <div key={i} style={{ marginBottom: i < 2 ? 10 : 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{obj.label}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{obj.label}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: obj.color }}>{obj.target}%</span>
                 </div>
                 <div style={{ height: 5, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
@@ -635,7 +635,7 @@ function SavingsRatePageInner() {
 
           {/* Conseils */}
           <div style={{ background: `${COLOR}08`, border: `1px solid ${COLOR}20`, borderRadius: 12, padding: '14px 16px' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils</p>
+            <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Conseils</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { color: COLOR, text: 'Automatisez votre épargne dès le 1er du mois — avant les dépenses.' },
@@ -645,7 +645,7 @@ function SavingsRatePageInner() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <ArrowRight style={{ width: 11, height: 11, color: item.color, flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{item.text}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>{item.text}</span>
                 </div>
               ))}
             </div>

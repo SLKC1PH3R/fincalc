@@ -83,7 +83,7 @@ const FILTER_TABS = [
   { id: 'avances',    label: 'Avancés',              count: 6 },
 ]
 
-const GOLD = '#f1c086'
+const GOLD = '#B07820'
 
 function timeAgo(dateStr: string) {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000
@@ -132,21 +132,21 @@ export default function SimulateursPage() {
   }, [search, activeFilter])
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--content-bg)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--p-bg)' }}>
 
       {/* ── HEADER ── */}
-      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--section-border)', flexShrink: 0, position: 'relative' }}>
+      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0, position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse at 80% 50%, ${GOLD}05, transparent 60%)` }} />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
-            <p style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 3 }}>
+            <p style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 3 }}>
               Outils financiers
             </p>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-              <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', margin: 0 }}>
+              <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.03em', margin: 0 }}>
                 Simulateurs
               </h1>
-              <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>
+              <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>
                 {loaded ? `${sims.length} sim. sauvegardée${sims.length > 1 ? 's' : ''}` : '…'} · {ALL_MODULES.length} modules
               </span>
             </div>
@@ -154,7 +154,7 @@ export default function SimulateursPage() {
 
           {/* Search */}
           <div style={{ position: 'relative', width: 220, flexShrink: 0 }}>
-            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted-c)', width: 13, height: 13, pointerEvents: 'none' }} />
+            <Search style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--p-text-dim)', width: 13, height: 13, pointerEvents: 'none' }} />
             <input
               type="text"
               placeholder="Rechercher…"
@@ -162,8 +162,8 @@ export default function SimulateursPage() {
               onChange={e => handleSearch(e.target.value)}
               style={{
                 width: '100%', paddingLeft: 30, paddingRight: 10, paddingTop: 6, paddingBottom: 6,
-                background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
-                borderRadius: 8, fontSize: 12, color: 'var(--text-em)', outline: 'none', boxSizing: 'border-box',
+                background: 'var(--p-card)', border: '1px solid var(--p-line)',
+                borderRadius: 8, fontSize: 12, color: 'var(--p-text-em)', outline: 'none', boxSizing: 'border-box',
               }}
             />
           </div>
@@ -171,7 +171,7 @@ export default function SimulateursPage() {
       </div>
 
       {/* ── FILTER TABS ── */}
-      <div style={{ padding: '6px 24px', borderBottom: '1px solid var(--section-border)', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+      <div style={{ padding: '6px 24px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
         {FILTER_TABS.map(tab => {
           const isActive = activeFilter === tab.id
           return (
@@ -181,19 +181,19 @@ export default function SimulateursPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 padding: '4px 10px', borderRadius: 7, border: 'none',
-                background: isActive ? 'rgba(241,192,134,0.12)' : 'transparent',
+                background: isActive ? 'rgba(176,120,32,0.12)' : 'transparent',
                 cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
-                color: isActive ? GOLD : 'var(--text-muted-c)',
+                color: isActive ? GOLD : 'var(--p-text-dim)',
                 fontWeight: isActive ? 600 : 400, fontSize: 12,
               }}
-              onMouseEnter={e => { if (!isActive) (e.currentTarget.style.background = 'var(--row-hover)') }}
+              onMouseEnter={e => { if (!isActive) (e.currentTarget.style.background = 'var(--p-row-hover)') }}
               onMouseLeave={e => { if (!isActive) (e.currentTarget.style.background = 'transparent') }}
             >
               {tab.label}
               <span style={{
                 fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
-                background: isActive ? 'rgba(241,192,134,0.2)' : 'var(--icon-chip-bg)',
-                color: isActive ? GOLD : 'var(--text-subtle)',
+                background: isActive ? 'rgba(176,120,32,0.2)' : 'var(--icon-chip-bg)',
+                color: isActive ? GOLD : 'var(--p-text-faint)',
               }}>
                 {tab.count}
               </span>
@@ -206,21 +206,21 @@ export default function SimulateursPage() {
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 24px 16px' }}>
         {filteredCategories.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, textAlign: 'center' }}>
-            <div style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Search style={{ width: 22, height: 22, color: 'var(--text-subtle)' }} />
+            <div style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--p-card)', border: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Search style={{ width: 22, height: 22, color: 'var(--p-text-faint)' }} />
             </div>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)', marginBottom: 4 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 4 }}>
                 Aucun résultat pour « {search} »
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginBottom: 12 }}>
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 12 }}>
                 Essayez un autre terme ou parcourez par catégorie
               </p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {['Fiscal', 'Immobilier', 'Épargne', 'Budget'].map(s => (
-                  <button key={s} onClick={() => { handleSearch(s) }} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', color: 'var(--text-muted-c)', cursor: 'pointer', transition: 'all 0.15s' }}
+                  <button key={s} onClick={() => { handleSearch(s) }} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'var(--p-card)', border: '1px solid var(--p-line)', color: 'var(--p-text-dim)', cursor: 'pointer', transition: 'all 0.15s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD + '50'; e.currentTarget.style.color = GOLD }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-muted-c)' }}>
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.color = 'var(--p-text-dim)' }}>
                     {s}
                   </button>
                 ))}
@@ -236,11 +236,11 @@ export default function SimulateursPage() {
               <div key={cat.id}>
                 {/* Category header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted-c)', flexShrink: 0 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--p-text-dim)', flexShrink: 0 }}>
                     {cat.label}
                   </span>
-                  <div style={{ flex: 1, height: 1, background: 'var(--section-border)' }} />
-                  <span style={{ fontSize: 10, color: 'var(--text-subtle)', flexShrink: 0 }}>{cat.modules.length} outil{cat.modules.length > 1 ? 's' : ''}</span>
+                  <div style={{ flex: 1, height: 1, background: 'var(--p-line)' }} />
+                  <span style={{ fontSize: 10, color: 'var(--p-text-faint)', flexShrink: 0 }}>{cat.modules.length} outil{cat.modules.length > 1 ? 's' : ''}</span>
                 </div>
 
                 {/* Module cards */}
@@ -269,22 +269,22 @@ export default function SimulateursPage() {
                           {/* Content */}
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                              <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
+                              <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--p-text-em)', letterSpacing: '-0.01em' }}>{mod.label}</span>
                               {(() => { const dc = DIFF_COLORS[mod.diff]; return <span style={{ fontSize: 9, color: dc, background: dc + '18', padding: '1px 6px', borderRadius: 20, fontWeight: 600, flexShrink: 0 }}>{mod.diff}</span> })()}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <p style={{ fontSize: 11.5, color: 'var(--text-muted-c)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '78%' }}>
+                              <p style={{ fontSize: 11.5, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '78%' }}>
                                 {mod.desc}
                               </p>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                                 {loaded && typeSims.length > 0 ? (
                                   <>
-                                    <Clock style={{ width: 10, height: 10, color: 'var(--text-subtle)' }} />
-                                    <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{lastSim ? timeAgo(lastSim.createdAt) : ''}</span>
+                                    <Clock style={{ width: 10, height: 10, color: 'var(--p-text-faint)' }} />
+                                    <span style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{lastSim ? timeAgo(lastSim.createdAt) : ''}</span>
                                     <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 20, background: mod.color + '18', color: mod.color }}>{typeSims.length}</span>
                                   </>
                                 ) : (
-                                  <ArrowUpRight style={{ width: 12, height: 12, color: 'var(--text-muted-c)' }} />
+                                  <ArrowUpRight style={{ width: 12, height: 12, color: 'var(--p-text-dim)' }} />
                                 )}
                               </div>
                             </div>

@@ -332,19 +332,19 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--content-bg)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--p-bg)' }}>
 
       {/* ── Header ── */}
-      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--section-border)', flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Link href="/dashboard/patrimoine" style={{ color: 'var(--text-subtle)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+      <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
           <span style={{ opacity: 0.4 }}>›</span>
           <span style={{ color: catCfg.color, fontWeight: 600 }}>{catCfg.label}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>{catCfg.label}</h1>
-            <span style={{ fontSize: 12, color: 'var(--text-subtle)', fontWeight: 400 }}>{catCfg.description}</span>
+            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>{catCfg.label}</h1>
+            <span style={{ fontSize: 12, color: 'var(--p-text-faint)', fontWeight: 400 }}>{catCfg.description}</span>
           </div>
           <Button onClick={openModal} size="sm" style={{ gap: 6, flexShrink: 0 }}>
             <Plus className="h-4 w-4" />Ajouter
@@ -355,12 +355,12 @@ export default function PatrimoineCategoryPage({ category }: Props) {
       {/* ── Empty state ── */}
       {!loading && envelopes.length === 0 && (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--card-dark)', border: '2px dashed var(--card-dark-border)', borderRadius: 16, maxWidth: 420 }}>
-            <BarChart3 style={{ width: 40, height: 40, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+          <div style={{ textAlign: 'center', padding: '48px 24px', background: 'var(--p-card)', border: '2px dashed var(--p-line)', borderRadius: 16, maxWidth: 420 }}>
+            <BarChart3 style={{ width: 40, height: 40, color: 'var(--p-text-faint)', margin: '0 auto 12px' }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--p-text)', marginBottom: 6 }}>
               Aucune enveloppe {catCfg.label.toLowerCase()} pour l'instant
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text-subtle)', marginBottom: 20 }}>Ajoutez votre premier actif dans cette catégorie</div>
+            <div style={{ fontSize: 13, color: 'var(--p-text-faint)', marginBottom: 20 }}>Ajoutez votre premier actif dans cette catégorie</div>
             <Button onClick={openModal} size="sm"><Plus className="h-4 w-4 mr-2" />Ajouter une enveloppe</Button>
           </div>
         </div>
@@ -376,14 +376,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               {/* Header + sort */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Enveloppes</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Enveloppes</span>
                   <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 99, background: catCfg.color + '18', color: catCfg.color, fontWeight: 700 }}>{envelopes.length}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 3 }}>
                   {(['valeur', 'perf', 'nom'] as const).map(s => {
                     const key = s === 'perf' ? 'performance' : s as 'valeur' | 'nom'
                     return (
-                      <button key={s} onClick={() => setSortBy(key)} style={{ padding: '2px 7px', borderRadius: 5, border: `1px solid ${sortBy === key ? catCfg.color + '40' : 'var(--card-dark-border)'}`, background: sortBy === key ? catCfg.color + '12' : 'transparent', color: sortBy === key ? catCfg.color : 'var(--text-subtle)', fontSize: 10, cursor: 'pointer', fontWeight: sortBy === key ? 600 : 400 }}>{s}</button>
+                      <button key={s} onClick={() => setSortBy(key)} style={{ padding: '2px 7px', borderRadius: 5, border: `1px solid ${sortBy === key ? catCfg.color + '40' : 'var(--p-line)'}`, background: sortBy === key ? catCfg.color + '12' : 'transparent', color: sortBy === key ? catCfg.color : 'var(--p-text-faint)', fontSize: 10, cursor: 'pointer', fontWeight: sortBy === key ? 600 : 400 }}>{s}</button>
                     )
                   })}
                 </div>
@@ -405,32 +405,32 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   return (
                     <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
                       <div
-                        style={{ padding: '10px 12px', borderRadius: 11, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '55'; (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'var(--card-dark)' }}
+                        style={{ padding: '10px 12px', borderRadius: 11, background: 'var(--p-card)', border: '1px solid var(--p-line)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '55'; (e.currentTarget as HTMLElement).style.background = 'var(--p-row-hover)' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'var(--p-card)' }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div style={{ width: 28, height: 28, borderRadius: 7, background: envColor + '18', border: `1px solid ${envColor}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <Icon style={{ width: 12, height: 12, color: envColor }} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{env.name}</div>
-                            <div style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{env.type}</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{env.name}</div>
+                            <div style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{env.type}</div>
                           </div>
                           {mounted && <MiniSparkline color={envColor} seed={value + invested + env.id.charCodeAt(0)} />}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-                            {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
+                            {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--p-text-faint)', fontSize: 11 }}>—</span>}
                           </span>
                           {hasPL && (
                             <span style={{ fontSize: 10, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
                               {plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)}%
                             </span>
                           )}
-                          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{pct.toFixed(0)}%</span>
+                          <span style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{pct.toFixed(0)}%</span>
                         </div>
-                        <div style={{ marginTop: 5, height: 2, borderRadius: 99, background: 'var(--section-border)', overflow: 'hidden' }}>
+                        <div style={{ marginTop: 5, height: 2, borderRadius: 99, background: 'var(--p-line)', overflow: 'hidden' }}>
                           <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
                         </div>
                       </div>
@@ -440,14 +440,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
                 {/* Add card */}
                 <button onClick={openModal}
-                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--card-dark-border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s', width: '100%', textAlign: 'left' }}
+                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--p-line)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s', width: '100%', textAlign: 'left' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '55'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '05' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-dark-border)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                 >
-                  <div style={{ width: 28, height: 28, borderRadius: 7, border: '1.5px dashed var(--card-dark-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Plus style={{ width: 13, height: 13, color: 'var(--text-subtle)' }} />
+                  <div style={{ width: 28, height: 28, borderRadius: 7, border: '1.5px dashed var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus style={{ width: 13, height: 13, color: 'var(--p-text-faint)' }} />
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>Ajouter une enveloppe</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>Ajouter une enveloppe</span>
                 </button>
               </div>
             </div>
@@ -468,43 +468,43 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   },
                   {
                     label: 'Capital investi', value: fmtCompact(totalInvested),
-                    sub: 'Coût de revient', color: 'var(--text-muted-c)', highlight: false, badge: null, badgeColor: '',
+                    sub: 'Coût de revient', color: 'var(--p-text-dim)', highlight: false, badge: null, badgeColor: '',
                   },
                   {
                     label: hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance',
                     value: hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—',
                     sub: hasPLData ? `${pl >= 0 ? '+' : ''}${plPct.toFixed(1)}% depuis l'ouverture` : '',
-                    color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--text-subtle)', highlight: hasPLData, badge: null, badgeColor: '',
+                    color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--p-text-faint)', highlight: hasPLData, badge: null, badgeColor: '',
                   },
                 ].map((k, i) => (
-                  <div key={i} style={{ padding: '12px 16px', borderRadius: 12, background: k.highlight ? `linear-gradient(135deg, ${k.color}10, transparent)` : 'var(--card-dark)', border: `1px solid ${k.highlight ? k.color + '30' : 'var(--card-dark-border)'}`, position: 'relative', overflow: 'hidden' }}>
+                  <div key={i} style={{ padding: '12px 16px', borderRadius: 12, background: k.highlight ? `linear-gradient(135deg, ${k.color}10, transparent)` : 'var(--p-card)', border: `1px solid ${k.highlight ? k.color + '30' : 'var(--p-line)'}`, position: 'relative', overflow: 'hidden' }}>
                     {k.highlight && <div style={{ position: 'absolute', top: -20, right: -10, width: 60, height: 60, borderRadius: '50%', background: `radial-gradient(ellipse, ${k.color}14, transparent)`, pointerEvents: 'none' }} />}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-                      <span style={{ fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>{k.label}</span>
+                      <span style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>{k.label}</span>
                       {k.badge && <span style={{ fontSize: 9, color: k.badgeColor, background: k.badgeColor + '18', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>{k.badge}</span>}
                     </div>
-                    <div style={{ fontSize: 19, fontWeight: 800, color: k.highlight ? k.color : 'var(--text-primary)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 3 }}>{k.value}</div>
-                    {k.sub && <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{k.sub}</div>}
+                    <div style={{ fontSize: 19, fontWeight: 800, color: k.highlight ? k.color : 'var(--p-text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 3 }}>{k.value}</div>
+                    {k.sub && <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{k.sub}</div>}
                   </div>
                 ))}
               </div>
 
               {/* Evolution chart */}
               {mounted && totalValue > 0 && (
-                <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px' }}>
+                <div style={{ background: 'var(--p-card)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8, flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>Évolution du portefeuille</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)', marginBottom: 2 }}>Évolution du portefeuille</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: 11, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>
                           {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)}
                         </span>
-                        <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%) sur la période</span>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%) sur la période</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 2, background: 'rgba(255,255,255,0.04)', padding: 3, borderRadius: 8 }}>
                       {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
-                        <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 600, background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--text-subtle)', transition: 'all 0.15s' }}>
+                        <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 600, background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--p-text-faint)', transition: 'all 0.15s' }}>
                           {r.toUpperCase()}
                         </button>
                       ))}
@@ -524,9 +524,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       <Tooltip content={({ active, payload }) => {
                         if (!active || !payload?.length) return null
                         return (
-                          <div style={{ background: 'var(--card-dark)', border: `1px solid ${catCfg.color}55`, borderRadius: 8, padding: '8px 14px' }}>
+                          <div style={{ background: 'var(--p-card)', border: `1px solid ${catCfg.color}55`, borderRadius: 8, padding: '8px 14px' }}>
                             <div style={{ color: catCfg.color, fontSize: 11, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
-                            <div style={{ color: 'var(--text-primary)', fontSize: 13, fontWeight: 700 }}>{fmtCompact(payload[0]?.value as number)}</div>
+                            <div style={{ color: 'var(--p-text)', fontSize: 13, fontWeight: 700 }}>{fmtCompact(payload[0]?.value as number)}</div>
                           </div>
                         )
                       }} />
@@ -538,8 +538,8 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
               {/* Répartition */}
               {envelopes.length > 1 && (
-                <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12, padding: '12px 16px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>Répartition</div>
+                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '12px 16px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Répartition</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {envelopes.map(env => {
                       const isImmo = env.type === 'IMMOBILIER'
@@ -551,14 +551,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                               <div style={{ width: 6, height: 6, borderRadius: 2, background: envColor, flexShrink: 0 }} />
-                              <span style={{ fontSize: 11, color: 'var(--text-muted-c)' }}>{env.name}</span>
+                              <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{env.name}</span>
                             </div>
                             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmtCompact(val)}</span>
+                              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{fmtCompact(val)}</span>
                               <span style={{ fontSize: 11, fontWeight: 600, color: envColor, minWidth: 32, textAlign: 'right' }}>{pct.toFixed(0)}%</span>
                             </div>
                           </div>
-                          <div style={{ height: 3, background: 'var(--section-border)', borderRadius: 99, overflow: 'hidden' }}>
+                          <div style={{ height: 3, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
                             <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
                           </div>
                         </div>
@@ -570,16 +570,16 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
               {/* Comparative table */}
               {envelopes.length > 1 && (
-                <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 14, overflow: 'hidden' }}>
-                  <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--card-dark-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Comparatif des enveloppes</span>
-                    <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
+                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
+                  <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Comparatif des enveloppes</span>
+                    <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
                   </div>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         {['Enveloppe', 'Type', 'Valeur', 'Investi', 'P&L', 'Perf.', 'Part'].map((h, i) => (
-                          <th key={i} style={{ padding: '9px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</th>
+                          <th key={i} style={{ padding: '9px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -604,14 +604,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                             <td style={{ padding: '9px 14px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                                 <div style={{ width: 8, height: 8, borderRadius: 2, background: envColor, flexShrink: 0 }} />
-                                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)' }}>{env.name}</span>
+                                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text)' }}>{env.name}</span>
                               </div>
                             </td>
                             <td style={{ padding: '9px 14px', textAlign: 'right' }}>
                               <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 99, background: envColor + '18', color: envColor, fontWeight: 600 }}>{env.type}</span>
                             </td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
+                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
                             <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: plAbs >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
                               {hasPL ? `${plAbs >= 0 ? '+' : ''}${fmtCompact(plAbs)}` : '—'}
                             </td>
@@ -620,14 +620,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                                 <span style={{ fontSize: 11, fontWeight: 700, color: plPctEnv >= 0 ? '#34d399' : '#f87171' }}>
                                   {plPctEnv >= 0 ? '↑' : '↓'} {Math.abs(plPctEnv).toFixed(1)}%
                                 </span>
-                              ) : <span style={{ color: 'var(--text-subtle)', fontSize: 11 }}>—</span>}
+                              ) : <span style={{ color: 'var(--p-text-faint)', fontSize: 11 }}>—</span>}
                             </td>
                             <td style={{ padding: '9px 14px', textAlign: 'right' }}>
                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
                                 <div style={{ width: 36, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' }}>
                                   <div style={{ width: `${part}%`, height: '100%', background: envColor, borderRadius: 99 }} />
                                 </div>
-                                <span style={{ fontSize: 10, color: 'var(--text-muted-c)', minWidth: 26, textAlign: 'right' }}>{part.toFixed(0)}%</span>
+                                <span style={{ fontSize: 10, color: 'var(--p-text-dim)', minWidth: 26, textAlign: 'right' }}>{part.toFixed(0)}%</span>
                               </div>
                             </td>
                           </tr>
@@ -636,9 +636,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                     </tbody>
                     <tfoot>
                       <tr style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-                        <td colSpan={2} style={{ padding: '9px 14px', fontSize: 10, fontWeight: 700, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total</td>
+                        <td colSpan={2} style={{ padding: '9px 14px', fontSize: 10, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total</td>
                         <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 800, color: catCfg.color, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</td>
                         <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
                           {hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—'}
                         </td>
@@ -649,7 +649,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                             </span>
                           )}
                         </td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 11, color: 'var(--text-subtle)' }}>100%</td>
+                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 11, color: 'var(--p-text-faint)' }}>100%</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -669,9 +669,9 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                         <span style={{ fontSize: 13 }}>🏆</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Meilleur performer</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Meilleur performer</span>
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
+                      <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>
                         <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>
                         {' '}
                         {(() => {
@@ -684,13 +684,13 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       </p>
                     </div>
                   )}
-                  <div style={{ height: 1, background: 'var(--section-border)' }} />
+                  <div style={{ height: 1, background: 'var(--p-line)' }} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                       <span style={{ fontSize: 13 }}>📈</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Tendance</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Tendance</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>
                       {pl > 100
                         ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
                         : pl < -100
@@ -698,13 +698,13 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                         : 'Vos actifs sont stables, sans variation significative.'}
                     </p>
                   </div>
-                  <div style={{ height: 1, background: 'var(--section-border)' }} />
+                  <div style={{ height: 1, background: 'var(--p-line)' }} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                       <span style={{ fontSize: 13 }}>💡</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Conseil</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Conseil</span>
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
                   </div>
                 </div>
               </div>
@@ -723,12 +723,12 @@ export default function PatrimoineCategoryPage({ category }: Props) {
           <div style={{ background: 'var(--modal-surface)', border: '1px solid var(--modal-surface-border)', borderRadius: 20, width: '100%', maxWidth: 480, padding: 28, boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--p-text)' }}>
                   {step === 'type' ? 'Quel type d\'actif ?' : `Nommer votre ${selectedType ? ENVELOPE_TYPE_CONFIG[selectedType].label : ''}`}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 2 }}>Catégorie : {catCfg.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 2 }}>Catégorie : {catCfg.label}</div>
               </div>
-              <button onClick={() => setShowModal(false)} style={{ padding: 6, borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+              <button onClick={() => setShowModal(false)} style={{ padding: 6, borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>
@@ -749,8 +749,8 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                           <Icon style={{ width: 14, height: 14, color: cfg.color }} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{cfg.label}</div>
-                          <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.description}</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{cfg.label}</div>
+                          <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{cfg.description}</div>
                         </div>
                       </div>
                     </button>
@@ -762,7 +762,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
             {step === 'name' && selectedType && (
               <div>
                 {catCfg.types.length > 1 && (
-                  <button onClick={() => setStep('type')} style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, padding: 0, textDecoration: 'underline' }}>
+                  <button onClick={() => setStep('type')} style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, padding: 0, textDecoration: 'underline' }}>
                     ← Changer de type
                   </button>
                 )}
@@ -770,7 +770,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   {(() => { const Icon = ENVELOPE_TYPE_CONFIG[selectedType].icon; return <Icon style={{ width: 16, height: 16, color: ENVELOPE_TYPE_CONFIG[selectedType].color }} /> })()}
                   <span style={{ fontSize: 13, fontWeight: 600, color: ENVELOPE_TYPE_CONFIG[selectedType].color }}>{ENVELOPE_TYPE_CONFIG[selectedType].label}</span>
                 </div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', display: 'block', marginBottom: 6 }}>Nom de l'enveloppe</label>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--p-text)', display: 'block', marginBottom: 6 }}>Nom de l'enveloppe</label>
                 <Input
                   autoFocus value={envelopeName} onChange={e => setEnvelopeName(e.target.value)}
                   placeholder={PLACEHOLDERS[selectedType]}

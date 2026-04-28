@@ -67,9 +67,9 @@ export function PeaCtoCryptoSection({
     <div className="space-y-4">
       {/* Méta PEA */}
       {isPEA && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: 20 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 12 }}>Informations PEA</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)', marginBottom: 12 }}>Informations PEA</div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 16 }}>
               <div>
                 <Label style={{ marginBottom: 6, display: 'block' }}>Versements effectués (€)</Label>
@@ -86,15 +86,15 @@ export function PeaCtoCryptoSection({
             {depositedNum > 0 && (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>Plafond de versements</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>Plafond de versements</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#818cf8' }}>{peaPct?.toFixed(1)} %</span>
                 </div>
-                <div style={{ height: 8, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden', marginBottom: 6 }}>
+                <div style={{ height: 8, borderRadius: 999, background: 'var(--p-line)', overflow: 'hidden', marginBottom: 6 }}>
                   <div style={{ height: '100%', width: `${peaPct ?? 0}%`, background: '#818cf8', borderRadius: 999, transition: 'width 0.5s' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{fmtCompact(depositedNum)} versés</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Plafond : 150 000 € — Reste {fmtCompact(Math.max(0, PEA_MAX - depositedNum))}</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{fmtCompact(depositedNum)} versés</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Plafond : 150 000 € — Reste {fmtCompact(Math.max(0, PEA_MAX - depositedNum))}</span>
                 </div>
               </>
             )}
@@ -111,10 +111,10 @@ export function PeaCtoCryptoSection({
             { label: 'Performance', value: `${perf >= 0 ? '+' : ''}${perf.toFixed(2)} %`, color: perf >= 0 ? '#34d399' : '#ef4444', sub: `${perfAbs >= 0 ? '+' : ''}${fmtCompact(perfAbs)}` },
             { label: 'Nb positions', value: String(positions.length), color: '#38bdf8' },
           ].map(kpi => (
-            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
+            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
               <div style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>}
+              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 4 }}>{kpi.sub}</div>}
             </div>
           ))}
         </div>

@@ -61,12 +61,12 @@ function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload
   return (
-    <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 10, padding: '10px 14px', fontSize: 12 }}>
-      <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>{d.label}</div>
+    <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 10, padding: '10px 14px', fontSize: 12 }}>
+      <div style={{ fontWeight: 700, color: 'var(--p-text)', marginBottom: 6 }}>{d.label}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <span style={{ color: 'var(--text-muted-c)' }}>Actuel : <b style={{ color: 'var(--text-primary)' }}>{d.current.toFixed(1)} %</b></span>
-        <span style={{ color: 'var(--text-muted-c)' }}>Cible  : <b style={{ color: '#f1c086' }}>{d.target.toFixed(1)} %</b></span>
-        <span style={{ color: 'var(--text-muted-c)' }}>Écart  : <b style={{ color: d.delta > 0 ? '#34d399' : '#ef4444' }}>{d.delta > 0 ? '+' : ''}{d.delta.toFixed(1)} %</b></span>
+        <span style={{ color: 'var(--p-text-dim)' }}>Actuel : <b style={{ color: 'var(--p-text)' }}>{d.current.toFixed(1)} %</b></span>
+        <span style={{ color: 'var(--p-text-dim)' }}>Cible  : <b style={{ color: '#B07820' }}>{d.target.toFixed(1)} %</b></span>
+        <span style={{ color: 'var(--p-text-dim)' }}>Écart  : <b style={{ color: d.delta > 0 ? '#34d399' : '#ef4444' }}>{d.delta > 0 ? '+' : ''}{d.delta.toFixed(1)} %</b></span>
       </div>
     </div>
   )
@@ -145,7 +145,7 @@ export default function RebalancingPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300, color: 'var(--text-subtle)', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300, color: 'var(--p-text-faint)', gap: 10 }}>
         <RefreshCw style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />
         Chargement du patrimoine…
       </div>
@@ -158,12 +158,12 @@ export default function RebalancingPage() {
       {/* Header */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(241,192,134,0.10)', border: '1px solid rgba(241,192,134,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Target style={{ width: 18, height: 18, color: '#f1c086' }} />
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(176,120,32,0.10)', border: '1px solid rgba(176,120,32,0.20)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Target style={{ width: 18, height: 18, color: '#B07820' }} />
           </div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>Rééquilibrage</h1>
-            <p style={{ fontSize: 13, color: 'var(--text-subtle)', marginTop: 2 }}>Définissez vos cibles et identifiez les ajustements à effectuer</p>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--p-text)', lineHeight: 1 }}>Rééquilibrage</h1>
+            <p style={{ fontSize: 13, color: 'var(--p-text-faint)', marginTop: 2 }}>Définissez vos cibles et identifiez les ajustements à effectuer</p>
           </div>
         </div>
       </div>
@@ -171,10 +171,10 @@ export default function RebalancingPage() {
       {/* KPI bar */}
       {totalPatrimoine > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
             <CardContent style={{ padding: '14px 18px' }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Patrimoine total</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(totalPatrimoine)}</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Patrimoine total</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)' }}>{fmtCompact(totalPatrimoine)}</div>
             </CardContent>
           </Card>
           {(Object.keys(ASSET_CLASSES) as AssetClass[]).map(cls => {
@@ -183,14 +183,14 @@ export default function RebalancingPage() {
             const pct = totalPatrimoine > 0 ? (val / totalPatrimoine) * 100 : 0
             if (val <= 0) return null
             return (
-              <Card key={cls} style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+              <Card key={cls} style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
                 <CardContent style={{ padding: '14px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: cfg.color }} />
-                    <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{cfg.label}</div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{cfg.label}</div>
                   </div>
-                  <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)' }}>{fmtCompact(val)}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{pct.toFixed(1)} %</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--p-text)' }}>{fmtCompact(val)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{pct.toFixed(1)} %</div>
                 </CardContent>
               </Card>
             )
@@ -199,9 +199,9 @@ export default function RebalancingPage() {
       )}
 
       {totalPatrimoine === 0 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', textAlign: 'center', padding: '32px 24px' }}>
-          <p style={{ color: 'var(--text-subtle)', fontSize: 14, marginBottom: 12 }}>Aucune enveloppe trouvée. Commencez par renseigner votre patrimoine.</p>
-          <Link href="/dashboard/patrimoine" style={{ color: '#f1c086', fontWeight: 600, fontSize: 13 }}>→ Aller au patrimoine</Link>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', textAlign: 'center', padding: '32px 24px' }}>
+          <p style={{ color: 'var(--p-text-faint)', fontSize: 14, marginBottom: 12 }}>Aucune enveloppe trouvée. Commencez par renseigner votre patrimoine.</p>
+          <Link href="/dashboard/patrimoine" style={{ color: '#B07820', fontWeight: 600, fontSize: 13 }}>→ Aller au patrimoine</Link>
         </Card>
       )}
 
@@ -210,10 +210,10 @@ export default function RebalancingPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
 
           {/* Left: Target inputs */}
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
             <CardContent style={{ padding: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Allocation cible</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)' }}>Allocation cible</span>
                 <span style={{
                   fontSize: 12, fontWeight: 600,
                   color: Math.abs(targetTotal - 100) < 0.5 ? '#34d399' : '#ef4444',
@@ -232,8 +232,8 @@ export default function RebalancingPage() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                           <Icon style={{ width: 13, height: 13, color: cfg.color }} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{cfg.label}</span>
-                          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>{cfg.description}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)' }}>{cfg.label}</span>
+                          <span style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{cfg.description}</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <input
@@ -243,15 +243,15 @@ export default function RebalancingPage() {
                             onChange={e => setTarget(cls, parseFloat(e.target.value) || 0)}
                             style={{
                               width: 52, padding: '3px 6px', borderRadius: 6, textAlign: 'right',
-                              border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)',
-                              color: 'var(--text-primary)', fontSize: 13, fontWeight: 700,
+                              border: '1px solid var(--p-line)', background: 'var(--p-card)',
+                              color: 'var(--p-text)', fontSize: 13, fontWeight: 700,
                               fontVariantNumeric: 'tabular-nums',
                             }}
                           />
-                          <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>%</span>
+                          <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>%</span>
                         </div>
                       </div>
-                      <div style={{ position: 'relative', height: 5, borderRadius: 999, background: 'var(--section-border)', overflow: 'hidden' }}>
+                      <div style={{ position: 'relative', height: 5, borderRadius: 999, background: 'var(--p-line)', overflow: 'hidden' }}>
                         <div style={{
                           position: 'absolute', top: 0, left: 0, height: '100%',
                           width: `${Math.min(100, targets[cls])}%`,
@@ -264,8 +264,8 @@ export default function RebalancingPage() {
               </div>
 
               {/* Optional: custom invest amount */}
-              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--section-border)' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--p-line)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   Base de calcul (optionnel)
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -276,13 +276,13 @@ export default function RebalancingPage() {
                     placeholder={`${Math.round(totalPatrimoine)} (actuel)`}
                     style={{
                       flex: 1, padding: '6px 10px', borderRadius: 8,
-                      border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)',
-                      color: 'var(--text-primary)', fontSize: 13,
+                      border: '1px solid var(--p-line)', background: 'var(--p-card)',
+                      color: 'var(--p-text)', fontSize: 13,
                     }}
                   />
-                  <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>€</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>€</span>
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text-subtle)', marginTop: 4 }}>
+                <div style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>
                   Laissez vide pour utiliser le patrimoine actuel ({fmtCompact(totalPatrimoine)})
                 </div>
               </div>
@@ -290,9 +290,9 @@ export default function RebalancingPage() {
           </Card>
 
           {/* Right: Chart current vs target */}
-          <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+          <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
             <CardContent style={{ padding: '20px' }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Actuel vs cible</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)', marginBottom: 16 }}>Actuel vs cible</div>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={chartData} barGap={2} barCategoryGap="25%">
                   <XAxis
@@ -316,17 +316,17 @@ export default function RebalancingPage() {
                       <Cell key={d.cls} fill={d.color + 'aa'} />
                     ))}
                   </Bar>
-                  <Bar dataKey="target" name="Cible" radius={[4, 4, 0, 0]} fill="#f1c086" opacity={0.85} />
+                  <Bar dataKey="target" name="Cible" radius={[4, 4, 0, 0]} fill="#B07820" opacity={0.85} />
                 </BarChart>
               </ResponsiveContainer>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <div style={{ width: 10, height: 10, borderRadius: 3, background: '#818cf8aa' }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Actuel</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Actuel</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: 3, background: '#f1c086cc' }} />
-                  <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>Cible</span>
+                  <div style={{ width: 10, height: 10, borderRadius: 3, background: '#B07820cc' }} />
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Cible</span>
                 </div>
               </div>
             </CardContent>
@@ -336,9 +336,9 @@ export default function RebalancingPage() {
 
       {/* Action plan */}
       {totalPatrimoine > 0 && Math.abs(targetTotal - 100) < 0.5 && (
-        <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+        <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: '20px' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Plan d'action</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--p-text)', marginBottom: 16 }}>Plan d'action</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {sorted.map(d => {
                 const cfg = ASSET_CLASSES[d.cls as AssetClass]
@@ -348,15 +348,15 @@ export default function RebalancingPage() {
                 return (
                   <div key={d.cls} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px',
-                    borderRadius: 12, border: `1px solid ${isBalanced ? 'var(--card-dark-border)' : isBuy ? 'rgba(52,211,153,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                    borderRadius: 12, border: `1px solid ${isBalanced ? 'var(--p-line)' : isBuy ? 'rgba(52,211,153,0.25)' : 'rgba(239,68,68,0.25)'}`,
                     background: isBalanced ? 'transparent' : isBuy ? 'rgba(52,211,153,0.04)' : 'rgba(239,68,68,0.04)',
                   }}>
                     <div style={{ width: 34, height: 34, borderRadius: 9, background: cfg.color + '18', border: `1px solid ${cfg.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <Icon style={{ width: 15, height: 15, color: cfg.color }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{cfg.label}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>{cfg.label}</div>
+                      <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 1 }}>
                         Actuel : {fmtCompact(d.currentEur)} ({d.current.toFixed(1)} %)
                         {' → '}Cible : {fmtCompact(d.targetEur)} ({d.target.toFixed(1)} %)
                       </div>
@@ -377,7 +377,7 @@ export default function RebalancingPage() {
                           {isBuy ? <ArrowUp style={{ width: 13, height: 13 }} /> : <ArrowDown style={{ width: 13, height: 13 }} />}
                           {isBuy ? '+' : ''}{fmtCompact(d.deltaEur)}
                         </div>
-                        <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                           ({isBuy ? '+' : ''}{d.delta.toFixed(1)} pt)
                         </span>
                       </div>
@@ -386,8 +386,8 @@ export default function RebalancingPage() {
                 )
               })}
             </div>
-            <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 8, background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.13)', fontSize: 11, color: 'var(--text-subtle)', lineHeight: 1.6 }}>
-              <b style={{ color: 'var(--text-primary)' }}>Note :</b> Les actions en vert indiquent un achat à réaliser, en rouge une réduction. Les montants sont calculés par rapport à la base de {fmtCompact(investBase)}. Le rééquilibrage peut se faire progressivement (DCA) ou en une seule opération.
+            <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 8, background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.13)', fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.6 }}>
+              <b style={{ color: 'var(--p-text)' }}>Note :</b> Les actions en vert indiquent un achat à réaliser, en rouge une réduction. Les montants sont calculés par rapport à la base de {fmtCompact(investBase)}. Le rééquilibrage peut se faire progressivement (DCA) ou en une seule opération.
             </div>
           </CardContent>
         </Card>

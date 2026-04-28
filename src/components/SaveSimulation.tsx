@@ -152,7 +152,7 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
             <p style={{ fontSize: 11, fontWeight: 700, color: '#818cf8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
               💡 Les utilisateurs simulent aussi
             </p>
-            <button onClick={() => setShowRecos(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', fontSize: 14, lineHeight: 1, padding: 2 }}>×</button>
+            <button onClick={() => setShowRecos(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', fontSize: 14, lineHeight: 1, padding: 2 }}>×</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {recos.map(rec => (
@@ -164,10 +164,10 @@ export function SaveSimulation({ type, name, inputs, results }: SaveSimulationPr
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(129,140,248,0.12)' }}
               >
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', margin: 0 }}>→ {rec.label}</p>
-                  <p style={{ fontSize: 11, color: 'var(--text-muted-c)', margin: 0 }}>{rec.desc}</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', margin: 0 }}>→ {rec.label}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0 }}>{rec.desc}</p>
                 </div>
-                <ChevronRight style={{ width: 12, height: 12, color: 'var(--text-subtle)', flexShrink: 0 }} />
+                <ChevronRight style={{ width: 12, height: 12, color: 'var(--p-text-faint)', flexShrink: 0 }} />
               </Link>
             ))}
           </div>

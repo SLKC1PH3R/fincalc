@@ -46,10 +46,10 @@ export function AVSection({ envelope, onSave }: {
       {!isSetup && (
         <div style={{ padding: '20px 24px', borderRadius: 14, background: '#fb923c12', border: '1.5px solid #fb923c30' }}>
           <Info style={{ width: 16, height: 16, color: '#fb923c', marginRight: 8, display: 'inline' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Première saisie — Renseignez votre contrat AV</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>Première saisie — Renseignez votre contrat AV</span>
         </div>
       )}
-      <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+      <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
         <CardContent style={{ padding: 24 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
@@ -83,10 +83,10 @@ export function AVSection({ envelope, onSave }: {
             ...(grossVal > surrenderVal ? [{ label: 'Plus-value latente', value: fmtEur(grossVal - surrenderVal), color: '#34d399' }] : []),
             ...(ageYears > 0 ? [{ label: 'Ancienneté', value: `${ageYears} ans`, color: '#818cf8', sub: isFiscalOptimal ? '✅ Fiscalité optimale (+8 ans)' : `⚠️ ${8 - ageYears} ans avant abattement` }] : []),
           ].map(kpi => (
-            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
+            <div key={kpi.label} style={{ padding: '16px 20px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, marginBottom: 6 }}>{kpi.label}</div>
               <div style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontVariantNumeric: 'tabular-nums' }}>{kpi.value}</div>
-              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 4 }}>{kpi.sub}</div>}
+              {kpi.sub && <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 4 }}>{kpi.sub}</div>}
             </div>
           ))}
         </div>

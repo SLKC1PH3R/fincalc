@@ -73,28 +73,28 @@ export default function ProfilPage() {
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(241,192,134,0.12)', border: '1px solid rgba(241,192,134,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <User style={{ width: 15, height: 15, color: '#f1c086' }} />
+          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(176,120,32,0.12)', border: '1px solid rgba(176,120,32,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <User style={{ width: 15, height: 15, color: '#B07820' }} />
           </div>
-          <p style={{ fontSize: 12, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Mon compte</p>
+          <p style={{ fontSize: 12, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Mon compte</p>
         </div>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.03em', marginBottom: 8 }}>
+        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text)', letterSpacing: '-0.03em', marginBottom: 8 }}>
           Mon profil financier
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-muted-c)', lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>
           Renseignez vos données une seule fois. Les simulateurs les pré-rempliront automatiquement.
           Vous pourrez toujours modifier localement sans écraser ce profil.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ color: 'var(--text-muted-c)', fontSize: 13 }}>Chargement…</div>
+        <div style={{ color: 'var(--p-text-dim)', fontSize: 13 }}>Chargement…</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
           {/* Profile type */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Votre profil investisseur</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: 24 }}>
+            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Votre profil investisseur</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
               {PROFILES.map(p => {
                 const selected = userProfile === p
@@ -105,15 +105,15 @@ export default function ProfilPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
                       borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                      background: selected ? 'rgba(241,192,134,0.10)' : 'rgba(255,255,255,0.02)',
-                      border: selected ? '1px solid rgba(241,192,134,0.40)' : '1px solid rgba(255,255,255,0.07)',
+                      background: selected ? 'rgba(176,120,32,0.10)' : 'rgba(255,255,255,0.02)',
+                      border: selected ? '1px solid rgba(176,120,32,0.40)' : '1px solid rgba(255,255,255,0.07)',
                     }}
                   >
                     <span style={{ fontSize: 20 }}>{PROFILE_ICONS[p]}</span>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: selected ? '#f1c086' : 'var(--text-primary)', margin: 0 }}>{PROFILE_LABELS[p]}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: selected ? '#B07820' : 'var(--p-text)', margin: 0 }}>{PROFILE_LABELS[p]}</p>
                     </div>
-                    {selected && <Check style={{ width: 14, height: 14, color: '#f1c086', marginLeft: 'auto', flexShrink: 0 }} />}
+                    {selected && <Check style={{ width: 14, height: 14, color: '#B07820', marginLeft: 'auto', flexShrink: 0 }} />}
                   </button>
                 )
               })}
@@ -121,8 +121,8 @@ export default function ProfilPage() {
           </div>
 
           {/* Financial data */}
-          <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--text-muted-c)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Données financières</p>
+          <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: 24 }}>
+            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Données financières</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
               {([
                 { key: 'age',              label: 'Âge',                        value: age,      set: setAge,      suffix: 'ans',   type: 'number', min: 18, max: 80 },
@@ -143,17 +143,17 @@ export default function ProfilPage() {
                     />
                     <span style={{
                       position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                      fontSize: 11, color: 'var(--text-muted-c)', pointerEvents: 'none',
+                      fontSize: 11, color: 'var(--p-text-dim)', pointerEvents: 'none',
                     }}>{suffix}</span>
                   </div>
-                  <p style={{ fontSize: 11, color: 'var(--text-subtle)', lineHeight: 1.4 }}>{FIELD_HINTS[key]}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.4 }}>{FIELD_HINTS[key]}</p>
                 </div>
               ))}
             </div>
 
             {/* Housing status */}
             <div style={{ marginTop: 20 }}>
-              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 10 }}>Statut logement</p>
+              <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text)', marginBottom: 10 }}>Statut logement</p>
               <div style={{ display: 'flex', gap: 10 }}>
                 {(['tenant', 'owner'] as HousingStatus[]).map(s => (
                   <button
@@ -162,9 +162,9 @@ export default function ProfilPage() {
                     style={{
                       padding: '8px 16px', borderRadius: 10, cursor: 'pointer', fontSize: 13, fontWeight: 500,
                       transition: 'all 0.15s',
-                      background: housingStatus === s ? 'rgba(241,192,134,0.10)' : 'rgba(255,255,255,0.02)',
-                      border: housingStatus === s ? '1px solid rgba(241,192,134,0.40)' : '1px solid rgba(255,255,255,0.07)',
-                      color: housingStatus === s ? '#f1c086' : 'var(--text-muted-c)',
+                      background: housingStatus === s ? 'rgba(176,120,32,0.10)' : 'rgba(255,255,255,0.02)',
+                      border: housingStatus === s ? '1px solid rgba(176,120,32,0.40)' : '1px solid rgba(255,255,255,0.07)',
+                      color: housingStatus === s ? '#B07820' : 'var(--p-text-dim)',
                     }}
                   >
                     {s === 'tenant' ? '🏢 Locataire' : '🏠 Propriétaire'}
@@ -185,8 +185,8 @@ export default function ProfilPage() {
           )}
 
           {/* Theme preference */}
-          <div style={{ padding: '16px 20px', background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 12 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Apparence</p>
+          <div style={{ padding: '16px 20px', background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)', marginBottom: 12 }}>Apparence</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {([
                 { val: 'dark' as const,  label: 'Sombre', Icon: Moon  },
@@ -198,9 +198,9 @@ export default function ProfilPage() {
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     padding: '10px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `1px solid ${theme === val ? 'rgba(241,192,134,0.45)' : 'var(--card-dark-border)'}`,
-                    background: theme === val ? 'rgba(241,192,134,0.10)' : 'transparent',
-                    color: theme === val ? '#f1c086' : 'var(--text-muted-c)',
+                    border: `1px solid ${theme === val ? 'rgba(176,120,32,0.45)' : 'var(--p-line)'}`,
+                    background: theme === val ? 'rgba(176,120,32,0.10)' : 'transparent',
+                    color: theme === val ? '#B07820' : 'var(--p-text-dim)',
                     fontWeight: theme === val ? 700 : 400,
                     fontSize: 13, transition: 'all 0.15s',
                   }}
@@ -211,7 +211,7 @@ export default function ProfilPage() {
                 </button>
               ))}
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 8 }}>
               Cette préférence est sauvegardée sur votre compte et s&apos;applique sur tous vos appareils.
             </p>
           </div>

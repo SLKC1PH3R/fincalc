@@ -187,11 +187,11 @@ function IndexChip({ label, price, changePct, isRate }: IndexData) {
   return (
     <div style={{
       padding: '12px 14px', borderRadius: 12,
-      background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+      background: 'var(--p-card)', border: '1px solid var(--p-line)',
       display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 110,
     }}>
-      <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
-      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+      <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
         {price == null ? '—' : isRate ? `${price} %` : fmt(price)}
       </span>
       {!isRate && (
@@ -259,49 +259,49 @@ function GererIndicesModal({
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }} onClick={onClose}>
       <div style={{
-        background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+        background: 'var(--p-card)', border: '1px solid var(--p-line)',
         borderRadius: 20, padding: 24, width: '100%', maxWidth: 420,
         boxShadow: '0 24px 64px rgba(0,0,0,0.5)', maxHeight: '85vh', overflowY: 'auto',
       }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Marchés &amp; Indices</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--p-text)' }}>Marchés &amp; Indices</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X style={{ width: 16, height: 16, color: 'var(--text-muted-c)' }} />
+            <X style={{ width: 16, height: 16, color: 'var(--p-text-dim)' }} />
           </button>
         </div>
 
         {/* Active indices */}
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
           Indices actifs
         </p>
         {activeIndices.length === 0 ? (
-          <p style={{ fontSize: 13, color: 'var(--text-subtle)', textAlign: 'center', padding: '12px 0', marginBottom: 12 }}>Aucun indice actif</p>
+          <p style={{ fontSize: 13, color: 'var(--p-text-faint)', textAlign: 'center', padding: '12px 0', marginBottom: 12 }}>Aucun indice actif</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
             {activeIndices.map(idx => (
               <div key={idx.symbol} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
-                borderRadius: 10, border: '1px solid var(--card-dark-border)',
-                background: 'var(--row-hover)',
+                borderRadius: 10, border: '1px solid var(--p-line)',
+                background: 'var(--p-row-hover)',
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{idx.label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{idx.symbol}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{idx.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{idx.symbol}</div>
                 </div>
                 {idx.price != null && (
-                  <div style={{ fontSize: 12, color: 'var(--text-muted-c)', fontVariantNumeric: 'tabular-nums' }}>
+                  <div style={{ fontSize: 12, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>
                     {idx.isRate ? `${idx.price} %` : fmt(idx.price)}
                   </div>
                 )}
                 <button onClick={() => handleDelete(idx.symbol)}
                   style={{
-                    background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 6,
-                    padding: '3px 6px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s', flexShrink: 0,
+                    background: 'none', border: '1px solid var(--p-line)', borderRadius: 6,
+                    padding: '3px 6px', cursor: 'pointer', color: 'var(--p-text-faint)', transition: 'all 0.15s', flexShrink: 0,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.color = 'hsl(0 72% 51%)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.color = 'var(--p-text-faint)' }}>
                   <Trash2 style={{ width: 11, height: 11 }} />
                 </button>
               </div>
@@ -311,22 +311,22 @@ function GererIndicesModal({
 
         {hasRemovedDefaults && (
           <button onClick={handleRestore}
-            style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', marginBottom: 16, display: 'block' }}>
+            style={{ fontSize: 12, color: '#B07820', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', marginBottom: 16, display: 'block' }}>
             Restaurer les indices par défaut
           </button>
         )}
 
         {/* Separator */}
-        <div style={{ borderTop: '1px solid var(--card-dark-border)', margin: '16px 0' }} />
+        <div style={{ borderTop: '1px solid var(--p-line)', margin: '16px 0' }} />
 
         {/* Add form */}
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 12 }}>
           Ajouter un indice
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div>
-              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Symbole</label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-faint)', display: 'block', marginBottom: 4 }}>Symbole</label>
               <SymbolAutocomplete
                 value={addSymbol}
                 assetType={addType === 'crypto' ? 'CRYPTO' : 'STOCK'}
@@ -335,7 +335,7 @@ function GererIndicesModal({
               />
             </div>
             <div>
-              <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Libellé affiché</label>
+              <label style={{ fontSize: 11, color: 'var(--p-text-faint)', display: 'block', marginBottom: 4 }}>Libellé affiché</label>
               <Input
                 placeholder="ex: Apple, Dow Jones"
                 value={addLabel}
@@ -346,7 +346,7 @@ function GererIndicesModal({
             </div>
           </div>
           <div>
-            <label style={{ fontSize: 11, color: 'var(--text-subtle)', display: 'block', marginBottom: 4 }}>Type</label>
+            <label style={{ fontSize: 11, color: 'var(--p-text-faint)', display: 'block', marginBottom: 4 }}>Type</label>
             <Select value={addType} onValueChange={v => setAddType(v as 'stock' | 'crypto')}>
               <SelectTrigger style={{ fontSize: 13 }}><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -358,7 +358,7 @@ function GererIndicesModal({
           <Button
             onClick={handleAdd}
             disabled={!addSymbol.trim() || !addLabel.trim()}
-            style={{ background: '#f1c086', color: '#000', border: 'none', fontSize: 13 }}>
+            style={{ background: '#B07820', color: '#000', border: 'none', fontSize: 13 }}>
             <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
             Ajouter
           </Button>
@@ -431,13 +431,13 @@ function SymbolAutocomplete({
           autoComplete="off"
         />
         {loading && (
-          <RefreshCw style={{ width: 12, height: 12, position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-subtle)', animation: 'spin 1s linear infinite' }} />
+          <RefreshCw style={{ width: 12, height: 12, position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--p-text-faint)', animation: 'spin 1s linear infinite' }} />
         )}
       </div>
       {open && results.length > 0 && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 600,
-          background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+          background: 'var(--p-card)', border: '1px solid var(--p-line)',
           borderRadius: 10, marginTop: 4, overflow: 'hidden',
           boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
         }}>
@@ -448,18 +448,18 @@ function SymbolAutocomplete({
                 display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                 padding: '9px 12px', background: 'none', border: 'none', cursor: 'pointer',
                 textAlign: 'left', transition: 'background 0.1s',
-                borderBottom: i < results.length - 1 ? '1px solid var(--section-border)' : 'none',
+                borderBottom: i < results.length - 1 ? '1px solid var(--p-line)' : 'none',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums', minWidth: 52 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums', minWidth: 52 }}>
                 {r.symbol}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--text-muted-c)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 12, color: 'var(--p-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {r.name}
               </span>
               {r.type && (
-                <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-subtle)', flexShrink: 0 }}>{r.type}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--p-text-faint)', flexShrink: 0 }}>{r.type}</span>
               )}
             </button>
           ))}
@@ -562,16 +562,16 @@ function PositionDialog({
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }} onClick={onClose}>
       <div style={{
-        background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+        background: 'var(--p-card)', border: '1px solid var(--p-line)',
         borderRadius: 20, padding: 28, width: '100%', maxWidth: 480,
         boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
       }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)' }}>
             {editPosition ? 'Modifier la position' : 'Ajouter une position'}
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X style={{ width: 18, height: 18, color: 'var(--text-muted-c)' }} />
+            <X style={{ width: 18, height: 18, color: 'var(--p-text-dim)' }} />
           </button>
         </div>
 
@@ -675,14 +675,14 @@ function PositionDialog({
 
           {/* Info livret */}
           {isLivret && (
-            <p style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
               Pour un livret, entrez le montant déposé en "Montant" et laissez la valeur unitaire à 1. Les taux sont indicatifs.
             </p>
           )}
 
           {/* Info SCPI/CASH */}
           {(form.assetType === 'SCPI' || form.assetType === 'CASH') && (
-            <p style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.5 }}>
               Valorisation manuelle : valeur = PRU × quantité. Aucune API n&apos;est appelée.
             </p>
           )}
@@ -690,7 +690,7 @@ function PositionDialog({
           {/* Submit */}
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <Button variant="outline" onClick={onClose} style={{ flex: 1 }}>Annuler</Button>
-            <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
+            <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#B07820', color: '#000', border: 'none' }}>
               {saving
                 ? <RefreshCw style={{ width: 14, height: 14, marginRight: 5, animation: 'spin 1s linear infinite' }} />
                 : <Check style={{ width: 14, height: 14, marginRight: 5 }} />}
@@ -754,18 +754,18 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={handleClose}>
-      <div style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 540, boxShadow: '0 24px 64px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+      <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 540, boxShadow: '0 24px 64px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)' }}>
               {step === 1 ? 'Ajouter une enveloppe' : step === 2 ? 'Nommer votre enveloppe' : `Configurer — ${cfg?.label}`}
             </h2>
-            <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 2 }}>Étape {step} / 3</p>
+            <p style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 2 }}>Étape {step} / 3</p>
           </div>
           <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X style={{ width: 18, height: 18, color: 'var(--text-muted-c)' }} />
+            <X style={{ width: 18, height: 18, color: 'var(--p-text-dim)' }} />
           </button>
         </div>
 
@@ -775,14 +775,14 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
             {(Object.entries(ENVELOPE_TYPE_CONFIG) as [EnvelopeType, typeof ENVELOPE_TYPE_CONFIG[EnvelopeType]][]).map(([t, c]) => {
               const Icon = c.icon
               return (
-                <button key={t} onClick={() => handleTypeSelect(t)} style={{ background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
+                <button key={t} onClick={() => handleTypeSelect(t)} style={{ background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = c.color + '60'; e.currentTarget.style.background = c.color + '10' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.background = 'var(--row-hover)' }}>
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.background = 'var(--p-row-hover)' }}>
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: c.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
                     <Icon style={{ width: 16, height: 16, color: c.color }} />
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{c.label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{c.description}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{c.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{c.description}</div>
                 </button>
               )
             })}
@@ -796,8 +796,8 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, background: cfg.color + '12', border: `1px solid ${cfg.color}30` }}>
                 <cfg.icon style={{ width: 20, height: 20, color: cfg.color }} />
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{cfg.label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{cfg.description}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{cfg.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{cfg.description}</div>
                 </div>
               </div>
             )}
@@ -807,7 +807,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <Button variant="outline" onClick={() => setStep(1)} style={{ flex: 1 }}>Retour</Button>
-              <Button onClick={() => setStep(3)} disabled={!name.trim()} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>Suivant</Button>
+              <Button onClick={() => setStep(3)} disabled={!name.trim()} style={{ flex: 1, background: '#B07820', color: '#000', border: 'none' }}>Suivant</Button>
             </div>
           </div>
         )}
@@ -828,7 +828,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
                 </Select>
               </div>
               {meta.livretType && LIVRET_CONFIG[meta.livretType as string] && (
-                <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
                   Taux : <strong>{LIVRET_CONFIG[meta.livretType as string].rate} %</strong>
                   {LIVRET_CONFIG[meta.livretType as string].maxBalance != null && <> · Plafond légal : <strong>{(LIVRET_CONFIG[meta.livretType as string].maxBalance as number).toLocaleString('fr-FR')} €</strong></>}
                 </div>
@@ -886,7 +886,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
             {/* PEA */}
             {type === 'PEA' && (<>
-              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: '#818cf818', border: '1px solid #818cf830', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: 'var(--p-text-faint)', background: '#818cf818', border: '1px solid #818cf830', borderRadius: 8, padding: '10px 12px', lineHeight: 1.6 }}>
                 Plafond de versements PEA : <strong>150 000 €</strong> · Exonération d&apos;IR après 5 ans de détention
               </div>
               <div className="space-y-1.5"><Label>Courtier</Label><Input placeholder="Saxo, Boursorama, Degiro…" value={String(meta.broker ?? '')} onChange={e => m('broker')(e.target.value)} /></div>
@@ -895,7 +895,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
                 <div className="space-y-1.5"><Label>Total versements (€)</Label><Input type="number" placeholder="50 000" value={String(meta.depositsTotal ?? '')} onChange={e => m('depositsTotal')(+e.target.value)} /></div>
               </div>
               {meta.depositsTotal != null && Number(meta.depositsTotal) > 0 && (
-                <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+                <div style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px' }}>
                   Headroom restant : <strong>{(PEA_MAX_DEPOSITS - Number(meta.depositsTotal)).toLocaleString('fr-FR')} €</strong> sur {PEA_MAX_DEPOSITS.toLocaleString('fr-FR')} €
                 </div>
               )}
@@ -926,7 +926,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
             {/* CTO */}
             {type === 'CTO' && (<>
-              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+              <div style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px' }}>
                 Vous pourrez ajouter vos positions (actions, ETFs) depuis la page de l&apos;enveloppe.
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -937,7 +937,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
             {/* CRYPTO */}
             {type === 'CRYPTO' && (<>
-              <div style={{ fontSize: 12, color: 'var(--text-subtle)', background: 'var(--row-hover)', border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '10px 12px' }}>
+              <div style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'var(--p-row-hover)', border: '1px solid var(--p-line)', borderRadius: 8, padding: '10px 12px' }}>
                 Vous pourrez ajouter vos positions crypto depuis la page de l&apos;enveloppe.
               </div>
               <div className="space-y-1.5"><Label>Plateforme</Label><Input placeholder="Ledger, Trezor, Binance, Coinbase…" value={String(meta.platform ?? '')} onChange={e => m('platform')(e.target.value)} /></div>
@@ -992,7 +992,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
 
             <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
               <Button variant="outline" onClick={() => setStep(2)} style={{ flex: 1 }}>Retour</Button>
-              <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#f1c086', color: '#000', border: 'none' }}>
+              <Button onClick={handleSubmit} disabled={saving} style={{ flex: 1, background: '#B07820', color: '#000', border: 'none' }}>
                 {saving ? <RefreshCw style={{ width: 13, height: 13, marginRight: 5, animation: 'spin 1s linear infinite' }} /> : <Check style={{ width: 13, height: 13, marginRight: 5 }} />}
                 Créer l&apos;enveloppe
               </Button>
@@ -1011,12 +1011,12 @@ function EnvelopeCard({ envelope, computedValue }: { envelope: Envelope; compute
   return (
     <Link href={`/dashboard/portfolio/${envelope.id}`} style={{ textDecoration: 'none' }}>
       <div style={{
-        background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+        background: 'var(--p-card)', border: '1px solid var(--p-line)',
         borderRadius: 16, padding: '18px 20px', cursor: 'pointer', transition: 'all 0.2s',
         position: 'relative', overflow: 'hidden',
       }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = cfg.color + '50'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.transform = '' }}>
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.transform = '' }}>
         <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 0% 0%, ${cfg.color}0e, transparent 55%)`, pointerEvents: 'none' }} />
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1024,18 +1024,18 @@ function EnvelopeCard({ envelope, computedValue }: { envelope: Envelope; compute
               <Icon style={{ width: 17, height: 17, color: cfg.color }} />
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-em)' }}>{envelope.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 1 }}>{cfg.label}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text-em)' }}>{envelope.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 1 }}>{cfg.label}</div>
             </div>
           </div>
-          <ChevronRight style={{ width: 16, height: 16, color: 'var(--text-subtle)', marginTop: 2 }} />
+          <ChevronRight style={{ width: 16, height: 16, color: 'var(--p-text-faint)', marginTop: 2 }} />
         </div>
         <div style={{ marginTop: 16, position: 'relative' }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
             {fmt(computedValue)}
           </div>
           {envelope.positionCount > 0 && (
-            <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>
               {envelope.positionCount} position{envelope.positionCount !== 1 ? 's' : ''}
             </div>
           )}
@@ -1223,7 +1223,7 @@ function PortfolioPageInner() {
             Actualiser
           </Button>
           <Button size="sm" onClick={() => { setEditPosition(null); setDialogOpen(true) }}
-            style={{ background: '#f1c086', color: '#000', border: 'none' }}>
+            style={{ background: '#B07820', color: '#000', border: 'none' }}>
             <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
             Ajouter
           </Button>
@@ -1257,7 +1257,7 @@ function PortfolioPageInner() {
           <CardHeader><CardTitle>Répartition par classe d&apos;actif</CardTitle></CardHeader>
           <CardContent>
             {pieData.length === 0 ? (
-              <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+              <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
                 Aucune position — ajoutez vos actifs
               </div>
             ) : (
@@ -1275,7 +1275,7 @@ function PortfolioPageInner() {
                     itemStyle={chart.itemStyle} labelStyle={chart.labelStyle}
                   />
                   <Legend iconType="circle" iconSize={8}
-                    formatter={(value) => <span style={{ fontSize: 12, color: 'var(--text-muted-c)' }}>{value}</span>}
+                    formatter={(value) => <span style={{ fontSize: 12, color: 'var(--p-text-dim)' }}>{value}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -1294,12 +1294,12 @@ function PortfolioPageInner() {
               <button onClick={() => setGererOpen(true)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 600,
-                  color: 'var(--text-subtle)', background: 'var(--row-hover)',
-                  border: '1px solid var(--card-dark-border)', borderRadius: 8, padding: '5px 10px',
+                  color: 'var(--p-text-faint)', background: 'var(--p-row-hover)',
+                  border: '1px solid var(--p-line)', borderRadius: 8, padding: '5px 10px',
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-em)'; e.currentTarget.style.borderColor = 'var(--text-muted-c)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-subtle)'; e.currentTarget.style.borderColor = 'var(--card-dark-border)' }}>
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--p-text-em)'; e.currentTarget.style.borderColor = 'var(--p-text-dim)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--p-text-faint)'; e.currentTarget.style.borderColor = 'var(--p-line)' }}>
                 <Settings2 style={{ width: 11, height: 11 }} />
                 Gérer
               </button>
@@ -1307,13 +1307,13 @@ function PortfolioPageInner() {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
                 Chargement...
               </div>
             ) : indices.length === 0 ? (
               <div style={{ height: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <p style={{ color: 'var(--text-subtle)', fontSize: 13 }}>Tous les indices sont masqués</p>
-                <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#f1c086', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                <p style={{ color: 'var(--p-text-faint)', fontSize: 13 }}>Tous les indices sont masqués</p>
+                <button onClick={() => setGererOpen(true)} style={{ fontSize: 12, color: '#B07820', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
                   Gérer les indices
                 </button>
               </div>
@@ -1337,13 +1337,13 @@ function PortfolioPageInner() {
         <CardContent>
           {enriched.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 0' }}>
-              <Layers style={{ width: 36, height: 36, color: 'var(--text-subtle)', margin: '0 auto 12px' }} />
-              <p style={{ fontSize: 14, color: 'var(--text-muted-c)', marginBottom: 6 }}>Aucune position enregistrée</p>
-              <p style={{ fontSize: 12, color: 'var(--text-subtle)', marginBottom: 20 }}>
+              <Layers style={{ width: 36, height: 36, color: 'var(--p-text-faint)', margin: '0 auto 12px' }} />
+              <p style={{ fontSize: 14, color: 'var(--p-text-dim)', marginBottom: 6 }}>Aucune position enregistrée</p>
+              <p style={{ fontSize: 12, color: 'var(--p-text-faint)', marginBottom: 20 }}>
                 Ajoutez vos actions, ETFs, cryptos, SCPI et livrets pour commencer le suivi.
               </p>
               <Button size="sm" onClick={() => { setEditPosition(null); setDialogOpen(true) }}
-                style={{ background: '#f1c086', color: '#000', border: 'none' }}>
+                style={{ background: '#B07820', color: '#000', border: 'none' }}>
                 <Plus style={{ width: 13, height: 13, marginRight: 5 }} />
                 Ajouter une position
               </Button>
@@ -1352,9 +1352,9 @@ function PortfolioPageInner() {
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--card-dark-border)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
                     {['Nom', 'Type', 'Qté / Montant', 'PRU', 'Valeur actuelle', '+/- €', '+/- %', ''].map((h, i) => (
-                      <th key={i} style={{ padding: '8px 12px', textAlign: i >= 2 ? 'right' : 'left', fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
+                      <th key={i} style={{ padding: '8px 12px', textAlign: i >= 2 ? 'right' : 'left', fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
                         {h}
                       </th>
                     ))}
@@ -1362,24 +1362,24 @@ function PortfolioPageInner() {
                 </thead>
                 <tbody>
                   {enriched.map(p => (
-                    <tr key={p.id} style={{ borderBottom: '1px solid var(--section-border)', transition: 'background 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                    <tr key={p.id} style={{ borderBottom: '1px solid var(--p-line)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                       <td style={{ padding: '11px 12px' }}>
-                        <div style={{ fontWeight: 600, color: 'var(--text-em)' }}>{p.name}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 1 }}>{p.symbol}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--p-text-em)' }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 1 }}>{p.symbol}</div>
                       </td>
                       <td style={{ padding: '11px 12px' }}><AssetBadge type={p.assetType} /></td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: 'var(--text-muted-c)' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: 'var(--p-text-dim)' }}>
                         {p.quantity % 1 === 0 ? p.quantity.toLocaleString('fr-FR') : p.quantity.toFixed(4)}
                       </td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: 'var(--text-muted-c)' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: 'var(--p-text-dim)' }}>
                         {fmtEur(p.pru)}
                       </td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>
                         {fmtEur(p.currentValueEur)}
                         {!p.isManual && p.currentPriceEur != null && (
-                          <div style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 400, marginTop: 1 }}>
+                          <div style={{ fontSize: 11, color: 'var(--p-text-faint)', fontWeight: 400, marginTop: 1 }}>
                             @ {fmtEur(p.currentPriceEur)}
                           </div>
                         )}
@@ -1397,15 +1397,15 @@ function PortfolioPageInner() {
                       <td style={{ padding: '11px 8px', textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
                           <button onClick={() => { setEditPosition(p); setDialogOpen(true) }}
-                            style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s' }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted-c)'; e.currentTarget.style.color = 'var(--text-em)' }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
+                            style={{ background: 'none', border: '1px solid var(--p-line)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--p-text-faint)', transition: 'all 0.15s' }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--p-text-dim)'; e.currentTarget.style.color = 'var(--p-text-em)' }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.color = 'var(--p-text-faint)' }}>
                             <Pencil style={{ width: 12, height: 12 }} />
                           </button>
                           <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
-                            style={{ background: 'none', border: '1px solid var(--card-dark-border)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--text-subtle)', transition: 'all 0.15s' }}
+                            style={{ background: 'none', border: '1px solid var(--p-line)', borderRadius: 7, padding: '4px 7px', cursor: 'pointer', color: 'var(--p-text-faint)', transition: 'all 0.15s' }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.color = 'hsl(0 72% 51%)' }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.color = 'var(--text-subtle)' }}>
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.color = 'var(--p-text-faint)' }}>
                             <Trash2 style={{ width: 12, height: 12 }} />
                           </button>
                         </div>
@@ -1422,7 +1422,7 @@ function PortfolioPageInner() {
       {/* Insight cards */}
       {totalValue > 0 && (
         <div>
-          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
             Aller plus loin avec PatrImo
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1457,20 +1457,20 @@ function PortfolioPageInner() {
             ].map((card, i) => (
               <Link key={i} href={card.href} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                  background: 'var(--p-card)', border: '1px solid var(--p-line)',
                   borderRadius: 16, padding: '20px', cursor: 'pointer', transition: 'all 0.2s',
                   position: 'relative', overflow: 'hidden',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = card.color + '50'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--card-dark-border)'; e.currentTarget.style.transform = '' }}>
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line)'; e.currentTarget.style.transform = '' }}>
                   <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 0% 0%, ${card.color}10, transparent 55%)`, pointerEvents: 'none' }} />
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, position: 'relative' }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: card.color + '18', border: `1px solid ${card.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <card.icon style={{ width: 16, height: 16, color: card.color }} />
                     </div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>{card.title}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>{card.title}</p>
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted-c)', lineHeight: 1.55, marginBottom: 14, position: 'relative' }}>{card.desc}</p>
+                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.55, marginBottom: 14, position: 'relative' }}>{card.desc}</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: card.color, fontWeight: 600, position: 'relative' }}>
                     {card.cta} <ArrowRight style={{ width: 12, height: 12 }} />
                   </div>

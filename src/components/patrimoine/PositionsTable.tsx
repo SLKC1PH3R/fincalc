@@ -177,29 +177,29 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
   }
 
   return (
-    <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)' }}>
+    <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
       <CardContent style={{ padding: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--section-border)' }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--p-line)' }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>
             Positions ({positions.length})
           </span>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {cacheAge !== null && cacheAge !== undefined && cacheAge > 0 && (
-              <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
+              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>
                 Prix actualisés il y a {cacheAge} min
               </span>
             )}
             <button
               onClick={onRefreshPrices}
               disabled={pricesLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'none', cursor: pricesLoading ? 'default' : 'pointer', fontSize: 12, color: pricesLoading ? 'var(--text-subtle)' : 'var(--text-primary)', opacity: pricesLoading ? 0.5 : 1, transition: 'color 0.15s, opacity 0.15s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--p-line)', background: 'none', cursor: pricesLoading ? 'default' : 'pointer', fontSize: 12, color: pricesLoading ? 'var(--p-text-faint)' : 'var(--p-text)', opacity: pricesLoading ? 0.5 : 1, transition: 'color 0.15s, opacity 0.15s' }}
             >
               <RefreshCw style={{ width: 12, height: 12, animation: pricesLoading ? 'spin 1s linear infinite' : 'none' }} />
               {pricesLoading ? 'Actualisation…' : 'Actualiser'}
             </button>
             <button
               onClick={() => setShowAddPos(v => !v)}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--card-dark-border)', background: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--text-primary)', fontWeight: 600 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 8, border: '1px solid var(--p-line)', background: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--p-text)', fontWeight: 600 }}
             >
               <Plus style={{ width: 12, height: 12 }} />
               Ajouter
@@ -208,12 +208,12 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
         </div>
 
         {showAddPos && (
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--section-border)', background: 'var(--row-hover)' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--p-line)', background: 'var(--p-row-hover)' }}>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
               <div>
                 <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>Type</Label>
                 {isCrypto ? (
-                  <div style={{ width: 100, height: 36, display: 'flex', alignItems: 'center', padding: '0 10px', borderRadius: 6, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', fontSize: 13, color: 'var(--text-muted-c)' }}>
+                  <div style={{ width: 100, height: 36, display: 'flex', alignItems: 'center', padding: '0 10px', borderRadius: 6, border: '1px solid var(--p-line)', background: 'var(--p-card)', fontSize: 13, color: 'var(--p-text-dim)' }}>
                     Crypto
                   </div>
                 ) : (
@@ -229,7 +229,7 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
               </div>
               <div style={{ position: 'relative' }}>
                 <Label style={{ fontSize: 11, marginBottom: 4, display: 'block' }}>
-                  Symbole {searchLoading && <span style={{ color: 'var(--text-subtle)', fontSize: 10 }}>…</span>}
+                  Symbole {searchLoading && <span style={{ color: 'var(--p-text-faint)', fontSize: 10 }}>…</span>}
                 </Label>
                 <Input
                   value={newPos.symbol}
@@ -243,7 +243,7 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                 {searchOpen && searchResults.length > 0 && (
                   <div style={{
                     position: 'absolute', top: '100%', left: 0, zIndex: 50,
-                    background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)',
+                    background: 'var(--p-card)', border: '1px solid var(--p-line)',
                     borderRadius: 8, marginTop: 4, minWidth: 280, maxHeight: 220, overflowY: 'auto',
                     boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
                   }}>
@@ -253,13 +253,13 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                         onMouseDown={() => selectSearchResult(r)}
                         style={{
                           padding: '7px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                          borderBottom: '1px solid var(--section-border)',
+                          borderBottom: '1px solid var(--p-line)',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--row-hover)')}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                       >
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-em)', fontFamily: 'monospace', minWidth: 56, flexShrink: 0 }}>{r.symbol}</span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted-c)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'monospace', minWidth: 56, flexShrink: 0 }}>{r.symbol}</span>
+                        <span style={{ fontSize: 11, color: 'var(--p-text-dim)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</span>
                         <span style={{ fontSize: 10, fontWeight: 600, color: r.type === 'ETF' ? '#60a5fa' : r.type === 'CRYPTO' ? '#f59e0b' : '#34d399', flexShrink: 0 }}>{r.type}</span>
                       </div>
                     ))}
@@ -307,14 +307,14 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
         )}
 
         {positions.length === 0 ? (
-          <div style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+          <div style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
             Aucune position — cliquez sur "Ajouter" pour commencer
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--section-border)' }}>
+                <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
                   {([
                     { label: 'Type',     col: 'type'     as SortCol },
                     { label: 'Titre',    col: 'symbol'   as SortCol },
@@ -326,7 +326,7 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                   ] as { label: string; col: SortCol }[]).map(({ label, col }) => (
                     <th key={col}
                       onClick={() => toggleSort(col)}
-                      style={{ padding: '8px 16px', textAlign: 'left', fontSize: 11, color: sortCol === col ? '#f97316' : 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
+                      style={{ padding: '8px 16px', textAlign: 'left', fontSize: 11, color: sortCol === col ? '#f97316' : 'var(--p-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
                     >
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                         {label} <SortIcon col={col} />
@@ -344,11 +344,11 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                   const pru = isEditing ? parseFloat(editingPos.pru) || pos.pru : pos.pru
                   const value = pd ? pd.priceEur * qty : pru * qty
                   const perf = pd ? ((pd.priceEur - pru) / pru) * 100 : null
-                  const color = perf === null ? 'var(--text-subtle)' : perf >= 0 ? '#34d399' : '#ef4444'
+                  const color = perf === null ? 'var(--p-text-faint)' : perf >= 0 ? '#34d399' : '#ef4444'
 
                   return (
-                    <tr key={pos.id} style={{ borderBottom: '1px solid var(--section-border)' }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--row-hover)'}
+                    <tr key={pos.id} style={{ borderBottom: '1px solid var(--p-line)' }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--p-row-hover)'}
                       onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                     >
                       <td style={{ padding: '10px 16px' }}>
@@ -357,8 +357,8 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                         </span>
                       </td>
                       <td style={{ padding: '10px 16px' }}>
-                        <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{pos.symbol}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{pos.name}</div>
+                        <div style={{ fontWeight: 600, color: 'var(--p-text)' }}>{pos.symbol}</div>
+                        <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{pos.name}</div>
                       </td>
                       <td style={{ padding: '8px 16px', fontVariantNumeric: 'tabular-nums' }}>
                         {isEditing ? (
@@ -367,11 +367,11 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                             value={editingPos.quantity}
                             onChange={e => setEditingPos(p => p ? { ...p, quantity: e.target.value } : null)}
                             onKeyDown={e => { if (e.key === 'Enter') savePosition(); if (e.key === 'Escape') cancelEdit() }}
-                            style={{ width: 72, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                            style={{ width: 72, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--p-line)', background: 'var(--p-card)', color: 'var(--p-text)', fontSize: 13 }}
                             autoFocus
                           />
                         ) : (
-                          <span style={{ color: 'var(--text-primary)' }}>{pos.quantity}</span>
+                          <span style={{ color: 'var(--p-text)' }}>{pos.quantity}</span>
                         )}
                       </td>
                       <td style={{ padding: '8px 16px', fontVariantNumeric: 'tabular-nums' }}>
@@ -381,16 +381,16 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                             value={editingPos.pru}
                             onChange={e => setEditingPos(p => p ? { ...p, pru: e.target.value } : null)}
                             onKeyDown={e => { if (e.key === 'Enter') savePosition(); if (e.key === 'Escape') cancelEdit() }}
-                            style={{ width: 90, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--card-dark-border)', background: 'var(--card-dark)', color: 'var(--text-primary)', fontSize: 13 }}
+                            style={{ width: 90, padding: '3px 6px', borderRadius: 5, border: '1px solid var(--p-line)', background: 'var(--p-card)', color: 'var(--p-text)', fontSize: 13 }}
                           />
                         ) : (
-                          <span style={{ color: 'var(--text-muted-c)' }}>{fmtEur(pos.pru)}</span>
+                          <span style={{ color: 'var(--p-text-dim)' }}>{fmtEur(pos.pru)}</span>
                         )}
                       </td>
-                      <td style={{ padding: '10px 16px', color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
-                        {pd ? fmtEur(pd.priceEur) : <span style={{ color: 'var(--text-subtle)' }}>—</span>}
+                      <td style={{ padding: '10px 16px', color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
+                        {pd ? fmtEur(pd.priceEur) : <span style={{ color: 'var(--p-text-faint)' }}>—</span>}
                       </td>
-                      <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>{fmtEur(value)}</td>
+                      <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtEur(value)}</td>
                       <td style={{ padding: '10px 16px', fontWeight: 600, color, fontVariantNumeric: 'tabular-nums' }}>
                         {perf !== null ? `${perf >= 0 ? '+' : ''}${perf.toFixed(2)} %` : '—'}
                       </td>
@@ -400,16 +400,16 @@ export function PositionsTable({ envelope, positions, prices, pricesLoading, isC
                             <button onClick={savePosition} style={{ padding: 4, borderRadius: 6, background: 'rgba(52,211,153,0.12)', border: 'none', cursor: 'pointer', color: '#34d399' }}>
                               <Check style={{ width: 13, height: 13 }} />
                             </button>
-                            <button onClick={cancelEdit} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                            <button onClick={cancelEdit} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                               <X style={{ width: 13, height: 13 }} />
                             </button>
                           </div>
                         ) : (
                           <div style={{ display: 'flex', gap: 2 }}>
-                            <button onClick={() => startEdit(pos)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                            <button onClick={() => startEdit(pos)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                               <Pencil style={{ width: 13, height: 13 }} />
                             </button>
-                            <button onClick={() => deletePosition(pos.id)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)' }}>
+                            <button onClick={() => deletePosition(pos.id)} style={{ padding: 4, borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                               <Trash2 style={{ width: 13, height: 13 }} />
                             </button>
                           </div>

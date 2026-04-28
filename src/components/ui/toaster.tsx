@@ -4,13 +4,13 @@ import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastVi
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react'
 
 const VARIANT_ICON: Record<string, React.ReactNode> = {
-  success:     <CheckCircle2 className="h-4 w-4 flex-shrink-0" style={{ color: '#f1c086' }} />,
+  success:     <CheckCircle2 className="h-4 w-4 flex-shrink-0" style={{ color: '#B07820' }} />,
   destructive: <AlertCircle  className="h-4 w-4 flex-shrink-0" style={{ color: '#f87171' }} />,
   default:     <Info         className="h-4 w-4 flex-shrink-0" style={{ color: '#60a5fa' }} />,
 }
 
 const VARIANT_ACCENT: Record<string, string> = {
-  success:     '#f1c086',
+  success:     '#B07820',
   destructive: '#f87171',
   default:     '#60a5fa',
 }

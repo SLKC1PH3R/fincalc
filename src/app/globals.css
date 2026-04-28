@@ -37,53 +37,90 @@
     --amber: 38 92% 50%;
     --blue: 217 91% 60%;
 
-    /* Content area — NextAdmin-style solid dark */
-    --content-bg: #1a1d24;
-    --card-dark: #222731;
-    --card-dark-border: rgba(255,255,255,0.06);
-    --mini-card-bg: #1e2230;
-    --modal-surface: #1e2230;
-    --modal-surface-border: rgba(255,255,255,0.10);
-    --popover-surface: #181c27;
-    --popover-surface-border: rgba(255,255,255,0.09);
-    --text-primary: #ffffff;
-    --text-muted-c: rgba(255,255,255,0.45);
-    --text-subtle: rgba(255,255,255,0.25);
-    --text-em: rgba(255,255,255,0.80);
-    --section-border: rgba(255,255,255,0.05);
-    --row-hover: rgba(255,255,255,0.035);
-    --icon-chip-bg: rgba(255,255,255,0.06);
-    --icon-chip-border: rgba(255,255,255,0.08);
-    --card-shadow: 0 2px 10px rgba(0,0,0,0.30);
-    --card-shadow-hover: 0 6px 20px rgba(0,0,0,0.40);
-    --chart-grid: rgba(255,255,255,0.06);
-    --chart-tick: rgba(255,255,255,0.35);
-    --chart-line: #f1c086;
-    --chart-line-dim: #c8922a;
-    --chart-fill-1: #f1c086;
-    --chart-fill-2: #34d399;
-    --chart-fill-3: #38bdf8;
+    /* ── New --p-* design tokens (ivory palette) ── */
+    --p-bg:          #F3EEE4;
+    --p-bg-2:        #ECE4D4;
+    --p-card:        #FFFFFF;
+    --p-card-2:      #FBF7EF;
+    --p-line:        rgba(10,10,10,0.08);
+    --p-line-2:      rgba(10,10,10,0.14);
+    --p-row-hover:   rgba(10,10,10,0.04);
+    --p-text:        #0A0A0A;
+    --p-text-em:     #1F1A12;
+    --p-text-mid:    #4A4338;
+    --p-text-dim:    #6B6356;
+    --p-text-faint:  #9A907F;
+    --p-gold:        #B07820;
+    --p-gold-2:      #D4A24C;
+    --p-gold-deep:   #8B5E18;
+    --p-gold-08:     rgba(176,120,32,0.08);
+    --p-gold-12:     rgba(176,120,32,0.12);
+    --p-gold-18:     rgba(176,120,32,0.18);
+    --p-gold-30:     rgba(176,120,32,0.30);
+    --p-green:       #1F7A4A;
+    --p-green-soft:  rgba(31,122,74,0.10);
+    --p-red:         #B23B3B;
+    --p-red-soft:    rgba(178,59,59,0.10);
+    --p-blue:        #2B5B9A;
+    --p-orange:      #C26A1F;
+    --p-violet:      #6B46C1;
+    --p-cyan:        #0E7490;
+    --p-pink:        #C2185B;
+    --p-sans:  'Geist', system-ui, sans-serif;
+    --p-serif: 'Instrument Serif', Georgia, serif;
+    --p-mono:  'Geist Mono', ui-monospace, monospace;
+    --r-xs: 4px; --r-sm: 8px; --r: 12px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px;
+    --shadow-sm: 0 1px 2px rgba(10,10,10,0.04), 0 1px 1px rgba(10,10,10,0.03);
+    --shadow-1:  0 4px 14px rgba(10,10,10,0.05), 0 1px 3px rgba(10,10,10,0.04);
+    --shadow-2:  0 24px 60px -20px rgba(10,10,10,0.18), 0 6px 20px -10px rgba(10,10,10,0.10);
 
-    /* Sidebar — NextAdmin dark gold theme */
-    --sb-bg: #1c2030;
-    --sb-border: rgba(255,255,255,0.06);
-    --sb-profile-bg: rgba(255,255,255,0.04);
-    --sb-mini-card: rgba(255,255,255,0.03);
-    --sb-text: rgba(255,255,255,0.52);
-    --sb-text-strong: #ffffff;
-    --sb-text-dim: rgba(255,255,255,0.18);
-    --sb-text-section: rgba(255,255,255,0.28);
-    --sb-hover-bg: rgba(255,255,255,0.045);
-    --sb-sim-text: rgba(255,255,255,0.28);
-    --sb-sim-text-hover: rgba(255,255,255,0.72);
-    --sb-divider: rgba(255,255,255,0.045);
-    --sb-active-bg: rgba(241,192,134,0.08);
-    --sb-active-border: transparent;
-    --sb-active-text: #ffffff;
-    --sb-gold-start: #c8922a;
-    --sb-gold-end: #f1c086;
-    --gold: #f1c086;
-    --gold-dim: #c8922a;
+    /* Content area — ivory light theme */
+    --content-bg: #F3EEE4;
+    --card-dark: #FFFFFF;
+    --card-dark-border: rgba(10,10,10,0.08);
+    --mini-card-bg: #FBF7EF;
+    --modal-surface: #FFFFFF;
+    --modal-surface-border: rgba(10,10,10,0.10);
+    --popover-surface: #FFFFFF;
+    --popover-surface-border: rgba(10,10,10,0.10);
+    --text-primary: #0A0A0A;
+    --text-muted-c: #6B6356;
+    --text-subtle: #9A907F;
+    --text-em: #1F1A12;
+    --section-border: rgba(10,10,10,0.08);
+    --row-hover: rgba(10,10,10,0.04);
+    --icon-chip-bg: rgba(10,10,10,0.05);
+    --icon-chip-border: rgba(10,10,10,0.08);
+    --card-shadow: 0 1px 3px rgba(10,10,10,0.06), 0 1px 2px rgba(10,10,10,0.04);
+    --card-shadow-hover: 0 4px 14px rgba(10,10,10,0.10);
+    --chart-grid: rgba(10,10,10,0.06);
+    --chart-tick: #9A907F;
+    --chart-line: #B07820;
+    --chart-line-dim: #8B5E18;
+    --chart-fill-1: #B07820;
+    --chart-fill-2: #1F7A4A;
+    --chart-fill-3: #2B5B9A;
+
+    /* Sidebar — ivory light theme */
+    --sb-bg: #F3EEE4;
+    --sb-border: rgba(10,10,10,0.08);
+    --sb-profile-bg: rgba(10,10,10,0.03);
+    --sb-mini-card: rgba(10,10,10,0.02);
+    --sb-text: #4A4338;
+    --sb-text-strong: #0A0A0A;
+    --sb-text-dim: #9A907F;
+    --sb-text-section: #9A907F;
+    --sb-hover-bg: rgba(10,10,10,0.04);
+    --sb-sim-text: #9A907F;
+    --sb-sim-text-hover: #0A0A0A;
+    --sb-divider: rgba(10,10,10,0.06);
+    --sb-active-bg: rgba(176,120,32,0.10);
+    --sb-active-border: rgba(176,120,32,0.25);
+    --sb-active-text: #8B5E18;
+    --sb-gold-start: #8B5E18;
+    --sb-gold-end: #B07820;
+    --gold: #B07820;
+    --gold-dim: #8B5E18;
   }
 
   @keyframes float-slow {
@@ -108,7 +145,7 @@
     50% { opacity: 0.4; }
   }
   .skeleton {
-    background: rgba(255,255,255,0.07);
+    background: rgba(10,10,10,0.07);
     border-radius: 6px;
     animation: skeleton-pulse 1.4s ease-in-out infinite;
   }
@@ -250,8 +287,8 @@
     transition: box-shadow 0.18s ease, border-color 0.18s ease;
   }
   .na-card:hover {
-    box-shadow: var(--card-shadow-hover, 0 6px 20px rgba(0,0,0,0.38));
-    border-color: rgba(255,255,255,0.09);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(176,120,32,0.20);
   }
 
   /* Scrollbar */
@@ -326,26 +363,26 @@
   background: var(--content-bg);
 }
 
-/* Very subtle dot/line texture — optional, nearly invisible */
+/* Ivory dot texture */
 .grid-bg::before {
   content: '';
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(176,120,32,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176,120,32,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Gentle gold accent glow — top-left only, restrained */
+/* Gentle warm gold glow — top-left */
 .grid-bg::after {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 40% 30% at -5% 0%, rgba(241,192,134,0.07) 0%, transparent 65%);
+    radial-gradient(ellipse 50% 35% at -5% 0%, rgba(176,120,32,0.08) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
 }
@@ -369,69 +406,71 @@ html { scroll-behavior: smooth; }
 .light .grid-bg::before,
 .light .grid-bg::after { display: none !important; }
 
-/* Light mode — outside @layer so it takes precedence over layered :root vars */
+/* Light mode — ivory palette (matches landing) */
 .light {
-  --background: 225 40% 98%;
-  --foreground: 0 0% 9%;
+  --background: 38 36% 92%;
+  --foreground: 0 0% 4%;
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 9%;
+  --card-foreground: 0 0% 4%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 9%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 92%;
-  --secondary-foreground: 0 0% 9%;
-  --muted: 0 0% 92%;
-  --muted-foreground: 0 0% 42%;
-  --accent: 0 0% 92%;
-  --accent-foreground: 0 0% 9%;
-  --destructive: 0 72% 50%;
+  --popover-foreground: 0 0% 4%;
+  --primary: 0 0% 4%;
+  --primary-foreground: 38 36% 92%;
+  --secondary: 38 20% 88%;
+  --secondary-foreground: 0 0% 4%;
+  --muted: 38 20% 88%;
+  --muted-foreground: 30 10% 42%;
+  --accent: 38 20% 88%;
+  --accent-foreground: 0 0% 4%;
+  --destructive: 0 62% 45%;
   --destructive-foreground: 0 0% 98%;
-  --border: 215 20% 88%;
-  --input: 215 20% 88%;
-  --ring: 0 0% 20%;
-  /* Content area — light mode */
-  --content-bg: #f1f5f9;
-  --card-dark: #ffffff;
-  --card-dark-border: rgba(0,0,0,0.07);
-  --mini-card-bg: #f8fafc;
-  --modal-surface: #ffffff;
-  --modal-surface-border: rgba(0,0,0,0.10);
-  --popover-surface: #ffffff;
-  --popover-surface-border: rgba(0,0,0,0.09);
-  --text-primary: #1e2432;
-  --text-muted-c: #637381;
-  --text-subtle: rgba(99,115,129,0.70);
-  --text-em: rgba(30,36,50,0.85);
-  --section-border: rgba(0,0,0,0.05);
-  --row-hover: rgba(0,0,0,0.025);
-  --icon-chip-bg: rgba(0,0,0,0.04);
-  --icon-chip-border: rgba(0,0,0,0.07);
-  --card-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  --card-shadow-hover: 0 6px 18px rgba(0,0,0,0.12);
-  --chart-grid: rgba(0,0,0,0.06);
-  --chart-tick: #637381;
-  --chart-line: #c8922a;
-  --chart-line-dim: #f1c086;
-  --chart-fill-1: #f1c086;
-  --chart-fill-2: #34d399;
-  --chart-fill-3: #38bdf8;
-  /* Sidebar */
-  --sb-bg: #eef1f7;
-  --sb-border: rgba(0,0,0,0.08);
-  --sb-profile-bg: #ffffff;
-  --sb-mini-card: #f1f5f9;
-  --sb-text: rgba(0,0,0,0.62);
-  --sb-text-strong: rgba(0,0,0,0.88);
-  --sb-text-dim: rgba(0,0,0,0.28);
-  --sb-text-section: rgba(0,0,0,0.42);
-  --sb-hover-bg: rgba(0,0,0,0.05);
-  --sb-sim-text: rgba(0,0,0,0.38);
-  --sb-sim-text-hover: rgba(0,0,0,0.78);
-  --sb-divider: rgba(0,0,0,0.07);
-  --sb-active-bg: rgba(241,192,134,0.15);
-  --sb-active-border: rgba(241,192,134,0.30);
-  --sb-active-text: #111111;
+  --border: 38 15% 86%;
+  --input: 38 15% 86%;
+  --ring: 36 73% 41%;
+  /* Content area — ivory */
+  --content-bg: #F3EEE4;
+  --card-dark: #FFFFFF;
+  --card-dark-border: rgba(10,10,10,0.08);
+  --mini-card-bg: #FBF7EF;
+  --modal-surface: #FFFFFF;
+  --modal-surface-border: rgba(10,10,10,0.10);
+  --popover-surface: #FFFFFF;
+  --popover-surface-border: rgba(10,10,10,0.10);
+  --text-primary: #0A0A0A;
+  --text-muted-c: #6B6356;
+  --text-subtle: #9A907F;
+  --text-em: #1F1A12;
+  --section-border: rgba(10,10,10,0.08);
+  --row-hover: rgba(10,10,10,0.04);
+  --icon-chip-bg: rgba(10,10,10,0.05);
+  --icon-chip-border: rgba(10,10,10,0.08);
+  --card-shadow: 0 1px 3px rgba(10,10,10,0.06);
+  --card-shadow-hover: 0 4px 14px rgba(10,10,10,0.10);
+  --chart-grid: rgba(10,10,10,0.06);
+  --chart-tick: #9A907F;
+  --chart-line: #B07820;
+  --chart-line-dim: #8B5E18;
+  --chart-fill-1: #B07820;
+  --chart-fill-2: #1F7A4A;
+  --chart-fill-3: #2B5B9A;
+  /* Sidebar — ivory */
+  --sb-bg: #F3EEE4;
+  --sb-border: rgba(10,10,10,0.08);
+  --sb-profile-bg: #FFFFFF;
+  --sb-mini-card: rgba(10,10,10,0.02);
+  --sb-text: #4A4338;
+  --sb-text-strong: #0A0A0A;
+  --sb-text-dim: #9A907F;
+  --sb-text-section: #9A907F;
+  --sb-hover-bg: rgba(10,10,10,0.04);
+  --sb-sim-text: #9A907F;
+  --sb-sim-text-hover: #0A0A0A;
+  --sb-divider: rgba(10,10,10,0.06);
+  --sb-active-bg: rgba(176,120,32,0.10);
+  --sb-active-border: rgba(176,120,32,0.25);
+  --sb-active-text: #8B5E18;
+  --gold: #B07820;
+  --gold-dim: #8B5E18;
 }
 
 /* Sidebar theme-adaptive classes */

@@ -46,9 +46,9 @@ const toastVariants = cva(
           '[--accent:#f87171] [--glow:rgba(248,113,113,0.07)]',
         ].join(' '),
         success: [
-          'bg-[rgba(13,16,23,0.94)] border-[rgba(241,192,134,0.20)]',
-          'shadow-[0_20px_48px_rgba(0,0,0,0.7),0_0_0_1px_rgba(241,192,134,0.08)]',
-          '[--accent:#f1c086] [--glow:rgba(241,192,134,0.07)]',
+          'bg-[rgba(13,16,23,0.94)] border-[rgba(176,120,32,0.20)]',
+          'shadow-[0_20px_48px_rgba(0,0,0,0.7),0_0_0_1px_rgba(176,120,32,0.08)]',
+          '[--accent:#B07820] [--glow:rgba(176,120,32,0.07)]',
         ].join(' '),
       },
     },

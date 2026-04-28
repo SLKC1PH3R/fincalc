@@ -144,7 +144,7 @@ export default function TaxReportPage() {
             <Shield style={{ width: 22, height: 22, color: '#818cf8' }} />
           </div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--p-text)', margin: 0 }}>
               Rapport Fiscal
             </h1>
             <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -157,7 +157,7 @@ export default function TaxReportPage() {
               }}>
                 Exercice {FISCAL_YEAR}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--text-subtle)' }}>
+              <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>
                 Généré le {new Date().toLocaleDateString('fr-FR')}
               </span>
             </div>
@@ -181,7 +181,7 @@ export default function TaxReportPage() {
             title: 'PFU (Flat Tax)',
             value: '30 %',
             detail: '12.8% IR + 17.2% prélèvements sociaux',
-            color: '#f1c086',
+            color: '#B07820',
             icon: <FileText style={{ width: 14, height: 14 }} />,
           },
           {
@@ -204,8 +204,8 @@ export default function TaxReportPage() {
             style={{
               padding: '14px 18px',
               borderRadius: 12,
-              background: 'var(--card-dark)',
-              border: '1px solid var(--card-dark-border)',
+              background: 'var(--p-card)',
+              border: '1px solid var(--p-line)',
               display: 'flex', alignItems: 'flex-start', gap: 12,
             }}
           >
@@ -218,44 +218,44 @@ export default function TaxReportPage() {
               {card.icon}
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
                 {card.title}
               </div>
               <div style={{ fontSize: 16, fontWeight: 800, color: card.color, fontVariantNumeric: 'tabular-nums' }}>
                 {card.value}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-subtle)', marginTop: 2 }}>{card.detail}</div>
+              <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{card.detail}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Table */}
-      <Card style={{ background: 'var(--card-dark)', border: '1px solid var(--card-dark-border)', marginBottom: 20 }}>
+      <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', marginBottom: 20 }}>
         <CardContent style={{ padding: 0 }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--section-border)' }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--p-line)' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--p-text)' }}>
               Récapitulatif par enveloppe — {FISCAL_YEAR}
             </div>
           </div>
 
           {loading ? (
-            <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+            <div style={{ padding: 32, textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
               Chargement…
             </div>
           ) : taxableEnvelopes.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-subtle)', fontSize: 13 }}>
+            <div style={{ padding: 32, textAlign: 'center', color: 'var(--p-text-faint)', fontSize: 13 }}>
               Aucune enveloppe fiscalisable trouvée. Créez des enveloppes PEA, CTO, AV, etc.
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--section-border)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
                     {['Enveloppe', 'Type', 'Capital investi', "Durée de détention", 'Régime fiscal', 'Avantage atteint'].map(h => (
                       <th key={h} style={{
                         textAlign: 'left', padding: '10px 16px',
-                        color: 'var(--text-subtle)', fontWeight: 600,
+                        color: 'var(--p-text-faint)', fontWeight: 600,
                         fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em',
                         whiteSpace: 'nowrap',
                       }}>
@@ -275,12 +275,12 @@ export default function TaxReportPage() {
                     return (
                       <tr
                         key={e.id}
-                        style={{ borderBottom: '1px solid var(--section-border)' }}
-                        onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--row-hover)')}
+                        style={{ borderBottom: '1px solid var(--p-line)' }}
+                        onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--p-row-hover)')}
                         onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}
                       >
                         <td style={{ padding: '12px 16px' }}>
-                          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{e.name}</div>
+                          <div style={{ fontWeight: 600, color: 'var(--p-text)' }}>{e.name}</div>
                         </td>
                         <td style={{ padding: '12px 16px' }}>
                           <span style={{
@@ -291,13 +291,13 @@ export default function TaxReportPage() {
                             {e.type}
                           </span>
                         </td>
-                        <td style={{ padding: '12px 16px', color: 'var(--text-em)', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
-                          {capitalInvested > 0 ? fmt(capitalInvested) : <span style={{ color: 'var(--text-subtle)' }}>—</span>}
+                        <td style={{ padding: '12px 16px', color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                          {capitalInvested > 0 ? fmt(capitalInvested) : <span style={{ color: 'var(--p-text-faint)' }}>—</span>}
                         </td>
-                        <td style={{ padding: '12px 16px', color: 'var(--text-muted-c)', maxWidth: 220 }}>
+                        <td style={{ padding: '12px 16px', color: 'var(--p-text-dim)', maxWidth: 220 }}>
                           {duree}
                         </td>
-                        <td style={{ padding: '12px 16px', color: 'var(--text-subtle)', maxWidth: 240 }}>
+                        <td style={{ padding: '12px 16px', color: 'var(--p-text-faint)', maxWidth: 240 }}>
                           {regime}
                         </td>
                         <td style={{ padding: '12px 16px' }}>
@@ -325,11 +325,11 @@ export default function TaxReportPage() {
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: 10,
         padding: '14px 18px', borderRadius: 12,
-        background: 'rgba(241,192,134,0.06)', border: '1px solid rgba(241,192,134,0.15)',
+        background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.15)',
       }}>
-        <Info style={{ width: 16, height: 16, color: '#f1c086', flexShrink: 0, marginTop: 1 }} />
-        <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: 0, lineHeight: 1.6 }}>
-          <strong style={{ color: '#f1c086' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans PatrImo.
+        <Info style={{ width: 16, height: 16, color: '#B07820', flexShrink: 0, marginTop: 1 }} />
+        <p style={{ fontSize: 12, color: 'var(--p-text-faint)', margin: 0, lineHeight: 1.6 }}>
+          <strong style={{ color: '#B07820' }}>Avertissement :</strong> Ce rapport est indicatif et basé sur les données saisies dans PatrImo.
           Il ne constitue pas un conseil fiscal. Consultez un conseiller fiscal ou votre notaire pour votre situation personnelle.
           Les montants de plus-values réalisées nécessitent un relevé auprès de votre courtier.
         </p>

@@ -59,8 +59,8 @@ export function GuidedModePanel({ steps, currentStep, onStepChange, onFinish }: 
       <p style={{ fontSize: 11, color: GREEN, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.10em', marginBottom: 8 }}>
         Question {currentStep + 1} / {steps.length}
       </p>
-      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>{s.question}</h3>
-      <p style={{ fontSize: 13, color: 'var(--text-muted-c)', marginBottom: 16, lineHeight: 1.5 }}>{s.hint}</p>
+      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--p-text)', marginBottom: 8 }}>{s.question}</h3>
+      <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 16, lineHeight: 1.5 }}>{s.hint}</p>
 
       {/* Input area */}
       <div style={{ marginBottom: 12 }}>
@@ -72,14 +72,14 @@ export function GuidedModePanel({ steps, currentStep, onStepChange, onFinish }: 
               onChange={e => s.onChange?.(+e.target.value)}
               style={{ fontSize: 20, fontWeight: 700, height: 52, maxWidth: 200 }}
             />
-            {s.suffix && <span style={{ fontSize: 16, color: 'var(--text-muted-c)' }}>{s.suffix}</span>}
+            {s.suffix && <span style={{ fontSize: 16, color: 'var(--p-text-dim)' }}>{s.suffix}</span>}
           </div>
         )}
 
         {type === 'slider' && (
           <>
             <div style={{ marginBottom: 10 }}>
-              <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
                 {s.displayValue ? s.displayValue(s.value ?? 0) : `${s.value}${s.suffix ?? ''}`}
               </span>
             </div>
@@ -107,13 +107,13 @@ export function GuidedModePanel({ steps, currentStep, onStepChange, onFinish }: 
                     borderRadius: 10,
                     textAlign: 'left',
                     cursor: 'pointer',
-                    border: selected ? `1px solid rgba(52,211,153,0.5)` : '1px solid var(--card-dark-border)',
+                    border: selected ? `1px solid rgba(52,211,153,0.5)` : '1px solid var(--p-line)',
                     background: selected ? 'rgba(52,211,153,0.10)' : 'rgba(255,255,255,0.03)',
                     transition: 'all 0.15s',
                   }}
                 >
-                  <p style={{ fontSize: 13, fontWeight: 600, color: selected ? GREEN : 'var(--text-em)', margin: 0 }}>{opt.label}</p>
-                  {opt.sub && <p style={{ fontSize: 11, color: 'var(--text-muted-c)', marginTop: 3, marginBottom: 0 }}>{opt.sub}</p>}
+                  <p style={{ fontSize: 13, fontWeight: 600, color: selected ? GREEN : 'var(--p-text-em)', margin: 0 }}>{opt.label}</p>
+                  {opt.sub && <p style={{ fontSize: 11, color: 'var(--p-text-dim)', marginTop: 3, marginBottom: 0 }}>{opt.sub}</p>}
                 </button>
               )
             })}
@@ -123,7 +123,7 @@ export function GuidedModePanel({ steps, currentStep, onStepChange, onFinish }: 
 
       {/* Reference tip */}
       <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', marginBottom: 20 }}>
-        <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: 0 }}>💡 {s.ref}</p>
+        <p style={{ fontSize: 12, color: 'var(--p-text-faint)', margin: 0 }}>💡 {s.ref}</p>
       </div>
 
       {/* Navigation */}

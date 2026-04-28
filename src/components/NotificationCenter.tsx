@@ -146,7 +146,7 @@ export function NotificationCenter() {
           borderColor: open ? 'rgba(255,255,255,0.12)' : 'transparent',
           cursor: 'pointer',
           transition: 'all 0.15s',
-          color: count > 0 ? '#f1c086' : 'var(--text-muted-c)',
+          color: count > 0 ? '#B07820' : 'var(--p-text-dim)',
         }}
         onMouseEnter={e => { if (!open) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' } }}
         onMouseLeave={e => { if (!open) { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = 'transparent' } }}
@@ -177,8 +177,8 @@ export function NotificationCenter() {
           display: 'flex', flexDirection: 'column',
         }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--section-border)' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-em)' }}>Notifications</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--p-line)' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text-em)' }}>Notifications</span>
             {count > 0 && (
               <span style={{ fontSize: 11, fontWeight: 700, color: '#f87171', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 6, padding: '1px 7px' }}>
                 {count} nouvelle{count > 1 ? 's' : ''}
@@ -189,24 +189,24 @@ export function NotificationCenter() {
           {/* List */}
           <div style={{ overflowY: 'auto', flex: 1 }}>
             {!loaded ? (
-              <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-muted-c)', fontSize: 12 }}>Chargement…</div>
+              <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--p-text-dim)', fontSize: 12 }}>Chargement…</div>
             ) : visible.length === 0 ? (
               <div style={{ padding: '32px 16px', textAlign: 'center' }}>
                 <CheckCircle2 style={{ width: 24, height: 24, color: '#34d399', margin: '0 auto 8px' }} />
-                <p style={{ fontSize: 13, color: 'var(--text-em)', fontWeight: 500 }}>Tout est en ordre</p>
-                <p style={{ fontSize: 12, color: 'var(--text-muted-c)', marginTop: 4 }}>Aucune alerte pour le moment.</p>
+                <p style={{ fontSize: 13, color: 'var(--p-text-em)', fontWeight: 500 }}>Tout est en ordre</p>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 4 }}>Aucune alerte pour le moment.</p>
               </div>
             ) : (
               visible.map(n => {
                 const { color, Icon } = TYPE_STYLE[n.type]
                 return (
-                  <div key={n.id} style={{ display: 'flex', gap: 10, padding: '12px 14px 12px 14px', borderBottom: '1px solid var(--section-border)', alignItems: 'flex-start' }}>
+                  <div key={n.id} style={{ display: 'flex', gap: 10, padding: '12px 14px 12px 14px', borderBottom: '1px solid var(--p-line)', alignItems: 'flex-start' }}>
                     <div style={{ width: 28, height: 28, borderRadius: 8, background: color + '18', border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                       <Icon style={{ width: 14, height: 14, color }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-em)', marginBottom: 2 }}>{n.title}</p>
-                      <p style={{ fontSize: 11, color: 'var(--text-muted-c)', lineHeight: 1.5 }}>{n.description}</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)', marginBottom: 2 }}>{n.title}</p>
+                      <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>{n.description}</p>
                       {n.href && (
                         <Link href={n.href} onClick={() => setOpen(false)} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginTop: 6, fontSize: 11, fontWeight: 600, color, textDecoration: 'none' }}>
                           Voir <ChevronRight style={{ width: 11, height: 11 }} />
@@ -215,9 +215,9 @@ export function NotificationCenter() {
                     </div>
                     <button
                       onClick={() => dismiss(n.id)}
-                      style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-subtle)', flexShrink: 0, borderRadius: 4, marginTop: 2 }}
-                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-muted-c)')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-subtle)')}
+                      style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', flexShrink: 0, borderRadius: 4, marginTop: 2 }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
                     >
                       <X style={{ width: 12, height: 12 }} />
                     </button>
@@ -229,12 +229,12 @@ export function NotificationCenter() {
 
           {/* Footer */}
           {visible.length > 0 && (
-            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--section-border)', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--p-line)', display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => visible.forEach(n => dismiss(n.id))}
-                style={{ fontSize: 11, color: 'var(--text-muted-c)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-em)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted-c)')}
+                style={{ fontSize: 11, color: 'var(--p-text-dim)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-em)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
               >
                 Tout marquer comme lu
               </button>

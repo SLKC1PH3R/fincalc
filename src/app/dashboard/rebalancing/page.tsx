@@ -153,7 +153,7 @@ export default function RebalancingPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)', display: 'flex', flexDirection: 'column', gap: 24, background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div>

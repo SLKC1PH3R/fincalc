@@ -66,7 +66,7 @@ function MortgagePageInner() {
     ? 'rgba(251,191,36,0.18)' : 'rgba(248,113,113,0.22)'
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>

@@ -68,7 +68,7 @@ export default function ProfilPage() {
   const isProfileFilled = !!(age || salary || savings || assets || expenses)
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)' }}>
+    <div style={{ maxWidth: 720, margin: '0 auto', padding: 'clamp(20px,4vw,40px) clamp(16px,4vw,24px)', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 32 }}>

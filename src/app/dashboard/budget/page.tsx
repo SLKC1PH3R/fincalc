@@ -103,7 +103,7 @@ function BudgetPageInner() {
   ]
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: 1100, margin: '0 auto', padding: '14px 24px 0', background: 'var(--p-bg)' }}>
 
       {/* Breadcrumb + Header */}
       <div style={{ marginBottom: 16, flexShrink: 0 }}>

@@ -453,12 +453,12 @@ function CompoundPageInner() {
                 </div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', margin: 0 }}>Effet boule de neige</p>
               </div>
-              <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, marginBottom: 10 }}>
-                En {inputs.years} ans, <strong style={{ color: '#111827' }}>{interestPct}%</strong> de votre capital final provient des intérêts composés.
+              <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6, marginBottom: 10 }}>
+                En {inputs.years} ans, <strong style={{ color: 'var(--p-text-em)' }}>{interestPct}%</strong> de votre capital final provient des intérêts composés.
               </p>
-              <div style={{ background: '#f9fafb', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: '#9ca3af' }}>Capitalisation</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#374151' }}>
+              <div style={{ background: 'var(--p-card-2)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Capitalisation</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text)' }}>
                   {inputs.frequency === 12 ? 'Mensuelle' : inputs.frequency === 4 ? 'Trimestrielle' : 'Annuelle'}
                 </span>
               </div>

@@ -127,7 +127,7 @@ export default function GestionPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
+      <div className="space-y-6 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px', background: 'var(--p-bg)', minHeight: '100%' }}>
         <div className="h-8 w-64 rounded-lg animate-pulse bg-muted mb-2" />
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3].map(i => <div key={i} className="h-24 rounded-2xl animate-pulse bg-muted" />)}
@@ -138,7 +138,7 @@ export default function GestionPage() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px' }}>
+    <div className="space-y-5 animate-fade-in" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 48px', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div>

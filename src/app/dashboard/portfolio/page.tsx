@@ -1207,7 +1207,7 @@ function PortfolioPageInner() {
   }, [enriched, envelopes])
 
   return (
-    <div className="space-y-6 animate-fade-in px-7 py-8">
+    <div className="space-y-6 animate-fade-in px-7 py-8" style={{ background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">

@@ -60,7 +60,7 @@ export function Hero() {
               <Link href="/login" className="btn-primary" style={{ padding: '14px 22px', fontSize: 15 }}>
                 Commencer gratuitement <I.arrow size={15} />
               </Link>
-              <a href="#dashboard" className="btn-ghost" style={{ padding: '14px 22px', fontSize: 15 }}>
+              <a href="/#dashboard" className="btn-ghost" style={{ padding: '14px 22px', fontSize: 15 }}>
                 Voir le produit
               </a>
             </div>

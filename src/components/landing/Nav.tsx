@@ -312,9 +312,9 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
         {/* Nav links */}
         <div style={{ padding: '12px 12px 0', flexShrink: 0 }}>
           {[
-            { label: 'Plateforme', href: '#pillars' },
-            { label: 'Comparatif', href: '#compare' },
-            { label: 'FAQ', href: '#faq' },
+            { label: 'Plateforme', href: '/#pillars' },
+            { label: 'Comparatif', href: '/#compare' },
+            { label: 'FAQ', href: '/#faq' },
           ].map(l => (
             <a key={l.label} href={l.href} onClick={onClose} style={{
               display: 'block', padding: '11px 12px', borderRadius: 8,
@@ -409,11 +409,11 @@ export function Nav() {
             border: '1px solid var(--line)',
             padding: '4px 4px', borderRadius: 999,
           }} className="nav-pill">
-            <NavLink label="Plateforme" href="#pillars" />
+            <NavLink label="Plateforme" href="/#pillars" />
             <SimulatorsMenu />
             <PatrimoineMenu />
-            <NavLink label="Comparatif" href="#compare" />
-            <NavLink label="FAQ" href="#faq" />
+            <NavLink label="Comparatif" href="/#compare" />
+            <NavLink label="FAQ" href="/#faq" />
           </div>
 
           {/* Desktop right CTAs */}

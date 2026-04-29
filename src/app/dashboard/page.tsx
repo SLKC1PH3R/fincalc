@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { useTheme } from '@/contexts/ThemeContext'
 import { fmt, fmtCompact } from '@/lib/utils'
 import {
   AreaChart, Area, PieChart, Pie, Cell,
@@ -26,8 +27,7 @@ interface Envelope {
   id: string; type: string; name: string; totalValue: number | null
 }
 
-const GOLD = '#B07820'
-const GOLD_BORDER = 'rgba(176,120,32,0.17)'
+// GOLD is defined inside the component (theme-aware)
 
 // ── Extract key result value from a simulation by type ────────────────────────
 function getSimPreview(type: string, results: Record<string, unknown>): string | null {
@@ -74,29 +74,31 @@ const ENVELOPE_ICONS: Record<string, React.ComponentType<{ className?: string; s
 }
 
 // ── Type metadata for simulations ─────────────────────────────────────────────
-const TYPE_META: Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }> = {
-  compound:          { label: 'Intérêts',    color: '#34d399', icon: TrendingUp },
-  dca:               { label: 'DCA',         color: '#38bdf8', icon: RefreshCw },
-  fire:              { label: 'FI/RE',       color: '#fb923c', icon: Flame },
-  buyrent:           { label: 'Achat/Loc',   color: '#a78bfa', icon: Home },
-  mortgage:          { label: 'Prêt',        color: '#f472b6', icon: Building2 },
-  rental:            { label: 'Locatif',     color: '#2dd4bf', icon: Wallet },
-  tax:               { label: 'Impôts',      color: '#fb7185', icon: Receipt },
-  'flat-tax':        { label: 'Flat Tax',    color: '#38bdf8', icon: Receipt },
-  'envelope-compare':{ label: 'PEA/CTO/AV', color: '#818cf8', icon: Wallet },
-  retirement:        { label: 'Retraite',    color: '#B07820', icon: PiggyBank },
-  'savings-rate':    { label: 'Taux épargne',   color: '#818cf8', icon: Percent },
-  budget:            { label: 'Budget',          color: '#a3e635', icon: Calculator },
-  'emergency-fund':  { label: 'Précaution',      color: '#34d399', icon: Shield },
-  'consumer-credit': { label: 'Crédit conso',    color: '#fb7185', icon: Calculator },
-  succession:        { label: 'Succession',       color: '#60a5fa', icon: PiggyBank },
+function makeTypeMeta(gold: string): Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }> {
+  return {
+    compound:          { label: 'Intérêts',    color: '#34d399', icon: TrendingUp },
+    dca:               { label: 'DCA',         color: '#38bdf8', icon: RefreshCw },
+    fire:              { label: 'FI/RE',       color: '#fb923c', icon: Flame },
+    buyrent:           { label: 'Achat/Loc',   color: '#a78bfa', icon: Home },
+    mortgage:          { label: 'Prêt',        color: '#f472b6', icon: Building2 },
+    rental:            { label: 'Locatif',     color: '#2dd4bf', icon: Wallet },
+    tax:               { label: 'Impôts',      color: '#fb7185', icon: Receipt },
+    'flat-tax':        { label: 'Flat Tax',    color: '#38bdf8', icon: Receipt },
+    'envelope-compare':{ label: 'PEA/CTO/AV', color: '#818cf8', icon: Wallet },
+    retirement:        { label: 'Retraite',    color: gold,      icon: PiggyBank },
+    'savings-rate':    { label: 'Taux épargne',   color: '#818cf8', icon: Percent },
+    budget:            { label: 'Budget',          color: '#a3e635', icon: Calculator },
+    'emergency-fund':  { label: 'Précaution',      color: '#34d399', icon: Shield },
+    'consumer-credit': { label: 'Crédit conso',    color: '#fb7185', icon: Calculator },
+    succession:        { label: 'Succession',       color: '#60a5fa', icon: PiggyBank },
+  }
 }
 
 // ── Score info helper ──────────────────────────────────────────────────────────
-function scoreInfo(s: number): { label: string; color: string } {
-  if (s >= 90) return { label: 'Excellent', color: '#B07820' }
+function scoreInfo(s: number, gold: string): { label: string; color: string } {
+  if (s >= 90) return { label: 'Excellent', color: gold }
   if (s >= 80) return { label: 'Très bien', color: '#34d399' }
-  if (s >= 60) return { label: 'Bien',      color: '#B07820' }
+  if (s >= 60) return { label: 'Bien',      color: gold }
   if (s >= 40) return { label: 'En progression', color: '#fb923c' }
   return { label: 'À améliorer', color: '#f87171' }
 }
@@ -160,6 +162,10 @@ function PatrimoineSparkline({ snapshots }: { snapshots: PatrimoineSnapshot[] })
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function HomePage() {
+  const { theme } = useTheme()
+  const GOLD = theme === 'dark' ? '#E1B572' : '#B07820'
+  const GOLD_BORDER = theme === 'dark' ? 'rgba(225,181,114,0.17)' : 'rgba(176,120,32,0.17)'
+  const TYPE_META = makeTypeMeta(GOLD)
   const { data: session } = useSession()
   const [sims, setSims] = useState<Simulation[]>([])
   const [envelopes, setEnvelopes] = useState<Envelope[]>([])
@@ -191,7 +197,7 @@ export default function HomePage() {
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) return
-        const si = scoreInfo(d.score)
+        const si = scoreInfo(d.score, '#B07820')
         setScoreWidget({ score: d.score, label: si.label, color: si.color, quickActions: d.quickActions ?? [], details: d.details ?? null })
       })
       .catch(() => {})
@@ -261,6 +267,9 @@ export default function HomePage() {
     }
     if (brut > 0) setPatrimoineKPI({ brut, dettes, net: Math.max(0, brut - dettes) })
   }, [envelopes])
+
+  // Re-derive score color at render time so it stays theme-aware
+  const scoreDisplay = scoreWidget ? { ...scoreWidget, color: scoreInfo(scoreWidget.score, GOLD).color } : null
 
   const firstName = session?.user?.name?.split(' ')[0] || ''
   const hour = new Date().getHours()
@@ -618,33 +627,33 @@ export default function HomePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* Score Patrimonial widget */}
-            {scoreWidget && (
+            {scoreDisplay && (
               <Link href="/dashboard/score" style={{ textDecoration: 'none' }}>
-                <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, border-color 0.2s', border: `1px solid ${scoreWidget.color}28` }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.borderColor = scoreWidget.color + '55' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.borderColor = scoreWidget.color + '28' }}>
+                <div className="na-card" style={{ padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, border-color 0.2s', border: `1px solid ${scoreDisplay.color}28` }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.borderColor = scoreDisplay.color + '55' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.borderColor = scoreDisplay.color + '28' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <ScoreGauge score={scoreWidget.score} color={scoreWidget.color} size={64} showLabel={false} />
+                    <ScoreGauge score={scoreDisplay.score} color={scoreDisplay.color} size={64} showLabel={false} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text-em)' }}>Score Patrimonial</span>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: scoreWidget.color, background: scoreWidget.color + '15', borderRadius: 5, padding: '1px 6px' }}>{scoreWidget.score}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: scoreDisplay.color, background: scoreDisplay.color + '15', borderRadius: 5, padding: '1px 6px' }}>{scoreDisplay.score}</span>
                       </div>
-                      <span style={{ fontSize: 11, color: scoreWidget.color, fontWeight: 600 }}>{scoreWidget.label}</span>
-                      {scoreWidget.details && (
+                      <span style={{ fontSize: 11, color: scoreDisplay.color, fontWeight: 600 }}>{scoreDisplay.label}</span>
+                      {scoreDisplay.details && (
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                           {([
                             { key: 'security', label: 'S', color: '#38bdf8' },
                             { key: 'realestate', label: 'I', color: '#34d399' },
-                            { key: 'longterm', label: 'L', color: '#B07820' },
+                            { key: 'longterm', label: 'L', color: GOLD },
                             { key: 'diversification', label: 'D', color: '#fb923c' },
                             { key: 'risk', label: 'R', color: '#f87171' },
                           ] as { key: keyof ScoreDetails; label: string; color: string }[]).map(({ key, label, color }) => {
-                            const p = scoreWidget.details![key]
+                            const p = scoreDisplay.details![key]
                             const pct = p ? p.score / p.max : 0
                             return (
                               <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
-                                <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(10,10,10,0.07)', overflow: 'hidden' }}>
+                                <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--p-line-2)', overflow: 'hidden' }}>
                                   <div style={{ width: `${Math.round(pct * 100)}%`, height: '100%', background: color, borderRadius: 2 }} />
                                 </div>
                                 <span style={{ fontSize: 9, color: 'var(--p-text-faint)' }}>{label}</span>

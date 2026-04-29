@@ -17,6 +17,7 @@ import { FieldTooltip } from '@/components/FieldTooltip'
 import { useUserProfile } from '@/lib/use-profile'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
+import { useChartTheme } from '@/lib/chart-theme'
 
 const Tip = FieldTooltip
 const COLOR = '#7c3aed'
@@ -24,35 +25,19 @@ const COLOR_LIGHT = '#ede9fe'
 const GREEN = '#10b981'
 const GREEN_LIGHT = '#d1fae5'
 
-// Light chart theme — hardcoded, independent of dark/light mode toggle
-const lightChart = {
-  grid: '#f3f4f6',
-  tick: '#9ca3af',
-  tooltip: {
-    background: '#ffffff',
-    border: '1px solid #e5e7eb',
-    borderRadius: 10,
-    boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
-    fontSize: 12,
-    padding: '8px 12px',
-  },
-  itemStyle: { color: '#374151' },
-  labelStyle: { color: '#6b7280', fontWeight: 600 },
-  lineDim: '#d1d5db',
-}
-
 // Card style helpers
 const card = {
-  background: '#ffffff',
-  border: '1px solid #e5e7eb',
+  background: 'var(--p-card)',
+  border: '1px solid var(--p-line)',
   borderRadius: 16,
-  boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+  boxShadow: 'var(--shadow-sm)',
 }
 const cardPad = '14px 16px'
-const divider = { height: 1, background: '#f3f4f6' }
-const labelStyle = { fontSize: 11, color: '#9ca3af', letterSpacing: '0.04em', fontWeight: 500 }
+const divider = { height: 1, background: 'var(--p-line)' }
+const labelStyle = { fontSize: 11, color: 'var(--p-text-faint)', letterSpacing: '0.04em', fontWeight: 500 }
 
 function CompoundPageInner() {
+  const chart = useChartTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const { profile } = useUserProfile()
@@ -129,11 +114,11 @@ function CompoundPageInner() {
   const investedPct = 100 - interestPct
 
   return (
-    <div style={{ padding: '24px 28px 56px', background: '#f7f8fa', minHeight: '100%' }}>
+    <div style={{ padding: '24px 28px 56px', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* ── Header ── */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span>Simulateurs</span>
           <span style={{ opacity: 0.5 }}>›</span>
           <span style={{ color: COLOR, fontWeight: 600 }}>Intérêts Composés</span>
@@ -144,8 +129,8 @@ function CompoundPageInner() {
               <TrendingUp style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 700, color: '#111827', margin: 0, letterSpacing: '-0.3px' }}>Intérêts Composés</h1>
-              <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>Effet boule de neige · Capitalisation · Long terme</p>
+              <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.3px' }}>Intérêts Composés</h1>
+              <p style={{ fontSize: 12, color: 'var(--p-text-faint)', margin: 0 }}>Effet boule de neige · Capitalisation · Long terme</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -204,7 +189,7 @@ function CompoundPageInner() {
             </p>
           </div>
           <button onClick={() => { localStorage.setItem('compound-banner-dismissed', '1'); setBannerDismissed(true) }}
-            style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 18, lineHeight: 1, padding: 2 }} aria-label="Fermer">×</button>
+            style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', fontSize: 18, lineHeight: 1, padding: 2 }} aria-label="Fermer">×</button>
         </div>
       )}
 
@@ -223,12 +208,12 @@ function CompoundPageInner() {
           <div style={{ position: 'sticky', top: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ ...card }}>
               {/* Card header */}
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 26, height: 26, borderRadius: 8, background: COLOR_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Settings2 style={{ width: 13, height: 13, color: COLOR }} />
                   </div>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', margin: 0 }}>Paramètres</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Paramètres</p>
                 </div>
                 <ProfileFillButton onFill={p => {
                   if (p.currentAssets) set('capital')(p.currentAssets)
@@ -245,8 +230,8 @@ function CompoundPageInner() {
                   </label>
                   <div style={{ position: 'relative' }}>
                     <Input type="number" value={inputs.capital} onChange={e => set('capital')(+e.target.value)}
-                      style={{ height: 38, fontSize: 14, fontWeight: 600, paddingRight: 30, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 10 }} />
-                    <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: '#9ca3af' }}>€</span>
+                      style={{ height: 38, fontSize: 14, fontWeight: 600, paddingRight: 30, borderRadius: 10 }} />
+                    <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--p-text-faint)' }}>€</span>
                   </div>
                 </div>
 
@@ -259,8 +244,8 @@ function CompoundPageInner() {
                   </label>
                   <div style={{ position: 'relative' }}>
                     <Input type="number" value={inputs.monthly} onChange={e => set('monthly')(+e.target.value)}
-                      style={{ height: 38, fontSize: 14, fontWeight: 600, paddingRight: 30, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 10 }} />
-                    <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: '#9ca3af' }}>€</span>
+                      style={{ height: 38, fontSize: 14, fontWeight: 600, paddingRight: 30, borderRadius: 10 }} />
+                    <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--p-text-faint)' }}>€</span>
                   </div>
                 </div>
 
@@ -284,7 +269,7 @@ function CompoundPageInner() {
                       </button>
                     ))}
                   </div>
-                  <p style={{ fontSize: 10, color: '#9ca3af', margin: 0, lineHeight: 1.4 }}>Réf. S&P 500 : ~10%/an · MSCI World : ~8%/an</p>
+                  <p style={{ fontSize: 10, color: 'var(--p-text-faint)', margin: 0, lineHeight: 1.4 }}>Réf. S&P 500 : ~10%/an · MSCI World : ~8%/an</p>
                 </div>
 
                 <div style={divider} />
@@ -308,7 +293,7 @@ function CompoundPageInner() {
                     Capitalisation<Tip text="Fréquence de réinvestissement des intérêts. Mensuelle est la plus courante." />
                   </label>
                   <Select value={String(inputs.frequency)} onValueChange={v => set('frequency')(+v)}>
-                    <SelectTrigger style={{ height: 36, fontSize: 13, background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: 10 }}><SelectValue /></SelectTrigger>
+                    <SelectTrigger style={{ height: 36, fontSize: 13, borderRadius: 10 }}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="12">Mensuelle</SelectItem>
                       <SelectItem value="4">Trimestrielle</SelectItem>
@@ -326,16 +311,16 @@ function CompoundPageInner() {
                   <scoreConf.Icon style={{ width: 14, height: 14, color: scoreConf.color }} />
                 </div>
                 <div>
-                  <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>Stratégie</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0 }}>Stratégie</p>
                   <p style={{ fontSize: 13, fontWeight: 700, color: scoreConf.color, margin: 0 }}>{scoreConf.label}</p>
                 </div>
                 <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                  <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>Multiplication</p>
-                  <p style={{ fontSize: 15, fontWeight: 800, color: '#111827', margin: 0 }}>×{r.multiplier.toFixed(1)}</p>
+                  <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0 }}>Multiplication</p>
+                  <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--p-text-em)', margin: 0 }}>×{r.multiplier.toFixed(1)}</p>
                 </div>
               </div>
-              <div style={{ height: 1, background: '#f3f4f6', margin: '10px 0' }} />
-              <p style={{ fontSize: 11, color: '#6b7280', margin: 0, lineHeight: 1.5 }}>
+              <div style={{ height: 1, background: 'var(--p-line)', margin: '10px 0' }} />
+              <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0, lineHeight: 1.5 }}>
                 {inputs.years} ans à {inputs.rate}% · {fmt(inputs.monthly)}/mois
               </p>
             </div>
@@ -371,7 +356,7 @@ function CompoundPageInner() {
             {/* LineChart */}
             <div style={{ ...card, padding: cardPad }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', margin: 0 }}>Évolution du capital sur {inputs.years} ans</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Évolution du capital sur {inputs.years} ans</p>
                 <CsvExport
                   data={r.chartData.map((d: { year: number; total: number; invested: number }) => ({ 'Année': d.year, 'Capital investi': d.invested.toFixed(0), 'Valeur totale': d.total.toFixed(0), 'Intérêts': (d.total - d.invested).toFixed(0) }))}
                   filename="interets-composes.csv"
@@ -380,13 +365,13 @@ function CompoundPageInner() {
               {mounted ? (
                 <ResponsiveContainer width="100%" height={190}>
                   <LineChart data={r.chartData} margin={{ top: 4, right: 8, left: 4, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={lightChart.grid} />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: lightChart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: lightChart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={lightChart.tooltip} itemStyle={lightChart.itemStyle} labelStyle={lightChart.labelStyle} />
-                    <Legend wrapperStyle={{ fontSize: 11, color: '#6b7280' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
+                    <Legend wrapperStyle={{ fontSize: 11, color: 'var(--p-text-dim)' }} />
                     <Line type="monotone" dataKey="total" name="Capital total" stroke={COLOR} strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="invested" name="Investi (sans intérêts)" stroke={lightChart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                    <Line type="monotone" dataKey="invested" name="Investi (sans intérêts)" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
                   </LineChart>
                 </ResponsiveContainer>
               ) : <div style={{ height: 190 }} />}
@@ -394,25 +379,25 @@ function CompoundPageInner() {
 
             {/* Decade table */}
             <div style={{ ...card, overflow: 'hidden' }}>
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: '#111827', margin: 0 }}>Jalons par 5 ans</p>
+              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Jalons par 5 ans</p>
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
-                  <tr style={{ background: '#f9fafb' }}>
+                  <tr style={{ background: 'var(--p-bg)' }}>
                     {['Année', 'Investi', 'Total', 'Intérêts', '×'].map((h, i) => (
-                      <th key={i} style={{ padding: '8px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid #f3f4f6' }}>{h}</th>
+                      <th key={i} style={{ padding: '8px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--p-line)' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {decadeTable.map((d: { year: number; total: number; invested: number }, idx: number) => (
-                    <tr key={d.year} style={{ borderBottom: '1px solid #f9fafb', background: idx % 2 === 1 ? '#fafafa' : '#ffffff' }}>
-                      <td style={{ padding: '8px 14px', color: '#374151', fontWeight: 600 }}>{d.year} ans</td>
-                      <td style={{ padding: '8px 14px', textAlign: 'right', color: '#6b7280', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.invested)}</td>
+                    <tr key={d.year} style={{ borderBottom: '1px solid var(--p-line)' }}>
+                      <td style={{ padding: '8px 14px', color: 'var(--p-text)', fontWeight: 600 }}>{d.year} ans</td>
+                      <td style={{ padding: '8px 14px', textAlign: 'right', color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmt(d.invested)}</td>
                       <td style={{ padding: '8px 14px', textAlign: 'right', color: COLOR, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{fmt(d.total)}</td>
                       <td style={{ padding: '8px 14px', textAlign: 'right', color: GREEN, fontVariantNumeric: 'tabular-nums' }}>{fmt(d.total - d.invested)}</td>
-                      <td style={{ padding: '8px 14px', textAlign: 'right', color: '#9ca3af', fontVariantNumeric: 'tabular-nums' }}>×{(d.total / (d.invested || 1)).toFixed(1)}</td>
+                      <td style={{ padding: '8px 14px', textAlign: 'right', color: 'var(--p-text-faint)', fontVariantNumeric: 'tabular-nums' }}>×{(d.total / (d.invested || 1)).toFixed(1)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -433,7 +418,7 @@ function CompoundPageInner() {
                   <Pie data={donutData} cx={75} cy={55} innerRadius={36} outerRadius={52} paddingAngle={3} dataKey="value" startAngle={90} endAngle={450}>
                     {donutData.map((d, i) => <Cell key={i} fill={d.color} />)}
                   </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={lightChart.tooltip} />
+                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} />
                 </PieChart>
               </div>
 
@@ -561,10 +546,10 @@ function CompoundPageInner() {
               return (
                 <ResponsiveContainer width="100%" height={200}>
                   <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={lightChart.grid} />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: lightChart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: lightChart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={lightChart.tooltip} itemStyle={lightChart.itemStyle} labelStyle={lightChart.labelStyle} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
+                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                     <Line type="monotone" dataKey="Scénario A" stroke="#7c3aed" strokeWidth={2.5} dot={false} />
                     <Line type="monotone" dataKey="Scénario B" stroke="#10b981" strokeWidth={2.5} dot={false} />

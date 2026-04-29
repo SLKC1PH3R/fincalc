@@ -48,7 +48,7 @@ function PlusValuePageInner() {
   }
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
@@ -63,7 +63,7 @@ function PlusValuePageInner() {
               <MapPin style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.3px' }}>Plus-value Immobilière</h1>
               <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Abattements IR/PS · Surtaxe · Durée optimale</p>
             </div>
           </div>

@@ -105,8 +105,8 @@ export default function ProfilPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
                       borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                      background: selected ? 'rgba(176,120,32,0.10)' : 'rgba(255,255,255,0.02)',
-                      border: selected ? '1px solid rgba(176,120,32,0.40)' : '1px solid rgba(255,255,255,0.07)',
+                      background: selected ? 'rgba(176,120,32,0.10)' : 'var(--p-card)',
+                      border: selected ? '1px solid rgba(176,120,32,0.40)' : '1px solid var(--p-line)',
                     }}
                   >
                     <span style={{ fontSize: 20 }}>{PROFILE_ICONS[p]}</span>

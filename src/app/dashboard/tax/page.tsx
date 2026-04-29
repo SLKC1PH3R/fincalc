@@ -122,7 +122,7 @@ function TaxPageInner() {
     ? 'rgba(176,120,32,0.18)' : 'rgba(248,113,113,0.22)'
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
@@ -137,7 +137,7 @@ function TaxPageInner() {
               <Receipt style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Impôts IR</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.3px' }}>Impôts IR</h1>
               <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Barème IR 2025 · TMI · Optimisation fiscale</p>
             </div>
           </div>
@@ -479,7 +479,7 @@ function TaxPageInner() {
             </div>
             <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
               {r.analysis.tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--p-line)' }}>
+                <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 11px', borderRadius: 9, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                     <span style={{ fontSize: 9, fontWeight: 800, color: COLOR }}>{i + 1}</span>
                   </div>

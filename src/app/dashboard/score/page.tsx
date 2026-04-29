@@ -93,7 +93,7 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
   }, [])
 
   return (
-    <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+    <div style={{ padding: '16px 0', borderBottom: '1px solid var(--p-line)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <div style={{ width: 34, height: 34, borderRadius: 10, background: meta.color + '15', border: `1px solid ${meta.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
           <Icon style={{ width: 15, height: 15, color: meta.color }} />
@@ -107,7 +107,7 @@ function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDet
             </div>
           </div>
           <p style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 8 }}>{meta.desc}</p>
-          <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ height: 5, background: 'var(--p-line)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: anim ? `${Math.round(pct * 100)}%` : '0%', background: barColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function ScorePage() {
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
         <p style={{ fontSize: 12, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Patrimoine</p>
-        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text)', letterSpacing: '-0.03em' }}>
+        <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text-em)', letterSpacing: '-0.03em' }}>
           Score Patrimonial PatrImo
         </h1>
         <p style={{ fontSize: 14, color: 'var(--p-text-dim)', marginTop: 8 }}>
@@ -185,9 +185,9 @@ export default function ScorePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {quickActions.map((qa, i) => (
               <Link key={i} href={qa.href}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', textDecoration: 'none', transition: 'border-color 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}>
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 12, background: 'var(--p-card)', border: '1px solid var(--p-line)', textDecoration: 'none', transition: 'border-color 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--p-text-dim)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--p-line)')}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#34d399', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 8, padding: '2px 8px', flexShrink: 0 }}>+{qa.pts} pts</span>
                 <span style={{ fontSize: 13, color: 'var(--p-text-em)', flex: 1 }}>{qa.label}</span>
                 <ArrowRight style={{ width: 13, height: 13, color: 'var(--p-text-faint)', flexShrink: 0 }} />

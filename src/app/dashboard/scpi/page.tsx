@@ -44,7 +44,7 @@ function SCPIPageInner() {
   const donutColors = ['#34d399', '#f87171', '#fb923c']
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
@@ -59,7 +59,7 @@ function SCPIPageInner() {
               <Building2 style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>SCPI — Pierre-Papier</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.3px' }}>SCPI — Pierre-Papier</h1>
               <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>Rendement net · Fiscalité foncière · Revalorisation</p>
             </div>
           </div>

@@ -29,7 +29,7 @@ function InflationPageInner() {
   tips.push(`Le seuil minimum de rendement pour maintenir votre pouvoir d'achat est ${inputs.inflationRate}%/an — soit le taux d'inflation.`)
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>

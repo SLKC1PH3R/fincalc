@@ -126,7 +126,7 @@ function RetirementPageInner() {
   ]
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
@@ -141,7 +141,7 @@ function RetirementPageInner() {
               <PiggyBank style={{ width: 20, height: 20, color: COLOR }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Retraite</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.3px' }}>Retraite</h1>
               <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0 }}>CNAV + Agirc-Arrco · Taux de remplacement</p>
             </div>
           </div>
@@ -286,7 +286,7 @@ function RetirementPageInner() {
                     <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{row.label}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums' }}>{row.value} / 172</span>
                   </div>
-                  <div style={{ height: 5, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: 5, borderRadius: 9999, background: 'var(--p-row-hover)', overflow: 'hidden' }}>
                     <div style={{ height: '100%', borderRadius: 9999, background: row.color, width: `${Math.min(row.value / 172 * 100, 100)}%`, transition: 'width 0.4s' }} />
                   </div>
                 </div>
@@ -333,7 +333,7 @@ function RetirementPageInner() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    <tr style={{ background: 'var(--p-row-hover)' }}>
                       <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--p-line)' }}>Départ</th>
                       {showAllCols && <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--p-line)' }}>Trim.</th>}
                       <th style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: '1px solid var(--p-line)' }}>Taux</th>
@@ -394,7 +394,7 @@ function RetirementPageInner() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {r.analysis.tips.slice(0, 3).map((tip, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, borderRadius: 8, border: '1px solid var(--p-line)', padding: '8px 10px' }}>
-                    <div style={{ width: 18, height: 18, borderRadius: 9999, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 18, height: 18, borderRadius: 9999, background: 'var(--p-row-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--p-text-dim)' }}>{i + 1}</span>
                     </div>
                     <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.5, margin: 0 }}>{tip}</p>
@@ -446,7 +446,7 @@ function RetirementPageInner() {
             </div>
 
             {/* Note légale */}
-            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.6, padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--p-text-dim)', lineHeight: 1.6, padding: '10px 12px', background: 'var(--p-card)', borderRadius: 8 }}>
               Calcul basé sur les formules CNAV 2026. Montants en euros nominaux estimés. Les résultats exacts dépendent de votre relevé de carrière complet.
             </p>
           </div>

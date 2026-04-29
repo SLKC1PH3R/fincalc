@@ -163,13 +163,13 @@ function ItemRow({ item, onChange, onRemove, placeholder }: {
           className="h-7 text-xs w-24 tabular-nums"
           placeholder="0"
         />
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', width: 16, flexShrink: 0 }}>€</span>
+        <span style={{ fontSize: 11, color: 'var(--p-text-faint)', width: 16, flexShrink: 0 }}>€</span>
       </div>
       <button
         onClick={onRemove}
-        style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+        style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}
         onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
       >
         <X style={{ width: 12, height: 12 }} />
       </button>
@@ -269,7 +269,7 @@ function SavingsRatePageInner() {
   ].filter(d => d.value > 0)
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
@@ -338,9 +338,9 @@ function SavingsRatePageInner() {
             ))}
             <button
               onClick={addRevenu}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
             >
               <Plus style={{ width: 12, height: 12 }} />Ajouter une source de revenu
             </button>
@@ -362,12 +362,12 @@ function SavingsRatePageInner() {
                       onChange={e => updateCatName(setInvestCats, cat.id, e.target.value)}
                       className="h-7 text-xs font-semibold flex-1"
                     />
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
+                    <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
                     {investCats.length > 1 && (
                       <button onClick={() => removeCat(setInvestCats, cat.id)}
-                        style={{ color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer' }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
+                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}>
                         <X style={{ width: 14, height: 14 }} />
                       </button>
                     )}
@@ -383,9 +383,9 @@ function SavingsRatePageInner() {
                   ))}
                   <button
                     onClick={() => addCatItem(setInvestCats, cat.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
                   >
                     <Plus style={{ width: 12, height: 12 }} />Ajouter
                   </button>
@@ -394,9 +394,9 @@ function SavingsRatePageInner() {
             })}
             <button
               onClick={() => addCat(setInvestCats, 'Nouvelle catégorie')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed var(--p-line)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
             >
               <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie
             </button>
@@ -406,7 +406,7 @@ function SavingsRatePageInner() {
           <div style={panelStyle}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <p style={{ fontSize: 11, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Dépenses</p>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmt(totalDepense)}</span>
             </div>
             {depenseCats.map(cat => {
               const total = cat.items.reduce((s, i) => s + i.value, 0)
@@ -418,12 +418,12 @@ function SavingsRatePageInner() {
                       onChange={e => updateCatName(setDepenseCats, cat.id, e.target.value)}
                       className="h-7 text-xs font-semibold flex-1"
                     />
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
+                    <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmt(total)}</span>
                     {depenseCats.length > 1 && (
                       <button onClick={() => removeCat(setDepenseCats, cat.id)}
-                        style={{ color: 'rgba(255,255,255,0.2)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer' }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}>
+                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}>
                         <X style={{ width: 14, height: 14 }} />
                       </button>
                     )}
@@ -439,9 +439,9 @@ function SavingsRatePageInner() {
                   ))}
                   <button
                     onClick={() => addCatItem(setDepenseCats, cat.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', paddingLeft: 12 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
                   >
                     <Plus style={{ width: 12, height: 12 }} />Ajouter
                   </button>
@@ -450,9 +450,9 @@ function SavingsRatePageInner() {
             })}
             <button
               onClick={() => addCat(setDepenseCats, 'Nouvelle catégorie')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.25)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed rgba(255,255,255,0.08)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', paddingTop: 8, borderTop: '1px dashed var(--p-line)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--p-text-dim)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--p-text-faint)')}
             >
               <Plus style={{ width: 12, height: 12 }} />Nouvelle catégorie
             </button>

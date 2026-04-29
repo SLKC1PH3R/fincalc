@@ -41,7 +41,7 @@ export default function SuccessionPage() {
   ].filter(d => d.value > 0)
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>

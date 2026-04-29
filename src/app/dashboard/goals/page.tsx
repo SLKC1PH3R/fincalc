@@ -574,7 +574,7 @@ export default function GoalsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 16px' }}>
+    <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 16px', background: 'var(--p-bg)' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>

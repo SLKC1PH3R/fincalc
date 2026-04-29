@@ -93,7 +93,7 @@ function DCAPageInner() {
   ]
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 16 }}>
@@ -466,7 +466,7 @@ function DCAPageInner() {
               return (
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--p-line)" />
                     <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => `${Math.round(v / 12)}a`} />
                     <YAxis tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
                     <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />

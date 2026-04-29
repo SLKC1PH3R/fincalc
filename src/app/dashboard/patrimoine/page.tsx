@@ -862,23 +862,12 @@ export default function PatrimoinePage() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '14px 32px 0',
-      '--card-dark': '#FFFFFF',
-      '--card-dark-border': 'rgba(10,10,10,0.10)',
-      '--text-primary': '#0A0A0A',
-      '--text-em': '#0A0A0A',
-      '--text-muted-c': '#6B6356',
-      '--text-subtle': '#9A907F',
-      '--row-hover': 'rgba(10,10,10,0.03)',
-      '--section-border': 'rgba(10,10,10,0.08)',
-      '--modal-surface': '#FFFFFF',
-      '--modal-surface-border': 'rgba(10,10,10,0.12)',
-      '--sb-text': '#0A0A0A',
-      '--sb-text-strong': '#0A0A0A',
-    } as React.CSSProperties}>
+      background: 'var(--p-bg)',
+    }}>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text)', margin: 0 }}>Mon Patrimoine</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>Mon Patrimoine</h1>
           <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>
             {envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''} · {pct}ème percentile français
           </span>

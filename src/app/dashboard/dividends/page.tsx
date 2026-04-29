@@ -79,7 +79,7 @@ export default function DividendsPage() {
   const hasData = !loading && withDividends.length > 0
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)', minHeight: '100%' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
@@ -210,7 +210,7 @@ export default function DividendsPage() {
               })}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--p-line)', fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.5 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'var(--p-card)', border: '1px solid var(--p-line)', fontSize: 11, color: 'var(--p-text-faint)', lineHeight: 1.5 }}>
               <Info style={{ width: 13, height: 13, flexShrink: 0, marginTop: 1 }} />
               <span>Rendements issus de Yahoo Finance (mis en cache 1h). À titre indicatif uniquement.</span>
             </div>
@@ -270,7 +270,7 @@ export default function DividendsPage() {
                   'Privilégier les "dividend aristocrats" pour la stabilité à long terme',
                   'Le PEA exonère les dividendes d\'impôts après 5 ans de détention',
                 ].map((tip, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--p-line)' }}>
+                  <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'var(--p-row-hover)', border: '1px solid var(--p-line)' }}>
                     <div style={{ width: 16, height: 16, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                       <span style={{ fontSize: 8, fontWeight: 800, color: COLOR }}>{i + 1}</span>
                     </div>

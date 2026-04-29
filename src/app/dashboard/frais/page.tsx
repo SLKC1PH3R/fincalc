@@ -29,7 +29,7 @@ function FeesPageInner() {
   if (inputs.grossRate > 5) tips.push('L\'effet des frais est amplifié par un rendement élevé — plus votre capital est performant, plus les frais vous coûtent cher en valeur absolue.')
 
   return (
-    <div style={{ padding: '20px 24px 48px' }}>
+    <div style={{ padding: '20px 24px 48px', background: 'var(--p-bg)' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 20 }}>

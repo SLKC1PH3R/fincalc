@@ -20,7 +20,6 @@ interface Goal {
 }
 interface PatrimoineKPI { net: number; brut: number; dettes: number }
 interface PatrimoineSnapshot { value: number; createdAt: string }
-interface MarketIndex { label: string; symbol: string; price: number; changePct: number; isRate?: boolean }
 interface ScorePillar { score: number; max: number; label: string }
 interface ScoreDetails {
   security: ScorePillar & { months: number | null }
@@ -300,35 +299,6 @@ function CardHeader({ eyebrow, sub, href, hrefLabel = 'Voir' }: { eyebrow: strin
   )
 }
 
-// ── Market ticker ──────────────────────────────────────────────────────────────
-function MarketTicker({ indices }: { indices: MarketIndex[] }) {
-  if (indices.length === 0) return null
-  return (
-    <div style={{ background: 'var(--p-card)', borderBottom: '1px solid var(--p-line)', overflow: 'hidden', display: 'flex' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 18px', borderRight: '1px solid var(--p-line)', flexShrink: 0 }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--p-green)', boxShadow: '0 0 8px var(--p-green)' }} />
-        <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--p-green)', letterSpacing: '0.16em', textTransform: 'uppercase', fontFamily: 'var(--p-mono)' }}>Live</span>
-      </div>
-      {indices.map((m, i) => {
-        const pos = m.changePct >= 0
-        const color = m.isRate ? 'var(--p-blue)' : pos ? 'var(--p-green)' : 'var(--p-red)'
-        return (
-          <div key={m.symbol} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRight: i < indices.length - 1 ? '1px solid var(--p-line)' : undefined, flexShrink: 0 }}>
-            <span style={{ fontSize: 10.5, color: 'var(--p-text-dim)', fontWeight: 500 }}>{m.label}</span>
-            <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'var(--p-mono)', letterSpacing: '-0.02em' }}>
-              {m.isRate ? `${m.price}%` : m.price >= 10000 ? `${(m.price / 1000).toFixed(1)}k` : m.price >= 1000 ? m.price.toFixed(0) : m.price.toFixed(2)}
-            </span>
-            {!m.isRate && (
-              <span style={{ fontSize: 9.5, fontWeight: 700, color, fontFamily: 'var(--p-mono)' }}>
-                {pos ? '+' : ''}{m.changePct.toFixed(2)}%
-              </span>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function HomePage() {
@@ -343,7 +313,6 @@ export default function HomePage() {
   const [scoreWidget, setScoreWidget] = useState<ScoreWidget | null>(null)
   const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
   const [patrimoineTimeline, setPatrimoineTimeline] = useState<PatrimoineSnapshot[]>([])
-  const [indices, setIndices] = useState<MarketIndex[]>([])
   const [period, setPeriod] = useState('1A')
   const [onboardingDismissed, setOnboardingDismissed] = useState(true)
 
@@ -385,16 +354,6 @@ export default function HomePage() {
       .catch(() => {})
   }, [])
 
-  // Load market indices
-  useEffect(() => {
-    fetch('/api/portfolio/prices', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ positions: [] }),
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.indices) setIndices(d.indices) })
-      .catch(() => {})
-  }, [])
 
   // Compute patrimoine KPI from envelopes
   useEffect(() => {
@@ -472,9 +431,6 @@ export default function HomePage() {
 
   return (
     <div className="flex-1" style={{ background: 'var(--p-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-
-      {/* Market ticker */}
-      <MarketTicker indices={indices} />
 
       {/* Top header */}
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '24px 28px 0', gap: 16, flexWrap: 'wrap' }}>

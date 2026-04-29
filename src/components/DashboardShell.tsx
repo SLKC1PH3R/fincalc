@@ -4,77 +4,54 @@ import { cn } from '@/lib/utils'
 import { type ReactNode, useState, useEffect } from 'react'
 import { PanelLeftOpen, Search, Sun, Moon } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { NotificationCenter } from './NotificationCenter'
 import { PatrimoLogo } from '@/components/PatrimoLogo'
 import dynamic from 'next/dynamic'
 import { useTheme } from '@/contexts/ThemeContext'
 
+interface MarketIndex { label: string; symbol: string; price: number; changePct: number; isRate?: boolean }
+
+function TickerBar({ indices }: { indices: MarketIndex[] }) {
+  if (indices.length === 0) return null
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', flex: 1, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingRight: 14, borderRight: '1px solid var(--p-line)', flexShrink: 0, marginRight: 6 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--p-green)', boxShadow: '0 0 7px var(--p-green)' }} />
+        <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--p-green)', letterSpacing: '0.16em', textTransform: 'uppercase', fontFamily: 'var(--p-mono)' }}>Live</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', overflowX: 'auto', scrollbarWidth: 'none', gap: 0 }}>
+        {indices.map((m, i) => {
+          const pos = m.changePct >= 0
+          const color = m.isRate ? 'var(--p-blue)' : pos ? 'var(--p-green)' : 'var(--p-red)'
+          return (
+            <div key={m.symbol} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 14px', borderRight: i < indices.length - 1 ? '1px solid var(--p-line)' : undefined, flexShrink: 0 }}>
+              <span style={{ fontSize: 10, color: 'var(--p-text-dim)', fontWeight: 500 }}>{m.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'var(--p-mono)', letterSpacing: '-0.02em' }}>
+                {m.isRate ? `${m.price}%` : m.price >= 10000 ? `${(m.price / 1000).toFixed(1)}k` : m.price >= 1000 ? m.price.toFixed(0) : m.price.toFixed(2)}
+              </span>
+              {!m.isRate && (
+                <span style={{ fontSize: 9, fontWeight: 700, color, fontFamily: 'var(--p-mono)' }}>
+                  {pos ? '+' : ''}{m.changePct.toFixed(2)}%
+                </span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 const OnboardingWizard = dynamic(() => import('./OnboardingWizard').then(m => m.OnboardingWizard), { ssr: false })
 const CommandPalette = dynamic(() => import('./CommandPalette').then(m => m.CommandPalette), { ssr: false })
 
-// ── Page title resolver ───────────────────────────────────────────────────────
-function usePageTitle(pathname: string): string {
-  const segments: Record<string, string> = {
-    '/dashboard': 'Vue d\'ensemble',
-    '/dashboard/patrimoine': 'Patrimoine',
-    '/dashboard/patrimoine/immobilier': 'Immobilier',
-    '/dashboard/patrimoine/actions': 'Actions & Fonds',
-    '/dashboard/patrimoine/livrets': 'Livrets',
-    '/dashboard/patrimoine/autres': 'Autres actifs',
-    '/dashboard/patrimoine/comptes': 'Comptes bancaires',
-    '/dashboard/patrimoine/emprunts': 'Emprunts',
-    '/dashboard/simulateurs': 'Simulateurs',
-    '/dashboard/compound': 'Intérêts composés',
-    '/dashboard/dca': 'DCA',
-    '/dashboard/fire': 'FI/RE',
-    '/dashboard/mortgage': 'Prêt immobilier',
-    '/dashboard/buyrent': 'Acheter vs Louer',
-    '/dashboard/rental': 'Locatif',
-    '/dashboard/tax': 'Impôts IR',
-    '/dashboard/flat-tax': 'Flat Tax vs Barème',
-    '/dashboard/retirement': 'Retraite',
-    '/dashboard/savings-rate': 'Taux d\'épargne',
-    '/dashboard/budget': 'Budget 50/30/20',
-    '/dashboard/emergency-fund': 'Épargne urgence',
-    '/dashboard/envelope-compare': 'PEA vs CTO vs AV',
-    '/dashboard/succession': 'Succession',
-    '/dashboard/inflation': 'Inflation',
-    '/dashboard/frais': 'Impact des frais',
-    '/dashboard/livrets': 'Livrets réglementés',
-    '/dashboard/plusvalue': 'Plus-value immo.',
-    '/dashboard/scpi': 'SCPI',
-    '/dashboard/viager': 'Viager',
-    '/dashboard/dividends': 'Revenus passifs',
-    '/dashboard/consumer-credit': 'Crédit conso',
-    '/dashboard/score': 'Score Patrimonial',
-    '/dashboard/calendar': 'Calendrier financier',
-    '/dashboard/marche': 'Marchés & Actifs',
-    '/dashboard/marche/etf': 'ETF',
-    '/dashboard/history': 'Historique',
-    '/dashboard/portfolio': 'Portefeuille',
-    '/dashboard/profil': 'Mon profil',
-    '/dashboard/settings': 'Paramètres',
-    '/dashboard/goals': 'Objectifs',
-    '/dashboard/benchmark': 'Benchmarks',
-    '/dashboard/transactions': 'Carnet d\'ordres',
-    '/dashboard/rebalancing': 'Rééquilibrage',
-    '/dashboard/gestion': 'Gestion',
-  }
-  // patrimoine sub-pages (dynamic [id])
-  if (pathname.startsWith('/dashboard/patrimoine/') && !Object.keys(segments).includes(pathname)) {
-    return 'Détail enveloppe'
-  }
-  return segments[pathname] || 'Dashboard'
-}
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const { collapsed, toggle } = useSidebar()
   const [showWizard, setShowWizard] = useState(false)
+  const [indices, setIndices] = useState<MarketIndex[]>([])
   const { data: session } = useSession()
-  const pathname = usePathname()
-  const pageTitle = usePageTitle(pathname)
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
@@ -83,6 +60,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       .then(data => {
         if (data && data.onboardingDone === false) setShowWizard(true)
       })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/portfolio/prices', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ positions: [] }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.indices) setIndices(d.indices) })
       .catch(() => {})
   }, [])
 
@@ -119,17 +106,15 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           boxShadow: '0 1px 0 var(--p-line)',
         }}>
 
-        {/* Left: page title */}
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Left: toggle + live ticker */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
           <button onClick={toggle}
             style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid var(--p-line-2)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', flexShrink: 0 }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--p-row-hover)'; e.currentTarget.style.color = 'var(--p-text)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--p-text-dim)' }}>
             <PanelLeftOpen className="h-4 w-4" />
           </button>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--p-text-em)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: "'Geist', system-ui, sans-serif" }}>
-            {pageTitle}
-          </h2>
+          <TickerBar indices={indices} />
         </div>
 
         {/* Right: search + notifications + user */}

@@ -597,10 +597,12 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
         {/* User card */}
         {!collapsed ? (
+          <Link href="/dashboard/profil" style={{ textDecoration: 'none' }}>
           <div style={{
             padding: '10px 12px', border: '1px solid var(--p-line)', borderRadius: 12,
             display: 'flex', alignItems: 'center', gap: 10,
             background: 'var(--p-card)', boxShadow: 'var(--shadow-sm)',
+            cursor: 'pointer',
           }}>
             {user.image ? (
               <img src={user.image} alt="" style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid var(--p-gold-30)' }} />
@@ -619,6 +621,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
               <div style={{ fontSize: 10, color: 'var(--p-text-dim)' }}>Plan Pro · 2026</div>
             </div>
           </div>
+          </Link>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
             <button onClick={toggleTheme} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid var(--p-line)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

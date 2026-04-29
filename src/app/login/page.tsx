@@ -165,7 +165,7 @@ function AuthForm() {
   const router      = useRouter()
   const searchParams = useSearchParams()
   const urlError    = searchParams.get('error')
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard/patrimoine'
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
   const displayErr  = error || (urlError ? (ERROR_MESSAGES[urlError] || ERROR_MESSAGES.Default) : '')
   const isReg = mode === 'register'
 

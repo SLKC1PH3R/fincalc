@@ -9,7 +9,7 @@ import {
   Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users, Scale, Landmark, Search, UserCircle,
-  Banknote, TrendingDown, LineChart, MapPin, CalendarDays,
+  Banknote, TrendingDown, LineChart, MapPin, CalendarDays, Bell,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
@@ -658,197 +658,163 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {/* ── Nav ── */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '6px 8px' : '4px 8px' }}>
 
-          {/* Tableau de bord */}
-          <div style={{ marginBottom: 4 }}>
-            <NavItem href="/dashboard" label="Tableau de bord" icon={BarChart3} active={pathname === '/dashboard'} />
-          </div>
+          {/* ── Main items ── */}
+          <div className="space-y-0.5" style={{ marginBottom: 4 }}>
+            <NavItem href="/dashboard" label="Vue d'ensemble" icon={BarChart3} active={pathname === '/dashboard'} />
 
-          {/* Mon Profil */}
-          <div style={{ marginBottom: 4 }}>
-            <NavItem href="/dashboard/profil" label="Mon profil financier" icon={UserCircle} active={pathname === '/dashboard/profil'} />
-          </div>
-
-          {/* Score Patrimonial (collapsed or no widget) */}
-          {(collapsed || score === null) && (
-            <div style={{ marginBottom: 4 }}>
-              <NavItem href="/dashboard/score" label="Score Patrimonial" icon={Award} active={pathname === '/dashboard/score'} />
+            {/* Patrimoine — expandable */}
+            <div>
+              <NavItem
+                href="/dashboard/patrimoine"
+                label="Patrimoine"
+                icon={Home}
+                active={pathname.startsWith('/dashboard/patrimoine')}
+                expandable={!collapsed}
+                expanded={patrimoineExpanded}
+                onToggleExpand={() => setPatrimoineExpanded(v => !v)}
+              />
+              {!collapsed && patrimoineExpanded && (
+                <div className="mt-0.5 ml-10 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
+                  {PATRIMOINE_CATEGORIES.slice(1).map(cat => {
+                    const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
+                    return <SubItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
+                  })}
+                </div>
+              )}
+              {collapsed && PATRIMOINE_CATEGORIES.slice(1).map(cat => {
+                const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
+                return <NavItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
+              })}
             </div>
-          )}
 
-          {/* Calendrier financier */}
-          <div style={{ marginBottom: 4 }}>
-            <NavItem href="/dashboard/calendar" label="Calendrier" icon={CalendarDays} active={pathname === '/dashboard/calendar'} />
-          </div>
-
-          {/* Marchés explorer */}
-          <div style={{ marginBottom: 4 }}>
-            <NavItem href="/dashboard/marche" label="Marchés & Actifs" icon={LineChart} active={pathname.startsWith('/dashboard/marche')} />
-          </div>
-
-          {/* thin divider */}
-          <div style={{ height: 1, margin: '4px 4px 6px', background: 'var(--sb-divider)' }} />
-
-          {/* ── PATRIMOINE ── */}
-          <div style={{ marginBottom: 2 }}>
-            <SectionLabel label="Patrimoine" sectionKey="Patrimoine" />
-            {(collapsed || !collapsedSections.has('Patrimoine')) && (
-              <div className="space-y-0.5">
-                <NavItem
-                  href="/dashboard/patrimoine"
-                  label="Vue d'ensemble"
-                  icon={BarChart3}
-                  active={pathname === '/dashboard/patrimoine'}
-                  expandable={!collapsed}
-                  expanded={patrimoineExpanded}
-                  onToggleExpand={() => setPatrimoineExpanded(v => !v)}
-                />
-                {!collapsed && patrimoineExpanded && (
-                  <div className="mt-0.5 ml-10 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                    {PATRIMOINE_CATEGORIES.slice(1).map(cat => {
-                      const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                      return <SubItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
-                    })}
-                  </div>
-                )}
-                {collapsed && PATRIMOINE_CATEGORIES.slice(1).map(cat => {
-                  const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                  return <NavItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* thin divider */}
-          <div style={{ height: 1, margin: '6px 4px', background: 'var(--sb-divider)' }} />
-
-          {/* ── SIMULATEURS ── */}
-          <div style={{ marginBottom: 2 }}>
-            <SectionLabel label="Simulateurs" sectionKey="Simulateurs" />
-            {(collapsed || !collapsedSections.has('Simulateurs')) && (
-              <div className="space-y-0.5">
-
-                {/* collapsed: all sim icons flat */}
-                {collapsed && ALL_SIM_HREFS.map(href => {
-                  const item = SIMULATEURS_GROUPS.flatMap(g => g.items).find(i => i.href === href)!
-                  return <NavItem key={href} href={href} label={item.label} icon={item.icon} active={pathname === href} />
-                })}
-
-                {/* expanded: header + grouped sub-items */}
-                {!collapsed && (
-                  <>
-                    <NavItem
-                      href="/dashboard/simulateurs"
-                      label="Simulateurs"
-                      icon={Calculator}
-                      active={pathname === '/dashboard/simulateurs'}
-                      expandable
-                      expanded={simulateursExpanded}
-                      onToggleExpand={() => setSimulateursExpanded(v => !v)}
-                    />
-                    {simulateursExpanded && (
-                      <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                        {SIMULATEURS_GROUPS.map(group => (
-                          <div key={group.label} style={{ marginBottom: 10 }}>
-                            {/* group header with collapse toggle */}
-                            <button
-                              onClick={() => toggleGroup(group.label)}
-                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px 4px', margin: 0 }}
-                            >
-                              <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.10em', color: 'var(--sb-text-section)' }}>
-                                {group.label}
-                              </span>
-                              <ChevronDown style={{ width: 9, height: 9, color: 'var(--sb-text-dim)', transform: collapsedGroups.has(group.label) ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }} />
-                            </button>
-                            {!collapsedGroups.has(group.label) && (
-                              <div className="space-y-0.5">
-                              {group.items.map(item => {
-                                const isActive = pathname === item.href
-                                const type = item.href.split('/').pop()
-                                const itemSims = type ? sims.filter(s => s.type === type) : []
-                                const isExpanded = expandedHref === item.href
-                                return (
-                                  <div key={item.href}>
-                                    <div className="flex items-center gap-0.5">
-                                      <SubItem href={item.href} label={item.label} icon={item.icon} active={isActive} />
-                                      {itemSims.length > 0 && !isActive && (
-                                        <span style={{ fontSize: 9, color: '#B07820', background: 'rgba(176,120,32,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
-                                          {itemSims.length}
-                                        </span>
-                                      )}
-                                      {itemSims.length > 0 && (
-                                        <button
-                                          onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
-                                          style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)' }}
-                                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+            {/* Simulateurs — expandable */}
+            <div>
+              <NavItem
+                href="/dashboard/simulateurs"
+                label="Simulateurs"
+                icon={Calculator}
+                active={pathname === '/dashboard/simulateurs' || ALL_SIM_HREFS.includes(pathname)}
+                expandable={!collapsed}
+                expanded={simulateursExpanded}
+                onToggleExpand={() => setSimulateursExpanded(v => !v)}
+              />
+              {!collapsed && simulateursExpanded && (
+                <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
+                  {SIMULATEURS_GROUPS.map(group => (
+                    <div key={group.label} style={{ marginBottom: 8 }}>
+                      <button
+                        onClick={() => toggleGroup(group.label)}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 8px 3px', margin: 0 }}
+                      >
+                        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.10em', color: 'var(--sb-text-section)' }}>
+                          {group.label}
+                        </span>
+                        <ChevronDown style={{ width: 9, height: 9, color: 'var(--sb-text-dim)', transform: collapsedGroups.has(group.label) ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }} />
+                      </button>
+                      {!collapsedGroups.has(group.label) && (
+                        <div className="space-y-0.5">
+                          {group.items.map(item => {
+                            const isActive = pathname === item.href
+                            const type = item.href.split('/').pop()
+                            const itemSims = type ? sims.filter(s => s.type === type) : []
+                            const isExpanded = expandedHref === item.href
+                            return (
+                              <div key={item.href}>
+                                <div className="flex items-center gap-0.5">
+                                  <SubItem href={item.href} label={item.label} icon={item.icon} active={isActive} />
+                                  {itemSims.length > 0 && !isActive && (
+                                    <span style={{ fontSize: 9, color: '#B07820', background: 'rgba(176,120,32,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
+                                      {itemSims.length}
+                                    </span>
+                                  )}
+                                  {itemSims.length > 0 && (
+                                    <button
+                                      onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
+                                      style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)' }}
+                                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
+                                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                                    >
+                                      <ChevronDown style={{ width: 10, height: 10, transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
+                                    </button>
+                                  )}
+                                </div>
+                                {isExpanded && itemSims.length > 0 && (
+                                  <div className="mt-0.5 ml-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 8 }}>
+                                    {itemSims.slice(0, 5).map(sim => {
+                                      const isActiveSim = activeSimId === sim.id
+                                      return (
+                                        <div key={sim.id} className="group flex items-center rounded-lg"
+                                          style={{ background: isActiveSim ? 'rgba(176,120,32,0.06)' : 'transparent' }}
+                                          onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
+                                          onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                                         >
-                                          <ChevronDown style={{ width: 10, height: 10, transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
-                                        </button>
-                                      )}
-                                    </div>
-                                    {isExpanded && itemSims.length > 0 && (
-                                      <div className="mt-0.5 ml-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 8 }}>
-                                        {itemSims.slice(0, 5).map(sim => {
-                                          const isActiveSim = activeSimId === sim.id
-                                          return (
-                                            <div key={sim.id} className="group flex items-center rounded-lg"
-                                              style={{ background: isActiveSim ? 'rgba(176,120,32,0.06)' : 'transparent' }}
-                                              onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                                              onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                                            >
-                                              <Link
-                                                href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                                className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
-                                                style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#B07820' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
-                                                onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
-                                                onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
-                                              >
-                                                {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#B07820' }} />}
-                                                <span className="truncate">{sim.name}</span>
-                                              </Link>
-                                              <button
-                                                onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
-                                                className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                                                style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
-                                                title="Supprimer"
-                                              >
-                                                <Trash2 style={{ width: 10, height: 10 }} />
-                                              </button>
-                                            </div>
-                                          )
-                                        })}
-                                        {itemSims.length > 5 && (
-                                          <Link href="/dashboard/history" className="block py-1 px-2 rounded-lg"
-                                            style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
-                                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+                                          <Link
+                                            href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+                                            className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
+                                            style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#B07820' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
+                                            onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
+                                            onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
                                           >
-                                            +{itemSims.length - 5} de plus…
+                                            {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#B07820' }} />}
+                                            <span className="truncate">{sim.name}</span>
                                           </Link>
-                                        )}
-                                      </div>
+                                          <button
+                                            onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
+                                            className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
+                                            style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                                            title="Supprimer"
+                                          >
+                                            <Trash2 style={{ width: 10, height: 10 }} />
+                                          </button>
+                                        </div>
+                                      )
+                                    })}
+                                    {itemSims.length > 5 && (
+                                      <Link href="/dashboard/history" className="block py-1 px-2 rounded-lg"
+                                        style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
+                                      >
+                                        +{itemSims.length - 5} de plus…
+                                      </Link>
                                     )}
                                   </div>
-                                )
-                              })}
+                                )}
                               </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {collapsed && ALL_SIM_HREFS.map(href => {
+                const item = SIMULATEURS_GROUPS.flatMap(g => g.items).find(i => i.href === href)!
+                return <NavItem key={href} href={href} label={item.label} icon={item.icon} active={pathname === href} />
+              })}
+            </div>
+
+            <NavItem href="/dashboard/score" label="Score" icon={Award} active={pathname === '/dashboard/score'} />
+            <NavItem href="/dashboard/goals" label="Objectifs" icon={Flame} active={pathname.startsWith('/dashboard/goals')} />
+            <NavItem href="/dashboard/profil" label="Mon profil financier" icon={UserCircle} active={pathname === '/dashboard/profil'} />
+            <NavItem href="/dashboard/calendar" label="Calendrier" icon={CalendarDays} active={pathname === '/dashboard/calendar'} />
+            <NavItem href="/dashboard/history" label="Historique" icon={History} active={pathname === '/dashboard/history'} />
           </div>
 
           {/* thin divider */}
-          <div style={{ height: 1, margin: '6px 4px', background: 'var(--sb-divider)' }} />
+          <div style={{ height: 1, margin: '6px 4px 2px', background: 'var(--sb-divider)' }} />
 
-          {/* Historique — accès rapide */}
-          <div style={{ marginBottom: 2 }}>
-            <NavItem href="/dashboard/history" label="Historique" icon={History} active={pathname === '/dashboard/history'} />
+          {/* ── Outils section ── */}
+          <div>
+            <SectionLabel label="Outils" sectionKey="Outils" />
+            {(collapsed || !collapsedSections.has('Outils')) && (
+              <div className="space-y-0.5">
+                <NavItem href="/dashboard/marche" label="Marchés" icon={LineChart} active={pathname.startsWith('/dashboard/marche')} />
+                <NavItem href="/dashboard/notifications" label="Notifications" icon={Bell} active={pathname === '/dashboard/notifications'} badge={undefined} />
+                <NavItem href="/dashboard/settings" label="Paramètres" icon={Settings} active={pathname === '/dashboard/settings'} />
+              </div>
+            )}
           </div>
 
           {/* Admin */}

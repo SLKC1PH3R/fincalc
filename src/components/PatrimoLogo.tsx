@@ -1,98 +1,81 @@
 import React from 'react'
 
 interface PatrimoLogoProps {
-  /** 'dark' = blanc/doré sur fond sombre (défaut). 'light' = ambre/noir sur fond clair. */
   variant?: 'dark' | 'light'
-  /** Largeur en px — hauteur calculée proportionnellement (viewBox 172×36). */
   width?: number
-  /** Suffixe unique pour l'ID du dégradé SVG — évite les conflits quand plusieurs logos coexistent. */
   uid?: string
   style?: React.CSSProperties
   className?: string
 }
 
 export function PatrimoLogo({
-  variant = 'dark',
+  variant = 'light',
   width = 140,
-  uid = 'a',
   style,
   className,
 }: PatrimoLogoProps) {
-  const height = Math.round(width * 36 / 172)
-  const gId = `gPLogo-${variant}-${uid}`
-  const dark = variant === 'dark'
+  const fs = Math.round(width / 6.5)
+  const dotSize = Math.max(4, Math.round(fs * 0.22))
+  const dotUp = Math.round(fs * 0.34)
+
+  const ink   = variant === 'dark' ? '#FFFFFF'              : '#0A0A0A'
+  const muted = variant === 'dark' ? 'rgba(176,120,32,0.65)': '#6B6356'
+  const line  = variant === 'dark' ? 'rgba(176,120,32,0.28)': 'rgba(10,10,10,0.14)'
 
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 172 36"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={style}
+    <div
       className={className}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 2,
+        lineHeight: 1,
+        userSelect: 'none',
+        ...style,
+      }}
     >
-      <defs>
-        <linearGradient id={gId} x1="0" y1="0" x2="0" y2="1">
-          {dark ? (
-            <>
-              <stop offset="0%" stopColor="#B07820" />
-              <stop offset="100%" stopColor="#8B5E18" />
-            </>
-          ) : (
-            <>
-              <stop offset="0%" stopColor="#8B5E18" />
-              <stop offset="100%" stopColor="#a07020" />
-            </>
-          )}
-        </linearGradient>
-      </defs>
+      <span style={{
+        fontFamily: "'Instrument Serif', Georgia, serif",
+        fontSize: fs,
+        color: ink,
+        letterSpacing: '-0.02em',
+      }}>P</span>
 
-      {/* Dot above P */}
-      <circle cx="7" cy="5" r="3.5" fill={`url(#${gId})`} />
+      {/* gold dot */}
+      <span style={{
+        width: dotSize,
+        height: dotSize,
+        borderRadius: '50%',
+        background: '#B07820',
+        display: 'inline-block',
+        transform: `translateY(-${dotUp}px)`,
+        flexShrink: 0,
+      }} />
 
-      {/* P — gradient */}
-      <text
-        x="0" y="31"
-        fontFamily="Geist, Inter, sans-serif"
-        fontWeight="800"
-        fontSize="25"
-        fill={`url(#${gId})`}
-        letterSpacing="-0.8"
-      >P</text>
+      <span style={{
+        fontFamily: "'Instrument Serif', Georgia, serif",
+        fontSize: fs,
+        color: ink,
+        letterSpacing: '-0.02em',
+      }}>atrimo</span>
 
-      {/* atrimo — white or dark */}
-      <text
-        x="18" y="31"
-        fontFamily="Geist, Inter, sans-serif"
-        fontWeight="800"
-        fontSize="25"
-        fill={dark ? '#ffffff' : '#111111'}
-        letterSpacing="-0.8"
-      >atrimo</text>
-
-      {/* Separator line */}
-      <line
-        x1="100" y1="7" x2="109" y2="31"
-        stroke={dark ? 'rgba(200,146,42,0.35)' : 'rgba(160,112,32,0.3)'}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-
-      {/* "finance" tagline */}
-      <text
-        x="114" y="27"
-        fontFamily="Geist, Inter, sans-serif"
-        fontWeight="400"
-        fontSize="11"
-        fill={dark ? 'rgba(176,120,32,0.45)' : 'rgba(160,112,32,0.55)'}
-        letterSpacing="0.04em"
-      >finance</text>
-    </svg>
+      <span style={{
+        marginLeft: Math.round(fs * 0.38),
+        paddingLeft: Math.round(fs * 0.38),
+        borderLeft: `1px solid ${line}`,
+        fontFamily: "'Geist Mono', ui-monospace, monospace",
+        fontSize: Math.max(9, Math.round(fs * 0.55)),
+        fontWeight: 500,
+        color: muted,
+        textTransform: 'uppercase',
+        letterSpacing: '0.14em',
+        alignSelf: 'center',
+      }}>finance</span>
+    </div>
   )
 }
 
-/** Icône P seule (favicon / sidebar réduite / intro animation). */
+/** Icône P seule (favicon / sidebar réduite). */
 export function PatrimoPIcon({
   size = 34,
   uid = 'pi',
@@ -102,8 +85,8 @@ export function PatrimoPIcon({
   uid?: string
   style?: React.CSSProperties
 }) {
-  const height = Math.round(size * 40 / 34)
   const gId = `gPIcon-${uid}`
+  const height = Math.round(size * 40 / 34)
   return (
     <svg
       width={size}
@@ -122,8 +105,8 @@ export function PatrimoPIcon({
       <circle cx="9" cy="5" r="4" fill={`url(#${gId})`} />
       <text
         x="0" y="38"
-        fontFamily="Geist, Inter, sans-serif"
-        fontWeight="900"
+        fontFamily="'Instrument Serif', Georgia, serif"
+        fontWeight="400"
         fontSize="36"
         fill={`url(#${gId})`}
         letterSpacing="-2"

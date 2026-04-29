@@ -6,40 +6,38 @@ import { useEffect, useState, Suspense } from 'react'
 import {
   TrendingUp, Flame, Receipt, Home, Building2, History, LogOut,
   Wallet, PiggyBank, RefreshCw, Calculator, Percent, Trash2,
-  Settings, PanelLeftClose, PanelLeftOpen, Shield, BarChart3, ChevronDown,
+  Settings, Shield, BarChart3, ChevronDown, ChevronRight,
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users, Scale, Landmark, Search, UserCircle,
   Banknote, TrendingDown, LineChart, MapPin, CalendarDays, Bell,
+  PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useSidebar } from './SidebarContext'
 import { useTheme } from '@/contexts/ThemeContext'
-import { PatrimoLogo, PatrimoPIcon } from '@/components/PatrimoLogo'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Icon = (props: any) => any
 
-// ── Patrimoine categories ─────────────────────────────────────────────────────
+// ── Data ──────────────────────────────────────────────────────────────────────
 const PATRIMOINE_CATEGORIES = [
-  { href: '/dashboard/patrimoine',            label: "Vue d'ensemble",    icon: BarChart3  },
   { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
   { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
   { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
-  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
   { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
   { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
+  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
 ]
 
 const SIMULATEURS_GROUPS = [
   {
     label: 'Placements',
     items: [
-      { href: '/dashboard/compound',    label: 'Intérêts composés', icon: TrendingUp },
-      { href: '/dashboard/dca',         label: 'DCA',               icon: RefreshCw  },
-      { href: '/dashboard/fire',        label: 'FI/RE',             icon: Flame      },
-      { href: '/dashboard/dividends',   label: 'Revenus passifs',   icon: Coins      },
-      { href: '/dashboard/benchmark',   label: 'Benchmarks',        icon: BarChart3  },
-      { href: '/dashboard/transactions', label: "Carnet d'ordres",  icon: History    },
+      { href: '/dashboard/compound',     label: 'Intérêts composés',  icon: TrendingUp  },
+      { href: '/dashboard/dca',          label: 'DCA',                icon: RefreshCw   },
+      { href: '/dashboard/fire',         label: 'FI/RE',              icon: Flame       },
+      { href: '/dashboard/dividends',    label: 'Revenus passifs',    icon: Coins       },
+      { href: '/dashboard/benchmark',    label: 'Benchmarks',         icon: BarChart3   },
+      { href: '/dashboard/transactions', label: "Carnet d'ordres",    icon: History     },
     ],
   },
   {
@@ -72,18 +70,19 @@ const SIMULATEURS_GROUPS = [
   {
     label: 'Outils avancés',
     items: [
-      { href: '/dashboard/livrets',   label: 'Livrets réglementés',   icon: Banknote    },
-      { href: '/dashboard/frais',     label: 'Impact des frais',      icon: TrendingDown },
-      { href: '/dashboard/inflation', label: 'Inflation & PA',        icon: LineChart   },
-      { href: '/dashboard/plusvalue', label: 'Plus-value immo.',      icon: MapPin      },
-      { href: '/dashboard/scpi',      label: 'SCPI',                  icon: Building2   },
-      { href: '/dashboard/viager',    label: 'Viager',                icon: Users       },
+      { href: '/dashboard/livrets',   label: 'Livrets réglementés', icon: Banknote    },
+      { href: '/dashboard/frais',     label: 'Impact des frais',    icon: TrendingDown },
+      { href: '/dashboard/inflation', label: 'Inflation & PA',      icon: LineChart   },
+      { href: '/dashboard/plusvalue', label: 'Plus-value immo.',    icon: MapPin      },
+      { href: '/dashboard/scpi',      label: 'SCPI',                icon: Building2   },
+      { href: '/dashboard/viager',    label: 'Viager',              icon: Users       },
     ],
   },
 ]
 
-// Flat list of all simulator hrefs (for active detection)
 const ALL_SIM_HREFS = SIMULATEURS_GROUPS.flatMap(g => g.items.map(i => i.href))
+const ALL_PATRI_HREFS = PATRIMOINE_CATEGORIES.map(c => c.href)
+const SIM_COUNT = ALL_SIM_HREFS.length
 
 interface SimEntry { id: string; type: string; name: string; inputs: Record<string, unknown> }
 
@@ -93,62 +92,262 @@ interface SidebarProps {
   isDemo?: boolean
 }
 
-// ── Icon box helpers — NextAdmin style ──────────────────────────────────────
-function IconBox({ icon: Icon, active, size = 30 }: { icon: Icon; active: boolean; size?: number }) {
+// ── Inline SVG icon helper ────────────────────────────────────────────────────
+function SvgIcon({ d, size = 15, color = 'currentColor' }: { d: string; size?: number; color?: string }) {
   return (
-    <div style={{
-      width: size,
-      height: size,
-      borderRadius: 8,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0,
-      background: active ? 'rgba(176,120,32,0.12)' : 'transparent',
-      transition: 'all 0.15s',
-    }}>
-      <Icon style={{ width: 16, height: 16, color: active ? '#B07820' : 'var(--sb-text-dim)' }} />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden
+      style={{ flexShrink: 0, color }}>
+      <path d={d} stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// ── Logo ──────────────────────────────────────────────────────────────────────
+function SidebarLogo({ collapsed }: { collapsed: boolean }) {
+  if (collapsed) {
+    return (
+      <div style={{
+        width: 34, height: 34, borderRadius: 9,
+        background: 'var(--p-gold-12)', border: '1px solid var(--p-gold-30)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 18, fontWeight: 900, color: 'var(--p-gold)',
+        fontFamily: "'Instrument Serif', Georgia, serif",
+        letterSpacing: '-0.02em',
+      }}>P</div>
+    )
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <svg width={26} height={30} viewBox="0 0 34 40" fill="none" aria-hidden>
+        <defs>
+          <linearGradient id="sbLogoGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#D4A24C" />
+            <stop offset="100%" stopColor="#B07820" />
+          </linearGradient>
+        </defs>
+        <circle cx="9" cy="5" r="4" fill="url(#sbLogoGrad)" />
+        <text x="0" y="38" fontFamily="'Instrument Serif', Georgia, serif" fontWeight="400" fontSize="36"
+          fill="url(#sbLogoGrad)" letterSpacing="-2">P</text>
+      </svg>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--p-text)', letterSpacing: '-0.02em', lineHeight: 1, fontFamily: "'Geist', system-ui, sans-serif" }}>
+          Patrimo
+        </div>
+        <div style={{ fontSize: 9, color: 'var(--p-gold)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 3, fontWeight: 700, fontFamily: "'Geist Mono', monospace" }}>
+          Finance
+        </div>
+      </div>
     </div>
   )
 }
 
+// ── Nav link ──────────────────────────────────────────────────────────────────
+function NavLink({
+  href, label, IconComp, active, collapsed, badge, badgeRed,
+  tooltip, onTooltip,
+}: {
+  href: string; label: string; IconComp: Icon; active: boolean; collapsed: boolean
+  badge?: string | number; badgeRed?: boolean
+  tooltip?: boolean; onTooltip?: (label: string | null, y: number) => void
+}) {
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}
+      onMouseEnter={e => {
+        if (collapsed && onTooltip) {
+          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+          onTooltip(label, r.top + r.height / 2)
+        }
+      }}
+      onMouseLeave={() => collapsed && onTooltip?.(null, 0)}
+    >
+      <div style={{
+        display: 'flex', alignItems: 'center',
+        gap: collapsed ? 0 : 10,
+        padding: collapsed ? '9px 0' : '8px 10px',
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        borderRadius: 8,
+        fontSize: 13, fontWeight: active ? 600 : 500,
+        color: active ? 'var(--p-gold)' : 'var(--p-text-mid)',
+        background: active ? 'var(--p-gold-12)' : 'transparent',
+        border: active ? '1px solid var(--p-gold-30)' : '1px solid transparent',
+        transition: 'background 0.12s, color 0.12s',
+        cursor: 'pointer',
+        userSelect: 'none',
+      }}
+        onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'var(--p-row-hover)' } }}
+        onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent' } }}
+      >
+        <IconComp style={{ width: 15, height: 15, flexShrink: 0 }} />
+        {!collapsed && (
+          <>
+            <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+            {badge != null && (
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
+                background: badgeRed ? 'var(--p-red)' : (active ? 'rgba(176,120,32,0.15)' : 'rgba(0,0,0,0.06)'),
+                color: badgeRed ? '#fff' : (active ? 'var(--p-gold)' : 'var(--p-text-dim)'),
+                fontFamily: "'Geist Mono', monospace",
+              }}>{badge}</span>
+            )}
+          </>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+// ── Expandable section header (no navigation) ─────────────────────────────────
+function SectionHeader({
+  label, IconComp, expanded, onToggle, collapsed, badge, active,
+}: {
+  label: string; IconComp: Icon; expanded: boolean; onToggle: () => void
+  collapsed: boolean; badge?: string | number; active?: boolean
+}) {
+  if (collapsed) {
+    return (
+      <div
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '9px 0', borderRadius: 8, cursor: 'pointer',
+          color: active ? 'var(--p-gold)' : 'var(--p-text-mid)',
+          background: active ? 'var(--p-gold-12)' : 'transparent',
+          border: active ? '1px solid var(--p-gold-30)' : '1px solid transparent',
+          transition: 'background 0.12s',
+        }}
+        onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--p-row-hover)' }}
+        onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
+      >
+        <IconComp style={{ width: 15, height: 15, flexShrink: 0 }} />
+      </div>
+    )
+  }
+  return (
+    <button
+      onClick={onToggle}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '8px 10px', width: '100%',
+        background: active ? 'var(--p-gold-12)' : 'transparent',
+        border: active ? '1px solid var(--p-gold-30)' : '1px solid transparent',
+        borderRadius: 8, cursor: 'pointer',
+        fontSize: 13, fontWeight: 500,
+        color: active ? 'var(--p-gold)' : 'var(--p-text-mid)',
+        fontFamily: 'inherit',
+        transition: 'background 0.12s',
+        textAlign: 'left',
+      }}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--p-row-hover)' }}
+      onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'var(--p-gold-12)' : 'transparent' }}
+    >
+      <IconComp style={{ width: 15, height: 15, flexShrink: 0 }} />
+      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      {badge != null && (
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
+          background: active ? 'rgba(176,120,32,0.15)' : 'rgba(0,0,0,0.06)',
+          color: active ? 'var(--p-gold)' : 'var(--p-text-dim)',
+          fontFamily: "'Geist Mono', monospace",
+        }}>{badge}</span>
+      )}
+      <ChevronDown style={{
+        width: 12, height: 12, flexShrink: 0,
+        transition: 'transform 0.2s',
+        transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+      }} />
+    </button>
+  )
+}
+
+// ── Sim sub-item ──────────────────────────────────────────────────────────────
+function SimSubItem({
+  href, label, IconComp, active, sims, activeSimId, onDelete,
+}: {
+  href: string; label: string; IconComp: Icon; active: boolean
+  sims: SimEntry[]; activeSimId: string | null; onDelete: (id: string) => void
+}) {
+  const itemSims = sims.filter(s => {
+    const typeMap: Record<string, string> = {
+      '/dashboard/compound': 'compound', '/dashboard/dca': 'dca', '/dashboard/fire': 'fire',
+      '/dashboard/mortgage': 'mortgage', '/dashboard/buyrent': 'buyrent', '/dashboard/rental': 'rental',
+      '/dashboard/tax': 'tax', '/dashboard/flat-tax': 'flat-tax', '/dashboard/envelope-compare': 'envelope-compare',
+      '/dashboard/retirement': 'retirement', '/dashboard/savings-rate': 'savings-rate',
+      '/dashboard/budget': 'budget', '/dashboard/emergency-fund': 'emergency-fund',
+      '/dashboard/consumer-credit': 'consumer-credit', '/dashboard/succession': 'succession',
+      '/dashboard/dividends': 'dividends', '/dashboard/inflation': 'inflation', '/dashboard/frais': 'frais',
+      '/dashboard/livrets': 'livrets', '/dashboard/plusvalue': 'plusvalue', '/dashboard/scpi': 'scpi',
+      '/dashboard/viager': 'viager', '/dashboard/benchmark': 'benchmark', '/dashboard/transactions': 'transactions',
+    }
+    return s.type === typeMap[href]
+  })
+
+  return (
+    <div>
+      <Link href={href} style={{ textDecoration: 'none' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '6px 8px', borderRadius: 7,
+          fontSize: 12, fontWeight: active ? 600 : 400,
+          color: active ? 'var(--p-gold)' : 'var(--p-text-dim)',
+          background: active ? 'var(--p-gold-08)' : 'transparent',
+          transition: 'background 0.1s',
+          cursor: 'pointer',
+        }}
+          onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--p-row-hover)' }}
+          onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'var(--p-gold-08)' : 'transparent' }}
+        >
+          {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--p-gold)', flexShrink: 0 }} />}
+          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+          {itemSims.length > 0 && (
+            <span style={{ fontSize: 9, color: 'var(--p-text-faint)', fontFamily: "'Geist Mono', monospace" }}>
+              {itemSims.length}
+            </span>
+          )}
+        </div>
+      </Link>
+      {active && itemSims.slice(0, 4).map(sim => {
+        const isActiveSim = sim.id === activeSimId
+        return (
+          <div key={sim.id} className="group" style={{ display: 'flex', alignItems: 'center', paddingLeft: 12 }}>
+            <Link
+              href={`${href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
+              style={{ flex: 1, fontSize: 11, color: isActiveSim ? 'var(--p-gold)' : 'var(--p-text-faint)', textDecoration: 'none', padding: '3px 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: isActiveSim ? 600 : 400 }}
+            >
+              {sim.name}
+            </Link>
+            <button
+              onClick={e => { e.preventDefault(); e.stopPropagation(); onDelete(sim.id) }}
+              style={{ opacity: 0, width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', flexShrink: 0 }}
+              className="group-hover:opacity-100"
+              title="Supprimer"
+            >
+              <Trash2 style={{ width: 9, height: 9 }} />
+            </button>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const activeSimId = searchParams.get('sim')
   const { collapsed, toggle } = useSidebar()
   const { theme, toggleTheme } = useTheme()
+
   const [sims, setSims] = useState<SimEntry[]>([])
-  const [expandedHref, setExpandedHref] = useState<string | null>(null)
   const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [simulateursExpanded, setSimulateursExpanded] = useState(true)
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => {
-    const activeGroup = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label
-    const all = new Set(SIMULATEURS_GROUPS.map(g => g.label))
-    if (activeGroup) all.delete(activeGroup)
-    return all
-  })
-  const toggleGroup = (label: string) => setCollapsedGroups((prev: Set<string>) => {
-    const next = new Set(prev)
-    if (next.has(label)) next.delete(label); else next.add(label)
-    return next
-  })
-  useEffect(() => {
-    const ag = SIMULATEURS_GROUPS.find(g => g.items.some(i => i.href === pathname))?.label
-    if (ag) setCollapsedGroups((prev: Set<string>) => { const next = new Set(prev); next.delete(ag); return next })
-  }, [pathname])
-  const [score, setScore] = useState<number | null>(null)
-  const [patrimoineTotal, setPatrimoineTotal] = useState<number | null>(null)
-  const [sparklineHistory, setSparklineHistory] = useState<number[]>([])
-  const [fireTarget, setFireTarget] = useState<number>(0)
-  const [dettesTotal, setDettesTotal] = useState<number>(0)
+  const [tooltip, setTooltip] = useState<{ label: string; y: number } | null>(null)
 
-  const toggleSection = (title: string) => setCollapsedSections(prev => {
-    const next = new Set(prev)
-    if (next.has(title)) next.delete(title); else next.add(title)
-    return next
-  })
+  // Auto-expand the relevant section when navigating
+  useEffect(() => {
+    if (ALL_PATRI_HREFS.some(h => pathname.startsWith(h))) setPatrimoineExpanded(true)
+    if (ALL_SIM_HREFS.some(h => pathname === h)) setSimulateursExpanded(true)
+  }, [pathname])
 
   const loadSims = () => {
     fetch('/api/simulations')
@@ -156,815 +355,306 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       .then(data => { if (Array.isArray(data)) setSims(data) })
       .catch(() => {})
   }
-
   useEffect(() => {
     loadSims()
     window.addEventListener('simulation-saved', loadSims)
-    return () => { window.removeEventListener('simulation-saved', loadSims) }
+    return () => window.removeEventListener('simulation-saved', loadSims)
   }, [])
-
-  useEffect(() => {
-    fetch('/api/score/last')
-      .then(r => r.json())
-      .then(data => { if (typeof data.score === 'number') setScore(data.score) })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    const saved = localStorage.getItem('patrimo_fire_target')
-    if (saved) { const n = parseFloat(saved); if (n > 0) setFireTarget(n) }
-  }, [])
-
-  useEffect(() => {
-    fetch('/api/patrimoine/envelopes')
-      .then(r => r.json())
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((data: any[]) => {
-        if (!Array.isArray(data)) return
-        let brut = 0, dettes = 0
-        for (const e of data) {
-          if (e.type === 'IMMOBILIER') {
-            brut += Number(e.metadata?.currentValue ?? 0)
-            dettes += Number(e.metadata?.creditRemaining ?? 0)
-          } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const val = e.totalValue !== null ? e.totalValue : (e.positions || []).reduce((s: number, p: any) => s + p.pru * p.quantity, 0)
-            brut += val
-          }
-        }
-        setPatrimoineTotal(brut)
-        setDettesTotal(dettes)
-      })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    fetch('/api/patrimoine/snapshots?days=180')
-      .then(r => r.json())
-      .then((snaps: { date: string; totalValue: number }[]) => {
-        if (Array.isArray(snaps) && snaps.length >= 2) {
-          // Sample up to 7 evenly-spaced points
-          const step = Math.max(1, Math.floor(snaps.length / 7))
-          const sampled = snaps.filter((_, i) => i % step === 0 || i === snaps.length - 1)
-          setSparklineHistory(sampled.map(s => s.totalValue))
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    if (pathname.startsWith('/dashboard/')) setExpandedHref(pathname)
-    if (ALL_SIM_HREFS.some(h => pathname === h)) setSimulateursExpanded(true)
-  }, [pathname])
 
   const deleteSim = async (id: string) => {
     setSims(prev => prev.filter(s => s.id !== id))
     try { await fetch(`/api/simulations?id=${id}`, { method: 'DELETE' }) } catch {}
   }
 
-  const W = collapsed ? 64 : 290
-  const [sbTooltip, setSbTooltip] = useState<{ label: string; y: number } | null>(null)
+  const isPatrimoineActive = ALL_PATRI_HREFS.some(h => pathname.startsWith(h))
+  const isSimActive = ALL_SIM_HREFS.some(h => pathname === h)
 
-  // ── Section label — NextAdmin style ─────────────────────────────────────
-  const SectionLabel = ({ label, sectionKey }: { label: string; sectionKey: string }) => {
-    if (collapsed) return <div style={{ height: 1, margin: '8px 4px', background: 'var(--sb-divider)' }} />
-    return (
-      <button
-        onClick={() => toggleSection(sectionKey)}
-        className="flex items-center justify-between w-full px-2"
-        style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: 4, marginTop: 8 }}
-      >
-        <span style={{
-          fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '0.10em', color: 'var(--sb-text-section)',
-        }}>
-          {label}
-        </span>
-        <ChevronDown
-          style={{
-            width: 11, height: 11,
-            color: 'var(--sb-text-dim)',
-            transform: collapsedSections.has(sectionKey) ? 'rotate(-90deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s',
-          }}
-        />
-      </button>
-    )
-  }
+  const W = collapsed ? 62 : 232
 
-  // ── Single nav item — NextAdmin style ─────────────────────────────────────
-  const NavItem = ({
-    href, label, icon: Icon, active, badge, onToggleExpand, expandable, expanded,
-  }: {
-    key?: string; href: string; label: string; icon: Icon; active: boolean
-    badge?: number; onToggleExpand?: () => void; expandable?: boolean; expanded?: boolean
-  }) => (
-    <div className="flex items-center gap-1">
-      <Link
-        href={href}
-        className={cn(
-          'flex items-center gap-2.5 rounded-lg flex-1 min-w-0',
-          collapsed ? 'justify-center py-2 px-2' : 'px-2.5 py-2',
-          active ? 'sb-link-active' : 'sb-link',
-        )}
-        style={{
-          textDecoration: 'none',
-          background: 'none',
-        }}
-        onClick={() => { if (expandable && !expanded && onToggleExpand) onToggleExpand() }}
-        onMouseEnter={e => {
-          if (collapsed) {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-            setSbTooltip({ label, y: rect.top + rect.height / 2 })
-          }
-        }}
-        onMouseLeave={() => { setSbTooltip(null) }}
-      >
-        <IconBox icon={Icon} active={active} />
-        {!collapsed && (
-          <>
-            <span style={{
-              fontSize: 13.5, fontWeight: active ? 600 : 400,
-              color: active ? 'var(--sb-active-text)' : 'var(--sb-text)',
-              flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {label}
-            </span>
-            {badge != null && badge > 0 && (
-              <span style={{
-                fontSize: 10, color: '#B07820',
-                background: 'rgba(176,120,32,0.12)',
-                padding: '1px 7px', borderRadius: 20,
-                fontWeight: 700, flexShrink: 0,
-              }}>
-                {badge}
-              </span>
-            )}
-          </>
-        )}
-      </Link>
-      {!collapsed && expandable && onToggleExpand && (
-        <button
-          onClick={onToggleExpand}
-          style={{
-            width: 22, height: 22,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            borderRadius: 6, border: 'none', background: 'none',
-            cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-        >
-          <ChevronDown style={{ width: 11, height: 11, transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
-        </button>
-      )}
-    </div>
-  )
-
-  // ── Sub-item row (indented, no icon box) ─────────────────────────────────
-  const SubItem = ({ href, label, icon: Icon, active }: { key?: string; href: string; label: string; icon: Icon; active: boolean }) => (
-    <Link
-      href={href}
-      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-colors"
-      style={{
-        textDecoration: 'none', fontSize: 12,
-        color: active ? '#B07820' : 'var(--sb-text)',
-        fontWeight: active ? 600 : 400,
-        background: active ? 'rgba(176,120,32,0.06)' : 'none',
-      }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-      onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'none' }}
-    >
-      <Icon style={{ width: 12, height: 12, flexShrink: 0, color: active ? '#B07820' : 'var(--sb-text-dim)' }} />
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-    </Link>
-  )
-
-  // ── Patrimoine widget derived values ────────────────────────────────────────
-  const fmtSb = (n: number) =>
-    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)} M€`
-    : n >= 1_000 ? `${Math.round(n / 1_000)} k€`
-    : `${Math.round(n)} €`
-  const sparkDelta = sparklineHistory.length >= 2
-    ? sparklineHistory[sparklineHistory.length - 1] - sparklineHistory[0]
-    : null
-  const sparkDeltaPct = sparkDelta !== null && sparklineHistory[0] > 0
-    ? (sparkDelta / sparklineHistory[0]) * 100
-    : null
-  const SW = 84, SH = 28
-  const sparkMax = sparklineHistory.length >= 2 ? Math.max(...sparklineHistory) : 0
-  const sparkMin = sparklineHistory.length >= 2 ? Math.min(...sparklineHistory) : 0
-  const sparkRange = sparkMax - sparkMin || 1
-  const sparkPts = sparklineHistory.length >= 2
-    ? sparklineHistory.map((v: number, i: number) =>
-        `${(i / (sparklineHistory.length - 1)) * SW},${SH - 2 - ((v - sparkMin) / sparkRange) * (SH - 4)}`
-      ).join(' ')
-    : null
-  const sparkLastCy = sparklineHistory.length >= 2
-    ? SH - 2 - ((sparklineHistory[sparklineHistory.length - 1] - sparkMin) / sparkRange) * (SH - 4)
-    : 0
-  const patrimoineNet = patrimoineTotal !== null ? Math.max(0, patrimoineTotal - dettesTotal) : 0
-  const fireProgress = patrimoineNet > 0 && fireTarget > 0
-    ? Math.min(100, (patrimoineNet / fireTarget) * 100)
-    : 0
+  const userName = user.name || user.email || 'Utilisateur'
+  const userInitial = userName[0].toUpperCase()
 
   return (
-    <>
-      {/* Mobile overlay */}
+    <aside style={{
+      width: W, flexShrink: 0,
+      borderRight: '1px solid var(--p-line)',
+      background: 'var(--p-bg)',
+      display: 'flex', flexDirection: 'column',
+      padding: collapsed ? '18px 8px' : '18px 14px',
+      transition: 'width 0.28s cubic-bezier(0.4,0,0.2,1), padding 0.28s',
+      overflow: 'hidden',
+      position: 'relative',
+      minHeight: '100vh',
+    }}>
+
+      {/* Logo + toggle */}
+      <div style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'space-between',
+        marginBottom: 20, gap: 8,
+      }}>
+        <SidebarLogo collapsed={collapsed} />
+        <button
+          onClick={toggle}
+          title={collapsed ? 'Déplier' : 'Réduire'}
+          style={{
+            width: 26, height: 26, borderRadius: 7,
+            border: '1px solid var(--p-line-2)', background: 'var(--p-card)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--p-text-dim)', flexShrink: 0,
+            boxShadow: 'var(--shadow-sm)', transition: 'background 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--p-card-2)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--p-card)'}
+        >
+          {collapsed
+            ? <PanelLeftOpen style={{ width: 12, height: 12 }} />
+            : <PanelLeftClose style={{ width: 12, height: 12 }} />}
+        </button>
+      </div>
+
+      {/* Search */}
       {!collapsed && (
-        <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={toggle} />
+        <button
+          onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '7px 10px', marginBottom: 14,
+            border: '1px solid var(--p-line)', borderRadius: 8,
+            background: 'var(--p-card)', width: '100%',
+            fontSize: 12, color: 'var(--p-text-dim)',
+            boxShadow: 'var(--shadow-sm)', cursor: 'pointer',
+            transition: 'border-color 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--p-gold-30)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--p-line)'}
+        >
+          <Search style={{ width: 13, height: 13, flexShrink: 0 }} />
+          <span style={{ flex: 1, textAlign: 'left' }}>Recherche…</span>
+          <kbd style={{ fontSize: 9, padding: '1px 5px', border: '1px solid var(--p-line)', borderRadius: 4, background: 'var(--p-bg)', color: 'var(--p-text-dim)', fontFamily: "'Geist Mono', monospace" }}>⌘K</kbd>
+        </button>
       )}
 
-      <aside
-        className={cn(
-          'fixed left-0 top-0 h-full flex flex-col z-40 transition-all duration-200',
-          collapsed ? '-translate-x-full md:translate-x-0' : 'translate-x-0'
-        )}
-        style={{
-          width: W,
-          background: 'var(--sb-bg)',
-          borderRight: '1px solid var(--sb-border)',
-          overflow: 'visible',
-        }}
-      >
-        {/* ── Collapsed tooltip ── */}
-        {collapsed && sbTooltip && (
-          <div style={{
-            position: 'fixed',
-            left: W + 10,
-            top: sbTooltip.y,
-            transform: 'translateY(-50%)',
-            background: '#FFFFFF',
-            color: '#0A0A0A',
-            border: '1px solid rgba(10,10,10,0.10)',
-            boxShadow: '0 4px 16px rgba(10,10,10,0.12)',
-            padding: '5px 10px',
-            borderRadius: 8,
-            fontSize: 12,
-            fontWeight: 500,
-            whiteSpace: 'nowrap',
-            zIndex: 9999,
-            pointerEvents: 'none',
-          }}>
-            {sbTooltip.label}
-          </div>
-        )}
-
-        {/* ── Subtle top gold accent ── */}
-        <div aria-hidden style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-          background: 'linear-gradient(90deg, #8B5E18, #B07820, transparent)',
-          opacity: 0.55,
-          pointerEvents: 'none', zIndex: 2,
-        }} />
-
-        {/* ── Logo / header — 65px to match topbar ── */}
-        <div className={cn(
-          'flex-shrink-0 flex items-center transition-all duration-200',
-          collapsed ? 'px-3 justify-center' : 'px-4'
-        )} style={{ height: 65, borderBottom: '1px solid var(--sb-border)' }}>
-          {!collapsed ? (
-            <div className="flex items-center justify-between w-full">
-                <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                  <PatrimoLogo width={126} uid="sb" variant={theme === 'dark' ? 'dark' : 'light'} />
-                </Link>
-                <button
-                  onClick={toggle}
-                  aria-label="Réduire la sidebar"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', padding: 4, borderRadius: 8 }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-text)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
-                >
-                  <PanelLeftClose style={{ width: 16, height: 16 }} />
-                </button>
-            </div>
-          ) : (
-            <button
-              onClick={toggle}
-              title="Ouvrir"
-              className="flex items-center justify-center transition-transform hover:scale-105"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <PatrimoPIcon size={28} uid="sb-col" />
-            </button>
-          )}
+      {/* Demo banner */}
+      {isDemo && !collapsed && (
+        <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', background: 'var(--p-gold-08)', border: '1px solid var(--p-gold-18)', borderRadius: 8, padding: '4px 10px' }}>
+          <span style={{ fontSize: 9 }}>🔒</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--p-gold)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Mode démo · Lecture seule</span>
         </div>
+      )}
 
-        {/* ── Patrimoine & Score widgets (below header, scrollable area) ── */}
-        {!collapsed && (
-          <div style={{ padding: '10px 10px 0', flexShrink: 0 }}>
-            {/* Patrimoine widget */}
-            {patrimoineTotal !== null && (() => {
-                const cardBg = '#FBF7EF'
-                const cardBorder = 'rgba(176,120,32,0.20)'
-                const cardBorderHover = 'rgba(176,120,32,0.40)'
-                const cardShadow = '0 1px 6px rgba(176,120,32,0.08)'
-                const labelColor = '#8B5E18'
-                const valueColor = '#0A0A0A'
-                const subColor = 'rgba(0,0,0,0.32)'
-                const miniCardBg = 'rgba(10,10,10,0.04)'
-                const miniLabelColor = 'rgba(0,0,0,0.38)'
-                const miniValueColor = 'rgba(0,0,0,0.75)'
-                const fireBgColor = 'rgba(10,10,10,0.06)'
-                const fireBarBg = 'rgba(10,10,10,0.08)'
-                const fireLabelColor = 'rgba(0,0,0,0.35)'
-                const fireTargetColor = 'rgba(0,0,0,0.55)'
-                return (
-                <Link href="/dashboard/patrimoine" style={{ textDecoration: 'none', display: 'block', marginBottom: 8 }}>
-                  <div
-                    style={{
-                      padding: '12px 14px', borderRadius: 12,
-                      background: cardBg,
-                      border: `1px solid ${cardBorder}`,
-                      cursor: 'pointer', transition: 'border-color 0.15s',
-                      boxShadow: cardShadow,
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = cardBorderHover)}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = cardBorder)}
-                  >
-                    {/* Top row: info left + sparkline right */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                          <TrendingUp style={{ width: 9, height: 9, color: labelColor }} />
-                          <span style={{ color: labelColor, fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase' as const }}>Patrimoine net</span>
-                        </div>
-                        <div style={{ color: valueColor, fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                          {fmtSb(Math.max(0, patrimoineTotal - dettesTotal))}
-                        </div>
-                        {sparkDelta !== null && (
-                          <div style={{ color: sparkDelta >= 0 ? '#4ade80' : '#f87171', fontSize: 10, fontWeight: 600, marginTop: 3 }}>
-                            {sparkDelta >= 0 ? '↑ +' : '↓ '}{fmtSb(Math.abs(sparkDelta))}
-                            {sparkDeltaPct !== null && (
-                              <span style={{ opacity: 0.6, marginLeft: 3 }}>({sparkDeltaPct >= 0 ? '+' : ''}{sparkDeltaPct.toFixed(1)}%)</span>
-                            )}
-                          </div>
-                        )}
-                      </div>
+      {/* ── Nav ── */}
+      <nav style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-                      {/* Sparkline SVG */}
-                      {sparkPts && (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                          <svg width={SW} height={SH} style={{ overflow: 'visible' }}>
-                            <defs>
-                              <linearGradient id="sbSparkGrad" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor={labelColor} stopOpacity={0.30} />
-                                <stop offset="100%" stopColor={labelColor} stopOpacity={1} />
-                              </linearGradient>
-                            </defs>
-                            <polyline points={sparkPts} fill="none" stroke="url(#sbSparkGrad)" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx={SW} cy={sparkLastCy} r={3} fill={labelColor} />
-                          </svg>
-                          <span style={{ fontSize: 9, color: subColor, fontWeight: 400 }}>6 derniers mois</span>
-                        </div>
-                      )}
-                    </div>
+        {/* Vue d'ensemble */}
+        <NavLink href="/dashboard" label="Vue d'ensemble" IconComp={BarChart3}
+          active={pathname === '/dashboard'} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
 
-                    {/* Brut / Dettes mini-cards */}
-                    {(patrimoineTotal > 0 || dettesTotal > 0) && (
-                      <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                        <div style={{ flex: 1, background: miniCardBg, borderRadius: 8, padding: '6px 10px' }}>
-                          <div style={{ fontSize: 9, color: miniLabelColor, marginBottom: 2 }}>Brut</div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: miniValueColor, fontVariantNumeric: 'tabular-nums' }}>{fmtSb(patrimoineTotal)}</div>
-                        </div>
-                        {dettesTotal > 0 && (
-                          <div style={{ flex: 1, background: miniCardBg, borderRadius: 8, padding: '6px 10px' }}>
-                            <div style={{ fontSize: 9, color: miniLabelColor, marginBottom: 2 }}>Dettes</div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: '#f87171', fontVariantNumeric: 'tabular-nums' }}>-{fmtSb(dettesTotal)}</div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* FIRE progress */}
-                    {fireTarget > 0 && (
-                      <div style={{ borderTop: `1px solid ${fireBgColor}`, paddingTop: 10, marginTop: 10 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 9, color: fireLabelColor, fontWeight: 400 }}>
-                            Vers objectif <span style={{ color: fireTargetColor }}>{fmtSb(fireTarget)}</span>
-                          </span>
-                          <span style={{ fontSize: 9, color: labelColor, fontWeight: 600 }}>{fireProgress.toFixed(0)}%</span>
-                        </div>
-                        <div style={{ height: 5, background: fireBarBg, borderRadius: 99 }}>
-                          <div style={{ width: `${fireProgress}%`, height: '100%', background: `linear-gradient(90deg, ${labelColor}99, ${labelColor})`, borderRadius: 99, transition: 'width 0.6s ease' }} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Link>
-                )
-              })()}
-
-              {/* Score widget */}
-              {score !== null && (() => {
-                const cardBg = '#FBF7EF'
-                const cardBorder = 'rgba(176,120,32,0.20)'
-                const cardBorderHover = 'rgba(176,120,32,0.40)'
-                const cardShadow = '0 1px 6px rgba(176,120,32,0.08)'
-                const labelColor = '#8B5E18'
-                const valueColor = '#0A0A0A'
-                const valueMutedColor = 'rgba(0,0,0,0.32)'
-                const barBg = 'rgba(10,10,10,0.08)'
-                return (
-                <Link
-                  href="/dashboard/score"
-                  style={{ textDecoration: 'none', display: 'block', marginBottom: 12 }}
-                >
+        {/* Patrimoine — header only, no link */}
+        <SectionHeader
+          label="Patrimoine" IconComp={Home}
+          expanded={patrimoineExpanded} onToggle={() => setPatrimoineExpanded(v => !v)}
+          collapsed={collapsed} badge={PATRIMOINE_CATEGORIES.length} active={isPatrimoineActive}
+        />
+        {!collapsed && patrimoineExpanded && (
+          <div style={{ marginLeft: 10, paddingLeft: 12, borderLeft: '1px solid var(--p-line)', display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 2 }}>
+            {PATRIMOINE_CATEGORIES.map(cat => {
+              const active = pathname.startsWith(cat.href)
+              const Ic = cat.icon
+              return (
+                <Link key={cat.href} href={cat.href} style={{ textDecoration: 'none' }}>
                   <div style={{
-                    padding: '10px 14px',
-                    borderRadius: 12,
-                    background: cardBg,
-                    border: `1px solid ${cardBorder}`,
-                    cursor: 'pointer',
-                    transition: 'border-color 0.15s',
-                    boxShadow: cardShadow,
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 7,
+                    fontSize: 12, fontWeight: active ? 600 : 400,
+                    color: active ? 'var(--p-gold)' : 'var(--p-text-dim)',
+                    background: active ? 'var(--p-gold-08)' : 'transparent',
+                    transition: 'background 0.1s', cursor: 'pointer',
                   }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = cardBorderHover)}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = cardBorder)}
+                    onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'var(--p-row-hover)' }}
+                    onMouseLeave={e => { if (!active) e.currentTarget.style.background = active ? 'var(--p-gold-08)' : 'transparent' }}
                   >
-                    <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: labelColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                        Score patrimonial
-                      </span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: valueColor, fontVariantNumeric: 'tabular-nums' }}>
-                        {score}<span style={{ fontSize: 10, fontWeight: 500, color: valueMutedColor }}>/100</span>
-                      </span>
-                    </div>
-                    <div style={{ height: 5, borderRadius: 99, background: barBg, overflow: 'hidden' }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${score}%`,
-                        borderRadius: 99,
-                        background: score >= 70
-                          ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                          : score >= 40
-                            ? 'linear-gradient(90deg, #8B5E18, #B07820)'
-                            : 'linear-gradient(90deg, #ef4444, #f87171)',
-                        transition: 'width 0.6s ease',
-                      }} />
-                    </div>
+                    {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--p-gold)', flexShrink: 0 }} />}
+                    <Ic style={{ width: 13, height: 13, flexShrink: 0 }} />
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.label}</span>
                   </div>
                 </Link>
-                )
-              })()}
+              )
+            })}
           </div>
         )}
 
-        {/* ── Search bar ── */}
-        {!collapsed && (
-          <div style={{ padding: '0 10px 8px', flexShrink: 0 }}>
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))}
-                style={{
-                  display: 'flex', alignItems: 'center', width: '100%',
-                  padding: '6px 10px', borderRadius: 8,
-                  border: '1px solid var(--sb-divider)', background: 'var(--sb-hover-bg)',
-                  cursor: 'pointer', gap: 7, transition: 'background 0.15s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-active-bg)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-              >
-                <Search style={{ width: 12, height: 12, color: 'var(--sb-text-dim)', flexShrink: 0 }} />
-                <span style={{ flex: 1, fontSize: 11, color: 'var(--sb-text-dim)', textAlign: 'left' as const }}>Recherche rapide…</span>
-                <span style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
-                  {['⌘', 'K'].map(k => (
-                    <kbd key={k} style={{ fontSize: 10, color: 'var(--sb-text-dim)', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '0px 4px', fontFamily: 'inherit' }}>{k}</kbd>
-                  ))}
-                </span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Demo banner */}
-        {isDemo && (
-          <div style={{ padding: collapsed ? '4px 8px' : '0 10px 8px', display: 'flex', justifyContent: 'center' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
-              background: 'rgba(176,120,32,0.05)', border: '1px solid rgba(176,120,32,0.12)',
-              borderRadius: 8, padding: '4px 10px', width: '100%',
-            }}>
-              <span style={{ fontSize: 11, flexShrink: 0 }}>🔒</span>
-              {!collapsed && (
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#B07820', letterSpacing: '0.08em', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
-                  Mode démo · Lecture seule
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Nav ── */}
-        <nav className="flex-1 overflow-y-auto" style={{ padding: collapsed ? '6px 8px' : '4px 8px' }}>
-
-          {/* ── Main items ── */}
-          <div className="space-y-0.5" style={{ marginBottom: 4 }}>
-            <NavItem href="/dashboard" label="Vue d'ensemble" icon={BarChart3} active={pathname === '/dashboard'} />
-
-            {/* Patrimoine — expandable */}
-            <div>
-              <NavItem
-                href="/dashboard/patrimoine"
-                label="Patrimoine"
-                icon={Home}
-                active={pathname.startsWith('/dashboard/patrimoine')}
-                expandable={!collapsed}
-                expanded={patrimoineExpanded}
-                onToggleExpand={() => setPatrimoineExpanded(v => !v)}
-              />
-              {!collapsed && patrimoineExpanded && (
-                <div className="mt-0.5 ml-10 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                  {PATRIMOINE_CATEGORIES.slice(1).map(cat => {
-                    const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                    return <SubItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
-                  })}
+        {/* Simulateurs — header only, no link */}
+        <SectionHeader
+          label="Simulateurs" IconComp={Calculator}
+          expanded={simulateursExpanded} onToggle={() => setSimulateursExpanded(v => !v)}
+          collapsed={collapsed} badge={SIM_COUNT} active={isSimActive}
+        />
+        {!collapsed && simulateursExpanded && (
+          <div style={{ marginLeft: 10, paddingLeft: 12, borderLeft: '1px solid var(--p-line)', display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 2 }}>
+            {SIMULATEURS_GROUPS.map(group => (
+              <div key={group.label}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', padding: '6px 8px 3px', fontFamily: "'Geist Mono', monospace" }}>
+                  {group.label}
                 </div>
-              )}
-              {collapsed && PATRIMOINE_CATEGORIES.slice(1).map(cat => {
-                const isActive = pathname === cat.href || pathname.startsWith(cat.href + '/')
-                return <NavItem key={cat.href} href={cat.href} label={cat.label} icon={cat.icon} active={isActive} />
-              })}
-            </div>
-
-            {/* Simulateurs — expandable */}
-            <div>
-              <NavItem
-                href="/dashboard/simulateurs"
-                label="Simulateurs"
-                icon={Calculator}
-                active={pathname === '/dashboard/simulateurs' || ALL_SIM_HREFS.includes(pathname)}
-                expandable={!collapsed}
-                expanded={simulateursExpanded}
-                onToggleExpand={() => setSimulateursExpanded(v => !v)}
-              />
-              {!collapsed && simulateursExpanded && (
-                <div className="mt-0.5 ml-10" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 10 }}>
-                  {SIMULATEURS_GROUPS.map(group => (
-                    <div key={group.label} style={{ marginBottom: 8 }}>
-                      <button
-                        onClick={() => toggleGroup(group.label)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 8px 3px', margin: 0 }}
-                      >
-                        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.10em', color: 'var(--sb-text-section)' }}>
-                          {group.label}
-                        </span>
-                        <ChevronDown style={{ width: 9, height: 9, color: 'var(--sb-text-dim)', transform: collapsedGroups.has(group.label) ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }} />
-                      </button>
-                      {!collapsedGroups.has(group.label) && (
-                        <div className="space-y-0.5">
-                          {group.items.map(item => {
-                            const isActive = pathname === item.href
-                            const type = item.href.split('/').pop()
-                            const itemSims = type ? sims.filter(s => s.type === type) : []
-                            const isExpanded = expandedHref === item.href
-                            return (
-                              <div key={item.href}>
-                                <div className="flex items-center gap-0.5">
-                                  <SubItem href={item.href} label={item.label} icon={item.icon} active={isActive} />
-                                  {itemSims.length > 0 && !isActive && (
-                                    <span style={{ fontSize: 9, color: '#B07820', background: 'rgba(176,120,32,0.08)', padding: '1px 5px', borderRadius: 4, fontWeight: 700, flexShrink: 0, marginRight: 2 }}>
-                                      {itemSims.length}
-                                    </span>
-                                  )}
-                                  {itemSims.length > 0 && (
-                                    <button
-                                      onClick={() => setExpandedHref(prev => prev === item.href ? null : item.href)}
-                                      style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', flexShrink: 0, color: 'var(--sb-text-dim)' }}
-                                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--sb-hover-bg)')}
-                                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                                    >
-                                      <ChevronDown style={{ width: 10, height: 10, transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }} />
-                                    </button>
-                                  )}
-                                </div>
-                                {isExpanded && itemSims.length > 0 && (
-                                  <div className="mt-0.5 ml-3 space-y-0.5" style={{ borderLeft: '1px solid var(--sb-divider)', paddingLeft: 8 }}>
-                                    {itemSims.slice(0, 5).map(sim => {
-                                      const isActiveSim = activeSimId === sim.id
-                                      return (
-                                        <div key={sim.id} className="group flex items-center rounded-lg"
-                                          style={{ background: isActiveSim ? 'rgba(176,120,32,0.06)' : 'transparent' }}
-                                          onMouseEnter={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'var(--sb-hover-bg)' }}
-                                          onMouseLeave={e => { if (!isActiveSim) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                                        >
-                                          <Link
-                                            href={`${item.href}?restore=${encodeURIComponent(JSON.stringify(sim.inputs))}&sim=${sim.id}`}
-                                            className="flex items-center gap-2 py-1 px-2 flex-1 min-w-0"
-                                            style={{ fontSize: 11, textDecoration: 'none', color: isActiveSim ? '#B07820' : 'var(--sb-sim-text)', fontWeight: isActiveSim ? 600 : 400 }}
-                                            onMouseEnter={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text-hover)' }}
-                                            onMouseLeave={e => { if (!isActiveSim) e.currentTarget.style.color = 'var(--sb-sim-text)' }}
-                                          >
-                                            {isActiveSim && <span className="h-1 w-1 rounded-full flex-shrink-0" style={{ background: '#B07820' }} />}
-                                            <span className="truncate">{sim.name}</span>
-                                          </Link>
-                                          <button
-                                            onClick={e => { e.preventDefault(); e.stopPropagation(); deleteSim(sim.id) }}
-                                            className="opacity-0 group-hover:opacity-100 h-5 w-5 flex items-center justify-center transition-all flex-shrink-0 mr-1 hover:text-red-400"
-                                            style={{ color: 'var(--sb-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
-                                            title="Supprimer"
-                                          >
-                                            <Trash2 style={{ width: 10, height: 10 }} />
-                                          </button>
-                                        </div>
-                                      )
-                                    })}
-                                    {itemSims.length > 5 && (
-                                      <Link href="/dashboard/history" className="block py-1 px-2 rounded-lg"
-                                        style={{ fontSize: 10, color: 'var(--sb-text-dim)', textDecoration: 'none' }}
-                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--sb-sim-text-hover)')}
-                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--sb-text-dim)')}
-                                      >
-                                        +{itemSims.length - 5} de plus…
-                                      </Link>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {collapsed && ALL_SIM_HREFS.map(href => {
-                const item = SIMULATEURS_GROUPS.flatMap(g => g.items).find(i => i.href === href)!
-                return <NavItem key={href} href={href} label={item.label} icon={item.icon} active={pathname === href} />
-              })}
-            </div>
-
-            <NavItem href="/dashboard/score" label="Score" icon={Award} active={pathname === '/dashboard/score'} />
-            <NavItem href="/dashboard/goals" label="Objectifs" icon={Flame} active={pathname.startsWith('/dashboard/goals')} />
-            <NavItem href="/dashboard/profil" label="Mon profil financier" icon={UserCircle} active={pathname === '/dashboard/profil'} />
-            <NavItem href="/dashboard/calendar" label="Calendrier" icon={CalendarDays} active={pathname === '/dashboard/calendar'} />
-            <NavItem href="/dashboard/history" label="Historique" icon={History} active={pathname === '/dashboard/history'} />
-          </div>
-
-          {/* thin divider */}
-          <div style={{ height: 1, margin: '6px 4px 2px', background: 'var(--sb-divider)' }} />
-
-          {/* ── Outils section ── */}
-          <div>
-            <SectionLabel label="Outils" sectionKey="Outils" />
-            {(collapsed || !collapsedSections.has('Outils')) && (
-              <div className="space-y-0.5">
-                <NavItem href="/dashboard/marche" label="Marchés" icon={LineChart} active={pathname.startsWith('/dashboard/marche')} />
-                <NavItem href="/dashboard/notifications" label="Notifications" icon={Bell} active={pathname === '/dashboard/notifications'} badge={undefined} />
-                <NavItem href="/dashboard/settings" label="Paramètres" icon={Settings} active={pathname === '/dashboard/settings'} />
+                {group.items.map(item => (
+                  <SimSubItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    IconComp={item.icon}
+                    active={pathname === item.href}
+                    sims={sims}
+                    activeSimId={activeSimId}
+                    onDelete={deleteSim}
+                  />
+                ))}
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* Score */}
+        <NavLink href="/dashboard/score" label="Score" IconComp={Award}
+          active={pathname === '/dashboard/score'} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        {/* Objectifs */}
+        <NavLink href="/dashboard/goals" label="Objectifs" IconComp={Flame}
+          active={pathname.startsWith('/dashboard/goals')} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        {/* Calendrier */}
+        <NavLink href="/dashboard/calendar" label="Calendrier" IconComp={CalendarDays}
+          active={pathname === '/dashboard/calendar'} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        {/* Historique */}
+        <NavLink href="/dashboard/history" label="Historique" IconComp={History}
+          active={pathname === '/dashboard/history'} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        {/* ── Outils ── */}
+        {!collapsed
+          ? <div style={{ marginTop: 16, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Geist Mono', monospace" }}>Outils</div>
+          : <div style={{ height: 1, margin: '12px 0 6px', background: 'var(--p-line)' }} />
+        }
+
+        <NavLink href="/dashboard/marche" label="Marchés" IconComp={LineChart}
+          active={pathname.startsWith('/dashboard/marche')} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        <NavLink href="/dashboard/notifications" label="Notifications" IconComp={Bell}
+          active={pathname === '/dashboard/notifications'} collapsed={collapsed}
+          badge={3} badgeRed
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        <NavLink href="/dashboard/settings" label="Paramètres" IconComp={Settings}
+          active={pathname === '/dashboard/settings'} collapsed={collapsed}
+          onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+
+        {/* Admin */}
+        {isAdmin && (
+          <>
+            {!collapsed
+              ? <div style={{ marginTop: 8, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Geist Mono', monospace" }}>Admin</div>
+              : <div style={{ height: 1, margin: '8px 0 4px', background: 'var(--p-line)' }} />
+            }
+            <NavLink href="/dashboard/admin" label="Administration" IconComp={Shield}
+              active={pathname === '/dashboard/admin'} collapsed={collapsed}
+              onTooltip={(l, y) => l ? setTooltip({ label: l, y }) : setTooltip(null)} />
+          </>
+        )}
+      </nav>
+
+      {/* ── Footer: theme + signout + user ── */}
+      <div style={{ marginTop: 12, borderTop: '1px solid var(--p-line)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+
+        {/* Theme toggle + sign out */}
+        {!collapsed && (
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, border: '1px solid var(--p-line)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', fontSize: 11, fontWeight: 500, transition: 'background 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--p-row-hover)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              {theme === 'dark' ? <Sun style={{ width: 13, height: 13 }} /> : <Moon style={{ width: 13, height: 13 }} />}
+              {theme === 'dark' ? 'Clair' : 'Sombre'}
+            </button>
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, border: '1px solid var(--p-line)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', fontSize: 11, transition: 'background 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(178,59,59,0.07)'; e.currentTarget.style.color = 'var(--p-red)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--p-text-dim)' }}
+              title="Déconnexion"
+            >
+              <LogOut style={{ width: 13, height: 13 }} />
+            </button>
+          </div>
+        )}
+
+        {/* User card */}
+        {!collapsed ? (
+          <div style={{
+            padding: '10px 12px', border: '1px solid var(--p-line)', borderRadius: 12,
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: 'var(--p-card)', boxShadow: 'var(--shadow-sm)',
+          }}>
+            {user.image ? (
+              <img src={user.image} alt="" style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid var(--p-gold-30)' }} />
+            ) : (
+              <div style={{
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg, var(--p-gold-deep), var(--p-gold-2))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, color: '#fff',
+              }}>{userInitial}</div>
+            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.name || user.email?.split('@')[0] || 'Utilisateur'}
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--p-text-dim)' }}>Plan Pro · 2026</div>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+            <button onClick={toggleTheme} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid var(--p-line)', background: 'transparent', cursor: 'pointer', color: 'var(--p-text-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {theme === 'dark' ? <Sun style={{ width: 14, height: 14 }} /> : <Moon style={{ width: 14, height: 14 }} />}
+            </button>
+            {user.image ? (
+              <img src={user.image} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', outline: '1.5px solid var(--p-gold-30)' }} />
+            ) : (
+              <div style={{
+                width: 34, height: 34, borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--p-gold-deep), var(--p-gold-2))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 700, color: '#fff',
+              }}>{userInitial}</div>
             )}
           </div>
+        )}
+      </div>
 
-          {/* Admin */}
-          {isAdmin && (
-            <div style={{ marginTop: 6 }}>
-              <SectionLabel label="Admin" sectionKey="Admin" />
-              {(collapsed || !collapsedSections.has('Admin')) && (
-                <NavItem href="/dashboard/admin" label="Administration" icon={Shield} active={pathname === '/dashboard/admin'} />
-              )}
-            </div>
-          )}
-        </nav>
-
-        {/* ── Footer ── */}
-        <div
-          className="flex-shrink-0"
-          style={{
-            borderTop: '1px solid var(--sb-divider)',
-            padding: collapsed ? '8px 8px' : '8px 8px 10px',
-          }}
-        >
-          {!collapsed ? (
-            <>
-              {/* User card */}
-              <div
-                className="flex items-center gap-2.5 px-2 py-2 rounded-xl mb-1"
-                style={{ background: 'var(--sb-profile-bg)', border: '1px solid rgba(176,120,32,0.06)' }}
-              >
-                {user.image ? (
-                  <img src={user.image} alt="" style={{ height: 28, width: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, outline: '1.5px solid rgba(176,120,32,0.20)' }} />
-                ) : (
-                  <div style={{
-                    height: 28, width: 28, borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg, #8B5E18 0%, #D4A24C 100%)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a' }}>
-                      {(user.name || user.email || 'U')[0].toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--sb-text-strong)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {user.name || 'Utilisateur'}
-                  </p>
-                  <p style={{ fontSize: 10, color: 'var(--sb-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {user.email}
-                  </p>
-                </div>
-              </div>
-              {/* Theme + Settings + Logout */}
-              <div className="flex items-center gap-1 px-1">
-                <button
-                  onClick={toggleTheme}
-                  title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
-                  aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: 6, padding: '6px 8px', borderRadius: 10,
-                    border: 'none', background: 'none', cursor: 'pointer',
-                    fontSize: 11, color: 'var(--sb-text-dim)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--sb-hover-bg)'; e.currentTarget.style.color = 'var(--sb-text)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--sb-text-dim)' }}
-                >
-                  {theme === 'dark' ? <Sun style={{ width: 13, height: 13 }} /> : <Moon style={{ width: 13, height: 13 }} />}
-                  {theme === 'dark' ? 'Clair' : 'Sombre'}
-                </button>
-                <Link
-                  href="/dashboard/settings"
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: 6, padding: '6px 8px', borderRadius: 10,
-                    textDecoration: 'none', fontSize: 11, color: pathname === '/dashboard/settings' ? 'var(--sb-text)' : 'var(--sb-text-dim)',
-                  }}
-                >
-                  <Settings style={{ width: 13, height: 13 }} />
-                  Paramètres
-                </Link>
-                <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  title="Déconnexion"
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: 6, padding: '6px 8px', borderRadius: 10,
-                    border: 'none', background: 'none', cursor: 'pointer',
-                    fontSize: 11, color: 'var(--sb-text-dim)',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.color = '#f87171' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--sb-text-dim)' }}
-                >
-                  <LogOut style={{ width: 13, height: 13 }} />
-                  Déconnexion
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={toggle}
-                title="Ouvrir"
-                aria-label="Ouvrir la sidebar"
-                style={{
-                  width: '100%', display: 'flex', justifyContent: 'center',
-                  padding: '8px 0', borderRadius: 10, border: 'none',
-                  background: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', marginBottom: 4,
-                }}
-                onMouseEnter={e => { (e.currentTarget.style.color = 'var(--sb-text)'); (e.currentTarget.style.background = 'var(--sb-hover-bg)') }}
-                onMouseLeave={e => { (e.currentTarget.style.color = 'var(--sb-text-dim)'); (e.currentTarget.style.background = 'none') }}
-              >
-                <PanelLeftOpen style={{ width: 16, height: 16 }} />
-              </button>
-              <button
-                onClick={toggleTheme}
-                title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
-                aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                style={{
-                  width: '100%', display: 'flex', justifyContent: 'center',
-                  padding: '8px 0', borderRadius: 10, border: 'none',
-                  background: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)', marginBottom: 4,
-                }}
-                onMouseEnter={e => { (e.currentTarget.style.color = 'var(--sb-text)'); (e.currentTarget.style.background = 'var(--sb-hover-bg)') }}
-                onMouseLeave={e => { (e.currentTarget.style.color = 'var(--sb-text-dim)'); (e.currentTarget.style.background = 'none') }}
-              >
-                {theme === 'dark' ? <Sun style={{ width: 16, height: 16 }} /> : <Moon style={{ width: 16, height: 16 }} />}
-              </button>
-              <button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                title="Déconnexion"
-                style={{
-                  width: '100%', display: 'flex', justifyContent: 'center',
-                  padding: '8px 0', borderRadius: 10, border: 'none',
-                  background: 'none', cursor: 'pointer', color: 'var(--sb-text-dim)',
-                }}
-                onMouseEnter={e => { (e.currentTarget.style.color = '#f87171'); (e.currentTarget.style.background = 'rgba(239,68,68,0.08)') }}
-                onMouseLeave={e => { (e.currentTarget.style.color = 'var(--sb-text-dim)'); (e.currentTarget.style.background = 'none') }}
-              >
-                <LogOut style={{ width: 16, height: 16 }} />
-              </button>
-            </>
-          )}
-        </div>
-      </aside>
-    </>
+      {/* Tooltip for collapsed mode */}
+      {collapsed && tooltip && (
+        <div style={{
+          position: 'fixed', left: W + 10, top: tooltip.y, transform: 'translateY(-50%)',
+          background: 'var(--p-card)', border: '1px solid var(--p-line)',
+          borderRadius: 8, padding: '5px 10px', fontSize: 12, fontWeight: 500,
+          color: 'var(--p-text-em)', boxShadow: 'var(--shadow-1)',
+          pointerEvents: 'none', zIndex: 9999, whiteSpace: 'nowrap',
+        }}>{tooltip.label}</div>
+      )}
+    </aside>
   )
 }
 
 export function Sidebar(props: SidebarProps) {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <SidebarInner {...props} />
     </Suspense>
   )

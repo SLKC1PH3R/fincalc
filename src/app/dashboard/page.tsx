@@ -346,14 +346,17 @@ export default function HomePage() {
     setOnboardingDismissed(localStorage.getItem('onboarding_dismissed') === '1')
   }, [])
 
-  // Load timeline
+  // Load snapshots (historical patrimoine)
   useEffect(() => {
-    fetch('/api/patrimoine/timeline')
+    fetch('/api/patrimoine/snapshots?days=1095')
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (Array.isArray(d)) setPatrimoineTimeline(d) })
+      .then(d => {
+        if (Array.isArray(d)) {
+          setPatrimoineTimeline(d.map((s: { totalValue: number; date: string }) => ({ value: s.totalValue, createdAt: s.date })))
+        }
+      })
       .catch(() => {})
   }, [])
-
 
   // Compute patrimoine KPI from envelopes
   useEffect(() => {
@@ -374,6 +377,31 @@ export default function HomePage() {
     if (brut > 0) setPatrimoineKPI({ brut, dettes, net: Math.max(0, brut - dettes) })
   }, [envelopes])
 
+  // Auto-save today's snapshot + append to local timeline
+  useEffect(() => {
+    if (!patrimoineKPI || envelopes.length === 0) return
+    const byEnvelope = Object.fromEntries(
+      envelopes.map(e => [e.id, e.totalValue ?? 0])
+    )
+    fetch('/api/patrimoine/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalValue: patrimoineKPI.brut, byEnvelope }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((snap: { totalValue: number; date: string } | null) => {
+        if (!snap) return
+        const todayStr = new Date().toISOString().split('T')[0]
+        setPatrimoineTimeline(prev => {
+          const already = prev.some(s => s.createdAt.startsWith(todayStr))
+          if (already) return prev
+          return [...prev, { value: snap.totalValue, createdAt: snap.date }]
+        })
+      })
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patrimoineKPI])
+
   // Derived values
   const firstName = session?.user?.name?.split(' ')[0] || ''
   const hour = new Date().getHours()
@@ -381,10 +409,36 @@ export default function HomePage() {
 
   const animatedNet = useCountUp(patrimoineKPI?.net ?? 0, 1400, loaded && !!patrimoineKPI)
 
-  const tLast = patrimoineTimeline.length >= 2 ? patrimoineTimeline[patrimoineTimeline.length - 1].value : null
-  const tPrev = patrimoineTimeline.length >= 2 ? patrimoineTimeline[0].value : null
-  const deltaMonth = tLast != null && patrimoineTimeline.length >= 2
-    ? tLast - patrimoineTimeline[Math.max(0, patrimoineTimeline.length - 2)].value
+  // Period filter
+  const PERIOD_DAYS: Record<string, number> = { '1M': 30, '6M': 180, '1A': 365, '3A': 1095, 'Tout': Infinity }
+  const filteredTimeline = (() => {
+    const days = PERIOD_DAYS[period] ?? 365
+    const cutoff = days === Infinity ? 0 : Date.now() - days * 86400000
+    return patrimoineTimeline.filter(s => new Date(s.createdAt).getTime() >= cutoff)
+  })()
+
+  // Synthesize chart data when history is sparse
+  const chartData = (() => {
+    if (filteredTimeline.length >= 2) return filteredTimeline
+    const currentVal = patrimoineKPI?.net ?? patrimoineKPI?.brut ?? 0
+    if (currentVal === 0) return filteredTimeline
+    const days = PERIOD_DAYS[period] ?? 365
+    const startMs = days === Infinity ? Date.now() - 365 * 86400000 : Date.now() - days * 86400000
+    const startISO = new Date(startMs).toISOString()
+    const nowISO = new Date().toISOString()
+    if (filteredTimeline.length === 1) {
+      return [{ value: filteredTimeline[0].value, createdAt: startISO }, filteredTimeline[0]]
+    }
+    return [
+      { value: currentVal, createdAt: startISO },
+      { value: currentVal, createdAt: nowISO },
+    ]
+  })()
+
+  const tLast = filteredTimeline.length >= 2 ? filteredTimeline[filteredTimeline.length - 1].value : null
+  const tPrev = filteredTimeline.length >= 2 ? filteredTimeline[0].value : null
+  const deltaMonth = tLast != null && filteredTimeline.length >= 2
+    ? tLast - filteredTimeline[Math.max(0, filteredTimeline.length - 2)].value
     : null
   const deltaYear = tLast != null && tPrev != null ? tLast - tPrev : null
   const deltaPct = deltaYear != null && tPrev ? ((deltaYear / tPrev) * 100).toFixed(1) : null
@@ -495,7 +549,7 @@ export default function HomePage() {
                 </div>
               </div>
               <div style={{ flex: 1, minHeight: 160 }}>
-                <PatrimoineLineChart data={patrimoineTimeline} />
+                <PatrimoineLineChart data={chartData} />
               </div>
             </div>
           </div>

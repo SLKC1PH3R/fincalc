@@ -90,10 +90,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const userName = session?.user?.name || session?.user?.email || 'Utilisateur'
 
   return (
-    <div className={cn(
-      'flex-1 h-full flex flex-col overflow-hidden transition-all duration-200 grid-bg',
-      collapsed ? 'md:ml-[64px] ml-0' : 'md:ml-[290px] ml-0'
-    )}>
+    <div className="flex-1 h-full flex flex-col overflow-hidden transition-all duration-200 grid-bg" style={{ minWidth: 0 }}>
 
       {/* ── Mobile top bar ── */}
       <div className="md:hidden flex items-center justify-between px-4 h-14 flex-shrink-0"

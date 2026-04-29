@@ -10,7 +10,6 @@ import {
   Sun, Moon, Bitcoin, Award, CreditCard, Coins,
   ShieldCheck, Users, Scale, Landmark, Search, UserCircle,
   Banknote, TrendingDown, LineChart, MapPin, CalendarDays, Bell,
-  PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react'
 import { useSidebar } from './SidebarContext'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -102,22 +101,41 @@ function SvgIcon({ d, size = 15, color = 'currentColor' }: { d: string; size?: n
   )
 }
 
-// ── Logo ──────────────────────────────────────────────────────────────────────
-function SidebarLogo({ collapsed }: { collapsed: boolean }) {
+// ── Logo (clickable — toggles sidebar) ───────────────────────────────────────
+function SidebarLogo({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   if (collapsed) {
     return (
-      <div style={{
-        width: 34, height: 34, borderRadius: 9,
-        background: 'var(--p-gold-12)', border: '1px solid var(--p-gold-30)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 18, fontWeight: 900, color: 'var(--p-gold)',
-        fontFamily: "'Instrument Serif', Georgia, serif",
-        letterSpacing: '-0.02em',
-      }}>P</div>
+      <button
+        onClick={onToggle}
+        title="Déplier"
+        style={{
+          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <svg width={32} height={36} viewBox="0 0 34 40" fill="none" aria-hidden>
+          <defs>
+            <linearGradient id="sbLogoGrad2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f1c086" />
+              <stop offset="100%" stopColor="#c8922a" />
+            </linearGradient>
+          </defs>
+          <circle cx="9" cy="5" r="4" fill="url(#sbLogoGrad2)" />
+          <text x="0" y="38" fontFamily="Geist, Inter, sans-serif" fontWeight="900" fontSize="36"
+            fill="url(#sbLogoGrad2)" letterSpacing="-2">P</text>
+        </svg>
+      </button>
     )
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <button
+      onClick={onToggle}
+      title="Réduire"
+      style={{
+        background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 10,
+      }}
+    >
       <svg width={26} height={30} viewBox="0 0 34 40" fill="none" aria-hidden>
         <defs>
           <linearGradient id="sbLogoGrad" x1="0" y1="0" x2="0" y2="1">
@@ -129,7 +147,7 @@ function SidebarLogo({ collapsed }: { collapsed: boolean }) {
         <text x="0" y="38" fontFamily="'Instrument Serif', Georgia, serif" fontWeight="400" fontSize="36"
           fill="url(#sbLogoGrad)" letterSpacing="-2">P</text>
       </svg>
-      <div>
+      <div style={{ textAlign: 'left' }}>
         <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--p-text)', letterSpacing: '-0.02em', lineHeight: 1, fontFamily: "'Geist', system-ui, sans-serif" }}>
           Patrimo
         </div>
@@ -137,7 +155,7 @@ function SidebarLogo({ collapsed }: { collapsed: boolean }) {
           Finance
         </div>
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -387,30 +405,13 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
       minHeight: '100vh',
     }}>
 
-      {/* Logo + toggle */}
+      {/* Logo — click to collapse/expand */}
       <div style={{
         display: 'flex', alignItems: 'center',
-        justifyContent: collapsed ? 'center' : 'space-between',
-        marginBottom: 20, gap: 8,
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        marginBottom: 20,
       }}>
-        <SidebarLogo collapsed={collapsed} />
-        <button
-          onClick={toggle}
-          title={collapsed ? 'Déplier' : 'Réduire'}
-          style={{
-            width: 26, height: 26, borderRadius: 7,
-            border: '1px solid var(--p-line-2)', background: 'var(--p-card)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'var(--p-text-dim)', flexShrink: 0,
-            boxShadow: 'var(--shadow-sm)', transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'var(--p-card-2)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'var(--p-card)'}
-        >
-          {collapsed
-            ? <PanelLeftOpen style={{ width: 12, height: 12 }} />
-            : <PanelLeftClose style={{ width: 12, height: 12 }} />}
-        </button>
+        <SidebarLogo collapsed={collapsed} onToggle={toggle} />
       </div>
 
       {/* Search */}

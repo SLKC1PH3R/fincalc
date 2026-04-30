@@ -1,8 +1,6 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
@@ -13,14 +11,13 @@ import { Download, TrendingUp, Info, Wallet, BookOpen, Settings2, GitCompare, Re
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
-import { useChartTheme } from '@/lib/chart-theme'
 import { CsvExport } from '@/components/CsvExport'
 import { FieldTooltip } from '@/components/FieldTooltip'
+import { SvgLineChart, SvgDonut } from '@/components/SvgChart'
 
 const COLOR = '#60a5fa'
 
 function DCAPageInner() {
-  const chart = useChartTheme()
   const [inputs, setInputs] = useState<DCAInputs>({ monthly: 500, years: 15, targetRate: 8, volatility: 15, initialPrice: 100, startingCapital: 0 })
   const set = (k: keyof DCAInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [loadingPatrimoine, setLoadingPatrimoine] = useState(false)
@@ -81,8 +78,8 @@ function DCAPageInner() {
 
   // Donut versements vs intérêts
   const donutData = [
-    { name: 'Capital versé', value: r.totalInvested, color: COLOR },
-    { name: 'Intérêts', value: Math.max(r.gain, 0), color: '#34d399' },
+    { label: 'Capital versé', value: r.totalInvested, color: COLOR },
+    { label: 'Intérêts', value: Math.max(r.gain, 0), color: '#34d399' },
   ]
 
   const guidedSteps: GuidedStep[] = [
@@ -298,18 +295,17 @@ function DCAPageInner() {
             {/* Chart capital versé vs valeur */}
             <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 12 }}>Évolution du portefeuille — {inputs.years} ans</p>
-              <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={r.chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${Math.round(v / 12)}a`} />
-                  <YAxis tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
-                  <Tooltip formatter={(v: any, name: string) => [fmt(v), name === 'value' ? 'Valeur' : 'Investi']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="value" name="Valeur portefeuille" stroke={COLOR} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="invested" name="Capital investi" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-                </LineChart>
-              </ResponsiveContainer>
-              <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+              <SvgLineChart
+                data={r.chartData}
+                xKey="month"
+                lines={[
+                  { key: 'value', label: 'Valeur portefeuille', color: COLOR },
+                  { key: 'invested', label: 'Capital investi', color: '#9ca3af', dash: true, width: 1.5 },
+                ]}
+                height={200}
+                xFormat={v => `${Math.round(v / 12)}a`}
+              />
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'flex-end' }}>
                 <CsvExport
                   data={annualTable.map(d => ({ 'Année': d.year, 'Capital investi': d.invested.toFixed(0), 'Valeur portefeuille': d.value.toFixed(0), 'Gain': d.gain.toFixed(0) }))}
                   filename="dca.csv"
@@ -369,19 +365,14 @@ function DCAPageInner() {
             <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 10 }}>Composition du capital final</p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <PieChart width={160} height={120}>
-                  <Pie data={donutData} cx={80} cy={60} innerRadius={38} outerRadius={55} paddingAngle={3} dataKey="value">
-                    {donutData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} />
-                </PieChart>
+                <SvgDonut segments={donutData} width={160} height={120} outerRadius={55} innerRadius={38} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
                 {donutData.map((d, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
-                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.label}</span>
                     </div>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)' }}>{fmt(d.value)}</span>
                   </div>
@@ -458,23 +449,22 @@ function DCAPageInner() {
               const yearsMax = Math.max(inputs.years, inputsB.years)
               const dataA = calcDCA({ ...inputs, years: yearsMax }).chartData
               const dataB = calcDCA({ ...inputsB, years: yearsMax }).chartData
-              const merged = dataA.filter((_: unknown, i: number) => i % 3 === 0).map((pt: { month: number; value: number; invested: number }, i: number) => ({
+              const merged = dataA.filter((_: unknown, i: number) => i % 3 === 0).map((pt: { month: number; value: number }, i: number) => ({
                 month: pt.month,
-                'Scénario A': pt.value,
-                'Scénario B': dataB[i * 3]?.value ?? 0,
+                scenA: pt.value,
+                scenB: dataB[i * 3]?.value ?? 0,
               }))
               return (
-                <ResponsiveContainer width="100%" height={240}>
-                  <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--p-line)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => `${Math.round(v / 12)}a`} />
-                    <YAxis tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} tickFormatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
-                    <Tooltip formatter={(v: number) => [fmt(v), '']} contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Line type="monotone" dataKey="Scénario A" stroke="#B07820" strokeWidth={2.5} dot={false} animationDuration={800} />
-                    <Line type="monotone" dataKey="Scénario B" stroke="#818cf8" strokeWidth={2.5} dot={false} animationDuration={800} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <SvgLineChart
+                  data={merged}
+                  xKey="month"
+                  lines={[
+                    { key: 'scenA', label: 'Scénario A', color: '#B07820' },
+                    { key: 'scenB', label: 'Scénario B', color: '#818cf8' },
+                  ]}
+                  height={260}
+                  xFormat={v => `${Math.round(v / 12)}a`}
+                />
               )
             })()}
           </div>

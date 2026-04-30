@@ -1,7 +1,6 @@
 'use client'
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useCountUp } from '@/lib/use-count-up'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
@@ -17,7 +16,7 @@ import { FieldTooltip } from '@/components/FieldTooltip'
 import { useUserProfile } from '@/lib/use-profile'
 import { ProfileFillButton } from '@/components/ProfileFillButton'
 import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
-import { useChartTheme } from '@/lib/chart-theme'
+import { SvgLineChart, SvgDonut } from '@/components/SvgChart'
 
 const Tip = FieldTooltip
 const COLOR = '#7c3aed'
@@ -37,9 +36,6 @@ const divider = { height: 1, background: 'var(--p-line)' }
 const labelStyle = { fontSize: 11, color: 'var(--p-text-faint)', letterSpacing: '0.04em', fontWeight: 500 }
 
 function CompoundPageInner() {
-  const chart = useChartTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
   const { profile } = useUserProfile()
   const [guidedMode, setGuidedMode] = useState(false)
   const [guidedStep, setGuidedStep] = useState(0)
@@ -99,8 +95,8 @@ function CompoundPageInner() {
   }, [r])
 
   const donutData = [
-    { name: 'Capital investi', value: r.invested, color: COLOR },
-    { name: 'Intérêts', value: Math.max(r.interest, 0), color: GREEN },
+    { label: 'Capital investi', value: r.invested, color: COLOR },
+    { label: 'Intérêts', value: Math.max(r.interest, 0), color: GREEN },
   ]
 
   const guidedSteps: GuidedStep[] = [
@@ -362,19 +358,16 @@ function CompoundPageInner() {
                   filename="interets-composes.csv"
                 />
               </div>
-              {mounted ? (
-                <ResponsiveContainer width="100%" height={190}>
-                  <LineChart data={r.chartData} margin={{ top: 4, right: 8, left: 4, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                    <Legend wrapperStyle={{ fontSize: 11, color: 'var(--p-text-dim)' }} />
-                    <Line type="monotone" dataKey="total" name="Capital total" stroke={COLOR} strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="invested" name="Investi (sans intérêts)" stroke={chart.lineDim} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : <div style={{ height: 190 }} />}
+              <SvgLineChart
+                data={r.chartData}
+                xKey="year"
+                lines={[
+                  { key: 'total', label: 'Capital total', color: COLOR },
+                  { key: 'invested', label: 'Investi (sans intérêts)', color: '#9ca3af', dash: true, width: 1.5 },
+                ]}
+                height={200}
+                xFormat={v => `${v}a`}
+              />
             </div>
 
             {/* Decade table */}
@@ -414,12 +407,7 @@ function CompoundPageInner() {
 
               {/* Donut chart */}
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
-                <PieChart width={150} height={110}>
-                  <Pie data={donutData} cx={75} cy={55} innerRadius={36} outerRadius={52} paddingAngle={3} dataKey="value" startAngle={90} endAngle={450}>
-                    {donutData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} />
-                </PieChart>
+                <SvgDonut segments={donutData} width={150} height={110} outerRadius={52} innerRadius={36} />
               </div>
 
               {/* Legend bars */}
@@ -430,7 +418,7 @@ function CompoundPageInner() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
-                        <span style={{ fontSize: 11, color: '#6b7280' }}>{d.name}</span>
+                        <span style={{ fontSize: 11, color: '#6b7280' }}>{d.label}</span>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <span style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{fmt(d.value)}</span>
@@ -532,31 +520,30 @@ function CompoundPageInner() {
           </div>
           <div style={{ ...card, padding: 20 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Évolution comparée sur {Math.max(inputs.years, inputsB.years)} ans</p>
-            {mounted && (() => {
+            {(() => {
               const yearsMax = Math.max(inputs.years, inputsB.years)
               const dataA = calcCompound({ ...inputs, years: yearsMax }).chartData
               const dataB = calcCompound({ ...inputsB, years: yearsMax }).chartData
               const merged = dataA.map((pt: { year: number; total: number; invested: number }, i: number) => ({
                 year: pt.year,
-                'Scénario A': pt.total,
-                'Scénario B': dataB[i]?.total ?? 0,
-                'Investi A': pt.invested,
-                'Investi B': dataB[i]?.invested ?? 0,
+                scenA: pt.total,
+                scenB: dataB[i]?.total ?? 0,
+                invA: pt.invested,
+                invB: dataB[i]?.invested ?? 0,
               }))
               return (
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={merged} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                    <XAxis dataKey="year" tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => `${v}a`} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Line type="monotone" dataKey="Scénario A" stroke="#7c3aed" strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="Scénario B" stroke="#10b981" strokeWidth={2.5} dot={false} />
-                    <Line type="monotone" dataKey="Investi A" stroke="#c4b5fd" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-                    <Line type="monotone" dataKey="Investi B" stroke="#6ee7b7" strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-                  </LineChart>
-                </ResponsiveContainer>
+                <SvgLineChart
+                  data={merged}
+                  xKey="year"
+                  lines={[
+                    { key: 'scenA', label: 'Scénario A', color: '#7c3aed' },
+                    { key: 'scenB', label: 'Scénario B', color: '#10b981' },
+                    { key: 'invA', label: 'Investi A', color: '#c4b5fd', dash: true, width: 1.5 },
+                    { key: 'invB', label: 'Investi B', color: '#6ee7b7', dash: true, width: 1.5 },
+                  ]}
+                  height={220}
+                  xFormat={v => `${v}a`}
+                />
               )
             })()}
           </div>

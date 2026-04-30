@@ -1,8 +1,6 @@
 'use client'
 import { Suspense } from 'react'
 import { useState, useEffect, useMemo } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, PieChart, Pie, Cell } from 'recharts'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
@@ -16,12 +14,11 @@ import { GuidedModePanel, type GuidedStep } from '@/components/GuidedModePanel'
 import { printReport } from '@/lib/print'
 import { CsvExport } from '@/components/CsvExport'
 import { FieldTooltip } from '@/components/FieldTooltip'
-import { useChartTheme } from '@/lib/chart-theme'
+import { SvgLineChart, SvgDonut } from '@/components/SvgChart'
 
 const COLOR = '#34d399'
 
 function FirePageInner() {
-  const chart = useChartTheme()
   const [inputs, setInputs] = useState<FireInputs>({ income: 60000, expenses: 36000, netWorth: 50000, rate: 7, withdrawalRate: 4 })
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [importingPatrimoine, setImportingPatrimoine] = useState(false)
@@ -107,8 +104,8 @@ function FirePageInner() {
 
   // Donut data for right panel
   const donutData = [
-    { name: 'Épargne', value: Math.max(r.annualSavings, 0), color: COLOR },
-    { name: 'Dépenses', value: inputs.expenses, color: '#f87171' },
+    { label: 'Épargne', value: Math.max(r.annualSavings, 0), color: COLOR },
+    { label: 'Dépenses', value: inputs.expenses, color: '#f87171' },
   ]
 
   const guidedSteps: GuidedStep[] = [
@@ -355,18 +352,17 @@ function FirePageInner() {
             {/* Projection chart */}
             <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 12 }}>Projection patrimoine vers l&apos;objectif FIRE</p>
-              <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={projectionData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-                  <XAxis dataKey="year" tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => `${v}a`} />
-                  <YAxis tick={{ fontSize: 10, fill: chart.tick }} tickFormatter={v => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : `${Math.round(v / 1000)}k`} />
-                  <Tooltip formatter={(v: any, name: string) => [fmt(v), name === 'patrimoine' ? 'Patrimoine' : 'Objectif FIRE']} contentStyle={chart.tooltip} itemStyle={chart.itemStyle} labelStyle={chart.labelStyle} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="patrimoine" name="Patrimoine" stroke={COLOR} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="objectif" name="Objectif FIRE" stroke="#f87171" strokeWidth={1.5} dot={false} strokeDasharray="5 5" />
-                </LineChart>
-              </ResponsiveContainer>
-              <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+              <SvgLineChart
+                data={projectionData}
+                xKey="year"
+                lines={[
+                  { key: 'patrimoine', label: 'Patrimoine', color: COLOR },
+                  { key: 'objectif', label: 'Objectif FIRE', color: '#f87171', dash: true, width: 1.5 },
+                ]}
+                height={200}
+                xFormat={v => `${v}a`}
+              />
+              <div style={{ marginTop: 4, display: 'flex', justifyContent: 'flex-end' }}>
                 <CsvExport
                   data={projectionData.map(d => ({ 'Année': d.year, 'Patrimoine': d.patrimoine, 'Objectif FIRE': d.objectif }))}
                   filename="fire-projection.csv"
@@ -421,19 +417,14 @@ function FirePageInner() {
             <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '14px 16px' }}>
               <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 10 }}>Allocation revenu</p>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <PieChart width={160} height={120}>
-                  <Pie data={donutData} cx={80} cy={60} innerRadius={38} outerRadius={55} paddingAngle={3} dataKey="value">
-                    {donutData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                  </Pie>
-                  <Tooltip formatter={(v: any) => [fmt(v), '']} contentStyle={chart.tooltip} />
-                </PieChart>
+                <SvgDonut segments={donutData} width={160} height={120} outerRadius={55} innerRadius={38} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
                 {donutData.map((d, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 2, background: d.color }} />
-                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{d.label}</span>
                     </div>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-em)' }}>{fmt(d.value)}/an</span>
                   </div>

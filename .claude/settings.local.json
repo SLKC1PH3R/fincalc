@@ -102,7 +102,15 @@
       "WebFetch(domain:api.anthropic.com)",
       "Bash(tar -xf /tmp/design_output.json -C /tmp/patrimo_design)",
       "Bash(node -e ' *)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(git merge *)",
+      "Bash(git -C c:/Users/jerem/Downloads/fincalc/.claude/worktrees/__TRACKED_VAR__ status --short)",
+      "Bash(git -C \"c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-a327f184dbb3b6374\" status --short)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git -C \"c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-a22019c32031d234d\" status --short)",
+      "Bash(git -C \"c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-a0fa4a476f4f1affc\" status --short)",
+      "Bash(git -C c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-__TRACKED_VAR__ status --short)"
     ]
   }
 }

@@ -1,13 +1,9 @@
 'use client'
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
-} from 'recharts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useChartTheme } from '@/lib/chart-theme'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
@@ -166,6 +162,51 @@ function generateEvolutionData(totalValue: number, range: TimeRange) {
   })
 }
 
+// ── EvolutionChart ────────────────────────────────────────────────────────────
+function EvolutionChart({ data, color, evolMin, evolMax }: {
+  data: { date: string; value: number }[]; color: string; evolMin: number; evolMax: number
+}) {
+  const W = 800, H = 140, PAD = { l: 54, r: 8, t: 8, b: 32 }
+  const w = W - PAD.l - PAD.r, h = H - PAD.t - PAD.b
+  const N = data.length - 1
+  if (N < 1) return null
+  const range = evolMax - evolMin || 1
+  const xy = (i: number, v: number) => ({ x: PAD.l + (i / N) * w, y: PAD.t + h - ((v - evolMin) / range) * h })
+  const pts = data.map((d, i) => xy(i, d.value))
+  const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const areaPath = `${linePath} L${pts[N].x},${PAD.t + h} L${pts[0].x},${PAD.t + h} Z`
+  const fmtK = (n: number) => Math.abs(n) >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : Math.abs(n) >= 1000 ? `${Math.round(n / 1000)}k` : String(Math.round(n))
+  const yTicks = [evolMin, evolMin + range * 0.5, evolMax]
+  const step = Math.max(1, Math.floor(N / 5))
+  const xLabels = data.map((d, i) => ({ d, i })).filter(({ i }) => i === 0 || i === N || i % step === 0)
+  const gradId = `eg${color.replace(/[^a-z0-9]/gi, '')}`
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.22} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      {yTicks.map((t, i) => {
+        const y = PAD.t + h - ((t - evolMin) / range) * h
+        return <g key={i}>
+          <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="rgba(128,128,128,0.12)" strokeDasharray="2 4" />
+          <text x={PAD.l - 6} y={y + 3.5} textAnchor="end" fontSize={9.5} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">{fmtK(t)}€</text>
+        </g>
+      })}
+      <path d={areaPath} fill={`url(#${gradId})`} />
+      <path d={linePath} fill="none" stroke={color} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+      {xLabels.map(({ d, i }) => {
+        const p = xy(i, d.value)
+        return <text key={i} x={p.x} y={H - 4} textAnchor="middle" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">{d.date}</text>
+      })}
+      <circle cx={pts[N].x} cy={pts[N].y} r={4} fill={color} />
+      <circle cx={pts[N].x} cy={pts[N].y} r={9} fill={color} opacity={0.18} />
+    </svg>
+  )
+}
+
 // ── MiniSparkline ─────────────────────────────────────────────────────────────
 function MiniSparkline({ color, seed }: { color: string; seed: number }) {
   let s = Math.abs(Math.floor(seed)) % 2_147_483_647 || 1
@@ -190,7 +231,6 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const catCfg = CATEGORY_CONFIG[category]
   const router = useRouter()
   const { toast } = useToast()
-  const chartTheme = useChartTheme()
 
   const [allEnvelopes, setAllEnvelopes] = useState<Envelope[]>([])
   const [loading, setLoading] = useState(true)
@@ -336,14 +376,14 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* ── Header ── */}
       <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+        <div style={{ fontSize: 10.5, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--p-mono)', letterSpacing: '0.04em' }}>
+          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>MON PATRIMOINE</Link>
           <span style={{ opacity: 0.4 }}>›</span>
-          <span style={{ color: catCfg.color, fontWeight: 600 }}>{catCfg.label}</span>
+          <span style={{ color: catCfg.color, fontWeight: 700 }}>{catCfg.label.toUpperCase()}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>{catCfg.label}</h1>
+            <h1 style={{ fontFamily: 'var(--p-serif)', fontSize: 26, fontWeight: 400, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.02em' }}>{catCfg.label}</h1>
             <span style={{ fontSize: 12, color: 'var(--p-text-faint)', fontWeight: 400 }}>{catCfg.description}</span>
           </div>
           <Button onClick={openModal} size="sm" style={{ gap: 6, flexShrink: 0 }}>
@@ -510,29 +550,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       ))}
                     </div>
                   </div>
-                  <ResponsiveContainer width="100%" height={140}>
-                    <AreaChart data={evolutionData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="evolGradCat" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={catCfg.color} stopOpacity={0.22} />
-                          <stop offset="100%" stopColor={catCfg.color} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                      <XAxis dataKey="date" tick={{ fontSize: 10, fill: chartTheme.tick }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                      <YAxis domain={[evolMin, evolMax]} tickFormatter={v => fmtCompact(v as number)} tick={{ fontSize: 9, fill: chartTheme.tick }} axisLine={false} tickLine={false} width={52} />
-                      <Tooltip content={({ active, payload }) => {
-                        if (!active || !payload?.length) return null
-                        return (
-                          <div style={{ background: 'var(--p-card)', border: `1px solid ${catCfg.color}55`, borderRadius: 8, padding: '8px 14px' }}>
-                            <div style={{ color: catCfg.color, fontSize: 11, fontWeight: 700 }}>{payload[0]?.payload?.date}</div>
-                            <div style={{ color: 'var(--p-text)', fontSize: 13, fontWeight: 700 }}>{fmtCompact(payload[0]?.value as number)}</div>
-                          </div>
-                        )
-                      }} />
-                      <Area type="monotone" dataKey="value" stroke={catCfg.color} strokeWidth={2.5} fill="url(#evolGradCat)" dot={false} activeDot={{ r: 4, fill: catCfg.color, strokeWidth: 0 }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  <EvolutionChart data={evolutionData} color={catCfg.color} evolMin={evolMin} evolMax={evolMax} />
                 </div>
               )}
 

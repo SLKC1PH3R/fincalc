@@ -43,14 +43,14 @@ export default function EmpruntsPage() {
 
       {/* ── Header ── */}
       <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
-          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+        <div style={{ fontSize: 10.5, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--p-mono)', letterSpacing: '0.04em' }}>
+          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>MON PATRIMOINE</Link>
           <span style={{ opacity: 0.4 }}>›</span>
-          <span style={{ color: COLOR, fontWeight: 600 }}>Emprunts</span>
+          <span style={{ color: COLOR, fontWeight: 700 }}>EMPRUNTS</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--p-text)', margin: 0, letterSpacing: '-0.3px' }}>Emprunts</h1>
+            <h1 style={{ fontFamily: 'var(--p-serif)', fontSize: 26, fontWeight: 400, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.02em' }}>Emprunts</h1>
             <span style={{ fontSize: 12, color: 'var(--p-text-faint)', fontWeight: 400 }}>Crédits immobiliers simulés</span>
           </div>
           <Button asChild size="sm" style={{ gap: 6, flexShrink: 0 }}>

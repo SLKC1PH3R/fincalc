@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
-  Landmark, Bitcoin, X, BarChart3,
+  Landmark, Bitcoin, X, BarChart3, Award, Lightbulb, ArrowUpRight, ArrowDownRight,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -410,29 +410,29 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* ── 3-col layout ── */}
       {!loading && envelopes.length > 0 && (
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 20px 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr 270px', gap: 16, alignItems: 'start' }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '20px 24px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 260px', gap: 18, alignItems: 'start' }}>
 
             {/* ── LEFT: Envelopes list ── */}
-            <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {/* Header + sort */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Enveloppes</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 99, background: catCfg.color + '18', color: catCfg.color, fontWeight: 700 }}>{envelopes.length}</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: 'var(--p-mono)' }}>Enveloppes</span>
+                  <span style={{ fontSize: 9, padding: '1px 7px', borderRadius: 99, background: catCfg.color + '20', color: catCfg.color, fontWeight: 700, fontFamily: 'var(--p-mono)' }}>{envelopes.length}</span>
                 </div>
-                <div style={{ display: 'flex', gap: 3 }}>
+                <div style={{ display: 'flex', gap: 2, background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 7, padding: 2 }}>
                   {(['valeur', 'perf', 'nom'] as const).map(s => {
                     const key = s === 'perf' ? 'performance' : s as 'valeur' | 'nom'
                     return (
-                      <button key={s} onClick={() => setSortBy(key)} style={{ padding: '2px 7px', borderRadius: 5, border: `1px solid ${sortBy === key ? catCfg.color + '40' : 'var(--p-line)'}`, background: sortBy === key ? catCfg.color + '12' : 'transparent', color: sortBy === key ? catCfg.color : 'var(--p-text-faint)', fontSize: 10, cursor: 'pointer', fontWeight: sortBy === key ? 600 : 400 }}>{s}</button>
+                      <button key={s} onClick={() => setSortBy(key)} style={{ padding: '2px 8px', borderRadius: 5, border: 'none', background: sortBy === key ? catCfg.color : 'transparent', color: sortBy === key ? '#fff' : 'var(--p-text-faint)', fontSize: 9.5, cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--p-mono)', transition: 'all 0.15s', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s}</button>
                     )
                   })}
                 </div>
               </div>
 
-              {/* Compact envelope cards */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {/* Envelope cards */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {sortedEnvelopes.map(env => {
                   const cfg = ENVELOPE_TYPE_CONFIG[env.type]
                   const Icon = cfg.icon
@@ -447,33 +447,39 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   return (
                     <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
                       <div
-                        style={{ padding: '10px 12px', borderRadius: 11, background: 'var(--p-card)', border: '1px solid var(--p-line)', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '55'; (e.currentTarget as HTMLElement).style.background = 'var(--p-row-hover)' }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'var(--p-card)' }}
+                        style={{ padding: '12px 14px', borderRadius: 14, background: 'var(--p-card)', border: '1px solid var(--p-line)', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '60'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 3px ${envColor}12` }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 7, background: envColor + '18', border: `1px solid ${envColor}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Icon style={{ width: 12, height: 12, color: envColor }} />
+                        {/* Top row: icon + name + sparkline */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                          <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, ${envColor}22, ${envColor}10)`, border: `1px solid ${envColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Icon style={{ width: 14, height: 14, color: envColor }} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--p-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{env.name}</div>
-                            <div style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{env.type}</div>
+                            <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--p-text-em)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>{env.name}</div>
+                            <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)', letterSpacing: '0.06em', marginTop: 1 }}>{cfg.label}</div>
                           </div>
                           {mounted && <MiniSparkline color={envColor} seed={value + invested + env.id.charCodeAt(0)} />}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>
-                            {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--p-text-faint)', fontSize: 11 }}>—</span>}
+                        {/* Value row */}
+                        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)', letterSpacing: '-0.02em' }}>
+                            {value > 0 ? fmtCompact(value) : <span style={{ color: 'var(--p-text-faint)', fontSize: 12 }}>—</span>}
                           </span>
-                          {hasPL && (
-                            <span style={{ fontSize: 10, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171' }}>
-                              {plEnv >= 0 ? '+' : ''}{((plEnv / invested) * 100).toFixed(1)}%
-                            </span>
-                          )}
-                          <span style={{ fontSize: 10, color: 'var(--p-text-faint)' }}>{pct.toFixed(0)}%</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {hasPL && (
+                              <span style={{ fontSize: 10, fontWeight: 700, color: plEnv >= 0 ? '#34d399' : '#f87171', fontFamily: 'var(--p-mono)', display: 'flex', alignItems: 'center', gap: 2 }}>
+                                {plEnv >= 0 ? <ArrowUpRight style={{ width: 10, height: 10 }} /> : <ArrowDownRight style={{ width: 10, height: 10 }} />}
+                                {Math.abs((plEnv / invested) * 100).toFixed(1)}%
+                              </span>
+                            )}
+                            <span style={{ fontSize: 10, color: envColor, fontFamily: 'var(--p-mono)', fontWeight: 700 }}>{pct.toFixed(0)}%</span>
+                          </div>
                         </div>
-                        <div style={{ marginTop: 5, height: 2, borderRadius: 99, background: 'var(--p-line)', overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
+                        {/* Progress bar */}
+                        <div style={{ height: 3, borderRadius: 99, background: 'var(--p-line)', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${envColor}aa, ${envColor})`, borderRadius: 99, transition: 'width 0.4s' }} />
                         </div>
                       </div>
                     </Link>
@@ -482,104 +488,107 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
                 {/* Add card */}
                 <button onClick={openModal}
-                  style={{ padding: '10px 12px', borderRadius: 11, border: '1.5px dashed var(--p-line)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s', width: '100%', textAlign: 'left' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '55'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '05' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--p-line)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                  style={{ padding: '11px 14px', borderRadius: 14, border: `1.5px dashed ${catCfg.color}40`, background: `${catCfg.color}04`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'all 0.15s', width: '100%' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '80'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '08' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = catCfg.color + '40'; (e.currentTarget as HTMLElement).style.background = catCfg.color + '04' }}
                 >
-                  <div style={{ width: 28, height: 28, borderRadius: 7, border: '1.5px dashed var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Plus style={{ width: 13, height: 13, color: 'var(--p-text-faint)' }} />
+                  <div style={{ width: 34, height: 34, borderRadius: 10, border: `1.5px dashed ${catCfg.color}50`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Plus style={{ width: 14, height: 14, color: catCfg.color }} />
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>Ajouter une enveloppe</span>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontWeight: 500 }}>Ajouter une enveloppe</span>
                 </button>
               </div>
             </div>
 
-            {/* ── CENTER: KPIs + chart + répartition + table ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* ── CENTER ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
               {/* KPI strip */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-                {[
-                  {
-                    label: 'Valeur totale',
-                    value: fmtCompact(totalValue),
-                    sub: `${envelopes.length} enveloppe${envelopes.length > 1 ? 's' : ''}`,
-                    color: catCfg.color, highlight: true,
-                    badge: pricesLoading ? '…' : Object.keys(livePrices).length > 0 ? 'LIVE' : null,
-                    badgeColor: pricesLoading ? catCfg.color : '#34d399',
-                  },
-                  {
-                    label: 'Capital investi', value: fmtCompact(totalInvested),
-                    sub: 'Coût de revient', color: 'var(--p-text-dim)', highlight: false, badge: null, badgeColor: '',
-                  },
-                  {
-                    label: hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance',
-                    value: hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—',
-                    sub: hasPLData ? `${pl >= 0 ? '+' : ''}${plPct.toFixed(1)}% depuis l'ouverture` : '',
-                    color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--p-text-faint)', highlight: hasPLData, badge: null, badgeColor: '',
-                  },
-                ].map((k, i) => (
-                  <div key={i} style={{ padding: '12px 16px', borderRadius: 12, background: k.highlight ? `linear-gradient(135deg, ${k.color}10, transparent)` : 'var(--p-card)', border: `1px solid ${k.highlight ? k.color + '30' : 'var(--p-line)'}`, position: 'relative', overflow: 'hidden' }}>
-                    {k.highlight && <div style={{ position: 'absolute', top: -20, right: -10, width: 60, height: 60, borderRadius: '50%', background: `radial-gradient(ellipse, ${k.color}14, transparent)`, pointerEvents: 'none' }} />}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-                      <span style={{ fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 500 }}>{k.label}</span>
-                      {k.badge && <span style={{ fontSize: 9, color: k.badgeColor, background: k.badgeColor + '18', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>{k.badge}</span>}
-                    </div>
-                    <div style={{ fontSize: 19, fontWeight: 800, color: k.highlight ? k.color : 'var(--p-text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', lineHeight: 1, marginBottom: 3 }}>{k.value}</div>
-                    {k.sub && <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{k.sub}</div>}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                {/* Card 1 — Valeur totale (hero) */}
+                <div style={{ padding: '16px 20px', borderRadius: 16, background: `linear-gradient(135deg, ${catCfg.color}14 0%, transparent 60%), var(--p-card)`, border: `1px solid ${catCfg.color}35`, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: -24, right: -16, width: 80, height: 80, borderRadius: '50%', background: `radial-gradient(ellipse, ${catCfg.color}18, transparent)`, pointerEvents: 'none' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
+                    <span style={{ fontSize: 9.5, color: catCfg.color, textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)' }}>Valeur totale</span>
+                    {(pricesLoading || Object.keys(livePrices).length > 0) && (
+                      <span style={{ fontSize: 8.5, color: pricesLoading ? catCfg.color : '#34d399', background: (pricesLoading ? catCfg.color : '#34d399') + '20', padding: '1px 5px', borderRadius: 3, fontWeight: 700, fontFamily: 'var(--p-mono)' }}>{pricesLoading ? '…' : 'LIVE'}</span>
+                    )}
                   </div>
-                ))}
+                  <div style={{ fontFamily: 'var(--p-mono)', fontSize: 'clamp(20px, 2.5vw, 28px)', fontWeight: 800, color: catCfg.color, letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 6 }}>{fmtCompact(totalValue)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{envelopes.length} enveloppe{envelopes.length > 1 ? 's' : ''}</div>
+                </div>
+                {/* Card 2 — Capital investi */}
+                <div style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
+                  <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)', marginBottom: 8 }}>Capital investi</div>
+                  <div style={{ fontFamily: 'var(--p-mono)', fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 700, color: 'var(--p-text-em)', letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 6 }}>{fmtCompact(totalInvested)}</div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Coût de revient</div>
+                </div>
+                {/* Card 3 — P&L */}
+                <div style={{ padding: '16px 20px', borderRadius: 16, background: hasPLData ? `linear-gradient(135deg, ${pl >= 0 ? '#34d399' : '#f87171'}10, transparent), var(--p-card)` : 'var(--p-card)', border: `1px solid ${hasPLData ? (pl >= 0 ? '#34d39930' : '#f8717130') : 'var(--p-line)'}` }}>
+                  <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)', marginBottom: 8 }}>{hasPLData ? (pl >= 0 ? 'Plus-value' : 'Moins-value') : 'Performance'}</div>
+                  <div style={{ fontFamily: 'var(--p-mono)', fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 700, color: hasPLData ? (pl >= 0 ? '#34d399' : '#f87171') : 'var(--p-text-faint)', letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 6 }}>
+                    {hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—'}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{hasPLData ? `${pl >= 0 ? '+' : ''}${plPct.toFixed(1)}% depuis l'ouverture` : 'Renseignez le coût d\'acquisition'}</div>
+                </div>
               </div>
 
               {/* Evolution chart */}
               {mounted && totalValue > 0 && (
-                <div style={{ background: 'var(--p-card)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)', marginBottom: 2 }}>Évolution du portefeuille</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 11, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', fontWeight: 600 }}>
-                          {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)}
+                      <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)', marginBottom: 4 }}>Évolution du portefeuille</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontFamily: 'var(--p-mono)', fontSize: 20, fontWeight: 800, color: 'var(--p-text-em)', letterSpacing: '-0.04em' }}>{fmtCompact(totalValue)}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: evolChange.abs >= 0 ? '#34d399' : '#f87171', display: 'flex', alignItems: 'center', gap: 3 }}>
+                          {evolChange.abs >= 0 ? <ArrowUpRight style={{ width: 12, height: 12 }} /> : <ArrowDownRight style={{ width: 12, height: 12 }} />}
+                          {evolChange.abs >= 0 ? '+' : ''}{fmtCompact(evolChange.abs)} ({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%)
                         </span>
-                        <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>({evolChange.pct >= 0 ? '+' : ''}{evolChange.pct.toFixed(2)}%) sur la période</span>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 2, background: 'rgba(255,255,255,0.04)', padding: 3, borderRadius: 8 }}>
+                    <div style={{ display: 'flex', gap: 2, background: 'var(--p-card-2)', border: '1px solid var(--p-line)', padding: 3, borderRadius: 9 }}>
                       {(['1j', '1s', '1m', '1a', 'max'] as TimeRange[]).map(r => (
-                        <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10, fontWeight: 600, background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--p-text-faint)', transition: 'all 0.15s' }}>
+                        <button key={r} onClick={() => setTimeRange(r)} style={{ padding: '3px 9px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 9.5, fontWeight: 700, fontFamily: 'var(--p-mono)', background: timeRange === r ? catCfg.color : 'transparent', color: timeRange === r ? '#fff' : 'var(--p-text-faint)', transition: 'all 0.15s', letterSpacing: '0.04em' }}>
                           {r.toUpperCase()}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <EvolutionChart data={evolutionData} color={catCfg.color} evolMin={evolMin} evolMax={evolMax} />
+                  <div style={{ padding: '12px 12px 4px' }}>
+                    <EvolutionChart data={evolutionData} color={catCfg.color} evolMin={evolMin} evolMax={evolMax} />
+                  </div>
                 </div>
               )}
 
               {/* Répartition */}
               {envelopes.length > 1 && (
-                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '12px 16px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text)', marginBottom: 10 }}>Répartition</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {envelopes.map(env => {
+                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, padding: '16px 20px' }}>
+                  <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)', marginBottom: 14 }}>Répartition</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+                    {[...envelopes].sort((a, b) => {
+                      const va = a.type === 'IMMOBILIER' ? Number(a.metadata.currentValue ?? 0) : computeMarketValue(a, livePrices)
+                      const vb = b.type === 'IMMOBILIER' ? Number(b.metadata.currentValue ?? 0) : computeMarketValue(b, livePrices)
+                      return vb - va
+                    }).map(env => {
                       const isImmo = env.type === 'IMMOBILIER'
                       const val = isImmo ? Number(env.metadata.currentValue ?? 0) : computeMarketValue(env, livePrices)
                       const pct = totalValue > 0 ? (val / totalValue) * 100 : 0
                       const envColor = envColorMap.get(env.id) ?? ENVELOPE_TYPE_CONFIG[env.type].color
                       return (
                         <div key={env.id}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                              <div style={{ width: 6, height: 6, borderRadius: 2, background: envColor, flexShrink: 0 }} />
-                              <span style={{ fontSize: 11, color: 'var(--p-text-dim)' }}>{env.name}</span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                              <div style={{ width: 8, height: 8, borderRadius: 3, background: envColor, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, color: 'var(--p-text-mid)', fontWeight: 500 }}>{env.name}</span>
                             </div>
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                              <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{fmtCompact(val)}</span>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: envColor, minWidth: 32, textAlign: 'right' }}>{pct.toFixed(0)}%</span>
+                            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                              <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>{fmtCompact(val)}</span>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: envColor, minWidth: 32, textAlign: 'right', fontFamily: 'var(--p-mono)' }}>{pct.toFixed(0)}%</span>
                             </div>
                           </div>
-                          <div style={{ height: 3, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
-                            <div style={{ width: `${pct}%`, height: '100%', background: envColor, borderRadius: 99 }} />
+                          <div style={{ height: 5, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${envColor}99, ${envColor})`, borderRadius: 99, transition: 'width 0.5s cubic-bezier(.4,0,.2,1)' }} />
                           </div>
                         </div>
                       )
@@ -590,16 +599,16 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
               {/* Comparative table */}
               {envelopes.length > 1 && (
-                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden' }}>
-                  <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Comparatif des enveloppes</span>
-                    <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
+                <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--p-line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)' }}>Comparatif des enveloppes</span>
+                    <span style={{ fontSize: 10, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>{Object.keys(livePrices).length > 0 ? 'Prix temps réel' : 'Valeurs renseignées'}</span>
                   </div>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <tr style={{ borderBottom: '1px solid var(--p-line)' }}>
                         {['Enveloppe', 'Type', 'Valeur', 'Investi', 'P&L', 'Perf.', 'Part'].map((h, i) => (
-                          <th key={i} style={{ padding: '9px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 10, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</th>
+                          <th key={i} style={{ padding: '8px 14px', textAlign: i === 0 ? 'left' : 'right', fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', fontWeight: 600, fontFamily: 'var(--p-mono)' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -616,38 +625,39 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                         const part = totalValue > 0 ? (val / totalValue) * 100 : 0
                         return (
                           <tr key={env.id}
-                            style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = envColor + '08'}
+                            style={{ borderBottom: '1px solid var(--p-line)', cursor: 'pointer', transition: 'background 0.12s' }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = envColor + '0a'}
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                             onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}
                           >
-                            <td style={{ padding: '9px 14px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                                <div style={{ width: 8, height: 8, borderRadius: 2, background: envColor, flexShrink: 0 }} />
+                            <td style={{ padding: '10px 14px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div style={{ width: 9, height: 9, borderRadius: 3, background: envColor, flexShrink: 0 }} />
                                 <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--p-text)' }}>{env.name}</span>
                               </div>
                             </td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
-                              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 99, background: envColor + '18', color: envColor, fontWeight: 600 }}>{env.type}</span>
+                            <td style={{ padding: '10px 14px', textAlign: 'right' }}>
+                              <span style={{ fontSize: 9, padding: '2px 7px', borderRadius: 99, background: envColor + '20', color: envColor, fontWeight: 700, fontFamily: 'var(--p-mono)', letterSpacing: '0.04em' }}>{env.type}</span>
                             </td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--p-text)', fontVariantNumeric: 'tabular-nums' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: plAbs >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                            <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>{val > 0 ? fmtCompact(val) : '—'}</td>
+                            <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 11, color: 'var(--p-text-faint)', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>{inv > 0 ? fmtCompact(inv) : '—'}</td>
+                            <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: plAbs >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>
                               {hasPL ? `${plAbs >= 0 ? '+' : ''}${fmtCompact(plAbs)}` : '—'}
                             </td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                            <td style={{ padding: '10px 14px', textAlign: 'right' }}>
                               {hasPL ? (
-                                <span style={{ fontSize: 11, fontWeight: 700, color: plPctEnv >= 0 ? '#34d399' : '#f87171' }}>
-                                  {plPctEnv >= 0 ? '↑' : '↓'} {Math.abs(plPctEnv).toFixed(1)}%
+                                <span style={{ fontSize: 11, fontWeight: 700, color: plPctEnv >= 0 ? '#34d399' : '#f87171', fontFamily: 'var(--p-mono)', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                                  {plPctEnv >= 0 ? <ArrowUpRight style={{ width: 11, height: 11 }} /> : <ArrowDownRight style={{ width: 11, height: 11 }} />}
+                                  {Math.abs(plPctEnv).toFixed(1)}%
                                 </span>
                               ) : <span style={{ color: 'var(--p-text-faint)', fontSize: 11 }}>—</span>}
                             </td>
-                            <td style={{ padding: '9px 14px', textAlign: 'right' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
-                                <div style={{ width: 36, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden' }}>
+                            <td style={{ padding: '10px 14px', textAlign: 'right' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+                                <div style={{ width: 40, height: 4, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden' }}>
                                   <div style={{ width: `${part}%`, height: '100%', background: envColor, borderRadius: 99 }} />
                                 </div>
-                                <span style={{ fontSize: 10, color: 'var(--p-text-dim)', minWidth: 26, textAlign: 'right' }}>{part.toFixed(0)}%</span>
+                                <span style={{ fontSize: 10, color: 'var(--p-text-dim)', minWidth: 28, textAlign: 'right', fontFamily: 'var(--p-mono)', fontWeight: 600 }}>{part.toFixed(0)}%</span>
                               </div>
                             </td>
                           </tr>
@@ -655,21 +665,22 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                       })}
                     </tbody>
                     <tfoot>
-                      <tr style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-                        <td colSpan={2} style={{ padding: '9px 14px', fontSize: 10, fontWeight: 700, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total</td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 800, color: catCfg.color, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalValue)}</td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 600, color: 'var(--p-text-dim)', fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(totalInvested)}</td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums' }}>
+                      <tr style={{ borderTop: `2px solid ${catCfg.color}30`, background: `${catCfg.color}06` }}>
+                        <td colSpan={2} style={{ padding: '10px 14px', fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', fontFamily: 'var(--p-mono)' }}>Total</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 13, fontWeight: 800, color: catCfg.color, fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>{fmtCompact(totalValue)}</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 11, color: 'var(--p-text-faint)', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>{fmtCompact(totalInvested)}</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 12, fontWeight: 700, color: pl >= 0 ? '#34d399' : '#f87171', fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--p-mono)' }}>
                           {hasPLData ? `${pl >= 0 ? '+' : ''}${fmtCompact(pl)}` : '—'}
                         </td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right' }}>
+                        <td style={{ padding: '10px 14px', textAlign: 'right' }}>
                           {hasPLData && (
-                            <span style={{ fontSize: 11, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171' }}>
-                              {pl >= 0 ? '↑' : '↓'} {Math.abs(plPct).toFixed(1)}%
+                            <span style={{ fontSize: 11, fontWeight: 800, color: pl >= 0 ? '#34d399' : '#f87171', fontFamily: 'var(--p-mono)', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                              {pl >= 0 ? <ArrowUpRight style={{ width: 11, height: 11 }} /> : <ArrowDownRight style={{ width: 11, height: 11 }} />}
+                              {Math.abs(plPct).toFixed(1)}%
                             </span>
                           )}
                         </td>
-                        <td style={{ padding: '9px 14px', textAlign: 'right', fontSize: 11, color: 'var(--p-text-faint)' }}>100%</td>
+                        <td style={{ padding: '10px 14px', textAlign: 'right', fontSize: 10, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>100%</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -679,54 +690,55 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
             {/* ── RIGHT: Insights ── */}
             <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ background: `linear-gradient(135deg, ${catCfg.color}08, transparent)`, border: `1px solid ${catCfg.color}20`, borderRadius: 14, padding: '14px 16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-                  <span style={{ fontSize: 15 }}>📊</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: catCfg.color }}>Insights & Analyses</span>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {bestEnv && (
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
-                        <span style={{ fontSize: 13 }}>🏆</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Meilleur performer</span>
+              {/* Eyebrow */}
+              <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700, fontFamily: 'var(--p-mono)', paddingLeft: 2 }}>Analyse</div>
+
+              {/* Tip cards */}
+              {bestEnv && (() => {
+                const inv = computeInvested(bestEnv)
+                const val = bestEnv.type === 'IMMOBILIER' ? Number(bestEnv.metadata.currentValue ?? 0) : computeMarketValue(bestEnv, livePrices)
+                const hp = bestEnv.positions.some(p => livePrices[p.symbol])
+                const hasPerf = canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv
+                const perfTxt = hasPerf ? `+${((val - inv) / inv * 100).toFixed(1)}% de performance` : `${fmtCompact(val)} de valeur actuelle`
+                return (
+                  <div style={{ background: 'var(--p-card)', border: `1px solid ${catCfg.color}25`, borderRadius: 14, padding: '14px 16px', borderLeft: `3px solid ${catCfg.color}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: catCfg.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <Award style={{ width: 13, height: 13, color: catCfg.color }} />
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>
-                        <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>
-                        {' '}
-                        {(() => {
-                          const inv = computeInvested(bestEnv)
-                          const val = bestEnv.type === 'IMMOBILIER' ? Number(bestEnv.metadata.currentValue ?? 0) : computeMarketValue(bestEnv, livePrices)
-                          const hp = bestEnv.positions.some(p => livePrices[p.symbol])
-                          if (canShowPL(bestEnv, val, inv, hp) && inv > 0 && val > inv) return `avec +${((val - inv) / inv * 100).toFixed(1)}% de performance`
-                          return `avec ${fmtCompact(val)} de valeur actuelle`
-                        })()}
-                      </p>
+                      <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--p-text-em)' }}>Meilleur performer</span>
                     </div>
-                  )}
-                  <div style={{ height: 1, background: 'var(--p-line)' }} />
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
-                      <span style={{ fontSize: 13 }}>📈</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Tendance</span>
-                    </div>
-                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>
-                      {pl > 100
-                        ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
-                        : pl < -100
-                        ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez les allocations.`
-                        : 'Vos actifs sont stables, sans variation significative.'}
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.7, margin: 0 }}>
+                      <span style={{ color: ENVELOPE_TYPE_CONFIG[bestEnv.type].color, fontWeight: 600 }}>{bestEnv.name}</span>{' '}avec {perfTxt}.
                     </p>
                   </div>
-                  <div style={{ height: 1, background: 'var(--p-line)' }} />
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
-                      <span style={{ fontSize: 13 }}>💡</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text)' }}>Conseil</span>
-                    </div>
-                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.65, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
+                )
+              })()}
+
+              <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, padding: '14px 16px', borderLeft: `3px solid ${hasPLData && pl >= 0 ? '#34d399' : hasPLData ? '#f87171' : 'var(--p-line)'}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: (hasPLData && pl >= 0 ? '#34d399' : '#f87171') + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <TrendingUp style={{ width: 13, height: 13, color: hasPLData && pl >= 0 ? '#34d399' : hasPLData ? '#f87171' : 'var(--p-text-faint)' }} />
                   </div>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--p-text-em)' }}>Tendance</span>
                 </div>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.7, margin: 0 }}>
+                  {pl > 100
+                    ? `Performance positive de +${fmtCompact(pl)} (+${plPct.toFixed(1)}%) sur l'ensemble de la catégorie.`
+                    : pl < -100
+                    ? `Performance négative de ${fmtCompact(pl)} (${plPct.toFixed(1)}%) — revoyez vos allocations.`
+                    : 'Actifs stables sans variation significative sur la période.'}
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, padding: '14px 16px', borderLeft: '3px solid var(--p-gold)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--p-gold-12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Lightbulb style={{ width: 13, height: 13, color: 'var(--p-gold)' }} />
+                  </div>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--p-text-em)' }}>Conseil</span>
+                </div>
+                <p style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.7, margin: 0 }}>{CATEGORY_TIPS[category]}</p>
               </div>
             </div>
 

@@ -1,14 +1,55 @@
 'use client'
 import { useState, useMemo } from 'react'
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { useChartTheme } from '@/lib/chart-theme'
 import { ChevronRight } from 'lucide-react'
 import { type Envelope, fmtEur, fmtCompact } from '@/components/patrimoine/types'
+
+function EquityChart({ data }: { data: { year: number; equity: number; credit: number }[] }) {
+  const W = 700, H = 220, PAD = { l: 60, r: 16, t: 12, b: 36 }
+  const w = W - PAD.l - PAD.r, h = H - PAD.t - PAD.b
+  const N = data.length - 1
+  if (N < 1) return null
+  const maxV = Math.max(...data.map(d => d.equity + d.credit)) * 1.05 || 1
+  const xy = (i: number, v: number) => ({ x: PAD.l + (i / N) * w, y: PAD.t + h - (v / maxV) * h })
+  const pts = (key: 'equity' | 'credit') => data.map((d, i) => xy(i, d[key]))
+  const line = (key: 'equity' | 'credit') => pts(key).map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const areaE = `${line('equity')} L${PAD.l + w},${PAD.t + h} L${PAD.l},${PAD.t + h} Z`
+  const areaD = `${line('credit')} L${PAD.l + w},${PAD.t + h} L${PAD.l},${PAD.t + h} Z`
+  const fmtK = (n: number) => n >= 1000 ? Math.round(n / 1000) + 'k' : String(Math.round(n))
+  const yTicks = [0, maxV * 0.25, maxV * 0.5, maxV * 0.75, maxV]
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} /><stop offset="100%" stopColor="#34d399" stopOpacity={0.04} />
+        </linearGradient>
+        <linearGradient id="debtGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f87171" stopOpacity={0.22} /><stop offset="100%" stopColor="#f87171" stopOpacity={0.04} />
+        </linearGradient>
+      </defs>
+      {yTicks.map((t, i) => {
+        const y = PAD.t + h - (t / maxV) * h
+        return <g key={i}>
+          <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="rgba(0,0,0,0.06)" strokeDasharray="2 4" />
+          <text x={PAD.l - 6} y={y + 3.5} textAnchor="end" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">{fmtK(t)}€</text>
+        </g>
+      })}
+      <path d={areaD} fill="url(#debtGrad)" />
+      <path d={areaE} fill="url(#eqGrad)" />
+      <path d={line('credit')} fill="none" stroke="#f87171" strokeWidth={1.8} strokeDasharray="5 3" />
+      <path d={line('equity')} fill="none" stroke="#34d399" strokeWidth={2} />
+      {data.filter((_, i) => i % Math.max(1, Math.floor(N / 6)) === 0 || i === N).map((d) => {
+        const origIdx = data.indexOf(d)
+        const p = xy(origIdx, d.equity)
+        return <text key={origIdx} x={p.x} y={H - 6} textAnchor="middle" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">{d.year}</text>
+      })}
+    </svg>
+  )
+}
 
 const PROPERTY_TYPES = [
   { id: 'residence-principale', label: 'Résidence principale' },
@@ -37,10 +78,9 @@ function ToggleSwitch({ on, color, onChange }: { on: boolean; color: string; onC
   )
 }
 
-export function ImmobilierSection({ envelope, onSave, chartTheme }: {
+export function ImmobilierSection({ envelope, onSave }: {
   envelope: Envelope
   onSave: (m: Record<string, unknown>) => Promise<void>
-  chartTheme: ReturnType<typeof useChartTheme>
 }) {
   const { toast } = useToast()
   const meta = envelope.metadata
@@ -459,20 +499,7 @@ export function ImmobilierSection({ envelope, onSave, chartTheme }: {
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)', marginBottom: 16 }}>
               Évolution du patrimoine net (projection)
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={equityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
-                <XAxis dataKey="year" tick={{ fontSize: 11, fill: chartTheme.tick }} />
-                <YAxis tickFormatter={v => fmtCompact(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} width={70} />
-                <Tooltip
-                  formatter={(v: number, name: string) => [fmtEur(v), name === 'equity' ? 'Patrimoine net' : 'Capital restant dû']}
-                  contentStyle={{ background: chartTheme.tooltip.background, border: chartTheme.tooltip.border, borderRadius: 8, fontSize: 12, color: chartTheme.tooltip.color }}
-                  itemStyle={chartTheme.itemStyle}
-                />
-                <Area type="monotone" dataKey="equity" stroke="#34d399" fill="#34d39918" name="equity" strokeWidth={2} />
-                <Area type="monotone" dataKey="credit" stroke="#f472b6" fill="#f472b612" name="credit" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+            <EquityChart data={equityData} />
           </CardContent>
         </Card>
       )}

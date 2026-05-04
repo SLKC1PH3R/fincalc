@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { useChartTheme } from '@/lib/chart-theme'
 import { PositionsTable } from '@/components/patrimoine/PositionsTable'
 import { EtfOptimizerSection } from '@/components/patrimoine/EtfOptimizerSection'
 import {
@@ -16,14 +15,13 @@ import { TransactionJournal } from '@/components/TransactionJournal'
 
 export function PeaCtoCryptoSection({
   envelope, prices, pricesLoading,
-  onRefreshPrices, onSave, chartTheme, onReload, isCrypto = false, cacheAge,
+  onRefreshPrices, onSave, onReload, isCrypto = false, cacheAge,
 }: {
   envelope: Envelope
   prices: Record<string, PriceData>
   pricesLoading: boolean
   onRefreshPrices: () => void
   onSave: (m: Record<string, unknown>) => Promise<void>
-  chartTheme: ReturnType<typeof useChartTheme>
   onReload: () => void
   isCrypto?: boolean
   cacheAge?: number | null
@@ -134,7 +132,7 @@ export function PeaCtoCryptoSection({
 
       {/* Optimisation ETF */}
       {!isCrypto && positions.filter(p => p.assetType === 'ETF').length > 0 && (
-        <EtfOptimizerSection positions={positions} prices={prices} chartTheme={chartTheme} />
+        <EtfOptimizerSection positions={positions} prices={prices} />
       )}
 
       {/* Journal de transactions */}

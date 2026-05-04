@@ -1,10 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo, type ComponentType } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip as RTooltip,
-  BarChart, Bar, PieChart, Pie, Cell, Legend,
-} from 'recharts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
@@ -12,7 +8,7 @@ import { fmt } from '@/lib/utils'
 import {
   Plus, TrendingUp, Building2, PiggyBank, Shield, Wallet,
   Landmark, Bitcoin, X, CreditCard, Flame, Globe, DollarSign,
-  BarChart2, Eye, MapPin,
+  BarChart2, Eye,
 } from 'lucide-react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -154,18 +150,6 @@ function getPercentile(patrimoine: number): number {
 }
 
 // ── Shared UI ──────────────────────────────────────────────────────────────────
-function ChartTip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; color?: string }>; label?: string }) {
-  if (!active || !payload?.length) return null
-  return (
-    <div style={{ background: '#FFFFFF', border: '1px solid rgba(10,10,10,0.12)', borderRadius: 8, padding: '8px 12px', fontSize: 12, boxShadow: '0 4px 16px rgba(10,10,10,0.10)' }}>
-      <div style={{ color: '#6B6356', marginBottom: 4 }}>{label}</div>
-      {payload.map((p, i) => (
-        <div key={i} style={{ color: p.color ?? T.gold, fontWeight: 700 }}>{fmtCompact(p.value)}</div>
-      ))}
-    </div>
-  )
-}
-
 function StatCard({ label, value, sub, color = T.gold }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 10, padding: '10px 14px' }}>
@@ -215,10 +199,266 @@ const PYRAMID_TIERS = [
   { label: 'Quartile inférieur', sub: '~25% des ménages',  threshold: '< 28 k€',   minPct: 0,  color: T.red,   w: 100 },
 ]
 
+// ── Inline SVG: EvolutionChart ─────────────────────────────────────────────────
+interface EvoPoint { date: string; value: number }
+
+function EvolutionChart({ data, color = T.gold }: { data: EvoPoint[]; color?: string }) {
+  if (data.length < 2) {
+    return (
+      <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p-text-faint)', fontSize: 12 }}>
+        Aucune donnée disponible
+      </div>
+    )
+  }
+
+  const W = 800, H = 200
+  const PAD = { l: 64, r: 12, t: 12, b: 28 }
+  const w = W - PAD.l - PAD.r
+  const h = H - PAD.t - PAD.b
+  const N = data.length - 1
+  const maxVal = Math.max(...data.map(d => d.value)) * 1.08
+  const minVal = Math.min(...data.map(d => d.value)) * 0.94
+
+  const xy = (i: number, v: number) => ({
+    x: PAD.l + (i / (N || 1)) * w,
+    y: PAD.t + h - ((v - minVal) / (maxVal - minVal || 1)) * h,
+  })
+
+  const pts = data.map((d, i) => xy(i, d.value))
+  const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const area = `${line} L${pts[N].x.toFixed(1)},${PAD.t + h} L${pts[0].x.toFixed(1)},${PAD.t + h} Z`
+
+  const yTicks = [minVal, minVal + (maxVal - minVal) * 0.25, minVal + (maxVal - minVal) * 0.5, minVal + (maxVal - minVal) * 0.75, maxVal]
+
+  // Show a subset of x labels to avoid crowding
+  const labelStep = Math.ceil(data.length / 6)
+  const labelIndices = data.map((_, i) => i).filter(i => i === 0 || i === N || i % labelStep === 0)
+
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="gradEvo" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.28} />
+          <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+        </linearGradient>
+      </defs>
+
+      {yTicks.map((t, i) => {
+        const y = PAD.t + h - ((t - minVal) / (maxVal - minVal || 1)) * h
+        return (
+          <g key={i}>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="rgba(0,0,0,0.06)" strokeDasharray="2 4" />
+            <text x={PAD.l - 7} y={y + 3.5} textAnchor="end" fontSize={9.5} fontFamily="var(--p-mono)" fill="var(--p-text-faint)" letterSpacing="0.03em">
+              {fmtCompact(t)}
+            </text>
+          </g>
+        )
+      })}
+
+      {labelIndices.map(i => {
+        const p = pts[i]
+        return (
+          <text key={i} x={p.x} y={H - 6} textAnchor="middle" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">
+            {data[i].date}
+          </text>
+        )
+      })}
+
+      <path d={area} fill="url(#gradEvo)" />
+      <path d={line} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+
+      <circle cx={pts[N].x} cy={pts[N].y} r={4} fill={color} />
+      <circle cx={pts[N].x} cy={pts[N].y} r={9} fill={color} opacity={0.18} />
+    </svg>
+  )
+}
+
+// ── Inline SVG: AllocationDonut ────────────────────────────────────────────────
+interface DonutSegment { name: string; value: number; color: string }
+
+function AllocationDonut({ segments }: { segments: DonutSegment[] }) {
+  const total = segments.reduce((s, d) => s + d.value, 0) || 1
+  const size = 160
+  const r = 54
+  const cx = size / 2, cy = size / 2
+  const c = 2 * Math.PI * r
+  const gap = 2
+
+  let offset = 0
+  const arcs = segments.map(seg => {
+    const dash = (seg.value / total) * c - gap
+    const arc = { dash, gap: c - dash, offset, seg }
+    offset += (seg.value / total) * c
+    return arc
+  })
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+      <div style={{ position: 'relative', width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--p-line)" strokeWidth={14} />
+          {arcs.map((arc, i) => (
+            <circle
+              key={i}
+              cx={cx} cy={cy} r={r}
+              fill="none"
+              stroke={arc.seg.color}
+              strokeWidth={14}
+              strokeDasharray={`${arc.dash} ${arc.gap}`}
+              strokeDashoffset={-arc.offset}
+            />
+          ))}
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontSize: 9.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)', letterSpacing: '0.10em', textTransform: 'uppercase', fontWeight: 700 }}>Classes</div>
+          <div style={{ fontFamily: 'var(--p-serif)', fontSize: 22, color: 'var(--p-text)', letterSpacing: '-0.03em', lineHeight: 1, marginTop: 2 }}>{segments.length}</div>
+        </div>
+      </div>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {segments.map((seg, i) => {
+          const pct = ((seg.value / total) * 100).toFixed(0)
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: seg.color, flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: 11, color: 'var(--p-text-mid)' }}>{seg.name}</span>
+              <span style={{ fontSize: 10, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>{pct}%</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'var(--p-mono)', minWidth: 52, textAlign: 'right' }}>{fmtCompact(seg.value)}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ── Inline SVG: BarChart (monthly revenue) ─────────────────────────────────────
+interface BarPoint { month: string; revenus: number }
+
+function MonthlyBarChart({ data, color = T.green }: { data: BarPoint[]; color?: string }) {
+  if (data.length === 0) return null
+  const W = 700, H = 180
+  const PAD = { l: 56, r: 12, t: 10, b: 28 }
+  const w = W - PAD.l - PAD.r
+  const h = H - PAD.t - PAD.b
+  const maxVal = Math.max(...data.map(d => d.revenus)) * 1.1 || 1
+  const barW = (w / data.length) * 0.55
+  const barGap = w / data.length
+
+  const yTicks = [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]
+
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="gradBar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.9} />
+          <stop offset="100%" stopColor={color} stopOpacity={0.5} />
+        </linearGradient>
+      </defs>
+
+      {yTicks.map((t, i) => {
+        const y = PAD.t + h - (t / maxVal) * h
+        return (
+          <g key={i}>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="rgba(0,0,0,0.06)" strokeDasharray="2 4" />
+            <text x={PAD.l - 7} y={y + 3.5} textAnchor="end" fontSize={9.5} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">
+              {fmtCompact(t)}
+            </text>
+          </g>
+        )
+      })}
+
+      {data.map((d, i) => {
+        const barH = (d.revenus / maxVal) * h
+        const bx = PAD.l + i * barGap + (barGap - barW) / 2
+        const by = PAD.t + h - barH
+        return (
+          <g key={i}>
+            <rect x={bx} y={by} width={barW} height={barH} fill="url(#gradBar)" rx={3} />
+            <text x={bx + barW / 2} y={PAD.t + h + 16} textAnchor="middle" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">
+              {d.month}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
+
+// ── Inline SVG: FireProjectionChart ───────────────────────────────────────────
+interface FirePoint { year: string; value: number; target: number }
+
+function FireProjectionChart({ data }: { data: FirePoint[] }) {
+  if (data.length < 2) return null
+  const W = 800, H = 220
+  const PAD = { l: 64, r: 12, t: 12, b: 32 }
+  const w = W - PAD.l - PAD.r
+  const h = H - PAD.t - PAD.b
+  const N = data.length - 1
+
+  const maxVal = Math.max(...data.map(d => Math.max(d.value, d.target))) * 1.08
+
+  const xy = (i: number, v: number) => ({
+    x: PAD.l + (i / (N || 1)) * w,
+    y: PAD.t + h - (v / maxVal) * h,
+  })
+
+  const ptsV = data.map((d, i) => xy(i, d.value))
+  const ptsT = data.map((d, i) => xy(i, d.target))
+
+  const lineV = ptsV.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const lineT = ptsT.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
+  const areaV = `${lineV} L${ptsV[N].x.toFixed(1)},${PAD.t + h} L${ptsV[0].x.toFixed(1)},${PAD.t + h} Z`
+
+  const yTicks = [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]
+
+  // Show every 5th year label
+  const labelStep = Math.max(1, Math.floor(data.length / 7))
+  const labelIndices = data.map((_, i) => i).filter(i => i % labelStep === 0 || i === N)
+
+  return (
+    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="gradFire2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={T.gold} stopOpacity={0.3} />
+          <stop offset="100%" stopColor={T.gold} stopOpacity={0.02} />
+        </linearGradient>
+      </defs>
+
+      {yTicks.map((t, i) => {
+        const y = PAD.t + h - (t / maxVal) * h
+        return (
+          <g key={i}>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="rgba(0,0,0,0.06)" strokeDasharray="2 4" />
+            <text x={PAD.l - 7} y={y + 3.5} textAnchor="end" fontSize={9.5} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">
+              {fmtCompact(t)}
+            </text>
+          </g>
+        )
+      })}
+
+      {labelIndices.map(i => {
+        const p = ptsV[i]
+        return (
+          <text key={i} x={p.x} y={H - 6} textAnchor="middle" fontSize={9} fontFamily="var(--p-mono)" fill="var(--p-text-faint)">
+            {data[i].year}
+          </text>
+        )
+      })}
+
+      <path d={areaV} fill="url(#gradFire2)" />
+      <path d={lineT} fill="none" stroke={T.red} strokeWidth={1.5} strokeDasharray="4 4" opacity={0.7} strokeLinejoin="round" />
+      <path d={lineV} fill="none" stroke={T.gold} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+
+      <circle cx={ptsV[N].x} cy={ptsV[N].y} r={4} fill={T.gold} />
+      <circle cx={ptsV[N].x} cy={ptsV[N].y} r={9} fill={T.gold} opacity={0.18} />
+    </svg>
+  )
+}
+
 // ── Tab: Vue d'ensemble ────────────────────────────────────────────────────────
-function TabOverview({ envelopes, snapshots, router }: {
+function TabOverview({ envelopes, router }: {
   envelopes: Envelope[]
-  snapshots: Snapshot[]
+  snapshots?: Snapshot[]
   router: ReturnType<typeof useRouter>
 }) {
   const [range, setRange] = useState<TimeRange>('1a')
@@ -245,6 +485,7 @@ function TabOverview({ envelopes, snapshots, router }: {
   }, [envelopes])
 
   const DONUT_COLORS = [T.purple, T.green, T.pink, T.amber, T.blue, T.orange, T.gray, T.cyan]
+  const donutSegments = allocByClass.map((d, i) => ({ name: d.name, value: d.value, color: DONUT_COLORS[i % DONUT_COLORS.length] }))
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -262,7 +503,7 @@ function TabOverview({ envelopes, snapshots, router }: {
                 <button key={cat} onClick={() => setChartCat(cat)} style={{
                   padding: '3px 9px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer',
                   border: `1px solid ${chartCat === cat ? T.gold : 'var(--p-line)'}`,
-                  background: chartCat === cat ? 'rgba(176,120,32,0.12)' : 'transparent',
+                  background: chartCat === cat ? 'var(--p-gold-12)' : 'transparent',
                   color: chartCat === cat ? T.gold : 'var(--p-text-dim)',
                 }}>{cat}</button>
               ))}
@@ -272,26 +513,13 @@ function TabOverview({ envelopes, snapshots, router }: {
               <button key={r} onClick={() => setRange(r)} style={{
                 padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
                 border: `1px solid ${range === r ? T.gold : 'var(--p-line)'}`,
-                background: range === r ? 'rgba(176,120,32,0.12)' : 'transparent',
+                background: range === r ? 'var(--p-gold-12)' : 'transparent',
                 color: range === r ? T.gold : 'var(--p-text-dim)',
               }}>{r}</button>
             ))}
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={200}>
-          <AreaChart data={evoData}>
-            <defs>
-              <linearGradient id="gradOv" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={T.gold} stopOpacity={0.25} />
-                <stop offset="100%" stopColor={T.gold} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={62} />
-            <RTooltip content={<ChartTip />} />
-            <Area type="monotone" dataKey="value" stroke={T.gold} strokeWidth={2} fill="url(#gradOv)" dot={false} />
-          </AreaChart>
-        </ResponsiveContainer>
+        <EvolutionChart data={evoData} color={T.gold} />
       </SectionCard>
 
       {/* Bottom 2-col */}
@@ -333,17 +561,13 @@ function TabOverview({ envelopes, snapshots, router }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Allocation donut */}
           <SectionCard title="Allocation par classe">
-            <ResponsiveContainer width="100%" height={160}>
-              <PieChart>
-                <Pie data={allocByClass} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={45} outerRadius={68} paddingAngle={2}>
-                  {allocByClass.map((_, idx) => (
-                    <Cell key={idx} fill={DONUT_COLORS[idx % DONUT_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 11, color: 'var(--p-text-dim)' }} />
-                <RTooltip formatter={(v: number) => fmtCompact(v)} />
-              </PieChart>
-            </ResponsiveContainer>
+            {donutSegments.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--p-text-faint)', fontSize: 12 }}>
+                Ajoutez des enveloppes pour voir l&apos;allocation
+              </div>
+            ) : (
+              <AllocationDonut segments={donutSegments} />
+            )}
           </SectionCard>
 
           {/* Paliers patrimoniaux */}
@@ -404,7 +628,7 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
         <button onClick={() => setFilter('ALL')} style={{
           padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: 'pointer',
           border: `1px solid ${filter === 'ALL' ? T.gold : 'var(--p-line)'}`,
-          background: filter === 'ALL' ? 'rgba(176,120,32,0.12)' : 'transparent',
+          background: filter === 'ALL' ? 'var(--p-gold-12)' : 'transparent',
           color: filter === 'ALL' ? T.gold : 'var(--p-text-dim)',
         }}>Tout ({envelopes.length})</button>
         {(Object.keys(byType) as EnvelopeType[]).map(t => (
@@ -509,7 +733,7 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
   const totalAnnual = incomes.reduce((s, x) => s + x.annual, 0)
   const totalMonthly = totalAnnual / 12
 
-  const monthlyData = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'].map(m => ({
+  const monthlyData: BarPoint[] = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'].map(m => ({
     month: m,
     revenus: Math.round(totalMonthly * (0.85 + Math.random() * 0.3)),
   }))
@@ -523,14 +747,7 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
       </div>
 
       <SectionCard title="Projection mensuelle">
-        <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={monthlyData}>
-            <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={52} />
-            <RTooltip content={<ChartTip />} />
-            <Bar dataKey="revenus" fill={T.green} radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        <MonthlyBarChart data={monthlyData} color={T.green} />
       </SectionCard>
 
       <SectionCard title="Revenus par enveloppe">
@@ -543,7 +760,7 @@ function TabRevenus({ envelopes }: { envelopes: Envelope[] }) {
             {incomes.sort((a, b) => b.annual - a.annual).map(({ env, annual, monthly }) => {
               const cfg = ENV_CFG[env.type]
               return (
-                <div key={env.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
+                <div key={env.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'var(--p-card-2)', borderRadius: 8 }}>
                   <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: `${cfg.color}18`, color: cfg.color, fontWeight: 600, flexShrink: 0 }}>{cfg.label}</span>
                   <span style={{ flex: 1, fontSize: 13, color: 'var(--p-text)' }}>{env.name}</span>
                   <span style={{ fontSize: 13, color: T.green, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(annual)}/an</span>
@@ -569,8 +786,8 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
   const progress = fireTarget > 0 ? Math.min(100, (patrimoineNet / fireTarget) * 100) : 0
 
   // Simulation projection FIRE
-  const projectionData = useMemo(() => {
-    const pts = []
+  const projectionData = useMemo((): FirePoint[] => {
+    const pts: FirePoint[] = []
     let v = patrimoineNet
     const r = rendement / 100
     for (let yr = 0; yr <= 30; yr++) {
@@ -590,7 +807,6 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
     return null
   }, [patrimoineNet, rendement, epargneAnnuelle, fireTarget])
 
-  const coastFireTarget = depensesAnnuelles * 25
   const leanFireTarget = depensesAnnuelles * 0.75 * 25
   const fatFireTarget = depensesAnnuelles * 2 * 25
 
@@ -603,7 +819,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
             { label: 'Dépenses annuelles (€)', value: depensesAnnuelles, setter: setDepensesAnnuelles, step: 1000 },
             { label: 'Rendement attendu (%)', value: rendement, setter: setRendement, step: 0.5, isPercent: true },
             { label: 'Épargne annuelle (€)', value: epargneAnnuelle, setter: setEpargneAnnuelle, step: 1000 },
-          ].map(({ label, value, setter, step, isPercent }) => (
+          ].map(({ label, value, setter, step }) => (
             <div key={label}>
               <div style={{ fontSize: 11, color: 'var(--p-text-dim)', marginBottom: 6 }}>{label}</div>
               <Input
@@ -647,7 +863,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
           ].map(ms => {
             const pct = fireTarget > 0 ? Math.min(100, (patrimoineNet / ms.target) * 100) : 0
             return (
-              <div key={ms.label} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: `1px solid ${pct >= 100 ? ms.color : 'var(--p-line)'}` }}>
+              <div key={ms.label} style={{ padding: '12px 14px', background: 'var(--p-card-2)', borderRadius: 10, border: `1px solid ${pct >= 100 ? ms.color : 'var(--p-line)'}` }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: pct >= 100 ? ms.color : 'var(--p-text)', marginBottom: 4 }}>
                   {pct >= 100 ? '✓ ' : ''}{ms.label}
                 </div>
@@ -665,21 +881,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
 
       {/* Projection chart */}
       <SectionCard title="Projection patrimoniale (30 ans)">
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={projectionData}>
-            <defs>
-              <linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={T.gold} stopOpacity={0.3} />
-                <stop offset="100%" stopColor={T.gold} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="year" tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} interval={4} />
-            <YAxis tickFormatter={fmtCompact} tick={{ fontSize: 10, fill: 'var(--p-text-faint)' }} axisLine={false} tickLine={false} width={62} />
-            <RTooltip content={<ChartTip />} />
-            <Area type="monotone" dataKey="target" stroke={T.red} strokeDasharray="4 4" strokeWidth={1.5} fill="none" dot={false} />
-            <Area type="monotone" dataKey="value" stroke={T.gold} strokeWidth={2} fill="url(#gradFire)" dot={false} />
-          </AreaChart>
-        </ResponsiveContainer>
+        <FireProjectionChart data={projectionData} />
         <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
           <span style={{ fontSize: 11, color: T.gold, display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 16, height: 2, background: T.gold, display: 'inline-block' }} /> Patrimoine projeté
@@ -872,7 +1074,7 @@ export default function PatrimoinePage() {
             {envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''} · {pct}ème percentile français
           </span>
         </div>
-        <Button onClick={() => setShowModal(true)} style={{ background: 'rgba(176,120,32,0.12)', border: '1px solid rgba(176,120,32,0.25)', color: T.gold, gap: 6, fontSize: 12, padding: '6px 12px', height: 'auto' }}>
+        <Button onClick={() => setShowModal(true)} style={{ background: 'var(--p-gold-12)', border: '1px solid var(--p-gold-30)', color: T.gold, gap: 6, fontSize: 12, padding: '6px 12px', height: 'auto' }}>
           <Plus size={14} /> Ajouter
         </Button>
       </div>
@@ -934,7 +1136,7 @@ export default function PatrimoinePage() {
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 7, fontSize: 12, fontWeight: 600,
               border: 'none', cursor: 'pointer', transition: 'all 0.15s',
-              background: tab === t.id ? 'rgba(176,120,32,0.12)' : 'transparent',
+              background: tab === t.id ? 'var(--p-gold-12)' : 'transparent',
               color: tab === t.id ? T.gold : 'var(--p-text-dim)',
             }}>
               <Icon size={13} />{t.label}
@@ -968,7 +1170,7 @@ export default function PatrimoinePage() {
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 6, display: 'block' }}>Type d'enveloppe</label>
+              <label style={{ fontSize: 12, color: 'var(--p-text-dim)', marginBottom: 6, display: 'block' }}>Type d&apos;enveloppe</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {ENVELOPE_TYPES_LIST.map(t => {
                   const cfg = ENV_CFG[t]
@@ -991,13 +1193,13 @@ export default function PatrimoinePage() {
                 onChange={e => setNewName(e.target.value)}
                 placeholder={`Mon ${ENV_CFG[newType].label}`}
                 onKeyDown={e => e.key === 'Enter' && createEnvelope()}
-                style={{ background: '#FBF7EF', border: '1px solid rgba(10,10,10,0.14)', color: '#0A0A0A' }}
+                style={{ background: 'var(--p-card-2)', border: '1px solid var(--p-line)', color: 'var(--p-text)' }}
               />
             </div>
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <Button variant="ghost" onClick={() => setShowModal(false)} style={{ color: 'var(--p-text-dim)' }}>Annuler</Button>
-              <Button onClick={createEnvelope} disabled={!newName.trim() || creating} style={{ background: 'rgba(176,120,32,0.15)', border: '1px solid rgba(176,120,32,0.3)', color: T.gold }}>
+              <Button onClick={createEnvelope} disabled={!newName.trim() || creating} style={{ background: 'var(--p-gold-12)', border: '1px solid var(--p-gold-30)', color: T.gold }}>
                 {creating ? 'Création…' : 'Créer'}
               </Button>
             </div>

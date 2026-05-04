@@ -4,7 +4,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { useChartTheme } from '@/lib/chart-theme'
 import { Pencil, Trash2, Check, X, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { ENVELOPE_TYPE_CONFIG, type Envelope, type PriceData, fmtCompact } from '@/components/patrimoine/types'
@@ -84,7 +83,6 @@ export default function EnvelopeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const { toast } = useToast()
-  const chartTheme = useChartTheme()
 
   const [envelope, setEnvelope] = useState<Envelope | null>(null)
   const [siblings, setSiblings] = useState<Envelope[]>([])
@@ -335,17 +333,17 @@ export default function EnvelopeDetailPage() {
           {/* ── CENTER: section content ── */}
           <div>
             {envelope.type === 'LIVRET' && <LivretSection envelope={envelope} onSave={saveMetadata} />}
-            {envelope.type === 'IMMOBILIER' && <ImmobilierSection envelope={envelope} onSave={saveMetadata} chartTheme={chartTheme} />}
+            {envelope.type === 'IMMOBILIER' && <ImmobilierSection envelope={envelope} onSave={saveMetadata} />}
             {(envelope.type === 'PEA' || envelope.type === 'CTO') && (
               <PeaCtoCryptoSection envelope={envelope} prices={prices} pricesLoading={pricesLoading}
                 onRefreshPrices={() => loadPrices(envelope.positions)} onSave={saveMetadata}
-                chartTheme={chartTheme} onReload={loadEnvelope} cacheAge={cacheAge} />
+                onReload={loadEnvelope} cacheAge={cacheAge} />
             )}
             {envelope.type === 'AV' && <AVSection envelope={envelope} onSave={saveMetadata} />}
             {envelope.type === 'CRYPTO' && (
               <PeaCtoCryptoSection envelope={envelope} prices={prices} pricesLoading={pricesLoading}
                 onRefreshPrices={() => loadPrices(envelope.positions)} onSave={saveMetadata}
-                chartTheme={chartTheme} onReload={loadEnvelope} isCrypto cacheAge={cacheAge} />
+                onReload={loadEnvelope} isCrypto cacheAge={cacheAge} />
             )}
             {envelope.type === 'PER' && <PERSection envelope={envelope} onSave={saveMetadata} />}
             {envelope.type === 'CASH' && <CashSection envelope={envelope} onSave={saveMetadata} />}

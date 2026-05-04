@@ -376,15 +376,17 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
       {/* ── Header ── */}
       <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid var(--p-line)', flexShrink: 0 }}>
-        <div style={{ fontSize: 10.5, color: 'var(--p-text-faint)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--p-mono)', letterSpacing: '0.04em' }}>
-          <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>MON PATRIMOINE</Link>
-          <span style={{ opacity: 0.4 }}>›</span>
-          <span style={{ color: catCfg.color, fontWeight: 700 }}>{catCfg.label.toUpperCase()}</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <h1 style={{ fontFamily: 'var(--p-serif)', fontSize: 26, fontWeight: 400, color: 'var(--p-text-em)', margin: 0, letterSpacing: '-0.02em' }}>{catCfg.label}</h1>
-            <span style={{ fontSize: 12, color: 'var(--p-text-faint)', fontWeight: 400 }}>{catCfg.description}</span>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)', letterSpacing: '0.10em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>
+              <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+              <span style={{ opacity: 0.5 }}>›</span>
+              <span style={{ color: catCfg.color }}>{catCfg.label}</span>
+            </div>
+            <h1 style={{ fontFamily: 'var(--p-serif)', fontSize: 'clamp(28px, 4vw, 38px)', fontWeight: 400, color: 'var(--p-text)', letterSpacing: '-0.03em', margin: 0, lineHeight: 1 }}>
+              {catCfg.label}<span style={{ color: catCfg.color }}>.</span>
+            </h1>
+            <div style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 6 }}>{catCfg.description}</div>
           </div>
           <Button onClick={openModal} size="sm" style={{ gap: 6, flexShrink: 0 }}>
             <Plus className="h-4 w-4" />Ajouter

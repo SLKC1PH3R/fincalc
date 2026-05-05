@@ -111,7 +111,10 @@
       "Bash(git -C \"c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-a22019c32031d234d\" status --short)",
       "Bash(git -C \"c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-a0fa4a476f4f1affc\" status --short)",
       "Bash(git -C c:/Users/jerem/Downloads/fincalc/.claude/worktrees/agent-__TRACKED_VAR__ status --short)",
-      "PowerShell(git -C \"c:/Users/jerem/Downloads/fincalc\" status --short | Where-Object { $_ -match \"patrimoine|ImmobilierSection|PeaCtoCrypto|EtfOptimizer\" })"
+      "PowerShell(git -C \"c:/Users/jerem/Downloads/fincalc\" status --short | Where-Object { $_ -match \"patrimoine|ImmobilierSection|PeaCtoCrypto|EtfOptimizer\" })",
+      "PowerShell(cd \"c:/Users/jerem/Downloads/fincalc\" && git worktree list --porcelain | Select-String \"^worktree \" | Select-Object -Skip 1 | ForEach-Object { $path = $_ -replace \"^worktree \", \"\"; git worktree remove --force \"$path\" 2>&1; Write-Host \"Removed: $path\" })",
+      "PowerShell(cd \"c:/Users/jerem/Downloads/fincalc\" && git worktree list --porcelain | Select-String \"^worktree \" | Select-Object -Skip 1 | ForEach-Object { $path = \\($_ -replace \"^worktree \", \"\"\\).Trim\\(\\); git worktree remove -f -f \"$path\" 2>&1 } && git worktree list)",
+      "PowerShell(cd \"c:/Users/jerem/Downloads/fincalc\" && git branch | Select-String \"worktree-agent\" | ForEach-Object { $b = $_.ToString\\(\\).Trim\\(\\); git branch -D \"$b\" })"
     ]
   }
 }

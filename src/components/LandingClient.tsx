@@ -208,22 +208,51 @@ const CSS = `
 .lp-stat-n span{color:var(--lp-blue)}
 .lp-stat-l{font-size:0.8rem;color:var(--lp-g2);margin-top:0.4rem}
 
-/* ── PILLAR CARDS ── */
+/* ── PILLAR CARDS (flip) ── */
 .lp-pcards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.lp-pcard{position:relative;border-radius:24px;padding:2px;cursor:default;transform-style:preserve-3d;will-change:transform;transition:transform .08s linear}
-.lp-pcard-border{position:absolute;inset:0;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.03) 50%,rgba(75,120,255,0.15) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-.lp-pcard-inner{border-radius:22px;background:rgba(13,17,30,0.65);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(255,255,255,0.06);padding:36px 36px 32px;position:relative;overflow:hidden;transition:background .3s}
-.lp-pcard:hover .lp-pcard-inner{background:rgba(18,24,42,0.75)}
-.lp-pcard-shine{position:absolute;inset:0;border-radius:22px;pointer-events:none;opacity:0;transition:opacity .3s}
-.lp-pcard:hover .lp-pcard-shine{opacity:1}
-.lp-pcard-glow{position:absolute;width:300px;height:300px;border-radius:50%;opacity:0;transition:opacity .4s;pointer-events:none;top:-80px;right:-60px;filter:blur(60px)}
-.lp-pcard:hover .lp-pcard-glow{opacity:1}
-.lp-pc1 .lp-pcard-glow{background:rgba(75,120,255,.12)}
-.lp-pc2 .lp-pcard-glow{background:rgba(20,200,160,.09)}
-.lp-pc3 .lp-pcard-glow{background:rgba(160,80,255,.09)}
-.lp-pc4 .lp-pcard-glow{background:rgba(34,197,94,.08)}
-.lp-pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
-.lp-pcard-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;line-height:1}
+.lp-pcard{position:relative;border-radius:24px;cursor:pointer;height:460px;perspective:1200px}
+.lp-pcard-flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .72s cubic-bezier(.4,0,.2,1);border-radius:24px}
+.lp-pcard:hover .lp-pcard-flip{transform:rotateY(180deg)}
+.lp-pcard-front,.lp-pcard-back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:24px;overflow:hidden}
+/* ── FRONT face ── */
+.lp-pcard-front{display:flex;flex-direction:column;justify-content:space-between;padding:32px 36px 28px}
+.lp-pc1 .lp-pcard-front{background:linear-gradient(155deg,rgba(13,17,30,.97) 0%,rgba(16,26,58,.93) 100%);border:1px solid rgba(75,120,255,.2)}
+.lp-pc2 .lp-pcard-front{background:linear-gradient(155deg,rgba(13,17,30,.97) 0%,rgba(10,36,32,.93) 100%);border:1px solid rgba(20,200,160,.18)}
+.lp-pc3 .lp-pcard-front{background:linear-gradient(155deg,rgba(13,17,30,.97) 0%,rgba(32,14,52,.93) 100%);border:1px solid rgba(160,80,255,.18)}
+.lp-pc4 .lp-pcard-front{background:linear-gradient(155deg,rgba(13,17,30,.97) 0%,rgba(10,36,18,.93) 100%);border:1px solid rgba(34,197,94,.16)}
+.lp-pf-top{display:flex;align-items:center;justify-content:space-between}
+.lp-pf-num{font-size:11px;font-weight:700;letter-spacing:.12em;padding:3px 12px;border-radius:99px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);font-family:monospace}
+.lp-pf-hint{font-size:9.5px;color:rgba(255,255,255,.18);letter-spacing:.10em;text-transform:uppercase}
+.lp-pf-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;flex:1;justify-content:center;padding:8px 0}
+.lp-pf-icon{width:84px;height:84px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;line-height:1}
+.lp-pc1 .lp-pf-icon{background:rgba(75,120,255,.16);border:1px solid rgba(75,120,255,.28);box-shadow:0 0 48px rgba(75,120,255,.16)}
+.lp-pc2 .lp-pf-icon{background:rgba(20,200,160,.13);border:1px solid rgba(20,200,160,.24);box-shadow:0 0 48px rgba(20,200,160,.12)}
+.lp-pc3 .lp-pf-icon{background:rgba(160,80,255,.13);border:1px solid rgba(160,80,255,.24);box-shadow:0 0 48px rgba(160,80,255,.12)}
+.lp-pc4 .lp-pf-icon{background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.20);box-shadow:0 0 48px rgba(34,197,94,.10)}
+.lp-pf-label{display:flex;flex-direction:column;gap:6px}
+.lp-pf-title{font-size:2.1rem;font-weight:800;letter-spacing:-.04em;color:var(--lp-white);line-height:1}
+.lp-pc1 .lp-pf-title em{color:#6b9fff;font-style:normal}
+.lp-pc2 .lp-pf-title em{color:#14c8a0;font-style:normal}
+.lp-pc3 .lp-pf-title em{color:#b06aff;font-style:normal}
+.lp-pc4 .lp-pf-title em{color:#22c55e;font-style:normal}
+.lp-pf-sub{font-size:.8rem;color:#5a6a88;letter-spacing:.02em}
+.lp-pf-kpi{font-size:2.6rem;font-weight:900;letter-spacing:-.06em;font-family:monospace;line-height:1;margin-top:4px}
+.lp-pc1 .lp-pf-kpi{color:#4b78ff}
+.lp-pc2 .lp-pf-kpi{color:#14c8a0}
+.lp-pc3 .lp-pf-kpi{color:#b06aff}
+.lp-pc4 .lp-pf-kpi{color:#22c55e}
+.lp-pf-bottom{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase}
+/* ── BACK face ── */
+.lp-pcard-back{transform:rotateY(180deg)}
+.lp-pcard-inner{height:100%;box-sizing:border-box;border-radius:24px;background:rgba(13,17,30,0.75);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border:1px solid rgba(255,255,255,0.07);padding:28px 28px 22px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.lp-pcard-shine{position:absolute;inset:0;border-radius:24px;pointer-events:none}
+.lp-pcard-glow{position:absolute;width:280px;height:280px;border-radius:50%;pointer-events:none;top:-80px;right:-60px;filter:blur(60px)}
+.lp-pc1 .lp-pcard-glow{background:rgba(75,120,255,.10)}
+.lp-pc2 .lp-pcard-glow{background:rgba(20,200,160,.08)}
+.lp-pc3 .lp-pcard-glow{background:rgba(160,80,255,.08)}
+.lp-pc4 .lp-pcard-glow{background:rgba(34,197,94,.07)}
+.lp-pcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.lp-pcard-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;line-height:1}
 .lp-pc1 .lp-pcard-icon{background:rgba(75,120,255,.15);border:1px solid rgba(75,120,255,.25)}
 .lp-pc2 .lp-pcard-icon{background:rgba(20,200,160,.12);border:1px solid rgba(20,200,160,.2)}
 .lp-pc3 .lp-pcard-icon{background:rgba(160,80,255,.12);border:1px solid rgba(160,80,255,.2)}
@@ -416,6 +445,7 @@ const CSS = `
   .lp-rmap-row{grid-template-columns:1fr;gap:0.75rem}
   .lp-sticky{display:none}
   .lp-pcards-grid{grid-template-columns:1fr}
+  .lp-pcard{height:400px}
 }
 `
 
@@ -451,41 +481,7 @@ export function LandingClient() {
     }, { threshold: 0.08 })
     document.querySelectorAll('.lp-wrap .fade').forEach(el => obs.observe(el))
 
-    // Pillar card tilt
-    const MAX = 10
-    const cards = document.querySelectorAll<HTMLElement>('.lp-pcard')
-    const handlers: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = []
-    cards.forEach(card => {
-      const move = (e: MouseEvent) => {
-        const r = card.getBoundingClientRect()
-        const dx = (e.clientX - (r.left + r.width / 2)) / r.width
-        const dy = (e.clientY - (r.top + r.height / 2)) / r.height
-        card.style.transform = `perspective(900px) rotateX(${-dy * MAX}deg) rotateY(${dx * MAX}deg) scale3d(1.015,1.015,1.015)`
-        const shine = card.querySelector<HTMLElement>('.lp-pcard-shine')
-        if (shine) {
-          const px = ((e.clientX - r.left) / r.width * 100).toFixed(1)
-          const py = ((e.clientY - r.top) / r.height * 100).toFixed(1)
-          shine.style.background = `radial-gradient(circle at ${px}% ${py}%,rgba(255,255,255,.07),transparent 55%)`
-          shine.style.opacity = '1'
-        }
-      }
-      const leave = () => {
-        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
-        const shine = card.querySelector<HTMLElement>('.lp-pcard-shine')
-        if (shine) shine.style.opacity = '0'
-      }
-      card.addEventListener('mousemove', move)
-      card.addEventListener('mouseleave', leave)
-      handlers.push({ el: card, move, leave })
-    })
-
-    return () => {
-      obs.disconnect()
-      handlers.forEach(({ el, move, leave }) => {
-        el.removeEventListener('mousemove', move)
-        el.removeEventListener('mouseleave', leave)
-      })
-    }
+    return () => { obs.disconnect() }
   }, [])
 
   return (
@@ -630,180 +626,260 @@ export function LandingClient() {
             </div>
             <div className="lp-pcards-grid fade">
 
-              {/* Card 1 — Simulateurs */}
+              {/* Card 1 — Simuler */}
               <div className="lp-pcard lp-pc1">
-                <div className="lp-pcard-border" />
-                <div className="lp-pcard-inner">
-                  <div className="lp-pcard-shine" />
-                  <div className="lp-pcard-glow" />
-                  <div className="lp-pcard-top">
-                    <div className="lp-pcard-icon">⚡</div>
-                    <span className="lp-pcard-num">01</span>
-                  </div>
-                  <div className="lp-pcard-body">
-                    <h3>Simulateurs</h3>
-                    <p>18 calculateurs couvrant intérêts composés, FI/RE, crédit immobilier, fiscalité, retraite et plus. Résultats instantanés.</p>
-                  </div>
-                  <div className="lp-pmini">
-                    <div className="lp-pmini-bar">
-                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
-                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Intérêts Composés</span>
+                <div className="lp-pcard-flip">
+                  {/* FRONT */}
+                  <div className="lp-pcard-front">
+                    <div className="lp-pf-top">
+                      <span className="lp-pf-num">01</span>
+                      <span className="lp-pf-hint">Survol pour découvrir</span>
                     </div>
-                    <div className="lp-pmini-body">
-                      <div className="lp-pmini-chart">
-                        {[18,28,35,42,52,63,71,82,95,100].map((h,i) => (
-                          <div key={i} className="lp-pmcb" style={{ height:`${h}%`, background:`rgba(75,120,255,${(0.25+h/100*0.75).toFixed(2)})` }} />
-                        ))}
+                    <div className="lp-pf-center">
+                      <div className="lp-pf-icon">⚡</div>
+                      <div className="lp-pf-label">
+                        <div className="lp-pf-title">Simuler<em>.</em></div>
+                        <div className="lp-pf-sub">18 calculateurs · Fiscalité 2026</div>
                       </div>
-                      <div className="lp-pmini-kpis">
-                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital investi</div><div className="lp-pmkpi-v">72 000 €</div></div>
-                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital final</div><div className="lp-pmkpi-v pos">186 400 €</div></div>
-                        <div className="lp-pmkpi"><div className="lp-pmkpi-l">Rendement</div><div className="lp-pmkpi-v pos">+7,0 %</div></div>
+                      <div className="lp-pf-kpi">18</div>
+                    </div>
+                    <div className="lp-pf-bottom">Voir les détails</div>
+                  </div>
+                  {/* BACK */}
+                  <div className="lp-pcard-back">
+                    <div className="lp-pcard-inner">
+                      <div className="lp-pcard-shine" />
+                      <div className="lp-pcard-glow" />
+                      <div className="lp-pcard-top">
+                        <div className="lp-pcard-icon">⚡</div>
+                        <span className="lp-pcard-num">01</span>
+                      </div>
+                      <div className="lp-pcard-body">
+                        <h3>Simulateurs</h3>
+                        <p>18 calculateurs couvrant intérêts composés, FI/RE, crédit immobilier, fiscalité, retraite et plus. Résultats instantanés.</p>
+                      </div>
+                      <div className="lp-pmini">
+                        <div className="lp-pmini-bar">
+                          <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Intérêts Composés</span>
+                        </div>
+                        <div className="lp-pmini-body">
+                          <div className="lp-pmini-chart">
+                            {[18,28,35,42,52,63,71,82,95,100].map((h,i) => (
+                              <div key={i} className="lp-pmcb" style={{ height:`${h}%`, background:`rgba(75,120,255,${(0.25+h/100*0.75).toFixed(2)})` }} />
+                            ))}
+                          </div>
+                          <div className="lp-pmini-kpis">
+                            <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital investi</div><div className="lp-pmkpi-v">72 000 €</div></div>
+                            <div className="lp-pmkpi"><div className="lp-pmkpi-l">Capital final</div><div className="lp-pmkpi-v pos">186 400 €</div></div>
+                            <div className="lp-pmkpi"><div className="lp-pmkpi-l">Rendement</div><div className="lp-pmkpi-v pos">+7,0 %</div></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="lp-pctag-row">
+                        {['FI/RE','DCA','Retraite','Crédit immo'].map(t => <span key={t} className="lp-pctag lp-pct1">{t}</span>)}
                       </div>
                     </div>
-                  </div>
-                  <div className="lp-pctag-row">
-                    {['FI/RE','DCA','Retraite','Crédit immo'].map(t => <span key={t} className="lp-pctag lp-pct1">{t}</span>)}
                   </div>
                 </div>
               </div>
 
-              {/* Card 2 — Insights */}
+              {/* Card 2 — Optimiser */}
               <div className="lp-pcard lp-pc2">
-                <div className="lp-pcard-border" />
-                <div className="lp-pcard-inner">
-                  <div className="lp-pcard-shine" />
-                  <div className="lp-pcard-glow" />
-                  <div className="lp-pcard-top">
-                    <div className="lp-pcard-icon">📊</div>
-                    <span className="lp-pcard-num">02</span>
-                  </div>
-                  <div className="lp-pcard-body">
-                    <h3>Insights</h3>
-                    <p>Graphiques interactifs, benchmarks CAC 40 / MSCI World et visualisations claires pour révéler la croissance et les tendances.</p>
-                  </div>
-                  <div className="lp-pmini">
-                    <div className="lp-pmini-bar">
-                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
-                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Répartition patrimoine</span>
+                <div className="lp-pcard-flip">
+                  {/* FRONT */}
+                  <div className="lp-pcard-front">
+                    <div className="lp-pf-top">
+                      <span className="lp-pf-num">02</span>
+                      <span className="lp-pf-hint">Survol pour découvrir</span>
                     </div>
-                    <div className="lp-pmini-body">
-                      <div className="lp-pmini-donut-row">
-                        <div className="lp-pmini-donut">
-                          <svg viewBox="0 0 64 64">
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="rgba(255,255,255,.05)" strokeWidth="10"/>
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="#4b78ff" strokeWidth="10" strokeDasharray="60 91" strokeDashoffset="24" strokeLinecap="round"/>
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="#14c8a0" strokeWidth="10" strokeDasharray="28 123" strokeDashoffset="-36" strokeLinecap="round"/>
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="#b06aff" strokeWidth="10" strokeDasharray="18 133" strokeDashoffset="-64" strokeLinecap="round"/>
-                            <circle cx="32" cy="32" r="24" fill="none" stroke="#f59e0b" strokeWidth="10" strokeDasharray="13 138" strokeDashoffset="-82" strokeLinecap="round"/>
-                          </svg>
-                          <div className="lp-pmini-donut-c">412k</div>
-                        </div>
-                        <div className="lp-pmini-dl">
-                          {[['#4b78ff','Immobilier','42 %'],['#14c8a0','Actions','28 %'],['#b06aff','Livrets','18 %'],['#f59e0b','Crypto','12 %']].map(([c,l,v]) => (
-                            <div key={l} className="lp-pmdlr"><div className="lp-pmdlr-dot" style={{ background:c }} />{l}<div className="lp-pmdlr-val">{v}</div></div>
-                          ))}
-                        </div>
+                    <div className="lp-pf-center">
+                      <div className="lp-pf-icon">📊</div>
+                      <div className="lp-pf-label">
+                        <div className="lp-pf-title">Optimiser<em>.</em></div>
+                        <div className="lp-pf-sub">ETF · Frais · Rendement net</div>
                       </div>
+                      <div className="lp-pf-kpi">-8 420€</div>
                     </div>
+                    <div className="lp-pf-bottom">Voir les détails</div>
                   </div>
-                  <div className="lp-pctag-row">
-                    {['CAC 40','MSCI World','Benchmark'].map(t => <span key={t} className="lp-pctag lp-pct2">{t}</span>)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3 — Patrimoine */}
-              <div className="lp-pcard lp-pc3">
-                <div className="lp-pcard-border" />
-                <div className="lp-pcard-inner">
-                  <div className="lp-pcard-shine" />
-                  <div className="lp-pcard-glow" />
-                  <div className="lp-pcard-top">
-                    <div className="lp-pcard-icon">🏛</div>
-                    <span className="lp-pcard-num">03</span>
-                  </div>
-                  <div className="lp-pcard-body">
-                    <h3>Patrimoine</h3>
-                    <p>Suivi complet — immobilier, actions, livrets, crypto — centralisé en temps réel via Finnhub & CoinGecko. Score 0–100 sur 6 piliers.</p>
-                  </div>
-                  <div className="lp-pmini">
-                    <div className="lp-pmini-bar">
-                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
-                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Mon portefeuille · live</span>
-                      <span style={{ marginLeft:'auto', fontSize:9, background:'rgba(34,197,94,.12)', color:'#22c55e', padding:'2px 7px', borderRadius:99, fontWeight:700 }}>● LIVE</span>
-                    </div>
-                    <div className="lp-pmini-body">
-                      <div className="lp-pmar">
-                        {[
-                          { bg:'rgba(75,120,255,.12)', ic:'📈', nm:'MSCI World ETF', perf:'+24,1 %', pos:true },
-                          { bg:'rgba(245,158,11,.10)', ic:'₿',  nm:'Bitcoin',        perf:'-4,2 %',  pos:false },
-                          { bg:'rgba(20,200,160,.10)', ic:'🏠', nm:'Immo Neuilly',   perf:'+8,4 %',  pos:true },
-                          { bg:'rgba(160,80,255,.10)', ic:'💳', nm:'Livret A',       perf:'+3,0 %',  pos:true },
-                        ].map(r => (
-                          <div key={r.nm} className="lp-pmar-row">
-                            <div className="lp-pmar-l">
-                              <div className="lp-pmar-ic" style={{ background:r.bg }}>{r.ic}</div>
-                              {r.nm}
+                  {/* BACK */}
+                  <div className="lp-pcard-back">
+                    <div className="lp-pcard-inner">
+                      <div className="lp-pcard-shine" />
+                      <div className="lp-pcard-glow" />
+                      <div className="lp-pcard-top">
+                        <div className="lp-pcard-icon">📊</div>
+                        <span className="lp-pcard-num">02</span>
+                      </div>
+                      <div className="lp-pcard-body">
+                        <h3>Insights</h3>
+                        <p>Graphiques interactifs, benchmarks CAC 40 / MSCI World et visualisations claires pour révéler la croissance et les tendances.</p>
+                      </div>
+                      <div className="lp-pmini">
+                        <div className="lp-pmini-bar">
+                          <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Répartition patrimoine</span>
+                        </div>
+                        <div className="lp-pmini-body">
+                          <div className="lp-pmini-donut-row">
+                            <div className="lp-pmini-donut">
+                              <svg viewBox="0 0 64 64">
+                                <circle cx="32" cy="32" r="24" fill="none" stroke="rgba(255,255,255,.05)" strokeWidth="10"/>
+                                <circle cx="32" cy="32" r="24" fill="none" stroke="#4b78ff" strokeWidth="10" strokeDasharray="60 91" strokeDashoffset="24" strokeLinecap="round"/>
+                                <circle cx="32" cy="32" r="24" fill="none" stroke="#14c8a0" strokeWidth="10" strokeDasharray="28 123" strokeDashoffset="-36" strokeLinecap="round"/>
+                                <circle cx="32" cy="32" r="24" fill="none" stroke="#b06aff" strokeWidth="10" strokeDasharray="18 133" strokeDashoffset="-64" strokeLinecap="round"/>
+                                <circle cx="32" cy="32" r="24" fill="none" stroke="#f59e0b" strokeWidth="10" strokeDasharray="13 138" strokeDashoffset="-82" strokeLinecap="round"/>
+                              </svg>
+                              <div className="lp-pmini-donut-c">412k</div>
                             </div>
-                            <span style={{ fontSize:11, fontWeight:700, color: r.pos ? '#22c55e' : '#ef4444' }}>{r.perf}</span>
+                            <div className="lp-pmini-dl">
+                              {[['#4b78ff','Immobilier','42 %'],['#14c8a0','Actions','28 %'],['#b06aff','Livrets','18 %'],['#f59e0b','Crypto','12 %']].map(([c,l,v]) => (
+                                <div key={l} className="lp-pmdlr"><div className="lp-pmdlr-dot" style={{ background:c }} />{l}<div className="lp-pmdlr-val">{v}</div></div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
+                        </div>
+                      </div>
+                      <div className="lp-pctag-row">
+                        {['CAC 40','MSCI World','Benchmark'].map(t => <span key={t} className="lp-pctag lp-pct2">{t}</span>)}
                       </div>
                     </div>
-                  </div>
-                  <div className="lp-pctag-row">
-                    {['Finnhub','CoinGecko','Score 0–100'].map(t => <span key={t} className="lp-pctag lp-pct3">{t}</span>)}
                   </div>
                 </div>
               </div>
 
-              {/* Card 4 — Sécurité */}
-              <div className="lp-pcard lp-pc4">
-                <div className="lp-pcard-border" />
-                <div className="lp-pcard-inner">
-                  <div className="lp-pcard-shine" />
-                  <div className="lp-pcard-glow" />
-                  <div className="lp-pcard-top">
-                    <div className="lp-pcard-icon">🔒</div>
-                    <span className="lp-pcard-num">04</span>
-                  </div>
-                  <div className="lp-pcard-body">
-                    <h3>Sécurité</h3>
-                    <p>Chiffrement AES-256, hébergé en Europe, conformité RGPD. Aucune donnée bancaire requise, aucune revente. Jamais.</p>
-                  </div>
-                  <div className="lp-pmini">
-                    <div className="lp-pmini-bar">
-                      <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
-                      <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
-                      <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>État de sécurité</span>
+              {/* Card 3 — Suivre */}
+              <div className="lp-pcard lp-pc3">
+                <div className="lp-pcard-flip">
+                  {/* FRONT */}
+                  <div className="lp-pcard-front">
+                    <div className="lp-pf-top">
+                      <span className="lp-pf-num">03</span>
+                      <span className="lp-pf-hint">Survol pour découvrir</span>
                     </div>
-                    <div className="lp-pmini-body">
-                      <div className="lp-pmsi">
-                        {[
-                          { t:'Chiffrement de bout en bout',   badge:'AES-256', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
-                          { t:'Hébergement certifié UE',       badge:'RGPD',    bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
-                          { t:'0 donnée bancaire collectée',   badge:'Vérifié', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
-                          { t:'OAuth 2.0 Google SSO',          badge:'Sécurisé',bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
-                        ].map(r => (
-                          <div key={r.t} className="lp-pmsi-row">
-                            <div className="lp-pmsi-chk">✓</div>
-                            <span style={{ flex:1 }}>{r.t}</span>
-                            <span className="lp-pmsi-badge" style={{ background:r.bc, color:r.tc }}>{r.badge}</span>
+                    <div className="lp-pf-center">
+                      <div className="lp-pf-icon">🏛</div>
+                      <div className="lp-pf-label">
+                        <div className="lp-pf-title">Suivre<em>.</em></div>
+                        <div className="lp-pf-sub">PEA, CTO, Immo, Crypto, Livrets</div>
+                      </div>
+                      <div className="lp-pf-kpi">+8,4%</div>
+                    </div>
+                    <div className="lp-pf-bottom">Voir les détails</div>
+                  </div>
+                  {/* BACK */}
+                  <div className="lp-pcard-back">
+                    <div className="lp-pcard-inner">
+                      <div className="lp-pcard-shine" />
+                      <div className="lp-pcard-glow" />
+                      <div className="lp-pcard-top">
+                        <div className="lp-pcard-icon">🏛</div>
+                        <span className="lp-pcard-num">03</span>
+                      </div>
+                      <div className="lp-pcard-body">
+                        <h3>Patrimoine</h3>
+                        <p>Suivi complet — immobilier, actions, livrets, crypto — centralisé en temps réel via Finnhub & CoinGecko. Score 0–100 sur 6 piliers.</p>
+                      </div>
+                      <div className="lp-pmini">
+                        <div className="lp-pmini-bar">
+                          <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Mon portefeuille · live</span>
+                          <span style={{ marginLeft:'auto', fontSize:9, background:'rgba(34,197,94,.12)', color:'#22c55e', padding:'2px 7px', borderRadius:99, fontWeight:700 }}>● LIVE</span>
+                        </div>
+                        <div className="lp-pmini-body">
+                          <div className="lp-pmar">
+                            {[
+                              { bg:'rgba(75,120,255,.12)', ic:'📈', nm:'MSCI World ETF', perf:'+24,1 %', pos:true },
+                              { bg:'rgba(245,158,11,.10)', ic:'₿',  nm:'Bitcoin',        perf:'-4,2 %',  pos:false },
+                              { bg:'rgba(20,200,160,.10)', ic:'🏠', nm:'Immo Neuilly',   perf:'+8,4 %',  pos:true },
+                              { bg:'rgba(160,80,255,.10)', ic:'💳', nm:'Livret A',       perf:'+3,0 %',  pos:true },
+                            ].map(r => (
+                              <div key={r.nm} className="lp-pmar-row">
+                                <div className="lp-pmar-l">
+                                  <div className="lp-pmar-ic" style={{ background:r.bg }}>{r.ic}</div>
+                                  {r.nm}
+                                </div>
+                                <span style={{ fontSize:11, fontWeight:700, color: r.pos ? '#22c55e' : '#ef4444' }}>{r.perf}</span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
+                      </div>
+                      <div className="lp-pctag-row">
+                        {['Finnhub','CoinGecko','Score 0–100'].map(t => <span key={t} className="lp-pctag lp-pct3">{t}</span>)}
                       </div>
                     </div>
                   </div>
-                  <div className="lp-pctag-row">
-                    {['AES-256','RGPD','OAuth 2.0','0 donnée bancaire'].map(t => <span key={t} className="lp-pctag lp-pct4">{t}</span>)}
+                </div>
+              </div>
+
+              {/* Card 4 — Sécuriser */}
+              <div className="lp-pcard lp-pc4">
+                <div className="lp-pcard-flip">
+                  {/* FRONT */}
+                  <div className="lp-pcard-front">
+                    <div className="lp-pf-top">
+                      <span className="lp-pf-num">04</span>
+                      <span className="lp-pf-hint">Survol pour découvrir</span>
+                    </div>
+                    <div className="lp-pf-center">
+                      <div className="lp-pf-icon">🔒</div>
+                      <div className="lp-pf-label">
+                        <div className="lp-pf-title">Sécuriser<em>.</em></div>
+                        <div className="lp-pf-sub">AES-256 · RGPD · Hébergé en Europe</div>
+                      </div>
+                      <div className="lp-pf-kpi">0 donnée</div>
+                    </div>
+                    <div className="lp-pf-bottom">Voir les détails</div>
+                  </div>
+                  {/* BACK */}
+                  <div className="lp-pcard-back">
+                    <div className="lp-pcard-inner">
+                      <div className="lp-pcard-shine" />
+                      <div className="lp-pcard-glow" />
+                      <div className="lp-pcard-top">
+                        <div className="lp-pcard-icon">🔒</div>
+                        <span className="lp-pcard-num">04</span>
+                      </div>
+                      <div className="lp-pcard-body">
+                        <h3>Sécurité</h3>
+                        <p>Chiffrement AES-256, hébergé en Europe, conformité RGPD. Aucune donnée bancaire requise, aucune revente. Jamais.</p>
+                      </div>
+                      <div className="lp-pmini">
+                        <div className="lp-pmini-bar">
+                          <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
+                          <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
+                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>État de sécurité</span>
+                        </div>
+                        <div className="lp-pmini-body">
+                          <div className="lp-pmsi">
+                            {[
+                              { t:'Chiffrement de bout en bout',   badge:'AES-256', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
+                              { t:'Hébergement certifié UE',       badge:'RGPD',    bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
+                              { t:'0 donnée bancaire collectée',   badge:'Vérifié', bc:'rgba(34,197,94,.12)',   tc:'#22c55e' },
+                              { t:'OAuth 2.0 Google SSO',          badge:'Sécurisé',bc:'rgba(75,120,255,.12)',  tc:'#6b9fff' },
+                            ].map(r => (
+                              <div key={r.t} className="lp-pmsi-row">
+                                <div className="lp-pmsi-chk">✓</div>
+                                <span style={{ flex:1 }}>{r.t}</span>
+                                <span className="lp-pmsi-badge" style={{ background:r.bc, color:r.tc }}>{r.badge}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="lp-pctag-row">
+                        {['AES-256','RGPD','OAuth 2.0','0 donnée bancaire'].map(t => <span key={t} className="lp-pctag lp-pct4">{t}</span>)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

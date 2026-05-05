@@ -128,6 +128,21 @@ const PLACEHOLDERS: Record<EnvelopeType, string> = {
   PER: 'ex : Mon PER Individuel', CASH: 'ex : Compte courant BNP',
 }
 
+// ── Livret subtypes ────────────────────────────────────────────────────────────
+interface LivretSubtype {
+  id: string; label: string; rate: number | null; plafond: number | null
+  description: string; badge: string | null; badgeColor?: string
+}
+const LIVRET_SUBTYPES: LivretSubtype[] = [
+  { id: 'livret-a',        label: 'Livret A',        rate: 2.4,  plafond: 22_950, description: 'Épargne réglementée, entièrement défiscalisée',    badge: 'Défiscalisé',   badgeColor: '#34d399' },
+  { id: 'ldds',            label: 'LDDS',            rate: 2.4,  plafond: 12_000, description: 'Livret de Développement Durable et Solidaire',      badge: 'Défiscalisé',   badgeColor: '#34d399' },
+  { id: 'lep',             label: 'LEP',             rate: 3.5,  plafond: 10_000, description: 'Sous conditions de ressources — meilleur taux réglementé', badge: 'Meilleur taux', badgeColor: '#f59e0b' },
+  { id: 'pel',             label: 'PEL',             rate: 2.25, plafond: 61_200, description: 'Plan Épargne Logement — durée min. 4 ans',           badge: 'Logement',      badgeColor: '#818cf8' },
+  { id: 'cel',             label: 'CEL',             rate: 1.6,  plafond: 15_300, description: 'Compte Épargne Logement, plafond intermédiaire',     badge: null },
+  { id: 'livret-jeune',    label: 'Livret Jeune',    rate: null, plafond:  1_600, description: '12–25 ans — taux libre (min. Livret A)',             badge: 'Jeune',         badgeColor: '#f472b6' },
+  { id: 'livret-bancaire', label: 'Livret bancaire', rate: null, plafond: null,   description: 'Taux libre, non plafonné réglementairement',         badge: null },
+]
+
 // ── Evolution chart helpers ────────────────────────────────────────────────────
 type TimeRange = '1j' | '1s' | '1m' | '1a' | 'max'
 
@@ -237,9 +252,11 @@ export default function PatrimoineCategoryPage({ category }: Props) {
   const [livePrices, setLivePrices] = useState<LivePrices>({})
   const [pricesLoading, setPricesLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  const [step, setStep] = useState<'type' | 'name'>('type')
+  const [step, setStep] = useState<'type' | 'livret-subtype' | 'name'>('type')
   const [selectedType, setSelectedType] = useState<EnvelopeType | null>(null)
+  const [selectedLivretSubtype, setSelectedLivretSubtype] = useState<LivretSubtype | null>(null)
   const [envelopeName, setEnvelopeName] = useState('')
+  const [envelopeBalance, setEnvelopeBalance] = useState('')
   const [creating, setCreating] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [timeRange, setTimeRange] = useState<TimeRange>('1a')
@@ -344,9 +361,18 @@ export default function PatrimoineCategoryPage({ category }: Props) {
     if (!selectedType || !envelopeName.trim()) return
     setCreating(true)
     try {
+      const metadata: Record<string, unknown> = {}
+      if (selectedType === 'LIVRET' && selectedLivretSubtype) {
+        metadata.livretType = selectedLivretSubtype.id
+        metadata.livretLabel = selectedLivretSubtype.label
+        if (selectedLivretSubtype.plafond) metadata.maxBalance = selectedLivretSubtype.plafond
+        if (selectedLivretSubtype.rate !== null) metadata.rate = selectedLivretSubtype.rate
+        const bal = parseFloat(envelopeBalance.replace(',', '.').replace(/\s/g, ''))
+        if (!isNaN(bal) && bal > 0) metadata.balance = bal
+      }
       const res = await fetch('/api/patrimoine/envelopes', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: selectedType, name: envelopeName.trim() }),
+        body: JSON.stringify({ type: selectedType, name: envelopeName.trim(), metadata }),
       })
       if (!res.ok) throw new Error()
       const created = await res.json()
@@ -360,9 +386,16 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   const openModal = () => {
     const solo = catCfg.types.length === 1
-    setStep(solo ? 'name' : 'type')
-    setSelectedType(solo ? catCfg.types[0] : null)
+    if (solo && catCfg.types[0] === 'LIVRET') {
+      setStep('livret-subtype')
+      setSelectedType('LIVRET')
+    } else {
+      setStep(solo ? 'name' : 'type')
+      setSelectedType(solo ? catCfg.types[0] : null)
+    }
+    setSelectedLivretSubtype(null)
     setEnvelopeName('')
+    setEnvelopeBalance('')
     setShowModal(true)
   }
 
@@ -752,13 +785,17 @@ export default function PatrimoineCategoryPage({ category }: Props) {
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 16 }}
           onClick={e => { if (e.target === e.currentTarget) setShowModal(false) }}
         >
-          <div style={{ background: 'var(--modal-surface)', border: '1px solid var(--modal-surface-border)', borderRadius: 20, width: '100%', maxWidth: 480, padding: 28, boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)' }}>
+          <div style={{ background: 'var(--modal-surface)', border: '1px solid var(--modal-surface-border)', borderRadius: 20, width: '100%', maxWidth: 520, padding: 28, boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--p-text)' }}>
-                  {step === 'type' ? 'Quel type d\'actif ?' : `Nommer votre ${selectedType ? ENVELOPE_TYPE_CONFIG[selectedType].label : ''}`}
+                  {step === 'type' ? 'Quel type d\'actif ?'
+                    : step === 'livret-subtype' ? 'Quel livret ?'
+                    : `Nommer votre ${selectedLivretSubtype ? selectedLivretSubtype.label : selectedType ? ENVELOPE_TYPE_CONFIG[selectedType].label : ''}`}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 2 }}>Catégorie : {catCfg.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--p-text-faint)', marginTop: 2 }}>
+                  {step === 'livret-subtype' ? 'Taux indicatifs au 01/02/2025' : `Catégorie : ${catCfg.label}`}
+                </div>
               </div>
               <button onClick={() => setShowModal(false)} style={{ padding: 6, borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)' }}>
                 <X style={{ width: 18, height: 18 }} />
@@ -771,7 +808,11 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   const Icon = cfg.icon
                   return (
                     <button key={type}
-                      onClick={() => { setSelectedType(type); setStep('name'); setEnvelopeName('') }}
+                      onClick={() => {
+                        setSelectedType(type)
+                        if (type === 'LIVRET') { setStep('livret-subtype') }
+                        else { setStep('name'); setEnvelopeName('') }
+                      }}
                       style={{ padding: '14px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', background: 'rgba(255,255,255,0.04)', border: `1.5px solid rgba(255,255,255,0.08)`, transition: 'all 0.15s' }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = cfg.color + '70'; (e.currentTarget as HTMLElement).style.background = cfg.color + '14' }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
@@ -791,24 +832,139 @@ export default function PatrimoineCategoryPage({ category }: Props) {
               </div>
             )}
 
-            {step === 'name' && selectedType && (
+            {step === 'livret-subtype' && (
               <div>
                 {catCfg.types.length > 1 && (
-                  <button onClick={() => setStep('type')} style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, padding: 0, textDecoration: 'underline' }}>
+                  <button onClick={() => setStep('type')} style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 14, padding: 0, textDecoration: 'underline' }}>
                     ← Changer de type
                   </button>
                 )}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 10, background: ENVELOPE_TYPE_CONFIG[selectedType].color + '10', border: `1px solid ${ENVELOPE_TYPE_CONFIG[selectedType].color}30`, marginBottom: 20 }}>
-                  {(() => { const Icon = ENVELOPE_TYPE_CONFIG[selectedType].icon; return <Icon style={{ width: 16, height: 16, color: ENVELOPE_TYPE_CONFIG[selectedType].color }} /> })()}
-                  <span style={{ fontSize: 13, fontWeight: 600, color: ENVELOPE_TYPE_CONFIG[selectedType].color }}>{ENVELOPE_TYPE_CONFIG[selectedType].label}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {LIVRET_SUBTYPES.map(sub => {
+                    const baseColor = '#34d399'
+                    return (
+                      <button key={sub.id}
+                        onClick={() => {
+                          setSelectedLivretSubtype(sub)
+                          setEnvelopeName(sub.label)
+                          setStep('name')
+                        }}
+                        style={{ padding: '12px 14px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', background: 'rgba(255,255,255,0.04)', border: '1.5px solid rgba(255,255,255,0.08)', transition: 'all 0.15s', width: '100%' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = baseColor + '60'; (e.currentTarget as HTMLElement).style.background = baseColor + '0e' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 34, height: 34, borderRadius: 9, background: baseColor + '15', border: `1px solid ${baseColor}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <PiggyBank style={{ width: 14, height: 14, color: baseColor }} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.01em' }}>{sub.label}</span>
+                              {sub.badge && (
+                                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 99, background: (sub.badgeColor ?? baseColor) + '22', color: sub.badgeColor ?? baseColor, fontWeight: 700, fontFamily: 'var(--p-mono)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{sub.badge}</span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{sub.description}</div>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, flexShrink: 0 }}>
+                            {sub.rate !== null ? (
+                              <span style={{ fontSize: 13, fontWeight: 800, color: baseColor, fontFamily: 'var(--p-mono)', letterSpacing: '-0.02em' }}>{sub.rate}%</span>
+                            ) : (
+                              <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>Libre</span>
+                            )}
+                            {sub.plafond !== null ? (
+                              <span style={{ fontSize: 9.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)', whiteSpace: 'nowrap' }}>
+                                {sub.plafond >= 1000 ? `${(sub.plafond / 1000).toFixed(sub.plafond % 1000 === 0 ? 0 : 1)} k€` : `${sub.plafond} €`} plafond
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: 9.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>Pas de plafond</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
+              </div>
+            )}
+
+            {step === 'name' && selectedType && (
+              <div>
+                <button
+                  onClick={() => selectedType === 'LIVRET' ? setStep('livret-subtype') : (catCfg.types.length > 1 ? setStep('type') : setShowModal(false))}
+                  style={{ fontSize: 12, color: 'var(--p-text-faint)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, padding: 0, textDecoration: 'underline' }}
+                >
+                  ← {selectedType === 'LIVRET' ? 'Changer de livret' : 'Changer de type'}
+                </button>
+
+                {/* Selected livret info banner */}
+                {selectedType === 'LIVRET' && selectedLivretSubtype ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: '#34d39910', border: '1px solid #34d39930', marginBottom: 20 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <PiggyBank style={{ width: 16, height: 16, color: '#34d399' }} />
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>{selectedLivretSubtype.label}</div>
+                        <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>{selectedLivretSubtype.description}</div>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      {selectedLivretSubtype.rate !== null && (
+                        <div style={{ fontSize: 15, fontWeight: 800, color: '#34d399', fontFamily: 'var(--p-mono)', letterSpacing: '-0.03em' }}>{selectedLivretSubtype.rate}%</div>
+                      )}
+                      {selectedLivretSubtype.plafond !== null && (
+                        <div style={{ fontSize: 10, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>
+                          Plafond {selectedLivretSubtype.plafond >= 1000 ? `${(selectedLivretSubtype.plafond / 1000).toFixed(selectedLivretSubtype.plafond % 1000 === 0 ? 0 : 2)} k€` : `${selectedLivretSubtype.plafond} €`}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 10, background: ENVELOPE_TYPE_CONFIG[selectedType].color + '10', border: `1px solid ${ENVELOPE_TYPE_CONFIG[selectedType].color}30`, marginBottom: 20 }}>
+                    {(() => { const Icon = ENVELOPE_TYPE_CONFIG[selectedType].icon; return <Icon style={{ width: 16, height: 16, color: ENVELOPE_TYPE_CONFIG[selectedType].color }} /> })()}
+                    <span style={{ fontSize: 13, fontWeight: 600, color: ENVELOPE_TYPE_CONFIG[selectedType].color }}>{ENVELOPE_TYPE_CONFIG[selectedType].label}</span>
+                  </div>
+                )}
+
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--p-text)', display: 'block', marginBottom: 6 }}>Nom de l'enveloppe</label>
                 <Input
                   autoFocus value={envelopeName} onChange={e => setEnvelopeName(e.target.value)}
-                  placeholder={PLACEHOLDERS[selectedType]}
+                  placeholder={selectedLivretSubtype ? `ex : Mon ${selectedLivretSubtype.label}` : PLACEHOLDERS[selectedType]}
                   onKeyDown={e => { if (e.key === 'Enter' && envelopeName.trim()) handleCreate() }}
-                  style={{ marginBottom: 20 }}
+                  style={{ marginBottom: 16 }}
                 />
+
+                {selectedType === 'LIVRET' && (
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--p-text)', display: 'block', marginBottom: 6 }}>
+                      Solde actuel
+                      <span style={{ fontSize: 11, color: 'var(--p-text-faint)', fontWeight: 400, marginLeft: 6 }}>(facultatif)</span>
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Input
+                        type="number" min={0} value={envelopeBalance} onChange={e => setEnvelopeBalance(e.target.value)}
+                        placeholder="ex : 8 500"
+                        style={{ paddingRight: 36 }}
+                      />
+                      <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--p-text-faint)', pointerEvents: 'none', fontFamily: 'var(--p-mono)' }}>€</span>
+                    </div>
+                    {selectedLivretSubtype?.plafond && envelopeBalance && !isNaN(parseFloat(envelopeBalance)) && (
+                      <div style={{ marginTop: 8 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                          <span style={{ fontSize: 10.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>
+                            {Math.min(100, (parseFloat(envelopeBalance) / selectedLivretSubtype.plafond) * 100).toFixed(0)}% du plafond
+                          </span>
+                          <span style={{ fontSize: 10, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)' }}>
+                            Reste : {Math.max(0, selectedLivretSubtype.plafond - parseFloat(envelopeBalance)).toLocaleString('fr-FR')} €
+                          </span>
+                        </div>
+                        <div style={{ height: 4, borderRadius: 99, background: 'var(--p-line)', overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.min(100, (parseFloat(envelopeBalance) / selectedLivretSubtype.plafond) * 100)}%`, height: '100%', background: 'linear-gradient(90deg, #34d39999, #34d399)', borderRadius: 99, transition: 'width 0.3s' }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div style={{ display: 'flex', gap: 8 }}>
                   <Button variant="outline" onClick={() => setShowModal(false)} style={{ flex: 1 }}>Annuler</Button>
                   <Button onClick={handleCreate} disabled={!envelopeName.trim() || creating} style={{ flex: 2 }}>

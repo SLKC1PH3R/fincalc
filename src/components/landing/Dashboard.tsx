@@ -46,7 +46,7 @@ export function DashboardSection() {
               alt="PatrImo dashboard"
               fill
               sizes="(max-width: 1240px) 100vw, 1240px"
-              style={{ objectFit: 'cover', borderRadius: 10, border: '1px solid var(--line)' }}
+              style={{ objectFit: 'contain', borderRadius: 10, objectPosition: 'top center' }}
             />
           </div>
           <div aria-hidden style={{

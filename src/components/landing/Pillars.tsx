@@ -130,6 +130,34 @@ export function Pillars() {
     { title: 'Éduquer', sub: '04', desc: 'Guides pédagogiques, glossaire, explications contextuelles à chaque simulateur. Comprendre avant d\'agir, progresser à son rythme.', Icon: I.book, viz: <PillarVizEducate /> },
   ];
 
+  const tilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    const r = el.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width
+    const y = (e.clientY - r.top) / r.height
+    const MAX = 9
+    el.style.transform = `perspective(900px) rotateX(${-(y - .5) * MAX * 2}deg) rotateY(${(x - .5) * MAX * 2}deg) scale3d(1.02,1.02,1.02)`
+    el.style.transition = 'transform .08s linear, box-shadow .08s linear, border-color .08s linear'
+    el.style.boxShadow = 'var(--shadow-lg)'
+    el.style.borderColor = 'var(--line-strong)'
+    const shine = el.querySelector<HTMLElement>('.pillar-shine')
+    if (shine) shine.style.background = `radial-gradient(circle at ${(x * 100).toFixed(1)}% ${(y * 100).toFixed(1)}%, rgba(255,255,255,0.07) 0%, transparent 55%)`
+    const glow = el.querySelector<HTMLElement>('.pillar-glow')
+    if (glow) glow.style.opacity = '1'
+  }
+
+  const resetTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    el.style.transform = ''
+    el.style.transition = 'transform .55s cubic-bezier(.4,0,.2,1), box-shadow .55s, border-color .3s'
+    el.style.boxShadow = ''
+    el.style.borderColor = ''
+    const shine = el.querySelector<HTMLElement>('.pillar-shine')
+    if (shine) shine.style.background = 'transparent'
+    const glow = el.querySelector<HTMLElement>('.pillar-glow')
+    if (glow) glow.style.opacity = '0'
+  }
+
   return (
     <section id="pillars" style={{ padding: '120px 0 80px' }}>
       <div className="container">
@@ -140,18 +168,32 @@ export function Pillars() {
         />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14, marginTop: 60 }} className="pillars-grid">
           {pillars.map((p, i) => (
-            <div key={p.title} className="pillar-card reveal" style={{
-              background: 'var(--surface)', border: '1px solid var(--line)',
-              borderRadius: 18, padding: 28, transitionDelay: `${i * 60}ms`,
-              display: 'grid', gridTemplateRows: '1fr auto', minHeight: 380,
-              overflow: 'hidden', position: 'relative',
-            }}>
+            <div
+              key={p.title}
+              className="pillar-card reveal"
+              onMouseMove={tilt}
+              onMouseLeave={resetTilt}
+              style={{
+                background: 'var(--surface)', border: '1px solid var(--line)',
+                borderRadius: 18, padding: 28, transitionDelay: `${i * 60}ms`,
+                display: 'grid', gridTemplateRows: '1fr auto', minHeight: 380,
+                overflow: 'hidden', position: 'relative',
+                willChange: 'transform',
+              }}
+            >
+              {/* Radial glow */}
               <div style={{
                 position: 'absolute', inset: 0, zIndex: 0,
                 background: 'radial-gradient(circle at 90% 10%, var(--gold-tint), transparent 55%)',
-                opacity: 0, transition: 'opacity .4s',
+                opacity: 0, transition: 'opacity .4s', pointerEvents: 'none',
               }} className="pillar-glow" />
-              <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* Shine (follows cursor) */}
+              <div className="pillar-shine" style={{
+                position: 'absolute', inset: 0, zIndex: 2,
+                borderRadius: 18, pointerEvents: 'none',
+                transition: 'background .12s',
+              }} />
+              <div style={{ position: 'relative', zIndex: 3 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
                   <div style={{
                     width: 40, height: 40, borderRadius: 10,
@@ -164,17 +206,16 @@ export function Pillars() {
                 <h3 style={{ fontFamily: 'var(--f-serif)', fontSize: 40, fontWeight: 400, lineHeight: 1, marginBottom: 14, letterSpacing: '-0.03em' }}>{p.title}.</h3>
                 <p style={{ fontSize: 14.5, color: 'var(--muted)', lineHeight: 1.6, maxWidth: 420 }}>{p.desc}</p>
               </div>
-              <div style={{ position: 'relative', zIndex: 1, marginTop: 30 }}>{p.viz}</div>
+              <div style={{ position: 'relative', zIndex: 3, marginTop: 30 }}>{p.viz}</div>
             </div>
           ))}
         </div>
       </div>
 
       <style>{`
-        .pillar-card { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
-        .pillar-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--line-strong); }
-        .pillar-card:hover .pillar-glow { opacity: 1; }
+        .pillar-card { transition: transform .55s cubic-bezier(.4,0,.2,1), box-shadow .55s, border-color .3s; }
         @media (max-width: 760px) { .pillars-grid { grid-template-columns: 1fr !important; } }
+        @media (prefers-reduced-motion: reduce) { .pillar-card { transition: none !important; } }
       `}</style>
     </section>
   );

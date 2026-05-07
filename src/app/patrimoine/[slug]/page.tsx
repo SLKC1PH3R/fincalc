@@ -1,12 +1,26 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Check, ArrowRight, ChevronLeft } from 'lucide-react'
-import { PatrimoLogo } from '@/components/PatrimoLogo'
+import { Nav } from '@/components/landing/Nav'
 import type { Metadata } from 'next'
+
+const BG      = '#F3EEE4'
+const SURFACE = '#FFFFFF'
+const INK     = '#0A0A0A'
+const MUTED   = '#6B6356'
+const LINE    = 'rgba(10,10,10,0.08)'
+const LINE_S  = 'rgba(10,10,10,0.14)'
+const GOLD    = '#B07820'
+const GOLD_D  = '#8B5E18'
+const GOLD_T2 = 'rgba(176,120,32,0.18)'
+const F_SANS  = "'Geist', system-ui, -apple-system, sans-serif"
+const F_SERIF = "'Instrument Serif', Georgia, serif"
+const F_MONO  = "'Geist Mono', ui-monospace, monospace"
 
 type PageContent = {
   title: string
   tag: string
+  em: string
   color: string
   desc: string
   why: string[]
@@ -18,8 +32,7 @@ type PageContent = {
 const PAGE_CONTENT: Record<string, PageContent> = {
   'vue-ensemble': {
     title: "Vue d'ensemble patrimoine",
-    tag: 'Patrimoine',
-    color: '#B07820',
+    tag: 'Patrimoine', em: '🏛', color: '#B07820',
     desc: "Votre bilan patrimonial complet en un coup d'œil : actifs, passifs, répartition par classe d'actifs et évolution dans le temps avec carte monde géographique.",
     why: [
       "Visualiser instantanément votre patrimoine net (actifs − passifs) en temps réel",
@@ -39,8 +52,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'immobilier': {
     title: 'Gestion immobilière',
-    tag: 'Patrimoine',
-    color: '#f472b6',
+    tag: 'Patrimoine', em: '🏠', color: '#f472b6',
     desc: "Centralisez tous vos biens immobiliers : résidence principale, investissements locatifs, SCPI. Suivi de la valeur, du crédit restant et des loyers perçus.",
     why: [
       "Suivre la valeur de marché estimée de chaque bien et l'équité accumulée",
@@ -60,8 +72,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'actions-fonds': {
     title: 'Actions & Fonds',
-    tag: 'Patrimoine',
-    color: '#34d399',
+    tag: 'Patrimoine', em: '📈', color: '#34d399',
     desc: "Suivez toutes vos positions en actions et fonds : PEA, CTO, Assurance Vie, PER. Valorisation en temps réel, allocation par classe d'actifs et performance globale.",
     why: [
       "Consolider PEA, CTO, AV et PER dans une vue unifiée sans les mélanger",
@@ -81,8 +92,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'livrets': {
     title: 'Livrets & Épargne réglementée',
-    tag: 'Patrimoine',
-    color: '#38bdf8',
+    tag: 'Patrimoine', em: '💰', color: '#38bdf8',
     desc: "Centralisez vos livrets réglementés (Livret A, LDDS, LEP, CEL, PEL) avec suivi des plafonds, des taux en vigueur et des intérêts générés.",
     why: [
       "Savoir en un clin d'œil si vos livrets sont à leurs plafonds légaux",
@@ -102,8 +112,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'autres-actifs': {
     title: 'Autres actifs & Crypto',
-    tag: 'Patrimoine',
-    color: '#fb923c',
+    tag: 'Patrimoine', em: '₿', color: '#fb923c',
     desc: "Tracez vos crypto-monnaies, métaux précieux, private equity et actifs alternatifs. Prix live via CoinGecko pour les crypto, valorisation manuelle pour les autres.",
     why: [
       "Intégrer la crypto dans votre bilan patrimonial global avec prix live",
@@ -123,8 +132,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'comptes-bancaires': {
     title: 'Comptes bancaires',
-    tag: 'Patrimoine',
-    color: '#a78bfa',
+    tag: 'Patrimoine', em: '🏦', color: '#a78bfa',
     desc: "Centralisez les soldes de vos comptes courants et d'épargne bancaires. Suivi de la liquidité disponible et répartition de votre trésorerie.",
     why: [
       "Avoir une vision claire de votre liquidité totale disponible à tout moment",
@@ -144,8 +152,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'emprunts': {
     title: "Vue consolidée des emprunts",
-    tag: 'Patrimoine',
-    color: '#fb7185',
+    tag: 'Patrimoine', em: '📋', color: '#fb7185',
     desc: "Centralisez tous vos crédits en cours : immobilier, consommation, auto. Capital restant dû global, mensualités totales et date de fin de chaque crédit.",
     why: [
       "Connaître votre dette totale consolidée en un seul endroit",
@@ -165,8 +172,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'detail-enveloppe': {
     title: "Détail d'une enveloppe",
-    tag: 'Patrimoine',
-    color: '#94a3b8',
+    tag: 'Patrimoine', em: '🗂', color: '#94a3b8',
     desc: "Page individuelle pour chaque enveloppe patrimoniale : positions détaillées, historique des mouvements, performance et métadonnées personnalisées.",
     why: [
       "Zoomer sur une enveloppe spécifique (ex : PEA) sans bruit des autres actifs",
@@ -184,31 +190,9 @@ const PAGE_CONTENT: Record<string, PageContent> = {
     ],
     href: '/dashboard/patrimoine',
   },
-  'portefeuille': {
-    title: 'Mon Portefeuille — positions live',
-    tag: 'Suivi & Trading',
-    color: '#38bdf8',
-    desc: "Suivi en temps réel de vos positions boursières et crypto avec prix live via Finnhub et CoinGecko. P&L latent, performance par position et vue d'ensemble du portefeuille.",
-    why: [
-      "Voir la valorisation de chaque position mise à jour en temps réel",
-      "Calculer le P&L latent et le rendement de chaque ligne",
-      "Analyser la diversification de votre portefeuille par secteur et géographie",
-    ],
-    steps: [
-      "Ajoutez vos positions avec le ticker, la quantité et le prix de revient moyen",
-      "Les prix se mettent à jour automatiquement via Finnhub (actions) et CoinGecko (crypto)",
-      "Consultez le P&L latent, le rendement total et la répartition de votre portefeuille",
-    ],
-    cases: [
-      "Trader actif suivant un portefeuille de 15 actions avec valorisation live",
-      "Investisseur long terme suivant son ETF World + quelques positions individuelles",
-    ],
-    href: '/dashboard/portfolio',
-  },
   'mon-portefeuille': {
     title: 'Mon Portefeuille — positions live',
-    tag: 'Suivi & Trading',
-    color: '#38bdf8',
+    tag: 'Suivi & Trading', em: '📊', color: '#38bdf8',
     desc: "Suivi en temps réel de vos positions boursières et crypto avec prix live via Finnhub et CoinGecko. P&L latent, performance par position et vue d'ensemble du portefeuille.",
     why: [
       "Voir la valorisation de chaque position mise à jour en temps réel",
@@ -228,8 +212,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'reequilibrage': {
     title: 'Rééquilibrage de portefeuille',
-    tag: 'Suivi & Trading',
-    color: '#34d399',
+    tag: 'Suivi & Trading', em: '🔄', color: '#34d399',
     desc: "Calculez les arbitrages nécessaires pour revenir à votre allocation cible. Identifiez les sur-pondérations et sous-pondérations par rapport à votre stratégie.",
     why: [
       "Maintenir la discipline de votre allocation cible sans calcul manuel",
@@ -247,31 +230,9 @@ const PAGE_CONTENT: Record<string, PageContent> = {
     ],
     href: '/dashboard/rebalancing',
   },
-  'objectifs': {
-    title: 'Mes Objectifs financiers',
-    tag: 'Suivi & Trading',
-    color: '#fb923c',
-    desc: "Créez et suivez vos objectifs financiers personnalisés avec barre de progression, date cible et épargne mensuelle nécessaire pour les atteindre.",
-    why: [
-      "Donner un sens concret à votre épargne avec des objectifs chiffrés",
-      "Calculer automatiquement l'effort d'épargne mensuel pour chaque objectif",
-      "Rester motivé grâce au suivi visuel de la progression vers chaque objectif",
-    ],
-    steps: [
-      "Créez un objectif avec un nom, un montant cible et une date souhaitée",
-      "Associez un compte ou une enveloppe à cet objectif",
-      "Suivez la progression et ajustez votre épargne si nécessaire",
-    ],
-    cases: [
-      "Couple épargnant pour un apport immobilier de 40 000€ dans 3 ans",
-      "Parent constituant un capital études de 20 000€ pour son enfant en 10 ans",
-    ],
-    href: '/dashboard/goals',
-  },
   'mes-objectifs': {
     title: 'Mes Objectifs financiers',
-    tag: 'Suivi & Trading',
-    color: '#fb923c',
+    tag: 'Suivi & Trading', em: '⭐', color: '#fb923c',
     desc: "Créez et suivez vos objectifs financiers personnalisés avec barre de progression, date cible et épargne mensuelle nécessaire pour les atteindre.",
     why: [
       "Donner un sens concret à votre épargne avec des objectifs chiffrés",
@@ -291,8 +252,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'carnet-ordres': {
     title: "Carnet d'ordres & Journal",
-    tag: 'Suivi & Trading',
-    color: '#c084fc',
+    tag: 'Suivi & Trading', em: '📖', color: '#c084fc',
     desc: "Journal complet de vos opérations BUY, SELL et DIVIDEND avec calcul du P&L réalisé, prix de revient moyen et historique des transactions.",
     why: [
       "Tenir un historique précis de toutes vos opérations boursières",
@@ -312,8 +272,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'rapport-fiscal': {
     title: 'Rapport Fiscal',
-    tag: 'Analyse & Fiscal',
-    color: '#fbbf24',
+    tag: 'Analyse & Fiscal', em: '🧾', color: '#fbbf24',
     desc: "Synthèse fiscale de vos plus-values, durées de détention et optimisations possibles par enveloppe. Aide à la préparation de votre déclaration fiscale.",
     why: [
       "Anticiper votre imposition sur les plus-values avant la déclaration",
@@ -333,8 +292,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'score-patrimonial': {
     title: 'Score Patrimonial',
-    tag: 'Analyse & Fiscal',
-    color: '#B07820',
+    tag: 'Analyse & Fiscal', em: '🏆', color: '#B07820',
     desc: "Notation 0-100 de votre santé financière sur 6 piliers : épargne, dettes, diversification, optimisation fiscale, prévoyance et progression vers le FIRE.",
     why: [
       "Avoir une vision synthétique et objective de votre santé financière globale",
@@ -354,8 +312,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
   },
   'gestion-personnelle': {
     title: 'Gestion personnelle',
-    tag: 'Analyse & Fiscal',
-    color: '#818cf8',
+    tag: 'Analyse & Fiscal', em: '🌐', color: '#818cf8',
     desc: "Vue synthétique de votre situation financière personnelle : taux d'épargne mensuel, budget, objectifs FIRE et projections patrimoniales à long terme.",
     why: [
       "Croiser patrimoine, budget et objectifs FIRE dans une vue unifiée",
@@ -401,118 +358,176 @@ export default async function PatrimoineSlugPage({ params }: Props) {
   const page = PAGE_CONTENT[slug]
   if (!page) redirect('/patrimoine')
 
+  const { title, tag, em, color, desc, why, steps, cases, href } = page
+
   return (
-    <div style={{ minHeight: '100vh', background: '#050505', color: '#fff', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="patrimo-landing" style={{ minHeight: '100vh', background: BG, color: INK, fontFamily: F_SANS }}>
 
-      {/* Header */}
-      <header style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '16px 0', position: 'sticky', top: 0, background: 'rgba(5,5,5,0.92)', backdropFilter: 'blur(16px)', zIndex: 50 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-            <PatrimoLogo width={130} uid="patrimo-slug" />
-          </Link>
-          <Link href="/login" style={{ textDecoration: 'none', padding: '8px 18px', borderRadius: 20, background: 'rgba(176,120,32,0.10)', border: '1px solid rgba(176,120,32,0.25)', color: '#B07820', fontSize: 13, fontWeight: 600 }}>
-            Créer un compte gratuit →
-          </Link>
-        </div>
-      </header>
+      <Nav />
 
-      <main style={{ maxWidth: 860, margin: '0 auto', padding: '48px 24px 100px' }}>
+      <main style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px 100px' }}>
 
         {/* Back */}
-        <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', marginBottom: 40, transition: 'color 0.15s' }}>
-          <ChevronLeft style={{ width: 14, height: 14 }} />
-          Pages de gestion
-        </Link>
-
-        {/* Hero */}
-        <div style={{ marginBottom: 64 }}>
-          <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 20, background: page.color + '18', border: `1px solid ${page.color}35`, fontSize: 11, color: page.color, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 20 }}>
-            {page.tag}
-          </div>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 900, margin: '0 0 20px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
-            {page.title}
-          </h1>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, margin: '0 0 36px', maxWidth: 680 }}>
-            {page.desc}
-          </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 24, background: 'linear-gradient(135deg, #8B5E18, #B07820)', color: '#000', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
-              Accéder à cette page <ArrowRight style={{ width: 16, height: 16 }} />
-            </Link>
-            <Link href="/patrimoine" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 26px', borderRadius: 24, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, textDecoration: 'none' }}>
-              Toutes les pages de gestion
-            </Link>
-          </div>
+        <div style={{ paddingTop: 40, marginBottom: 48 }}>
+          <Link href="/patrimoine" className="patr-back-link">
+            <ChevronLeft style={{ width: 14, height: 14 }} />
+            Outils patrimoniaux
+          </Link>
         </div>
 
-        {/* Pourquoi cette page ? */}
-        <section style={{ marginBottom: 64 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 28px', letterSpacing: '-0.02em' }}>
+        {/* Hero */}
+        <section style={{ marginBottom: 80 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+            <span style={{ width: 6, height: 6, borderRadius: 99, background: color, display: 'inline-block' }} />
+            <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color, textTransform: 'uppercase', letterSpacing: '0.16em' }}>{tag}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, marginBottom: 22 }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 14, flexShrink: 0, marginTop: 4,
+              background: `${color}12`, border: `1px solid ${color}25`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
+            }}>{em}</div>
+            <h1 style={{ fontFamily: F_SERIF, fontSize: 'clamp(2rem, 4.5vw, 3rem)', fontWeight: 400, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1, color: INK }}>
+              {title}
+            </h1>
+          </div>
+
+          <p style={{ fontSize: 18, color: MUTED, maxWidth: 580, margin: '0 0 36px', lineHeight: 1.65 }}>
+            {desc}
+          </p>
+
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <Link href={href} className="patr-btn-primary">
+              Accéder à cette page
+              <ArrowRight style={{ width: 15, height: 15 }} />
+            </Link>
+            <Link href="/patrimoine" className="patr-btn-ghost">
+              Tous les outils patrimoniaux
+            </Link>
+          </div>
+        </section>
+
+        {/* Pourquoi cette page */}
+        <section style={{ marginBottom: 80 }}>
+          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 28px', letterSpacing: '-0.02em', color: INK }}>
             Pourquoi cette page ?
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-            {page.why.map((reason, i) => (
-              <div key={i} style={{ background: page.color + '0a', border: `1px solid ${page.color}20`, borderRadius: 16, padding: '20px 22px', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: page.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                  <Check style={{ width: 14, height: 14, color: page.color }} />
+            {why.map((reason, i) => (
+              <div key={i} style={{
+                padding: '22px 20px', borderRadius: 14,
+                background: SURFACE, border: `1px solid ${LINE_S}`,
+                boxShadow: `0 2px 8px ${LINE}`,
+              }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: `${color}14`, border: `1px solid ${color}25`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
+                }}>
+                  <Check style={{ width: 14, height: 14, color }} />
                 </div>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>{reason}</p>
+                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: MUTED, fontWeight: 500 }}>
+                  {reason}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Comment ça marche */}
-        <section style={{ marginBottom: 64 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 36px', letterSpacing: '-0.02em' }}>
+        <section style={{ marginBottom: 80 }}>
+          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 36px', letterSpacing: '-0.02em', color: INK }}>
             Comment ça marche ?
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {page.steps.map((step, i) => (
-              <div key={i} style={{ display: 'flex', gap: 24, alignItems: 'flex-start', paddingBottom: i < page.steps.length - 1 ? 32 : 0, position: 'relative' }}>
-                {/* Vertical line */}
-                {i < page.steps.length - 1 && (
-                  <div style={{ position: 'absolute', left: 19, top: 48, width: 2, height: 'calc(100% - 16px)', background: `linear-gradient(to bottom, ${page.color}40, transparent)` }} />
-                )}
-                <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 12, background: page.color + '18', border: `1px solid ${page.color}35`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 15, fontWeight: 800, color: page.color }}>0{i + 1}</span>
+            {steps.map((step, i) => (
+              <div key={i} style={{ display: 'flex', gap: 24, alignItems: 'flex-start', paddingBottom: 32, borderBottom: i < steps.length - 1 ? `1px solid ${LINE}` : 'none', marginBottom: i < steps.length - 1 ? 32 : 0 }}>
+                <div style={{
+                  flexShrink: 0, fontFamily: F_SERIF,
+                  fontSize: 48, fontWeight: 400, lineHeight: 1,
+                  color, letterSpacing: '-0.04em', opacity: 0.7, minWidth: 52,
+                }}>
+                  {String(i + 1).padStart(2, '0')}
                 </div>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, margin: '10px 0 0', paddingBottom: 8 }}>{step}</p>
+                <div style={{ paddingTop: 8, flex: 1 }}>
+                  <p style={{ margin: 0, fontSize: 16, color: MUTED, lineHeight: 1.65, fontWeight: 400 }}>
+                    {step}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
         {/* Cas d'usage */}
-        <section style={{ marginBottom: 64 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 24px', letterSpacing: '-0.02em' }}>
+        <section style={{ marginBottom: 80 }}>
+          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 24px', letterSpacing: '-0.02em', color: INK }}>
             Cas d&apos;usage
           </h2>
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '28px 32px' }}>
-            {page.cases.map((c, i) => (
-              <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: i < page.cases.length - 1 ? 18 : 0 }}>
-                <span style={{ fontSize: 18, color: page.color, flexShrink: 0, lineHeight: 1.4 }}>•</span>
-                <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.65)', lineHeight: 1.65, margin: 0 }}>{c}</p>
-              </div>
-            ))}
+          <div style={{ padding: '28px 28px', borderRadius: 16, background: SURFACE, border: `1px solid ${LINE_S}` }}>
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {cases.map((c, i) => (
+                <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <span style={{ color, fontSize: 18, lineHeight: 1.4, flexShrink: 0, fontWeight: 700 }}>→</span>
+                  <span style={{ fontSize: 15, color: MUTED, lineHeight: 1.65 }}>{c}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
         {/* CTA final */}
-        <section style={{ textAlign: 'center', padding: '48px 32px', borderRadius: 24, background: 'rgba(176,120,32,0.05)', border: '1px solid rgba(176,120,32,0.15)' }}>
-          <h3 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 12px', letterSpacing: '-0.03em' }}>
-            Accédez à cette page gratuitement
-          </h3>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', margin: '0 0 32px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
-            Créez un compte PatrImo pour gérer votre patrimoine, suivre vos actifs et accéder aux 18 simulateurs.
-          </p>
-          <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '13px 30px', borderRadius: 24, background: 'linear-gradient(135deg, #8B5E18, #B07820)', color: '#000', fontWeight: 700, fontSize: 15 }}>
-            Commencer gratuitement
-            <ArrowRight style={{ width: 16, height: 16 }} />
-          </Link>
+        <section style={{
+          textAlign: 'center', padding: '56px 32px', borderRadius: 24,
+          background: SURFACE, border: `1px solid ${LINE_S}`,
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ position: 'absolute', top: '-40%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '200%', background: `radial-gradient(ellipse, ${GOLD_T2} 0%, transparent 60%)`, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
+              <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Compte gratuit</span>
+            </div>
+            <h3 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 400, margin: '0 0 12px', letterSpacing: '-0.02em', color: INK }}>
+              Accédez à cette page gratuitement
+            </h3>
+            <p style={{ fontSize: 15, color: MUTED, margin: '0 0 28px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65, fontFamily: F_SANS }}>
+              Créez un compte PatrImo pour gérer votre patrimoine, suivre vos actifs et accéder aux 18 simulateurs.
+            </p>
+            <Link href="/login" className="patr-btn-primary">
+              Commencer gratuitement
+              <ArrowRight style={{ width: 15, height: 15 }} />
+            </Link>
+          </div>
         </section>
 
       </main>
+
+      <style>{`
+        .patr-btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          text-decoration: none; padding: 13px 26px; border-radius: 999px;
+          background: #8B5E18; color: #FFFFFF !important;
+          font-weight: 600; font-size: 14px; font-family: 'Geist', system-ui;
+          transition: transform .15s, box-shadow .15s;
+        }
+        .patr-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,94,24,0.35); background: #B07820; }
+        .patr-btn-ghost {
+          display: inline-flex; align-items: center; gap: 6px;
+          text-decoration: none; padding: 13px 26px; border-radius: 999px;
+          background: #FFFFFF; border: 1px solid rgba(10,10,10,0.14);
+          color: #6B6356; font-weight: 500; font-size: 14px; font-family: 'Geist', system-ui;
+          transition: background .15s;
+        }
+        .patr-btn-ghost:hover { background: #FBF7EF; }
+        .patr-back-link {
+          text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+          color: #9A907F; font-size: 13px; font-weight: 500;
+          font-family: 'Geist Mono', monospace; transition: color 0.15s;
+        }
+        .patr-back-link:hover { color: #0A0A0A; }
+      `}</style>
     </div>
   )
 }

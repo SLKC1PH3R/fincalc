@@ -61,16 +61,16 @@ const SIM_GROUPS = [
 ];
 
 const PATR_LEFT = [
-  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/dashboard/patrimoine' },
-  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/dashboard/patrimoine/immobilier' },
-  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/dashboard/patrimoine' },
-  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/dashboard/patrimoine/livrets' },
+  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/patrimoine/vue-ensemble' },
+  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/patrimoine/immobilier' },
+  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/patrimoine/actions-fonds' },
+  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/patrimoine/livrets' },
 ];
 const PATR_RIGHT = [
-  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/dashboard/patrimoine/autres' },
-  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/dashboard/patrimoine/comptes' },
-  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/dashboard/patrimoine/emprunts' },
-  { ic: '🏆', n: 'Score patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/dashboard/score' },
+  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/patrimoine/autres-actifs' },
+  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/patrimoine/comptes-bancaires' },
+  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/patrimoine/emprunts' },
+  { ic: '🏆', n: 'Score patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/patrimoine/score-patrimonial' },
 ];
 
 /* ── Dropdown wrapper (desktop only) ── */
@@ -187,12 +187,6 @@ function PatrimoineMenu() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <span style={{
-                    width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-                    background: 'var(--surface-2)', border: '1px solid var(--line)',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14,
-                  }}>{it.ic}</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.3 }}>{it.n}</div>
                     <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1, fontFamily: "'Geist Mono', monospace" }}>{it.sub}</div>
@@ -203,7 +197,7 @@ function PatrimoineMenu() {
           ))}
         </div>
         <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-          <Link href="/dashboard/patrimoine" style={{
+          <Link href="/patrimoine" style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontSize: 12.5, fontWeight: 600, color: 'var(--gold-deep)',
             fontFamily: "'Geist Mono', monospace", letterSpacing: '0.02em',
@@ -213,7 +207,7 @@ function PatrimoineMenu() {
             onMouseEnter={e => (e.currentTarget.style.gap = '10px')}
             onMouseLeave={e => (e.currentTarget.style.gap = '6px')}
           >
-            Accéder à mon patrimoine <I.arrow size={13} />
+            Voir les outils patrimoniaux <I.arrow size={13} />
           </Link>
         </div>
       </div>

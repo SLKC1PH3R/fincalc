@@ -448,7 +448,7 @@ export function Nav() {
         borderBottom: scrolled ? '1px solid var(--line)' : '1px solid transparent',
         transition: 'all .3s ease',
       }}>
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
           <Logo />
 
           {/* Desktop center pill */}
@@ -468,7 +468,14 @@ export function Nav() {
           {/* Desktop right CTAs */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }} className="nav-cta">
             <ThemeToggle />
-            <Link href="/login" style={{ fontSize: 13.5, color: 'var(--ink-2)', padding: '8px 14px', borderRadius: 999 }}>
+            <Link href="/login" style={{
+              fontSize: 13.5, color: 'var(--muted)',
+              padding: '8px 14px', borderRadius: 999,
+              transition: 'color .15s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+            >
               Se connecter
             </Link>
             <Link href="/login" className="btn-primary">

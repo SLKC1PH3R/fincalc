@@ -39,30 +39,40 @@ export function Simulators() {
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1,
-          border: '1px solid var(--line)', borderRadius: 16, overflow: 'hidden',
-          background: 'var(--line)',
+          display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8,
         }} className="sims-grid">
           {sims.map(s => (
-            <Link key={s.n} href={s.href} className="sim-cell" style={{
+            <Link key={s.n} href={s.href} className="sim-card" style={{
               background: 'var(--surface)',
-              padding: '18px 16px', minHeight: 108,
+              border: '1px solid var(--line)',
+              borderRadius: 12,
+              padding: '16px 14px',
+              minHeight: 108,
               textDecoration: 'none',
-              transition: 'background .2s', position: 'relative',
-              display: 'block',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              position: 'relative',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ color: 'var(--gold-deep)' }}><s.Ic size={16} /></div>
                 <span style={{ fontFamily: 'var(--f-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{s.cat}</span>
               </div>
-              <div style={{ fontSize: 14, color: 'var(--ink)', fontWeight: 500, marginBottom: 3 }}>{s.n}</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--f-mono)' }}>{s.d}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, color: 'var(--ink)', fontWeight: 500, marginBottom: 3, lineHeight: 1.3 }}>{s.n}</div>
+                <div style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--f-mono)' }}>{s.d}</div>
+              </div>
+              <div className="sim-arrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', opacity: 0, transition: 'opacity .2s' }}>
+                <I.arrow size={12} style={{ color: 'var(--gold-deep)' }} />
+              </div>
             </Link>
           ))}
         </div>
       </div>
       <style>{`
-        .sim-cell:hover { background: var(--surface-2) !important; }
+        .sim-card { cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .2s; }
+        .sim-card:hover { border-color: var(--gold-deep) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .sim-card:hover .sim-arrow { opacity: 1 !important; }
         @media (max-width: 1020px) { .sims-grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (max-width: 600px)  { .sims-grid { grid-template-columns: repeat(2, 1fr) !important; } }
       `}</style>

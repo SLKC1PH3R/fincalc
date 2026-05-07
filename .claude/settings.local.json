@@ -116,7 +116,9 @@
       "PowerShell(cd \"c:/Users/jerem/Downloads/fincalc\" && git worktree list --porcelain | Select-String \"^worktree \" | Select-Object -Skip 1 | ForEach-Object { $path = \\($_ -replace \"^worktree \", \"\"\\).Trim\\(\\); git worktree remove -f -f \"$path\" 2>&1 } && git worktree list)",
       "PowerShell(cd \"c:/Users/jerem/Downloads/fincalc\" && git branch | Select-String \"worktree-agent\" | ForEach-Object { $b = $_.ToString\\(\\).Trim\\(\\); git branch -D \"$b\" })",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\tools\" -Recurse -File)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(python scripts/search.py \"fintech patrimonial landing page finance france elegant ivory\" --design-system -f markdown)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"fintech patrimonial landing page finance france elegant ivory\" --design-system -f markdown)"
     ]
   }
 }

@@ -7,15 +7,15 @@ import { SectionHead } from './Pillars';
 export function Compare() {
   const rows: Array<[string, boolean, boolean, boolean, boolean]> = [
     ['Patrimoine consolidé multi-enveloppes', true, true, false, false],
-    ['18 simulateurs fiscaux FR 2026', true, false, false, true],
+    ['18 simulateurs fiscaux FR 2026', true, false, false, false],
     ['Optimisation ETF (TER + alternatives)', true, false, false, false],
     ['Carte monde · exposition géographique', true, true, false, false],
     ['Score patrimonial · 6 piliers', true, false, false, false],
-    ['Aucune connexion bancaire requise', true, false, false, true],
-    ['100 % gratuit · sans publicité', true, false, true, true],
+    ['Aucune connexion bancaire requise', true, false, true, false],
+    ['100 % gratuit · sans publicité', true, false, false, false],
     ['Open-source · self-hostable', true, false, false, false],
   ];
-  const cols = ['PatrImo', 'Finary', 'Yomoni', 'Excel'];
+  const cols = ['PatrImo', 'Finary', 'Linxea', 'Moneythor'];
   return (
     <section id="compare" style={{ padding: '100px 0', background: 'var(--surface)', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
       <div className="container">

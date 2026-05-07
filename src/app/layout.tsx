@@ -7,7 +7,7 @@ import { SplashScreen } from '@/components/SplashScreen'
 export const metadata: Metadata = {
   metadataBase: new URL('https://finance.digitalstack.cloud'),
   title: 'PatrImo — Outils de Finance Personnelle',
-  description: 'Le seul outil 100 % gratuit qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.',
+  description: 'Simulateurs financiers gratuits pour investisseurs français — FI/RE, prêt immobilier, impôts 2026, score patrimonial. Sans données bancaires.',
   icons: {
     icon: '/icon.svg',
     shortcut: '/icon.svg',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'PatrImo — Outils de Finance Personnelle',
-    description: 'Le seul outil 100 % gratuit qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine — sans jamais toucher à vos comptes bancaires.',
+    description: 'Simulateurs financiers gratuits pour investisseurs français — FI/RE, prêt immobilier, impôts 2026, score patrimonial. Sans données bancaires.',
     url: 'https://finance.digitalstack.cloud',
     siteName: 'PatrImo',
     images: [{ url: '/1.png', width: 1280, height: 800, alt: 'PatrImo — Dashboard patrimoine' }],
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'PatrImo — Outils de Finance Personnelle',
-    description: 'Le seul outil 100 % gratuit qui calcule vos impôts, simule votre FIRE et pilote votre patrimoine.',
+    description: 'Simulateurs financiers gratuits pour investisseurs français — FI/RE, prêt immobilier, impôts 2026, score patrimonial. Sans données bancaires.',
     images: ['/1.png'],
   },
 }

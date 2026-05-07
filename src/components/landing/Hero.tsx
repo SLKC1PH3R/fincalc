@@ -39,15 +39,16 @@ export function Hero() {
             </div>
             <h1 style={{
               fontFamily: 'var(--f-serif)',
-              fontSize: 'clamp(44px, 5.8vw, 84px)',
+              fontSize: 'clamp(40px, 5.2vw, 76px)',
               fontWeight: 400,
-              lineHeight: 0.98,
+              lineHeight: 1.02,
               letterSpacing: '-0.035em',
               marginBottom: 28,
               color: 'var(--ink)',
             }}>
-              Suivre. Optimiser.<br />
-              <span style={{ fontStyle: 'italic', color: 'var(--gold-deep)' }}>Simuler.</span>
+              Le patrimoine de<br />
+              l'investisseur français,<br />
+              <span style={{ fontStyle: 'italic', color: 'var(--gold-deep)' }}>enfin piloté.</span>
             </h1>
             <p style={{
               fontSize: 18, lineHeight: 1.55,
@@ -56,22 +57,30 @@ export function Hero() {
               L'application n°1 de l'investisseur français. Pilotez l'intégralité de votre patrimoine,
               simulez chaque décision, optimisez vos frais — depuis une seule plateforme.
             </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 34 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
               <Link href="/login" className="btn-primary" style={{ padding: '14px 22px', fontSize: 15 }}>
-                Commencer gratuitement <I.arrow size={15} />
+                Créer mon espace gratuit <I.arrow size={15} />
               </Link>
               <a href="/#dashboard" className="btn-ghost" style={{ padding: '14px 22px', fontSize: 15 }}>
                 Voir le produit
               </a>
             </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 18px', marginBottom: 28, fontFamily: 'var(--f-mono)', fontSize: 11.5, color: 'var(--muted)' }}>
+              {['Sans carte bancaire', 'Sans engagement', 'Données chiffrées'].map(t => (
+                <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <I.check size={12} stroke={2.5} style={{ color: 'var(--gold)' }} />
+                  {t}
+                </span>
+              ))}
+            </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px 22px' }}>
               {['Aucune donnée bancaire', 'RGPD · UE', 'Chiffré de bout en bout', 'Open-source'].map(t => (
                 <div key={t} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 7,
-                  fontSize: 12.5, color: 'var(--muted)',
+                  fontSize: 12, color: 'var(--muted)',
                   fontFamily: 'var(--f-mono)',
                 }}>
-                  <I.check size={13} stroke={2} style={{ color: 'var(--gold)' }} />
+                  <I.check size={12} stroke={2} style={{ color: 'var(--gold)' }} />
                   {t}
                 </div>
               ))}

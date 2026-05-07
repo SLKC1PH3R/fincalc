@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 export function Logos() {
-  const items = ['Finnhub', 'CoinGecko', 'Banque de France', 'OAT 10Y', 'BCE', 'CAC 40', 'MSCI World', 'Euronext', 'AMF', 'Bpifrance'];
+  const items = ['Finnhub', 'CoinGecko', 'BCE', 'OAT 10A', 'AMF', 'Bpifrance', 'Euronext', 'MSCI World'];
   return (
     <section style={{ padding: '32px 0', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
       <div className="container" style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'nowrap' }}>
@@ -19,7 +19,7 @@ export function Logos() {
         }}>
           <div style={{
             display: 'flex', gap: 50, width: 'max-content',
-            animation: 'patrimo-marquee 30s linear infinite',
+            animation: 'patrimo-marquee 48s linear infinite',
           }}>
             {[...items, ...items].map((l, i) => (
               <span key={i} style={{

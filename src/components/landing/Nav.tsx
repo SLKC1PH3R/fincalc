@@ -143,7 +143,6 @@ function SimulatorsMenu() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <span style={{ fontSize: 14, lineHeight: 1.3, flexShrink: 0 }}>{it.em}</span>
                   <span style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.3 }}>{it.n}</span>
                     <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: "'Geist Mono', monospace", marginTop: 1 }}>{it.sub}</span>

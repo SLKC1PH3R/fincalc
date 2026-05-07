@@ -64,6 +64,16 @@ export function Footer() {
                 }}>{s}</a>
               ))}
             </div>
+            <a href="mailto:contact@digitalstack.cloud" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16,
+              fontFamily: 'var(--f-mono)', fontSize: 11.5, color: 'var(--muted)',
+              textDecoration: 'none',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+            >
+              contact@digitalstack.cloud
+            </a>
           </div>
           {cols.map(col => (
             <div key={col.t}>

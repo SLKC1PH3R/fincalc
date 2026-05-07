@@ -41,25 +41,32 @@
   --maxw: 1240px;
 }
 
-/* Optional dark palette — opt-in via [data-palette="dark"] on <html> or <body> */
+/* Dark palette — opt-in via [data-palette="dark"] on .patrimo-landing */
 [data-palette="dark"] {
-  --bg: #0B0B0C;
-  --surface: #141416;
-  --surface-2: #1A1A1D;
-  --surface-3: #24242A;
-  --ink: #F5F1EA;
-  --ink-2: #D9D3C7;
-  --muted: #9A907F;
-  --muted-2: #6B6356;
-  --line: rgba(255,255,255,0.07);
-  --line-strong: rgba(255,255,255,0.14);
-  --gold: #E1B572;
-  --gold-deep: #B07820;
-  --gold-soft: #F1D6A0;
-  --gold-tint: rgba(225,181,114,0.10);
+  --bg:          #0A0A0A;
+  --surface:     #121214;
+  --surface-2:   #1C1C1F;
+  --surface-3:   #272729;
+  --ink:         #F3EEE4;
+  --ink-2:       #D9D3C7;
+  --muted:       #9A907F;
+  --muted-2:     #6B6356;
+  --line:        rgba(255,255,255,0.07);
+  --line-strong: rgba(255,255,255,0.13);
+
+  --gold:        #E1B572;
+  --gold-deep:   #C4922A;
+  --gold-soft:   #F1D6A0;
+  --gold-tint:   rgba(225,181,114,0.10);
   --gold-tint-2: rgba(225,181,114,0.22);
-  --up: #4FB97E;
+
+  --up:   #4FB97E;
   --down: #E87676;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.40);
+  --shadow-lg: 0 24px 60px -20px rgba(0,0,0,0.55), 0 6px 20px -10px rgba(0,0,0,0.30);
+  --shadow-xl: 0 40px 90px -30px rgba(0,0,0,0.60);
 }
 
 /* Landing body baseline — scoped to .patrimo-landing so we don't clobber your app */

@@ -13,7 +13,12 @@ export function Score() {
     { n: 'Horizon', v: 80, d: 'Allocation cohérente' },
   ];
   return (
-    <section style={{ padding: '100px 0' }}>
+    <section style={{
+      padding: '100px 0',
+      background: 'var(--surface)',
+      borderTop: '1px solid var(--line)',
+      borderBottom: '1px solid var(--line)',
+    }}>
       <div className="container">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56, alignItems: 'center' }} className="score-grid">
           <div style={{

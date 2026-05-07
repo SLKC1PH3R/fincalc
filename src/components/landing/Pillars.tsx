@@ -109,7 +109,10 @@ export function Pillars() {
   };
 
   return (
-    <section id="pillars" style={{ padding: '120px 0 80px' }}>
+    <section id="pillars" style={{
+      padding: '120px 0 80px',
+      background: 'radial-gradient(ellipse 80% 50% at 50% 0%, var(--surface-2) 0%, var(--bg) 65%)',
+    }}>
       <div className="container">
         <SectionHead
           eyebrow="Plateforme"

@@ -15,7 +15,10 @@ export function Testimonials() {
     { q: "Aucune donnée bancaire partagée. Mon comptable est rassuré, moi aussi.", n: 'Anaïs T.', r: "Chef d'entreprise · Toulouse", k: 'PEA · PER · Immo' },
   ];
   return (
-    <section style={{ padding: '100px 0' }}>
+    <section style={{
+      padding: '100px 0',
+      background: 'radial-gradient(ellipse 70% 50% at 50% 100%, var(--surface-2) 0%, var(--bg) 70%)',
+    }}>
       <div className="container">
         <SectionHead
           eyebrow="Témoignages"

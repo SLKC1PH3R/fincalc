@@ -15,7 +15,11 @@ export function Faq() {
     { q: 'Puis-je auto-héberger PatrImo ?', a: 'Oui. Le code est disponible sur GitHub. Stack : Next.js, PostgreSQL, Prisma. Documentation Docker fournie.' },
   ];
   return (
-    <section id="faq" style={{ padding: '100px 0' }}>
+    <section id="faq" style={{
+      padding: '100px 0',
+      background: 'var(--surface)',
+      borderTop: '1px solid var(--line)',
+    }}>
       <div className="container" style={{ maxWidth: 880 }}>
         <SectionHead
           eyebrow="Questions"

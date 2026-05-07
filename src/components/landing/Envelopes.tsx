@@ -16,7 +16,7 @@ export function Envelopes() {
     { n: 'Liquidités', d: 'Mois de dépenses', v: '12 600 €', p: '= 3,2 mois', up: null as boolean | null, Ic: I.wallet, color: '#5A5F70' },
   ];
   return (
-    <section id="envelopes" style={{ padding: '100px 0' }}>
+    <section id="envelopes" style={{ padding: '100px 0', background: 'var(--bg)' }}>
       <div className="container">
         <SectionHead
           eyebrow="8 enveloppes"

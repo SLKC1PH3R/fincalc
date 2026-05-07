@@ -6,14 +6,14 @@ import { I } from './icons';
 import { SectionHead } from './Pillars';
 
 const ENV_LIST = [
-  { n: 'PEA',           d: 'Plafond 150 k€',        v: '148 200 €', p: '+12.4%', up: true  as boolean|null, Ic: I.chart,  color: '#C4922A', img: '/1.png'   },
-  { n: 'CTO',           d: 'Libre · Positions',      v: '62 400 €',  p: '+9.1%',  up: true  as boolean|null, Ic: I.coin,   color: '#4F6A4A', img: '/2.png'   },
-  { n: 'Assurance Vie', d: 'Ancienneté 8A',          v: '84 500 €',  p: '+4.7%',  up: true  as boolean|null, Ic: I.shield, color: '#6B5E7E', img: '/3.png'   },
-  { n: 'PER',           d: 'Économie TMI',           v: '22 000 €',  p: '+5.2%',  up: true  as boolean|null, Ic: I.tree,   color: '#4B6878', img: '/4.png'   },
-  { n: 'Immobilier',    d: 'Valeur nette',           v: '185 000 €', p: '+3.1%',  up: true  as boolean|null, Ic: I.home,   color: '#8A5A3F', img: '/5.jpeg'  },
-  { n: 'Livrets',       d: 'Livret A · LDDS · LEP', v: '32 900 €',  p: '+3.0%',  up: true  as boolean|null, Ic: I.bank,   color: '#5F5A4F', img: '/6.jpeg'  },
-  { n: 'Crypto',        d: 'Via CoinGecko',          v: '28 400 €',  p: '-4.2%',  up: false as boolean|null, Ic: I.cpu,    color: '#8A6B3F', img: '/7.jpeg'  },
-  { n: 'Liquidités',    d: 'Mois de dépenses',       v: '12 600 €',  p: '= 3,2 mois', up: null,              Ic: I.wallet, color: '#5A5F70', img: '/8.jpeg'  },
+  { n: 'PEA',           d: 'Plafond 150 k€',        v: '148 200 €', p: '+12.4%', up: true  as boolean|null, Ic: I.chart,  color: '#C4922A', img: '/PEA.png'          },
+  { n: 'CTO',           d: 'Libre · Positions',      v: '62 400 €',  p: '+9.1%',  up: true  as boolean|null, Ic: I.coin,   color: '#4F6A4A', img: '/CTO.png'          },
+  { n: 'Assurance Vie', d: 'Ancienneté 8A',          v: '84 500 €',  p: '+4.7%',  up: true  as boolean|null, Ic: I.shield, color: '#6B5E7E', img: '/AV.png'           },
+  { n: 'PER',           d: 'Économie TMI',           v: '22 000 €',  p: '+5.2%',  up: true  as boolean|null, Ic: I.tree,   color: '#4B6878', img: '/PER.png'          },
+  { n: 'Immobilier',    d: 'Valeur nette',           v: '185 000 €', p: '+3.1%',  up: true  as boolean|null, Ic: I.home,   color: '#8A5A3F', img: '/immobilliers.png' },
+  { n: 'Livrets',       d: 'Livret A · LDDS · LEP', v: '32 900 €',  p: '+3.0%',  up: true  as boolean|null, Ic: I.bank,   color: '#5F5A4F', img: '/livrets.png'      },
+  { n: 'Crypto',        d: 'Via CoinGecko',          v: '28 400 €',  p: '-4.2%',  up: false as boolean|null, Ic: I.cpu,    color: '#8A6B3F', img: '/crypto.png'       },
+  { n: 'Liquidités',    d: 'Mois de dépenses',       v: '12 600 €',  p: '= 3,2 mois', up: null,              Ic: I.wallet, color: '#5A5F70', img: '/liquidites.png'   },
 ];
 
 /* ── Coverflow 3D carousel ── */

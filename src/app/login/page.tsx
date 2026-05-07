@@ -232,12 +232,12 @@ function AuthForm() {
         }} />
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', lineHeight: 1 }}>
+        <a href="https://finance.digitalstack.cloud" style={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', lineHeight: 1, textDecoration: 'none' }}>
           <span style={{ fontFamily: F_SERIF, fontSize: 28, color: INK, letterSpacing: '-0.02em' }}>P</span>
           <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block', transform: 'translateY(-9px)', flexShrink: 0 }} />
           <span style={{ fontFamily: F_SERIF, fontSize: 28, color: INK, letterSpacing: '-0.02em' }}>atrimo</span>
           <span style={{ marginLeft: 10, paddingLeft: 10, borderLeft: `1px solid ${LINE2}`, fontFamily: F_MONO, fontSize: 10, fontWeight: 500, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.14em', alignSelf: 'center' }}>finance</span>
-        </div>
+        </a>
 
         {/* Form area */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', maxWidth: 380, width: '100%', margin: '0 auto', position: 'relative' }}>
@@ -251,11 +251,13 @@ function AuthForm() {
               {isReg ? (
                 <>Pilotez votre <em style={{ fontStyle: 'italic', color: GOLD_D }}>patrimoine</em><span style={{ color: GOLD }}>.</span></>
               ) : (
-                <>Bon retour<br /><em style={{ fontStyle: 'italic', color: GOLD_D }}>parmi nous</em><span style={{ color: GOLD }}>.</span></>
+                <>Votre espace<br /><em style={{ fontStyle: 'italic', color: GOLD_D }}>patrimonial</em><span style={{ color: GOLD }}>.</span></>
               )}
             </h1>
             <p style={{ fontSize: 13.5, color: MUTED, marginTop: 12, lineHeight: 1.55, maxWidth: 320 }}>
-              {isReg ? 'Gratuit, sans carte bancaire. 18 simulateurs et un score patrimonial inclus.' : 'Reprenez vos simulations là où vous les avez laissées.'}
+              {isReg
+                ? 'Gratuit, sans carte bancaire. 18 simulateurs et un score patrimonial inclus.'
+                : 'Simulez, optimisez, suivez. Tout vous attend exactement là où vous l\'avez laissé.'}
             </p>
           </div>
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Check, ArrowRight, ChevronLeft } from 'lucide-react'
 import { Nav } from '@/components/landing/Nav'
+import { ToolPreview } from '@/components/landing/ToolPreview'
 import type { Metadata } from 'next'
 
 const BG       = '#F3EEE4'
@@ -472,6 +473,9 @@ export default async function ToolSlugPage({ params }: Props) {
             </Link>
           </div>
         </section>
+
+        {/* Mini simulator preview */}
+        <ToolPreview slug={slug} color={color} />
 
         {/* Pourquoi ce simulateur */}
         <section style={{ marginBottom: 80 }}>

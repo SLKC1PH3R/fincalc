@@ -6,233 +6,203 @@ import { I } from './icons';
 import { SectionHead } from './Pillars';
 
 const ENV_LIST = [
-  { n: 'PEA',           d: 'Plafond 150 k€',        v: '148 200 €', p: '+12.4%', up: true  as boolean|null, Ic: I.chart,  color: '#C4922A', img: '/PEA.png'          },
-  { n: 'CTO',           d: 'Libre · Positions',      v: '62 400 €',  p: '+9.1%',  up: true  as boolean|null, Ic: I.coin,   color: '#4F6A4A', img: '/CTO.png'          },
-  { n: 'Assurance Vie', d: 'Ancienneté 8A',          v: '84 500 €',  p: '+4.7%',  up: true  as boolean|null, Ic: I.shield, color: '#6B5E7E', img: '/AV.png'           },
-  { n: 'PER',           d: 'Économie TMI',           v: '22 000 €',  p: '+5.2%',  up: true  as boolean|null, Ic: I.tree,   color: '#4B6878', img: '/PER.png'          },
-  { n: 'Immobilier',    d: 'Valeur nette',           v: '185 000 €', p: '+3.1%',  up: true  as boolean|null, Ic: I.home,   color: '#8A5A3F', img: '/immobilliers.png' },
-  { n: 'Livrets',       d: 'Livret A · LDDS · LEP', v: '32 900 €',  p: '+3.0%',  up: true  as boolean|null, Ic: I.bank,   color: '#5F5A4F', img: '/livrets.png'      },
-  { n: 'Crypto',        d: 'Via CoinGecko',          v: '28 400 €',  p: '-4.2%',  up: false as boolean|null, Ic: I.cpu,    color: '#8A6B3F', img: '/crypto.png'       },
-  { n: 'Liquidités',    d: 'Mois de dépenses',       v: '12 600 €',  p: '= 3,2 mois', up: null,              Ic: I.wallet, color: '#5A5F70', img: '/liquidites.png'   },
+  { n: 'PEA',           d: 'Plafond 150 k€',        v: '148 200 €', p: '+12.4%', up: true  as boolean|null, Ic: I.chart,  color: '#C4922A', img: '/PEA.png',          url: 'finance.digitalstack.cloud/dashboard/patrimoine/pea'          },
+  { n: 'CTO',           d: 'Libre · Positions',      v: '62 400 €',  p: '+9.1%',  up: true  as boolean|null, Ic: I.coin,   color: '#4F6A4A', img: '/CTO.png',          url: 'finance.digitalstack.cloud/dashboard/patrimoine/cto'          },
+  { n: 'Assurance Vie', d: 'Ancienneté 8A',          v: '84 500 €',  p: '+4.7%',  up: true  as boolean|null, Ic: I.shield, color: '#6B5E7E', img: '/AV.png',           url: 'finance.digitalstack.cloud/dashboard/patrimoine/av'           },
+  { n: 'PER',           d: 'Économie TMI',           v: '22 000 €',  p: '+5.2%',  up: true  as boolean|null, Ic: I.tree,   color: '#4B6878', img: '/PER.png',          url: 'finance.digitalstack.cloud/dashboard/patrimoine/per'          },
+  { n: 'Immobilier',    d: 'Valeur nette',           v: '185 000 €', p: '+3.1%',  up: true  as boolean|null, Ic: I.home,   color: '#8A5A3F', img: '/immobilliers.png', url: 'finance.digitalstack.cloud/dashboard/patrimoine/immobilier'   },
+  { n: 'Livrets',       d: 'Livret A · LDDS · LEP', v: '32 900 €',  p: '+3.0%',  up: true  as boolean|null, Ic: I.bank,   color: '#5F5A4F', img: '/livrets.png',      url: 'finance.digitalstack.cloud/dashboard/patrimoine/livrets'      },
+  { n: 'Crypto',        d: 'Via CoinGecko',          v: '28 400 €',  p: '-4.2%',  up: false as boolean|null, Ic: I.cpu,    color: '#8A6B3F', img: '/crypto.png',       url: 'finance.digitalstack.cloud/dashboard/patrimoine/crypto'       },
+  { n: 'Liquidités',    d: 'Mois de dépenses',       v: '12 600 €',  p: '= 3,2 mois', up: null,              Ic: I.wallet, color: '#5A5F70', img: '/liquidites.png',   url: 'finance.digitalstack.cloud/dashboard/patrimoine/liquidites'   },
 ];
 
-/* ── Coverflow 3D carousel ── */
-function CoverflowCarousel() {
-  const N = ENV_LIST.length;
+const N = ENV_LIST.length;
+
+/* ── Browser-chrome carousel ── */
+function EnvelopeCarousel() {
   const [active, setActive] = React.useState(0);
-  const [drag, setDrag] = React.useState(0);      // fractional offset (-1 to +1)
-  const dragging = React.useRef(false);
-  const startX  = React.useRef(0);
-  const DRAG_SCALE = 520;                          // px per card-unit
+  const [fading, setFading] = React.useState(false);
+  const timerRef = React.useRef<ReturnType<typeof setInterval>>();
 
-  /* float offset of card i from center (accounts for live drag) */
-  const getOffset = (i: number): number => {
-    let off = i - active;
-    if (off >  N / 2) off -= N;
-    if (off < -N / 2) off += N;
-    return off + drag;                             // drag shifts all cards live
+  const resetTimer = React.useCallback(() => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setFading(true);
+      setTimeout(() => { setActive(p => (p + 1) % N); setFading(false); }, 220);
+    }, 4200);
+  }, []);
+
+  React.useEffect(() => {
+    resetTimer();
+    return () => clearInterval(timerRef.current);
+  }, [resetTimer]);
+
+  const select = (i: number) => {
+    if (i === active) return;
+    setFading(true);
+    setTimeout(() => { setActive(i); setFading(false); }, 220);
+    resetTimer();
   };
 
-  /* continuous coverflow transform from a float offset */
-  const cardStyle = (floatOff: number): React.CSSProperties | null => {
-    const abs = Math.abs(floatOff);
-    if (abs > 2.65) return null;                   // hidden entirely
-
-    const rotY    = floatOff * 52;                 // deg — rotates away from viewer
-    const tx      = floatOff * 54;                 // % of card width — lateral shift
-    const scale   = 1 - Math.min(abs, 1) * 0.18 - Math.max(abs - 1, 0) * 0.10;
-    const opacity = 1 - Math.min(abs, 1) * 0.28 - Math.max(abs - 1, 0) * 0.18;
-    const zIndex  = Math.round(30 - abs * 8);
-    const blur    = Math.max(0, abs - 0.5) * 0.8;
-
-    return {
-      transform: `translateX(${tx}%) rotateY(${rotY}deg) scale(${scale})`,
-      opacity,
-      zIndex,
-      filter:    blur > 0 ? `blur(${blur.toFixed(1)}px)` : 'none',
-      transition: dragging.current
-        ? 'none'
-        : 'transform .55s cubic-bezier(.32,.72,0,1), opacity .4s ease, filter .4s ease',
-    };
-  };
-
-  /* pointer handlers */
-  const onDown = (x: number) => { dragging.current = true; startX.current = x; };
-  const onMove = (x: number) => {
-    if (!dragging.current) return;
-    setDrag(Math.max(-1, Math.min(1, (x - startX.current) / DRAG_SCALE)));
-  };
-  const onUp = (x: number) => {
-    if (!dragging.current) return;
-    dragging.current = false;
-    const d = (x - startX.current) / DRAG_SCALE;
-    setDrag(0);
-    if (d < -0.22) setActive(p => (p + 1) % N);
-    else if (d > 0.22) setActive(p => (p - 1 + N) % N);
-  };
-
-  const currentEnv = ENV_LIST[active];
+  const env = ENV_LIST[active];
 
   return (
-    <div style={{ marginTop: 72, paddingBottom: 8 }}>
+    <div style={{ marginTop: 64 }}>
 
-      {/* ── Stage ── */}
-      <div
-        style={{
-          position: 'relative',
-          height: 320,
-          perspective: '1400px',
-          perspectiveOrigin: '50% 50%',
-          overflow: 'hidden',                      // clip the extreme cards
-          cursor: dragging.current ? 'grabbing' : 'grab',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-        }}
-        onMouseDown={e  => onDown(e.clientX)}
-        onMouseMove={e  => onMove(e.clientX)}
-        onMouseUp={e    => onUp(e.clientX)}
-        onMouseLeave={e => onUp(e.clientX)}
-        onTouchStart={e => onDown(e.touches[0].clientX)}
-        onTouchMove={e  => { e.preventDefault(); onMove(e.touches[0].clientX); }}
-        onTouchEnd={e   => onUp(e.changedTouches[0].clientX)}
-      >
-        {ENV_LIST.map((env, i) => {
-          const floatOff = getOffset(i);
-          const st = cardStyle(floatOff);
-          if (!st) return null;
-
-          const isCenter = Math.abs(floatOff) < 0.5;
-
-          return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                width: 460,
-                height: 300,
-                marginLeft: -230,
-                borderRadius: 18,
-                overflow: 'hidden',
-                boxShadow: isCenter
-                  ? '0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.14)'
-                  : '0 8px 24px rgba(0,0,0,0.10)',
-                border: isCenter
-                  ? `1px solid ${currentEnv.color}44`
-                  : '1px solid var(--line)',
-                transformOrigin: 'center center',
-                ...st,
-              }}
-              onClick={() => {
-                if (!dragging.current && Math.abs(floatOff) > 0.4) {
-                  floatOff < 0 ? setActive(p => (p - 1 + N) % N) : setActive(p => (p + 1) % N);
-                }
-              }}
-            >
-              <Image
-                src={env.img}
-                alt={env.n}
-                fill
-                style={{ objectFit: 'cover', objectPosition: 'top', pointerEvents: 'none' }}
-                draggable={false}
-                priority={i === active}
-              />
-
-              {/* color stripe */}
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-                background: env.color, opacity: 0.9, pointerEvents: 'none',
-              }} />
-
-              {/* bottom label — only on center */}
-              {isCenter && (
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  padding: '48px 18px 16px',
-                  background: 'linear-gradient(to top, rgba(10,8,5,0.75) 0%, transparent 100%)',
-                  pointerEvents: 'none',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{
-                      width: 22, height: 22, borderRadius: 6,
-                      background: env.color + '40',
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#fff', flexShrink: 0,
-                    }}><env.Ic size={11} /></div>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{env.n}</span>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--f-mono)', marginLeft: 2 }}>{env.d}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Aura glow behind center card */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            bottom: -60, left: '50%',
-            transform: 'translateX(-50%)',
-            width: 460, height: 200,
-            borderRadius: '50%',
-            background: `radial-gradient(ellipse at center, ${currentEnv.color}38 0%, transparent 70%)`,
-            filter: 'blur(32px)',
-            pointerEvents: 'none',
-            zIndex: 1,
-            transition: 'background .6s ease',
-          }}
-        />
-      </div>
-
-      {/* ── Dots + counter ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 28, justifyContent: 'center' }}>
+      {/* ── Envelope tabs ── */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
         {ENV_LIST.map((e, i) => (
           <button
             key={i}
-            onClick={() => { setDrag(0); setActive(i); }}
-            title={e.n}
+            onClick={() => select(i)}
             style={{
-              width: i === active ? 22 : 6,
-              height: 6, borderRadius: 99,
-              padding: 0, border: 'none',
-              background: i === active ? currentEnv.color : 'var(--line-strong)',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '6px 13px', borderRadius: 99,
+              fontFamily: 'var(--f-mono)', fontSize: 11,
+              background: i === active ? 'var(--ink)' : 'var(--surface)',
+              color:      i === active ? 'var(--bg)' : 'var(--muted)',
+              border:     `1px solid ${i === active ? 'transparent' : 'var(--line)'}`,
               cursor: 'pointer',
-              transition: 'width .35s cubic-bezier(.32,.72,0,1), background .4s',
+              boxShadow: i === active ? 'var(--shadow-sm)' : 'none',
+              transition: 'background .2s, color .2s, box-shadow .2s',
             }}
-          />
+          >
+            {/* Color dot */}
+            <span style={{
+              width: 6, height: 6, borderRadius: 99, flexShrink: 0,
+              background: i === active ? e.color : e.color + '88',
+            }} />
+            {e.n}
+          </button>
         ))}
-        <span style={{
-          marginLeft: 12, fontSize: 11, fontFamily: 'var(--f-mono)',
-          color: 'var(--muted)', letterSpacing: '0.06em',
-        }}>
-          {String(active + 1).padStart(2, '0')} / {String(N).padStart(2, '0')} · {currentEnv.n}
-        </span>
       </div>
 
-      {/* ── Arrow navigation ── */}
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 18 }}>
-        {[
-          { dir: -1, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg> },
-          { dir:  1, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg> },
-        ].map(({ dir, icon }) => (
-          <button
-            key={dir}
-            onClick={() => setActive(p => (p + dir + N) % N)}
+      {/* ── Browser window ── */}
+      <div style={{
+        borderRadius: 14, overflow: 'hidden',
+        border: '1px solid var(--line-strong)',
+        boxShadow: 'var(--shadow-lg)',
+        background: 'var(--surface)',
+      }}>
+
+        {/* Chrome bar */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '9px 14px',
+          borderBottom: '1px solid var(--line)',
+          background: 'var(--surface-2)',
+        }}>
+          <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#EC6A5E' }} />
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#F4BF4F' }} />
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#62C555' }} />
+          </div>
+
+          {/* URL */}
+          <div style={{
+            flex: 1, margin: '0 10px',
+            background: 'var(--bg)',
+            borderRadius: 6, padding: '4px 11px',
+            fontFamily: 'var(--f-mono)', fontSize: 10.5,
+            border: '1px solid var(--line)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            transition: 'opacity .22s',
+            opacity: fading ? 0.4 : 1,
+          }}>
+            <span style={{ color: 'var(--muted-2)' }}>https://</span>
+            <span style={{ color: 'var(--ink)' }}>{env.url}</span>
+          </div>
+
+          {/* Active envelope badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            padding: '3px 9px', borderRadius: 99, flexShrink: 0,
+            background: env.color + '18',
+            border: `1px solid ${env.color}44`,
+            fontFamily: 'var(--f-mono)', fontSize: 10,
+            color: env.color,
+            transition: 'background .3s, border-color .3s, color .3s',
+          }}>
+            <env.Ic size={10} />
+            {env.n}
+          </div>
+        </div>
+
+        {/* Screenshot */}
+        <div style={{
+          position: 'relative',
+          aspectRatio: '16 / 10',
+          background: 'var(--surface-2)',
+          overflow: 'hidden',
+        }}>
+          {/* Color stripe at top matches envelope */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+            background: env.color, zIndex: 2, pointerEvents: 'none',
+            transition: 'background .3s',
+          }} />
+
+          <Image
+            src={env.img}
+            alt={env.n}
+            fill
             style={{
-              width: 38, height: 38, borderRadius: 99,
-              background: 'var(--surface)', border: '1px solid var(--line)',
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--muted)', cursor: 'pointer',
-              transition: 'border-color .2s, color .2s',
+              objectFit: 'cover', objectPosition: 'top left',
+              transition: 'opacity .22s ease',
+              opacity: fading ? 0 : 1,
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = currentEnv.color; e.currentTarget.style.color = currentEnv.color; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; e.currentTarget.style.color = 'var(--muted)'; }}
-          >{icon}</button>
-        ))}
+            quality={85}
+            sizes="(max-width: 900px) 100vw, 70vw"
+            priority={active === 0}
+          />
+        </div>
+
+        {/* Bottom bar: dots + counter + progress */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '9px 14px',
+          borderTop: '1px solid var(--line)',
+          background: 'var(--surface-2)',
+        }}>
+          {ENV_LIST.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => select(i)}
+              aria-label={ENV_LIST[i].n}
+              style={{
+                width:      i === active ? 20 : 5,
+                height:     5, borderRadius: 99,
+                background: i === active ? env.color : 'var(--line-strong)',
+                border: 'none', padding: 0, cursor: 'pointer',
+                transition: 'width .35s cubic-bezier(.32,.72,0,1), background .3s',
+              }}
+            />
+          ))}
+
+          <span style={{
+            marginLeft: 8, fontFamily: 'var(--f-mono)', fontSize: 9.5,
+            color: 'var(--muted)', letterSpacing: '0.07em', whiteSpace: 'nowrap',
+          }}>
+            {String(active + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}
+            <span style={{ margin: '0 5px', opacity: 0.4 }}>·</span>
+            {env.n}
+          </span>
+
+          {/* Auto-advance progress */}
+          <div style={{ flex: 1, marginLeft: 8, height: 2, borderRadius: 99, background: 'var(--line)', overflow: 'hidden' }}>
+            <div
+              key={active}
+              style={{
+                height: '100%', borderRadius: 99,
+                background: env.color,
+                animation: 'env-progress 4.2s linear forwards',
+              }}
+            />
+          </div>
+        </div>
       </div>
+
+      <style>{`@keyframes env-progress { from { width: 0% } to { width: 100% } }`}</style>
     </div>
   );
 }
@@ -277,7 +247,7 @@ export function Envelopes() {
           ))}
         </div>
 
-        <CoverflowCarousel />
+        <EnvelopeCarousel />
       </div>
       <style>{`
         .env-card { transition: transform .3s, box-shadow .3s, border-color .3s; cursor: pointer; }

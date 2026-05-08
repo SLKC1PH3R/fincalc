@@ -50,6 +50,49 @@ function tmiIR(revBrut: number, parts = 1) {
   return 45
 }
 
+const GOLD_D = '#8B5E18'
+
+/* ── blur gate — wraps any "insight" content ── */
+function BlurGate({ children, height }: { children: React.ReactNode; height?: number }) {
+  return (
+    <div style={{ position: 'relative', marginTop: 8 }}>
+      {/* blurred content — real values visible through blur (enticing) */}
+      <div style={{
+        filter: 'blur(5px)',
+        userSelect: 'none',
+        pointerEvents: 'none',
+        opacity: 0.85,
+        ...(height ? { height, overflow: 'hidden' } : {}),
+      }}>
+        {children}
+      </div>
+      {/* CTA overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(243,238,228,0.55)',
+        backdropFilter: 'blur(1px)',
+        borderRadius: 10,
+      }}>
+        <a href="/login" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          padding: '7px 16px', borderRadius: 99,
+          background: GOLD_D, color: '#fff',
+          fontSize: 11.5, fontWeight: 700, textDecoration: 'none',
+          fontFamily: F_SANS, letterSpacing: '0.01em',
+          boxShadow: '0 4px 16px rgba(139,94,24,0.35)',
+          whiteSpace: 'nowrap',
+        }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Inscription gratuite pour voir le détail
+        </a>
+      </div>
+    </div>
+  )
+}
+
 /* ── shared UI ── */
 function Sl({ label, value, min, max, step = 1, onChange, display, color }: {
   label: string; value: number; min: number; max: number; step?: number
@@ -78,16 +121,19 @@ function BigResult({ label, value, sub, color }: { label: string; value: string;
   )
 }
 
+/* KpiRow — always blurred to gate the breakdown details */
 function KpiRow({ items }: { items: { label: string; value: string; color?: string }[] }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${items.length}, 1fr)`, gap: 8, marginTop: 8 }}>
-      {items.map(({ label, value, color }) => (
-        <div key={label} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: 10, background: BG, border: `1px solid ${LINE_STR}` }}>
-          <div style={{ fontSize: 9, fontFamily: F_MONO, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
-          <div style={{ fontFamily: F_MONO, fontSize: 15, fontWeight: 700, color: color || INK }}>{value}</div>
-        </div>
-      ))}
-    </div>
+    <BlurGate>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${items.length}, 1fr)`, gap: 8 }}>
+        {items.map(({ label, value, color }) => (
+          <div key={label} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: 10, background: BG, border: `1px solid ${LINE_STR}` }}>
+            <div style={{ fontSize: 9, fontFamily: F_MONO, color: MUTED2, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{label}</div>
+            <div style={{ fontFamily: F_MONO, fontSize: 15, fontWeight: 700, color: color || INK }}>{value}</div>
+          </div>
+        ))}
+      </div>
+    </BlurGate>
   )
 }
 
@@ -135,28 +181,30 @@ function CompoundInterest({ color }: { color: string }) {
           ]} />
         </div>
       </div>
-      {/* Mini spark chart */}
-      <div style={{ height: 60, borderRadius: 8, background: LINE, overflow: 'hidden', position: 'relative' }}>
-        <svg viewBox="0 0 400 60" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-          <defs>
-            <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity=".25" />
-              <stop offset="100%" stopColor={color} stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {(() => {
-            const pts = Array.from({ length: 40 }, (_, i) => {
-              const v = compoundFV(pv, pmt, r, (i + 1) * yr / 40)
-              return [(i / 39) * 400, 56 - (v / fv) * 52] as [number, number]
-            })
-            const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
-            return <>
-              <path d={`${d} L400,60 L0,60 Z`} fill="url(#cg)" />
-              <path d={d} stroke={color} strokeWidth="1.5" fill="none" />
-            </>
-          })()}
-        </svg>
-      </div>
+      {/* Mini spark chart — blurred */}
+      <BlurGate height={60}>
+        <div style={{ height: 60, borderRadius: 8, background: LINE, overflow: 'hidden', position: 'relative' }}>
+          <svg viewBox="0 0 400 60" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+            <defs>
+              <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity=".25" />
+                <stop offset="100%" stopColor={color} stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {(() => {
+              const pts = Array.from({ length: 40 }, (_, i) => {
+                const v = compoundFV(pv, pmt, r, (i + 1) * yr / 40)
+                return [(i / 39) * 400, 56 - (v / fv) * 52] as [number, number]
+              })
+              const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+              return <>
+                <path d={`${d} L400,60 L0,60 Z`} fill="url(#cg)" />
+                <path d={d} stroke={color} strokeWidth="1.5" fill="none" />
+              </>
+            })()}
+          </svg>
+        </div>
+      </BlurGate>
     </div>
   )
 }
@@ -357,8 +405,12 @@ function FlatTaxSim({ color }: { color: string }) {
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <Bar label="Flat Tax (30%)" value={fmtEur(flatTax)} max={Math.max(flatTax, bareme)} color="#818cf8" pct={flatTax / Math.max(flatTax, bareme) * 100} />
-        <Bar label={`Barème (${tmi}% + PS)`} value={fmtEur(bareme)} max={Math.max(flatTax, bareme)} color="#fb923c" pct={bareme / Math.max(flatTax, bareme) * 100} />
+        <BlurGate>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Bar label="Flat Tax (30%)" value={fmtEur(flatTax)} max={Math.max(flatTax, bareme)} color="#818cf8" pct={flatTax / Math.max(flatTax, bareme) * 100} />
+            <Bar label={`Barème (${tmi}% + PS)`} value={fmtEur(bareme)} max={Math.max(flatTax, bareme)} color="#fb923c" pct={bareme / Math.max(flatTax, bareme) * 100} />
+          </div>
+        </BlurGate>
         <KpiRow items={[
           { label: 'Flat Tax', value: fmtEur(flatTax), color: flatTax < bareme ? UP : undefined },
           { label: 'Barème', value: fmtEur(bareme), color: bareme < flatTax ? UP : undefined },
@@ -834,26 +886,28 @@ function ScorePatrimonialSim({ color }: { color: string }) {
         </div>
       </div>
 
-      {/* Tips */}
+      {/* Tips — blurred */}
       <div style={{ marginTop: 20, borderTop: `1px solid ${LINE_STR}`, paddingTop: 16 }}>
         <div style={{ fontSize: 10, fontFamily: F_MONO, color: MUTED2, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>3 axes prioritaires</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {weakest.map((p, i) => (
-            <div key={p.key} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 12px', borderRadius: 8, background: BG, border: `1px solid ${LINE_STR}` }}>
-              <div style={{
-                width: 20, height: 20, borderRadius: 99, flexShrink: 0,
-                background: scores[p.key] < 40 ? DOWN + '20' : '#B07820' + '20',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 10, fontWeight: 700, fontFamily: F_MONO,
-                color: scores[p.key] < 40 ? DOWN : '#B07820',
-              }}>{i + 1}</div>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: INK, marginBottom: 2 }}>{p.label} · score {scores[p.key]}</div>
-                <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.5 }}>{p.tip}</div>
+        <BlurGate>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {weakest.map((p, i) => (
+              <div key={p.key} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 12px', borderRadius: 8, background: BG, border: `1px solid ${LINE_STR}` }}>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 99, flexShrink: 0,
+                  background: scores[p.key] < 40 ? DOWN + '20' : '#B07820' + '20',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 10, fontWeight: 700, fontFamily: F_MONO,
+                  color: scores[p.key] < 40 ? DOWN : '#B07820',
+                }}>{i + 1}</div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: INK, marginBottom: 2 }}>{p.label} · score {scores[p.key]}</div>
+                  <div style={{ fontSize: 11, color: MUTED, lineHeight: 1.5 }}>{p.tip}</div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </BlurGate>
       </div>
     </div>
   )

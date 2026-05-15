@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 
+
 const PAPER   = '#efe7d2'
 const INK     = '#15140f'
 const CORAL   = '#c96a4a'
@@ -9,53 +10,6 @@ const LINE_S  = 'rgba(21,20,15,0.07)'
 const F_SERIF = "'Playfair Display','Times New Roman',serif"
 const F_MONO  = "'JetBrains Mono','SF Mono',Menlo,monospace"
 
-function AnimatedCurves() {
-  const [t, setT] = useState(0)
-  useEffect(() => {
-    let raf: number
-    const tick = () => { setT(performance.now() / 1000); raf = requestAnimationFrame(tick) }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [])
-  const W = 1400, H = 900
-  const curves = [
-    { phase: 0,   amp: 100, freq: 0.009, y0: H * 0.56, color: 'rgba(201,106,74,0.18)', sw: 1.5 },
-    { phase: 2.1, amp: 145, freq: 0.007, y0: H * 0.66, color: 'rgba(21,20,15,0.05)',   sw: 1.0 },
-    { phase: 3.8, amp: 70,  freq: 0.015, y0: H * 0.46, color: 'rgba(201,106,74,0.10)', sw: 0.8 },
-  ] as const
-  return (
-    <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMid slice"
-      style={{ position: 'absolute', inset: 0 }} aria-hidden>
-      <defs>
-        {curves.map((c, i) => (
-          <linearGradient key={i} id={`sp-lg${i}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={c.color} />
-            <stop offset="100%" stopColor={c.color.replace(/[\d.]+\)$/, '0)')} />
-          </linearGradient>
-        ))}
-      </defs>
-      {curves.map((c, i) => {
-        const pts: string[] = []
-        for (let x = 0; x <= W; x += 20) {
-          const y = c.y0
-            + Math.sin(x * c.freq + t * 0.28 + c.phase) * c.amp
-            + Math.sin(x * c.freq * 2.3 + t * 0.44 + c.phase) * c.amp * 0.27
-            - x * 0.06
-          pts.push(`${x},${Math.max(0, Math.min(H, y))}`)
-        }
-        const line = `M${pts.join(' L')}`
-        const area = `${line} L${W},${H} L0,${H} Z`
-        return (
-          <g key={i}>
-            <path d={area} fill={`url(#sp-lg${i})`} />
-            <path d={line} fill="none" stroke={c.color.replace(/[\d.]+\)$/, '0.5)')} strokeWidth={c.sw} />
-          </g>
-        )
-      })}
-    </svg>
-  )
-}
 
 function CornerTick({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
   const pts = {
@@ -101,7 +55,7 @@ export function SplashScreen() {
       transition: phase === 'fading' ? 'opacity 700ms cubic-bezier(0.4,0,0.2,1)' : 'none',
       pointerEvents: phase === 'fading' ? 'none' : 'all',
     }}>
-      <AnimatedCurves />
+
 
       {/* Left rail */}
       <div style={{

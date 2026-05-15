@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 /* ─────────────────────────────────────────────────────────────────
    Patrimo — landing page
@@ -54,6 +54,9 @@ const STYLES = `
 .az-top-i .rgt{display:inline-flex;gap:18px;align-items:center}
 .az-top-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:color 160ms,border-color 160ms}
 .az-top-link:hover{color:var(--coral);border-bottom-color:var(--coral)}
+.az-lang-btn{background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;padding:0;transition:color 160ms}
+.az-lang-btn.active{color:var(--ink);font-weight:700}
+.az-lang-btn:hover{color:var(--coral)}
 .az-pulse{width:6px;height:6px;border-radius:50%;background:var(--coral);display:inline-block;margin-right:6px;animation:az-pulse 2.4s ease-in-out infinite}
 @keyframes az-pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
@@ -355,6 +358,297 @@ const STYLES = `
 @media(max-width:560px){.az-c{padding:0 16px}.az-hero h1{font-size:38px}.az-lgrid{grid-template-columns:1fr}.az-cards{grid-template-columns:1fr}.az-pills{justify-content:flex-start}.az-sec{padding:80px 0}.az-top-i{font-size:9px}}
 `
 
+/* ── Translations ─────────────────────────────────────────────────────────── */
+const COPY = {
+  fr: {
+    rail_right: 'Patrimo · Gestion patrimoniale augmentée · Paris · 2026',
+    rail_left:  'Intelligence · Structuration · Pilotage · Confidentiel',
+    top_ref:    'PTM / 2026',
+    top_vol:    'Vol. 01 / N° 01',
+    top_rub:    'Rubrique',
+    top_theme:  'Patrimoine · Intelligence',
+    top_free:   'Gratuit · Made in France',
+    top_email:  'contact@patrimo.fr',
+    nav_platform:   'Plateforme',
+    nav_envelopes:  'Enveloppes',
+    nav_method:     'Méthode',
+    nav_score:      'Score',
+    nav_contact:    'Contact',
+    nav_cta:        'Créer mon espace',
+    nav_meta:       'Finance · N° 01',
+    nav_submeta:    'Paris · Open-source · RGPD',
+    // Hero
+    i_rule_sub: 'Couverture / Planche Principale',
+    i_rule_vol: 'Patrimo / Volume 01',
+    i_label:    'Cockpit patrimonial intelligent',
+    i_h1_a:     'La gestion patrimoniale,',
+    i_h1_em:    'réinventée',
+    i_lead:     "18 simulateurs fiscaux · 8 enveloppes · 0 donnée bancaire. Gratuit, pour l'investisseur français qui veut comprendre avant d'agir.",
+    i_cta_primary: 'Créer mon espace gratuit',
+    i_cta_ghost:   'Découvrir la plateforme',
+    i_stat1_b: 'simulateurs',    i_stat1_s: 'Fiscalité française',
+    i_stat2_b: 'enveloppes',     i_stat2_s: 'PEA · AV · PER…',
+    i_stat3_b: 'donnée bancaire',i_stat3_s: 'Zéro accès requis',
+    i_foot_l: "Gratuit · Pour l'investisseur français",
+    i_annot_tr: 'Planche N° 01',
+    i_annot_br: 'Composé par',
+    i_idx: ['Inventaire','Analyse','Simulation','Décision'],
+    // Wire
+    wire_title: '8 enveloppes',
+    wire_sub:   'Patrimo · France · Gratuit',
+    wire_row1: [['PEA','Exonéré après 5 ans'],['AV','Abattement 152 500 €'],['PER','Déduction IR'],['CTO','Flat Tax 30 %'],['LIVRET','Défiscalisé garanti'],['SCPI','Rendement 5,2 %'],['CRYPTO','3916-bis déclaré'],['CASH','Précaution & opportunité'],['PEA','Exonéré après 5 ans'],['AV','Abattement 152 500 €'],['PER','Déduction IR'],['CTO','Flat Tax 30 %'],['LIVRET','Défiscalisé garanti'],['SCPI','Rendement 5,2 %'],['CRYPTO','3916-bis déclaré'],['CASH','Précaution & opportunité']],
+    wire_row2: [['FT','Flat Tax vs Barème · 18 simulateurs'],['PE','PEA vs CTO vs Assurance-Vie'],['IF','IFI · Transmission · Succession'],['RE','Retraite · PER · LMNP · SCPI'],['SC','Score Patrimonial · 7 dimensions'],['SZ','Zéro donnée bancaire · RGPD · AES-256'],['FT','Flat Tax vs Barème · 18 simulateurs'],['PE','PEA vs CTO vs Assurance-Vie'],['IF','IFI · Transmission · Succession'],['RE','Retraite · PER · LMNP · SCPI'],['SC','Score Patrimonial · 7 dimensions'],['SZ','Zéro donnée bancaire · RGPD · AES-256']],
+    // II
+    ii_rule_sub: 'Manifeste / À propos',
+    ii_rule_tag: 'Identité',
+    ii_label: 'Notre manifeste',
+    ii_h2_a: 'La clarté', ii_h2_em1: 'décisionnelle,', ii_h2_b: 'au cœur de chaque', ii_h2_em2: 'patrimoine',
+    ii_lead1: "Patrimo n'est pas un outil de plus. C'est une couche d'intelligence financière qui transforme la complexité patrimoniale en décisions claires, structurées et documentées. Gratuit par conviction, sécurisé par construction.",
+    ii_lead2: "18 simulateurs fiscaux. 8 enveloppes. Zéro donnée bancaire. Conçu pour l'investisseur français qui veut comprendre avant d'agir.",
+    ii_founded: 'Fondé en 2024',
+    ii_stamp1: 'Open-source · RGPD',
+    ii_stamp2: 'Hébergé en UE · AES-256',
+    ii_capt_b: 'Planche II',
+    ii_capt:   'Dashboard patrimonial · 2026',
+    // III
+    iii_rule_sub: 'Capacités / Plateforme',
+    iii_rule_tag: '4 modules',
+    iii_label: 'Intelligence patrimoniale',
+    iii_h2_a: 'Quatre modules,', iii_h2_em: 'une vision', iii_h2_b: 'unifiée',
+    iii_ribbon: 'Plateforme Patrimo · 2026',
+    iii_cards: [
+      { n:'01', tag:'Suivre',    title:'Vision patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, patrimoine net, performance." },
+      { n:'02', tag:'Optimiser', title:'Chaque frais compte',           body:"ETFs comparés aux meilleures alternatives. Sur 20 ans, 0,18 % de moins = des milliers d’euros récupérés." },
+      { n:'03', tag:'Simuler',   title:'18 simulateurs fiscaux',        body:"Flat tax vs barème, PEA vs CTO, IFI, transmission, retraite. Tout en un seul endroit." },
+      { n:'04', tag:'Éduquer',   title:"Comprendre avant d’agir",  body:"Guides pratiques, glossaire interactif, fiches enveloppe. L’éducation financière française." },
+    ],
+    // IV
+    iv_rule_sub: 'Enveloppes / 8 classes',
+    iv_rule_tag: '8 fiches',
+    iv_label: '8 enveloppes analysées',
+    iv_h2_a: 'Chaque enveloppe,', iv_h2_em: 'maîtrisée',
+    iv_pills: ['Toutes 08','Actions','Épargne','Immobilier'],
+    iv_labs: [
+      { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.png' },
+      { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.", img:'/PEA.png' },
+      { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.", img:'/AV.png' },
+      { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.", img:'/CTO.png' },
+      { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.", img:'/PER.png' },
+      { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.", img:'/immobilliers.png' },
+      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.png' },
+      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.png' },
+    ],
+    iv_foot: '8 enveloppes · Fiches complètes',
+    // V
+    v_rule_sub: 'Méthode / Simulateurs',
+    v_rule_tag: '4 étapes',
+    v_label: 'Notre approche',
+    v_h2_a: 'Quatre étapes.', v_h2_em: 'Un résultat', v_h2_b: 'mesurable',
+    v_sub_p: 'Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.',
+    v_steps: [
+      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/patrimoine-actifs.png' },
+      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/patrimoine-overview.png' },
+      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/dashboard-mobile.png' },
+      { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/dashboard-desktop.png' },
+    ],
+    v_foot_l: 'Patrimo · Méthode propriétaire · 2024',
+    v_foot_r_a: 'Résultat immédiat · ', v_foot_r_b: 'Zéro compte requis',
+    // VI
+    vi_rule_sub: 'Score Patrimonial · 7 dimensions',
+    vi_rule_tag: 'Analyse complète',
+    vi_label: 'Score',
+    vi_h2_a: 'Une note pour', vi_h2_em1: 'comprendre', vi_h2_b: 'où vous en', vi_h2_em2: 'êtes',
+    vi_link: 'Calculer mon score',
+    vi_card1_sl: 'Diversification', vi_card1_h3: 'Allocation & diversification', vi_card1_p: 'Score de 0 à 100 sur 7 dimensions clés de votre patrimoine.', vi_card1_foot: '7 dimensions · Note globale',
+    vi_card2_sl: 'Optimisation fiscale', vi_card2_h3: 'Fiscalité & enveloppes', vi_card2_p: "Taux d'imposition effectif, levier fiscal disponible, optimisation possible.", vi_card2_foot: 'Flat Tax · TMI · PFU',
+    // VII
+    vii_rule_sub: 'Sécurité / Confiance',
+    vii_rule_tag: 'Zéro compromis',
+    vii_label: 'Sécurité',
+    vii_quote: 'Patrimo ne demande aucune donnée bancaire. Vous saisissez ce que vous voulez, ',
+    vii_quote_em: 'quand vous voulez.',
+    vii_author_title: 'Architecture de confiance',
+    vii_author_sub: 'AES-256 · RGPD · Hébergé en UE · Open-source',
+    vii_ptxt: 'Patrimo est conçu pour les investisseurs qui refusent de partager leurs accès bancaires. Vous contrôlez vos données à 100 %.',
+    vii_partners: [
+      { g:'AES', n:'AES-256',        t:'Chiffrement' },
+      { g:'EU',  n:'RGPD',           t:'Conformité' },
+      { g:'⚡',  n:'Temps réel',     t:'Performance' },
+      { g:'{}',  n:'Open-source',    t:'Transparence' },
+      { g:'0',   n:'Donnée bancaire', t:'Zéro accès' },
+    ],
+    // VIII
+    viii_rule_sub: 'Entrée / CTA',
+    viii_rule_tag: 'Accès immédiat · Gratuit',
+    viii_label: 'Commencer',
+    viii_h2_a: 'Reprenez le', viii_h2_em: 'contrôle', viii_h2_b: 'de votre patrimoine',
+    viii_lead: 'Créez votre espace gratuitement. Aucune donnée bancaire requise. Résultats immédiats, sans engagement.',
+    viii_cta: 'Créer mon espace gratuit',
+    viii_cfoot: ['100 % gratuit','Zéro donnée bancaire','Accès immédiat'],
+    viii_ribbon: 'Patrimo · Votre patrimoine, piloté',
+    // Footer
+    ft_desc: "Plateforme patrimoniale gratuite — 18 simulateurs fiscaux, 8 enveloppes et un score patrimonial sur 7 dimensions. Conçue pour l'investisseur français qui veut comprendre avant d'agir.",
+    ft_col1: 'Plateforme',
+    ft_col1_links: [['#plateforme','Vision patrimoniale'],['#plateforme','Optimisation TER'],['#methode','18 simulateurs'],['#score','Score patrimonial']],
+    ft_col2: 'Enveloppes',
+    ft_col2_links: [['#enveloppes','PEA · AV · PER'],['#enveloppes','CTO · Livrets'],['#enveloppes','SCPI · Immobilier'],['#enveloppes','Crypto · Cash']],
+    ft_col3: 'Ressources',
+    ft_col3_links: [['#methode','Notre approche'],['#about','À propos'],['/login','Créer un compte'],['#contact','Contact']],
+    ft_col4: 'Légal',
+    ft_col4_links: [['#','Mentions légales'],['#','Confidentialité'],['#','CGU'],['#','RGPD']],
+    ft_copy: '© 2026 Patrimo · Tous droits réservés · Made in France',
+    ft_status: 'Opérationnel',
+    ft_open: 'Open-source · RGPD',
+    ft_city: 'Paris · France',
+    ft_mega_a: 'Patri', ft_mega_em: 'mo',
+  },
+  en: {
+    rail_right: 'Patrimo · Augmented Wealth Management · Paris · 2026',
+    rail_left:  'Intelligence · Structure · Control · Confidential',
+    top_ref:    'PTM / 2026',
+    top_vol:    'Vol. 01 / No. 01',
+    top_rub:    'Section',
+    top_theme:  'Wealth · Intelligence',
+    top_free:   'Free · Made in France',
+    top_email:  'contact@patrimo.fr',
+    nav_platform:   'Platform',
+    nav_envelopes:  'Wrappers',
+    nav_method:     'Method',
+    nav_score:      'Score',
+    nav_contact:    'Contact',
+    nav_cta:        'Create my space',
+    nav_meta:       'Finance · No. 01',
+    nav_submeta:    'Paris · Open-source · GDPR',
+    // Hero
+    i_rule_sub: 'Cover / Main Plate',
+    i_rule_vol: 'Patrimo / Volume 01',
+    i_label:    'Intelligent wealth cockpit',
+    i_h1_a:     'Wealth management,',
+    i_h1_em:    'reinvented',
+    i_lead:     '18 tax simulators · 8 investment wrappers · 0 banking data. Free, for the French investor who wants to understand before acting.',
+    i_cta_primary: 'Create my free space',
+    i_cta_ghost:   'Discover the platform',
+    i_stat1_b: 'simulators',      i_stat1_s: 'French tax law',
+    i_stat2_b: 'wrappers',        i_stat2_s: 'PEA · Life ins. · PER…',
+    i_stat3_b: 'banking data',    i_stat3_s: 'Zero access required',
+    i_foot_l: 'Free · For the French investor',
+    i_annot_tr: 'Plate No. 01',
+    i_annot_br: 'Composed by',
+    i_idx: ['Inventory','Analysis','Simulation','Decision'],
+    // Wire
+    wire_title: '8 wrappers',
+    wire_sub:   'Patrimo · France · Free',
+    wire_row1: [['PEA','Tax-free after 5 years'],['AV','Life Ins. allowance €152,500'],['PER','Income tax deduction'],['CTO','Flat Tax 30%'],['LIVRET','Regulated tax-free savings'],['SCPI','REIT yield 5.2%'],['CRYPTO','Declared annually'],['CASH','Safety & opportunity'],['PEA','Tax-free after 5 years'],['AV','Life Ins. allowance €152,500'],['PER','Income tax deduction'],['CTO','Flat Tax 30%'],['LIVRET','Regulated tax-free savings'],['SCPI','REIT yield 5.2%'],['CRYPTO','Declared annually'],['CASH','Safety & opportunity']],
+    wire_row2: [['FT','Flat Tax vs Progressive · 18 simulators'],['PE','PEA vs CTO vs Life Insurance'],['IF','Wealth tax · Estate · Succession'],['RE','Retirement · PER · LMNP · SCPI'],['SC','Wealth Score · 7 dimensions'],['SZ','Zero banking data · GDPR · AES-256'],['FT','Flat Tax vs Progressive · 18 simulators'],['PE','PEA vs CTO vs Life Insurance'],['IF','Wealth tax · Estate · Succession'],['RE','Retirement · PER · LMNP · SCPI'],['SC','Wealth Score · 7 dimensions'],['SZ','Zero banking data · GDPR · AES-256']],
+    // II
+    ii_rule_sub: 'Manifesto / About',
+    ii_rule_tag: 'Identity',
+    ii_label: 'Our manifesto',
+    ii_h2_a: 'Decision', ii_h2_em1: 'clarity,', ii_h2_b: 'at the heart of every', ii_h2_em2: 'portfolio',
+    ii_lead1: 'Patrimo is not just another tool. It is a financial intelligence layer that transforms wealth complexity into clear, structured, and documented decisions. Free by conviction, secure by design.',
+    ii_lead2: '18 tax simulators. 8 investment wrappers. Zero banking data. Built for the French investor who wants to understand before acting.',
+    ii_founded: 'Founded in 2024',
+    ii_stamp1: 'Open-source · GDPR',
+    ii_stamp2: 'EU-hosted · AES-256',
+    ii_capt_b: 'Plate II',
+    ii_capt:   'Wealth dashboard · 2026',
+    // III
+    iii_rule_sub: 'Capabilities / Platform',
+    iii_rule_tag: '4 modules',
+    iii_label: 'Wealth intelligence',
+    iii_h2_a: 'Four modules,', iii_h2_em: 'one unified', iii_h2_b: 'vision',
+    iii_ribbon: 'Patrimo Platform · 2026',
+    iii_cards: [
+      { n:'01', tag:'Track',    title:'Complete wealth overview', body:'Real-time mapping of your assets. 8 wrappers, net worth, performance.' },
+      { n:'02', tag:'Optimise', title:'Every fee matters',        body:'ETFs compared to best alternatives. Over 20 years, 0.18% less = thousands of euros recovered.' },
+      { n:'03', tag:'Simulate', title:'18 tax simulators',        body:'Flat tax vs progressive, PEA vs CTO, wealth tax, estate, retirement. All in one place.' },
+      { n:'04', tag:'Educate',  title:'Understand before acting', body:'Practical guides, interactive glossary, wrapper fact sheets. French financial education.' },
+    ],
+    // IV
+    iv_rule_sub: 'Wrappers / 8 classes',
+    iv_rule_tag: '8 fact sheets',
+    iv_label: '8 wrappers analysed',
+    iv_h2_a: 'Every wrapper,', iv_h2_em: 'mastered',
+    iv_pills: ['All 08','Equities','Savings','Real Estate'],
+    iv_labs: [
+      { n:'01', badge:'Tax-free',         title:'Savings accounts',    body:'Livret A · LDDS · LEP. Regulated savings available at any time.', img:'/livrets.png' },
+      { n:'02', badge:'Exempt 5y+',       title:'PEA',                 body:'The prime wrapper for French and European equity investment.', img:'/PEA.png' },
+      { n:'03', badge:'Allowance 8y',     title:'Life Insurance',      body:'Euro funds · Units. Optimised inheritance, softened tax after 8 years.', img:'/AV.png' },
+      { n:'04', badge:'Flat Tax 30%',     title:'CTO',                 body:'All asset classes, no ceiling. Absolute freedom.', img:'/CTO.png' },
+      { n:'05', badge:'Tax deduction',    title:'PER',                 body:'Deduct today at your marginal rate, capitalise tomorrow.', img:'/PER.png' },
+      { n:'06', badge:'Bank leverage',    title:'Real Estate',         body:'SCPI · Direct · LMNP. Recurring rental income.', img:'/immobilliers.png' },
+      { n:'07', badge:'Annual report',    title:'Crypto assets',       body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.', img:'/crypto.png' },
+      { n:'08', badge:'Safety net',       title:'Cash',                body:'3 to 6 months of expenses. Opportunity reserve.', img:'/liquidites.png' },
+    ],
+    iv_foot: '8 wrappers · Full fact sheets',
+    // V
+    v_rule_sub: 'Method / Simulators',
+    v_rule_tag: '4 steps',
+    v_label: 'Our approach',
+    v_h2_a: 'Four steps.', v_h2_em: 'One measurable', v_h2_b: 'outcome',
+    v_sub_p: 'Every simulation starts with simple inputs. Results are instant, visual and exportable.',
+    v_steps: [
+      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/patrimoine-actifs.png' },
+      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/patrimoine-overview.png' },
+      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/dashboard-mobile.png' },
+      { n:'iv',  t:'Decision',  b:'Wealth score across 7 dimensions. Actionable recommendations. You decide — with full clarity.', img:'/dashboard-desktop.png' },
+    ],
+    v_foot_l: 'Patrimo · Proprietary method · 2024',
+    v_foot_r_a: 'Instant results · ', v_foot_r_b: 'No account required',
+    // VI
+    vi_rule_sub: 'Wealth Score · 7 dimensions',
+    vi_rule_tag: 'Full analysis',
+    vi_label: 'Score',
+    vi_h2_a: 'A score to', vi_h2_em1: 'understand', vi_h2_b: 'where you', vi_h2_em2: 'stand',
+    vi_link: 'Calculate my score',
+    vi_card1_sl: 'Diversification', vi_card1_h3: 'Allocation & diversification', vi_card1_p: 'Score from 0 to 100 across 7 key dimensions of your portfolio.', vi_card1_foot: '7 dimensions · Global rating',
+    vi_card2_sl: 'Tax optimisation', vi_card2_h3: 'Tax & wrappers', vi_card2_p: 'Effective tax rate, available tax leverage, optimisation potential.', vi_card2_foot: 'Flat Tax · Marginal rate · PFU',
+    // VII
+    vii_rule_sub: 'Security / Trust',
+    vii_rule_tag: 'Zero compromise',
+    vii_label: 'Security',
+    vii_quote: 'Patrimo never asks for banking data. You enter what you want, ',
+    vii_quote_em: 'whenever you want.',
+    vii_author_title: 'Trust architecture',
+    vii_author_sub: 'AES-256 · GDPR · EU-hosted · Open-source',
+    vii_ptxt: 'Patrimo is built for investors who refuse to share their banking credentials. You control your data 100%.',
+    vii_partners: [
+      { g:'AES', n:'AES-256',     t:'Encryption' },
+      { g:'EU',  n:'GDPR',        t:'Compliance' },
+      { g:'⚡',  n:'Real-time',   t:'Performance' },
+      { g:'{}',  n:'Open-source', t:'Transparency' },
+      { g:'0',   n:'Banking data', t:'Zero access' },
+    ],
+    // VIII
+    viii_rule_sub: 'Entry / CTA',
+    viii_rule_tag: 'Immediate access · Free',
+    viii_label: 'Get started',
+    viii_h2_a: 'Take back', viii_h2_em: 'control', viii_h2_b: 'of your wealth',
+    viii_lead: 'Create your space for free. No banking data required. Immediate results, no commitment.',
+    viii_cta: 'Create my free space',
+    viii_cfoot: ['100% free','Zero banking data','Immediate access'],
+    viii_ribbon: 'Patrimo · Your wealth, managed',
+    // Footer
+    ft_desc: 'Free wealth platform — 18 tax simulators, 8 investment wrappers and a wealth score across 7 dimensions. Built for the French investor who wants to understand before acting.',
+    ft_col1: 'Platform',
+    ft_col1_links: [['#plateforme','Wealth overview'],['#plateforme','TER optimisation'],['#methode','18 simulators'],['#score','Wealth score']],
+    ft_col2: 'Wrappers',
+    ft_col2_links: [['#enveloppes','PEA · Life ins. · PER'],['#enveloppes','CTO · Savings'],['#enveloppes','SCPI · Real estate'],['#enveloppes','Crypto · Cash']],
+    ft_col3: 'Resources',
+    ft_col3_links: [['#methode','Our approach'],['#about','About'],['/login','Create account'],['#contact','Contact']],
+    ft_col4: 'Legal',
+    ft_col4_links: [['#','Legal notice'],['#','Privacy policy'],['#','Terms of use'],['#','GDPR']],
+    ft_copy: '© 2026 Patrimo · All rights reserved · Made in France',
+    ft_status: 'Operational',
+    ft_open: 'Open-source · GDPR',
+    ft_city: 'Paris · France',
+    ft_mega_a: 'Patri', ft_mega_em: 'mo',
+  },
+} as const
+
+type Lang = keyof typeof COPY
+
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
 function Plate({ label, src }: { label: string; src?: string }) {
   if (src) return <img src={src} alt={label} className="az-pimg" />
   return (
@@ -369,7 +663,11 @@ const Arr = () => (
   <svg viewBox="0 0 24 24"><path d="M5 19L19 5M19 5H8M19 5v11" /></svg>
 )
 
+/* ── Component ────────────────────────────────────────────────────────────── */
 export function LandingPage() {
+  const [lang, setLang] = useState<Lang>('fr')
+  const t = COPY[lang]
+
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>('[data-az]')
     const io = new IntersectionObserver(
@@ -410,24 +708,28 @@ export function LandingPage() {
       <style>{STYLES}</style>
 
       {/* Side rails */}
-      <div className="az-rail right"><span className="rt">Patrimo · Gestion patrimoniale augmentée · Paris · 2026</span></div>
-      <div className="az-rail left"><span className="rt">Intelligence · Structuration · Pilotage · Confidentiel</span></div>
+      <div className="az-rail right"><span className="rt">{t.rail_right}</span></div>
+      <div className="az-rail left"><span className="rt">{t.rail_left}</span></div>
 
       <div className="az-shell">
 
         {/* TOPBAR */}
         <div className="az-top">
           <div className="az-c az-top-i">
-            <span><b>PTM / 2026</b> &nbsp;·&nbsp; Vol. 01 / N° 01</span>
+            <span><b>{t.top_ref}</b> &nbsp;·&nbsp; {t.top_vol}</span>
             <span className="mid">
-              <span>Rubrique <b className="ct">Patrimoine · Intelligence</b></span>
-              <span>Gratuit · Made in France</span>
+              <span>{t.top_rub} <b className="ct">{t.top_theme}</b></span>
+              <span>{t.top_free}</span>
             </span>
             <span className="rgt">
-              <a className="az-top-link" href="mailto:contact@patrimo.fr">
-                <span className="az-pulse" />contact@patrimo.fr
+              <a className="az-top-link" href={`mailto:${t.top_email}`}>
+                <span className="az-pulse" />{t.top_email}
               </a>
-              <span><b>FR</b> · EN</span>
+              <span>
+                <button className={`az-lang-btn${lang === 'fr' ? ' active' : ''}`} onClick={() => setLang('fr')}>FR</button>
+                {' · '}
+                <button className={`az-lang-btn${lang === 'en' ? ' active' : ''}`} onClick={() => setLang('en')}>EN</button>
+              </span>
             </span>
           </div>
         </div>
@@ -438,19 +740,19 @@ export function LandingPage() {
             <a href="#top" className="az-brand">
               <span className="az-bmark">P</span>
               <span>Patrimo</span>
-              <span className="az-bmeta"><b>Finance · N° 01</b>Paris · Open-source · RGPD</span>
+              <span className="az-bmeta"><b>{t.nav_meta}</b>{t.nav_submeta}</span>
             </a>
             <nav>
               <ul className="az-links">
-                <li><a href="#plateforme">Plateforme<span className="n">04</span></a></li>
-                <li><a href="#enveloppes">Enveloppes<span className="n">08</span></a></li>
-                <li><a href="#methode">Méthode<span className="n">04</span></a></li>
-                <li><a href="#score">Score<span className="n">07</span></a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#plateforme">{t.nav_platform}<span className="n">04</span></a></li>
+                <li><a href="#enveloppes">{t.nav_envelopes}<span className="n">08</span></a></li>
+                <li><a href="#methode">{t.nav_method}<span className="n">04</span></a></li>
+                <li><a href="#score">{t.nav_score}<span className="n">07</span></a></li>
+                <li><a href="#contact">{t.nav_contact}</a></li>
               </ul>
             </nav>
             <div className="az-nav-side">
-              <a className="az-cta" href="/login">Créer mon espace</a>
+              <a className="az-cta" href="/login">{t.nav_cta}</a>
               <span className="az-sdot" aria-hidden="true" />
             </div>
           </div>
@@ -462,48 +764,43 @@ export function LandingPage() {
             <div className="az-rule">
               <span className="az-roman">I.</span>
               <span className="mg">
-                <span>Couverture / Planche Principale</span>
+                <span>{t.i_rule_sub}</span>
                 <span className="dm">·</span>
-                <span>Patrimo / Volume 01</span>
+                <span>{t.i_rule_vol}</span>
               </span>
               <span>001 / 008</span>
             </div>
           </div>
           <div className="az-c hg az-hg">
             <div className="az-hcopy">
-              <span className="az-label" data-az>Cockpit patrimonial intelligent <span className="ix">· N° 01</span></span>
+              <span className="az-label" data-az>{t.i_label} <span className="ix">· N° 01</span></span>
               <h1 className="az-display" data-az>
-                La gestion patrimoniale, <em>réinventée</em><span className="dot">.</span>
+                {t.i_h1_a} <em>{t.i_h1_em}</em><span className="dot">.</span>
               </h1>
-              <p className="az-lead" data-az>
-                18 simulateurs fiscaux · 8 enveloppes · 0 donnée bancaire.
-                Gratuit, pour l'investisseur français qui veut comprendre avant d'agir.
-              </p>
+              <p className="az-lead" data-az>{t.i_lead}</p>
               <div className="az-hact" data-az>
                 <a className="az-btn az-btn-primary" href="/login">
-                  Créer mon espace gratuit
+                  {t.i_cta_primary}
                   <span className="az-arr"><Arr /></span>
                 </a>
-                <a className="az-btn az-btn-ghost" href="#plateforme">
-                  Découvrir la plateforme
-                </a>
+                <a className="az-btn az-btn-ghost" href="#plateforme">{t.i_cta_ghost}</a>
               </div>
               <div className="az-hstats" data-az>
                 <div className="az-stat">
                   <span className="az-ring solid">18</span>
-                  <span className="az-statlabel"><b>simulateurs</b>Fiscalité française</span>
+                  <span className="az-statlabel"><b>{t.i_stat1_b}</b>{t.i_stat1_s}</span>
                 </div>
                 <div className="az-stat">
                   <span className="az-ring">8</span>
-                  <span className="az-statlabel"><b>enveloppes</b>PEA · AV · PER…</span>
+                  <span className="az-statlabel"><b>{t.i_stat2_b}</b>{t.i_stat2_s}</span>
                 </div>
                 <div className="az-stat">
                   <span className="az-ring coral">0</span>
-                  <span className="az-statlabel"><b>donnée bancaire</b>Zéro accès requis</span>
+                  <span className="az-statlabel"><b>{t.i_stat3_b}</b>{t.i_stat3_s}</span>
                 </div>
               </div>
               <div className="az-hfoot" data-az>
-                <span className="az-meta">Gratuit · Pour l'investisseur français</span>
+                <span className="az-meta">{t.i_foot_l}</span>
                 <span className="az-coord">48.8566° N · 2.3522° E · Paris</span>
               </div>
             </div>
@@ -511,15 +808,14 @@ export function LandingPage() {
               <span className="az-corner tl" /><span className="az-corner tr" />
               <span className="az-corner bl" /><span className="az-corner br" />
               <span className="az-annot tl az-coord">FIG. 01 / PTM-01</span>
-              <span className="az-annot tr">Planche N° 01</span>
-              <span className="az-annot bl az-coord">Gratuit · 2026</span>
-              <span className="az-annot br">Composé par&nbsp;<span style={{ color: 'var(--coral)' }}>Patrimo</span></span>
+              <span className="az-annot tr">{t.i_annot_tr}</span>
+              <span className="az-annot bl az-coord">Free · 2026</span>
+              <span className="az-annot br">{t.i_annot_br}&nbsp;<span style={{ color: 'var(--coral)' }}>Patrimo</span></span>
               <Plate label="HERO" src="/hero-decor.webp" />
               <div className="idx">
-                <span><span className="n">01</span>Inventaire</span>
-                <span className="on"><span className="n">02</span>Analyse</span>
-                <span><span className="n">03</span>Simulation</span>
-                <span><span className="n">04</span>Décision</span>
+                {t.i_idx.map((label, i) => (
+                  <span key={i} className={i === 1 ? 'on' : ''}><span className="n">0{i+1}</span>{label}</span>
+                ))}
               </div>
             </div>
           </div>
@@ -531,18 +827,15 @@ export function LandingPage() {
             <div className="az-wleft">
               <span className="az-wmark"><span className="az-wpulse" /></span>
               <span className="az-wtitle">
-                <b>8 enveloppes</b>
-                <span>Patrimo · France · Gratuit</span>
+                <b>{t.wire_title}</b>
+                <span>{t.wire_sub}</span>
               </span>
             </div>
             <div className="az-wrows">
-              {[
-                [['PEA','Exonéré après 5 ans'],['AV','Abattement 152 500 €'],['PER','Déduction IR'],['CTO','Flat Tax 30 %'],['LIVRET','Défiscalisé garanti'],['SCPI','Rendement 5,2 %'],['CRYPTO','3916-bis déclaré'],['CASH','Précaution & opportunité'],['PEA','Exonéré après 5 ans'],['AV','Abattement 152 500 €'],['PER','Déduction IR'],['CTO','Flat Tax 30 %'],['LIVRET','Défiscalisé garanti'],['SCPI','Rendement 5,2 %'],['CRYPTO','3916-bis déclaré'],['CASH','Précaution & opportunité']],
-                [['FT','Flat Tax vs Barème · 18 simulateurs'],['PE','PEA vs CTO vs Assurance-Vie'],['IF','IFI · Transmission · Succession'],['RE','Retraite · PER · LMNP · SCPI'],['SC','Score Patrimonial · 7 dimensions'],['SZ','Zéro donnée bancaire · RGPD · AES-256'],['FT','Flat Tax vs Barème · 18 simulateurs'],['PE','PEA vs CTO vs Assurance-Vie'],['IF','IFI · Transmission · Succession'],['RE','Retraite · PER · LMNP · SCPI'],['SC','Score Patrimonial · 7 dimensions'],['SZ','Zéro donnée bancaire · RGPD · AES-256']],
-              ].map((row, ri) => (
+              {[t.wire_row1, t.wire_row2].map((row, ri) => (
                 <div key={ri} className={`az-wrow${ri === 1 ? ' rev' : ''}`}>
                   <div className="az-mtrack" aria-hidden="true">
-                    {row.map(([coord, name], i) => (
+                    {(row as [string,string][]).map(([coord, name], i) => (
                       <span key={i} className="az-witem">
                         <span className="az-wdot">·</span>
                         <span className="az-wcoord">{coord}</span>
@@ -561,37 +854,29 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">II.</span>
-              <span className="mg"><span>Manifeste / À propos</span><span className="dm">·</span><span>Identité</span></span>
+              <span className="mg"><span>{t.ii_rule_sub}</span><span className="dm">·</span><span>{t.ii_rule_tag}</span></span>
               <span>002 / 008</span>
             </div>
             <div className="az-agrid">
               <div data-az>
-                <span className="az-label">Notre manifeste <span className="ix">· II</span></span>
+                <span className="az-label">{t.ii_label} <span className="ix">· II</span></span>
                 <h2 className="az-display">
-                  La clarté <em>décisionnelle,</em>{' '}
-                  au cœur de chaque <em>patrimoine</em><span className="dot">.</span>
+                  {t.ii_h2_a} <em>{t.ii_h2_em1}</em>{' '}{t.ii_h2_b} <em>{t.ii_h2_em2}</em><span className="dot">.</span>
                 </h2>
-                <p className="az-lead">
-                  Patrimo n'est pas un outil de plus. C'est une couche d'intelligence financière
-                  qui transforme la complexité patrimoniale en décisions claires, structurées et
-                  documentées. Gratuit par conviction, sécurisé par construction.
-                </p>
-                <p className="az-lead" style={{ marginTop: 18 }}>
-                  18 simulateurs fiscaux. 8 enveloppes. Zéro donnée bancaire.
-                  Conçu pour l'investisseur français qui veut comprendre avant d'agir.
-                </p>
+                <p className="az-lead">{t.ii_lead1}</p>
+                <p className="az-lead" style={{ marginTop: 18 }}>{t.ii_lead2}</p>
                 <div className="az-afrow">
                   <span className="mark">P</span>
-                  <span>Fondé en 2024</span>
+                  <span>{t.ii_founded}</span>
                   <div className="az-stamp">
-                    <span>Open-source · RGPD</span>
-                    <span>Hébergé en UE · AES-256</span>
+                    <span>{t.ii_stamp1}</span>
+                    <span>{t.ii_stamp2}</span>
                   </div>
                 </div>
               </div>
               <div className="az-aart" data-az="right">
                 <Plate label="ABOUT" src="/dashboard-desktop.png" />
-                <div className="az-acapt"><b>Planche II</b>Dashboard patrimonial · 2026</div>
+                <div className="az-acapt"><b>{t.ii_capt_b}</b>{t.ii_capt}</div>
               </div>
             </div>
           </div>
@@ -602,27 +887,22 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">III.</span>
-              <span className="mg"><span>Capacités / Plateforme</span><span className="dm">·</span><span>4 modules</span></span>
+              <span className="mg"><span>{t.iii_rule_sub}</span><span className="dm">·</span><span>{t.iii_rule_tag}</span></span>
               <span>003 / 008</span>
             </div>
             <div className="az-cgrid">
               <div className="az-cart" data-az="left">
                 <Plate label="PLATEFORME" src="/patrimoine-overview.png" />
-                <span className="ribbon">Plateforme Patrimo <b>·</b> 2026</span>
+                <span className="ribbon">{t.iii_ribbon}</span>
                 <span className="az-corner tl" /><span className="az-corner br" />
               </div>
               <div className="az-ccopy">
-                <span className="az-label" data-az>Intelligence patrimoniale <span className="ix">· III</span></span>
+                <span className="az-label" data-az>{t.iii_label} <span className="ix">· III</span></span>
                 <h2 className="az-display" data-az>
-                  Quatre modules, <em>une vision</em> unifiée<span className="dot">.</span>
+                  {t.iii_h2_a} <em>{t.iii_h2_em}</em> {t.iii_h2_b}<span className="dot">.</span>
                 </h2>
                 <div className="az-cards">
-                  {[
-                    { n:'01', tag:'Suivre',    title:'Vision patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, patrimoine net, performance." },
-                    { n:'02', tag:'Optimiser', title:'Chaque frais compte',           body:"ETFs comparés aux meilleures alternatives. Sur 20 ans, 0,18 % de moins = des milliers d'euros récupérés." },
-                    { n:'03', tag:'Simuler',   title:'18 simulateurs fiscaux',        body:"Flat tax vs barème, PEA vs CTO, IFI, transmission, retraite. Tout en un seul endroit." },
-                    { n:'04', tag:'Éduquer',   title:"Comprendre avant d'agir",       body:"Guides pratiques, glossaire interactif, fiches enveloppe. L'éducation financière française." },
-                  ].map((c, i) => (
+                  {t.iii_cards.map((c, i) => (
                     <div key={i} className="az-card" data-az>
                       <div className="cnum">{c.n}<span className="ctag">{c.tag}</span></div>
                       <h3>{c.title}</h3>
@@ -641,34 +921,24 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">IV.</span>
-              <span className="mg"><span>Enveloppes / 8 classes</span><span className="dm">·</span><span>8 fiches</span></span>
+              <span className="mg"><span>{t.iv_rule_sub}</span><span className="dm">·</span><span>{t.iv_rule_tag}</span></span>
               <span>004 / 008</span>
             </div>
             <div className="az-lhead">
               <div data-az>
-                <span className="az-label">8 enveloppes analysées <span className="ix">· IV</span></span>
-                <h2 className="az-display">Chaque enveloppe, <em>maîtrisée</em><span className="dot">.</span></h2>
+                <span className="az-label">{t.iv_label} <span className="ix">· IV</span></span>
+                <h2 className="az-display">{t.iv_h2_a} <em>{t.iv_h2_em}</em><span className="dot">.</span></h2>
               </div>
               <div>
                 <div className="az-pills">
-                  <button className="az-pill active">Toutes <span>08</span></button>
-                  <button className="az-pill">Actions</button>
-                  <button className="az-pill">Épargne</button>
-                  <button className="az-pill">Immobilier</button>
+                  {t.iv_pills.map((p, i) => (
+                    <button key={i} className={`az-pill${i === 0 ? ' active' : ''}`}>{p}</button>
+                  ))}
                 </div>
               </div>
             </div>
             <div className="az-lgrid">
-              {[
-                { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.png' },
-                { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.", img:'/PEA.png' },
-                { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.", img:'/AV.png' },
-                { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.", img:'/CTO.png' },
-                { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.", img:'/PER.png' },
-                { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.", img:'/immobilliers.png' },
-                { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.png' },
-                { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.png' },
-              ].map((lab, i) => (
+              {t.iv_labs.map((lab, i) => (
                 <div key={i} className="az-lab" data-az>
                   <div className="az-limg">
                     <Plate label={`ENV-${lab.n}`} src={lab.img} />
@@ -682,7 +952,7 @@ export function LandingPage() {
               ))}
             </div>
             <div className="az-lfoot">
-              <span className="az-meta">8 enveloppes · Fiches complètes</span>
+              <span className="az-meta">{t.iv_foot}</span>
               <div className="az-prog">
                 {Array.from({ length: 8 }, (_, i) => <span key={i} className={i < 5 ? 'on' : ''} />)}
               </div>
@@ -695,28 +965,23 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">V.</span>
-              <span className="mg"><span>Méthode / Simulateurs</span><span className="dm">·</span><span>4 étapes</span></span>
+              <span className="mg"><span>{t.v_rule_sub}</span><span className="dm">·</span><span>{t.v_rule_tag}</span></span>
               <span>005 / 008</span>
             </div>
             <div className="az-mhead">
               <div data-az>
-                <span className="az-label">Notre approche <span className="ix">· V</span></span>
+                <span className="az-label">{t.v_label} <span className="ix">· V</span></span>
                 <h2 className="az-display">
-                  Quatre étapes. <em>Un résultat</em> mesurable<span className="dot">.</span>
+                  {t.v_h2_a} <em>{t.v_h2_em}</em> {t.v_h2_b}<span className="dot">.</span>
                 </h2>
               </div>
               <div className="mright" data-az>
                 <span className="plus">+</span>
-                <p>Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.</p>
+                <p>{t.v_sub_p}</p>
               </div>
             </div>
             <div className="az-mgrid">
-              {[
-                { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/patrimoine-actifs.png' },
-                { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/patrimoine-overview.png' },
-                { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/dashboard-mobile.png' },
-                { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/dashboard-desktop.png' },
-              ].map((s, i) => (
+              {t.v_steps.map((s, i) => (
                 <div key={i} className="az-mstep" data-az>
                   <div className="snum">{s.n}</div>
                   <h4>{s.t}{i < 3 && <span className="arr-r">→</span>}</h4>
@@ -726,8 +991,8 @@ export function LandingPage() {
               ))}
             </div>
             <div className="az-mfoot">
-              <div className="mfl"><span className="mring" /><span>Patrimo · Méthode propriétaire · 2024</span></div>
-              <div className="mfr">Résultat immédiat · <b>Zéro compte requis</b></div>
+              <div className="mfl"><span className="mring" /><span>{t.v_foot_l}</span></div>
+              <div className="mfr">{t.v_foot_r_a}<b>{t.v_foot_r_b}</b></div>
             </div>
           </div>
         </section>
@@ -737,31 +1002,30 @@ export function LandingPage() {
           <div className="az-dark">
             <div className="az-drule">
               <span className="az-roman">VI.</span>
-              <span className="mg"><span>Score Patrimonial · 7 dimensions</span><span className="dm">·</span><span>Analyse complète</span></span>
+              <span className="mg"><span>{t.vi_rule_sub}</span><span className="dm">·</span><span>{t.vi_rule_tag}</span></span>
               <span>006 / 008</span>
             </div>
             <div className="az-dgrid">
               <div className="az-dcopy" data-az>
-                <span className="az-label">Score <span className="ix">· VI</span></span>
+                <span className="az-label">{t.vi_label} <span className="ix">· VI</span></span>
                 <h2>
-                  Une note pour <em>comprendre</em>{' '}
-                  où vous en <em>êtes</em><span className="dot">.</span>
+                  {t.vi_h2_a} <em>{t.vi_h2_em1}</em>{' '}{t.vi_h2_b} <em>{t.vi_h2_em2}</em><span className="dot">.</span>
                 </h2>
-                <a className="az-dlink" href="/login">Calculer mon score</a>
+                <a className="az-dlink" href="/login">{t.vi_link}</a>
               </div>
               <a className="az-wcard rot1" href="/login" data-az>
-                <div className="wlrow"><span className="wsl">Diversification</span><span className="widx">DIM-01</span></div>
+                <div className="wlrow"><span className="wsl">{t.vi_card1_sl}</span><span className="widx">DIM-01</span></div>
                 <div className="wimg"><Plate label="SCORE-1" src="/patrimoine-actifs.png" /></div>
-                <h3>Allocation & diversification</h3>
-                <p>Score de 0 à 100 sur 7 dimensions clés de votre patrimoine.</p>
-                <div className="wmrow"><span>7 dimensions · Note globale</span><span className="wyr">2026</span></div>
+                <h3>{t.vi_card1_h3}</h3>
+                <p>{t.vi_card1_p}</p>
+                <div className="wmrow"><span>{t.vi_card1_foot}</span><span className="wyr">2026</span></div>
               </a>
               <a className="az-wcard rot2" href="/login" data-az>
-                <div className="wlrow"><span className="wsl">Optimisation fiscale</span><span className="widx">DIM-02</span></div>
+                <div className="wlrow"><span className="wsl">{t.vi_card2_sl}</span><span className="widx">DIM-02</span></div>
                 <div className="wimg"><Plate label="SCORE-2" src="/patrimoine-overview.png" /></div>
-                <h3>Fiscalité & enveloppes</h3>
-                <p>Taux d'imposition effectif, levier fiscal disponible, optimisation possible.</p>
-                <div className="wmrow"><span>Flat Tax · TMI · PFU</span><span className="wyr">2026</span></div>
+                <h3>{t.vi_card2_h3}</h3>
+                <p>{t.vi_card2_p}</p>
+                <div className="wmrow"><span>{t.vi_card2_foot}</span><span className="wyr">2026</span></div>
               </a>
             </div>
           </div>
@@ -772,36 +1036,25 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">VII.</span>
-              <span className="mg"><span>Sécurité / Confiance</span><span className="dm">·</span><span>Zéro compromis</span></span>
+              <span className="mg"><span>{t.vii_rule_sub}</span><span className="dm">·</span><span>{t.vii_rule_tag}</span></span>
               <span>007 / 008</span>
             </div>
             <div className="az-tgrid">
               <div data-az>
-                <span className="az-label">Sécurité <span className="ix">· VII</span></span>
+                <span className="az-label">{t.vii_label} <span className="ix">· VII</span></span>
                 <h2 className="az-tcopy" style={{ marginTop: 28 }}>
                   <div className="az-display">
-                    « Patrimo ne demande aucune donnée bancaire.
-                    Vous saisissez ce que vous voulez,{' '}
-                    <em>quand vous voulez.</em> »
+                    « {t.vii_quote}<em>{t.vii_quote_em}</em> »
                   </div>
                 </h2>
                 <div className="az-author">
                   <div className="az-avatar">P</div>
-                  <p>Architecture de confiance<span>AES-256 · RGPD · Hébergé en UE · Open-source</span></p>
+                  <p>{t.vii_author_title}<span>{t.vii_author_sub}</span></p>
                 </div>
                 <div className="az-divider" />
-                <p className="az-ptxt">
-                  Patrimo est conçu pour les investisseurs qui refusent de partager leurs accès bancaires.
-                  Vous contrôlez vos données à 100 %.
-                </p>
+                <p className="az-ptxt">{t.vii_ptxt}</p>
                 <div className="az-partners">
-                  {[
-                    { g:'AES', n:'AES-256',        t:'Chiffrement' },
-                    { g:'EU',  n:'RGPD',           t:'Conformité' },
-                    { g:'⚡',  n:'Temps réel',     t:'Performance' },
-                    { g:'{}',  n:'Open-source',    t:'Transparence' },
-                    { g:'0',   n:'Donnée bancaire', t:'Zéro accès' },
-                  ].map((p, i) => (
+                  {t.vii_partners.map((p, i) => (
                     <div key={i} className="az-partner" data-az>
                       <div className="az-pglyph">{p.g}</div>
                       <span className="az-pname">{p.n}</span>
@@ -822,35 +1075,31 @@ export function LandingPage() {
           <div className="az-c">
             <div className="az-rule">
               <span className="az-roman">VIII.</span>
-              <span className="mg"><span>Entrée / CTA</span><span className="dm">·</span><span>Accès immédiat · Gratuit</span></span>
+              <span className="mg"><span>{t.viii_rule_sub}</span><span className="dm">·</span><span>{t.viii_rule_tag}</span></span>
               <span>008 / 008</span>
             </div>
             <div className="az-ctag">
               <div data-az>
-                <span className="az-label">Commencer <span className="ix">· VIII</span></span>
+                <span className="az-label">{t.viii_label} <span className="ix">· VIII</span></span>
                 <h2 className="az-display">
-                  Reprenez le <em>contrôle</em>{' '}
-                  de votre patrimoine<span className="dot">.</span>
+                  {t.viii_h2_a} <em>{t.viii_h2_em}</em>{' '}{t.viii_h2_b}<span className="dot">.</span>
                 </h2>
-                <p className="az-lead">
-                  Créez votre espace gratuitement. Aucune donnée bancaire requise.
-                  Résultats immédiats, sans engagement.
-                </p>
+                <p className="az-lead">{t.viii_lead}</p>
                 <div style={{ marginTop: 36, marginBottom: 32 }}>
                   <a className="az-btn az-btn-primary" href="/login" style={{ fontSize: 15, padding: '16px 28px' }}>
-                    Créer mon espace gratuit
+                    {t.viii_cta}
                     <span className="az-arr"><Arr /></span>
                   </a>
                 </div>
                 <div className="az-cfoot">
-                  <span className="cs">100 % gratuit</span>
-                  <span>Zéro donnée bancaire</span>
-                  <span>Accès immédiat</span>
+                  {t.viii_cfoot.map((s, i) => (
+                    <span key={i} className={i === 0 ? 'cs' : ''}>{s}</span>
+                  ))}
                 </div>
               </div>
               <div className="az-caart" data-az="right">
                 <Plate label="CTA" src="/patrimoine-actifs.png" />
-                <span className="ribbon">Patrimo · Votre patrimoine, piloté</span>
+                <span className="ribbon">{t.viii_ribbon}</span>
               </div>
             </div>
           </div>
@@ -865,64 +1114,39 @@ export function LandingPage() {
                   <span className="az-bmark">P</span>
                   <span>Patrimo</span>
                 </a>
-                <p>
-                  Plateforme patrimoniale gratuite — 18 simulateurs fiscaux, 8 enveloppes
-                  et un score patrimonial sur 7 dimensions. Conçue pour l'investisseur français
-                  qui veut comprendre avant d'agir.
-                </p>
+                <p>{t.ft_desc}</p>
               </div>
-              <div className="az-fcol">
-                <h5>Plateforme</h5>
-                <ul>
-                  <li><a href="#plateforme">Vision patrimoniale</a></li>
-                  <li><a href="#plateforme">Optimisation TER</a></li>
-                  <li><a href="#methode">18 simulateurs</a></li>
-                  <li><a href="#score">Score patrimonial</a></li>
-                </ul>
-              </div>
-              <div className="az-fcol">
-                <h5>Enveloppes</h5>
-                <ul>
-                  <li><a href="#enveloppes">PEA · AV · PER</a></li>
-                  <li><a href="#enveloppes">CTO · Livrets</a></li>
-                  <li><a href="#enveloppes">SCPI · Immobilier</a></li>
-                  <li><a href="#enveloppes">Crypto · Cash</a></li>
-                </ul>
-              </div>
-              <div className="az-fcol">
-                <h5>Ressources</h5>
-                <ul>
-                  <li><a href="#methode">Notre approche</a></li>
-                  <li><a href="#about">À propos</a></li>
-                  <li><a href="/login">Créer un compte</a></li>
-                  <li><a href="#contact">Contact</a></li>
-                </ul>
-              </div>
-              <div className="az-fcol">
-                <h5>Légal</h5>
-                <ul>
-                  <li><a href="#">Mentions légales</a></li>
-                  <li><a href="#">Confidentialité</a></li>
-                  <li><a href="#">CGU</a></li>
-                  <li><a href="#">RGPD</a></li>
-                </ul>
-              </div>
+              {([
+                [t.ft_col1, t.ft_col1_links],
+                [t.ft_col2, t.ft_col2_links],
+                [t.ft_col3, t.ft_col3_links],
+                [t.ft_col4, t.ft_col4_links],
+              ] as [string, [string,string][]][]).map(([title, links], ci) => (
+                <div key={ci} className="az-fcol">
+                  <h5>{title}</h5>
+                  <ul>
+                    {links.map(([href, label], li) => (
+                      <li key={li}><a href={href}>{label}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
             <div className="az-fbot">
-              <span>© 2026 Patrimo · Tous droits réservés · Made in France</span>
+              <span>{t.ft_copy}</span>
               <div className="fr">
                 <span>
                   <span style={{ width:6,height:6,borderRadius:'50%',background:'var(--coral)',display:'inline-block',marginRight:6,verticalAlign:'middle',animation:'az-pulse 2.4s ease-in-out infinite' }} />
-                  Opérationnel
+                  {t.ft_status}
                 </span>
-                <span>Open-source · RGPD</span>
-                <span>Paris · France</span>
+                <span>{t.ft_open}</span>
+                <span>{t.ft_city}</span>
               </div>
             </div>
           </div>
           <div className="az-fmega">
             <div className="az-c">
-              <div className="word">Patri<em>mo</em></div>
+              <div className="word">{t.ft_mega_a}<em>{t.ft_mega_em}</em></div>
             </div>
           </div>
         </footer>

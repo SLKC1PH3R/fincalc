@@ -811,7 +811,7 @@ export function LandingPage() {
               <span className="az-annot tr">{t.i_annot_tr}</span>
               <span className="az-annot bl az-coord">Free · 2026</span>
               <span className="az-annot br">{t.i_annot_br}&nbsp;<span style={{ color: 'var(--coral)' }}>Patrimo</span></span>
-              <Plate label="HERO" src="/hero-decor.webp" />
+              <Plate label="HERO" src="/hero.jpg" />
               <div className="idx">
                 {t.i_idx.map((label, i) => (
                   <span key={i} className={i === 1 ? 'on' : ''}><span className="n">0{i+1}</span>{label}</span>

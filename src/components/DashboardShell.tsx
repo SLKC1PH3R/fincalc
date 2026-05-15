@@ -45,6 +45,7 @@ function TickerBar({ indices }: { indices: MarketIndex[] }) {
 
 const OnboardingWizard = dynamic(() => import('./OnboardingWizard').then(m => m.OnboardingWizard), { ssr: false })
 const CommandPalette = dynamic(() => import('./CommandPalette').then(m => m.CommandPalette), { ssr: false })
+const WelcomeSplash = dynamic(() => import('./WelcomeSplash').then(m => m.WelcomeSplash), { ssr: false })
 
 
 export function DashboardShell({ children }: { children: ReactNode }) {
@@ -204,6 +205,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       </main>
 
       {showWizard && <OnboardingWizard onClose={() => setShowWizard(false)} />}
+      <WelcomeSplash />
       <CommandPalette />
     </div>
   )

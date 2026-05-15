@@ -351,7 +351,7 @@ export default function HomePage() {
 
   // Load snapshots (historical patrimoine)
   useEffect(() => {
-    fetch('/api/patrimoine/snapshots?days=1095')
+    fetch('/api/patrimoine/snapshots?days=1825')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (Array.isArray(d)) {
@@ -413,7 +413,7 @@ export default function HomePage() {
   const animatedNet = useCountUp(patrimoineKPI?.net ?? 0, 1400, loaded && !!patrimoineKPI)
 
   // Period filter
-  const PERIOD_DAYS: Record<string, number> = { '1M': 30, '6M': 180, '1A': 365, '3A': 1095, 'Tout': Infinity }
+  const PERIOD_DAYS: Record<string, number> = { '1M': 30, '6M': 180, '1A': 365, '3A': 1095, '5A': 1825, 'Tout': Infinity }
   const filteredTimeline = (() => {
     const days = PERIOD_DAYS[period] ?? 365
     const cutoff = days === Infinity ? 0 : Date.now() - days * 86400000
@@ -487,7 +487,7 @@ export default function HomePage() {
     fontFamily: 'var(--p-sans)',
   }
 
-  const periods = ['1M', '6M', '1A', '3A', 'Tout']
+  const periods = ['1M', '6M', '1A', '3A', '5A', 'Tout']
 
   return (
     <div className="flex-1" style={{ background: 'var(--p-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

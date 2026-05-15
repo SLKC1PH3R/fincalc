@@ -241,6 +241,72 @@ async function main() {
     })
   }
   console.log(`✅ ${positions.length} positions démo créées`)
+
+  // ─── Snapshots historiques démo — 5 ans ───────────────────────────────────────
+  await prisma.patrimoineSnapshot.deleteMany({ where: { userId: demoUser.id } })
+
+  // Milestones brut (actifs totaux sans déduction dettes) — dates clés d'achat immobilier
+  // Mai 2021 : PEA+AV+CTO+PER+livrets+Parking+F2 Toulouse+Local Lyon = ~424k
+  // Nov 2021 : + achat LMNP Grenoble 125k → brut +128k
+  // Jun 2022 : + achat Studio Bordeaux 95k → brut +96k
+  // Sep 2022 : + achat RP Lyon 265k → brut +267k
+  // Avr 2023 : + achat RS Annecy 320k → brut +323k
+  // Mai 2026 : valeur actuelle ~1 330k
+  const MILESTONES = [
+    { date: '2021-05-01', value: 424000 },
+    { date: '2021-10-01', value: 431000 },
+    { date: '2021-11-01', value: 559000 },  // Grenoble
+    { date: '2022-05-01', value: 569000 },
+    { date: '2022-06-01', value: 665000 },  // Bordeaux
+    { date: '2022-08-01', value: 671000 },
+    { date: '2022-09-01', value: 940000 },  // RP Lyon
+    { date: '2023-03-01', value: 961000 },
+    { date: '2023-04-01', value: 1284000 }, // RS Annecy
+    { date: '2026-05-01', value: 1330000 },
+  ]
+
+  function lerp(a, b, t) { return a + (b - a) * t }
+
+  // Bruit déterministe pour des valeurs cohérentes entre exécutions
+  function stableNoise(ms, amp) {
+    const h = (((ms * 2654435761) >>> 0) / 4294967296)
+    return (h - 0.5) * 2 * amp
+  }
+
+  const snapshots = []
+  const cursor = new Date('2021-05-01')
+  const end    = new Date('2026-05-01')
+
+  while (cursor <= end) {
+    const ms      = cursor.getTime()
+    const dateObj = new Date(cursor.toISOString().split('T')[0])
+
+    // Cherche les deux milestones encadrants
+    let lo = MILESTONES[0], hi = MILESTONES[MILESTONES.length - 1]
+    for (let i = 0; i < MILESTONES.length - 1; i++) {
+      const a = new Date(MILESTONES[i].date).getTime()
+      const b = new Date(MILESTONES[i + 1].date).getTime()
+      if (ms >= a && ms <= b) { lo = MILESTONES[i]; hi = MILESTONES[i + 1]; break }
+    }
+
+    const span = new Date(hi.date).getTime() - new Date(lo.date).getTime()
+    const t    = span > 0 ? (ms - new Date(lo.date).getTime()) / span : 1
+    const base = lerp(lo.value, hi.value, Math.max(0, Math.min(1, t)))
+    const noise = stableNoise(ms, base * 0.007) // ±0.7 % de bruit stable
+    const totalValue = Math.round(base + noise)
+
+    snapshots.push({ userId: demoUser.id, date: dateObj, totalValue, byEnvelope: { synthetic: true } })
+    cursor.setMonth(cursor.getMonth() + 1)
+  }
+
+  for (const snap of snapshots) {
+    await prisma.patrimoineSnapshot.upsert({
+      where:  { userId_date: { userId: snap.userId, date: snap.date } },
+      update: { totalValue: snap.totalValue, byEnvelope: snap.byEnvelope },
+      create: snap,
+    })
+  }
+  console.log(`✅ ${snapshots.length} snapshots historiques démo créés (5 ans)`)
   console.log('🚀 Seed terminé !')
 }
 

@@ -118,7 +118,9 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\tools\" -Recurse -File)",
       "Bash(Select-Object FullName)",
       "Bash(python scripts/search.py \"fintech patrimonial landing page finance france elegant ivory\" --design-system -f markdown)",
-      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"fintech patrimonial landing page finance france elegant ivory\" --design-system -f markdown)"
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"fintech patrimonial landing page finance france elegant ivory\" --design-system -f markdown)",
+      "Bash(Remove-Item -Recurse -Force src/components/landing/space)",
+      "Bash(Remove-Item -Force src/components/landing/icons.tsx, src/components/landing/Stats.tsx, src/components/landing/WorldMap.tsx, src/components/landing/Security.tsx, src/components/landing/index.ts, src/components/landing/LiveRates.tsx, src/components/landing/Dashboard.tsx, src/components/landing/Compare.tsx, src/components/landing/Footer.tsx, src/components/landing/Logos.tsx, src/components/landing/tokens.css, src/components/landing/Score.tsx, src/components/landing/Testimonials.tsx, src/components/landing/Faq.tsx, src/components/landing/Hero.tsx, src/components/landing/Pillars.tsx, src/components/landing/Simulators.tsx, src/components/landing/Mockup.tsx, src/components/landing/Envelopes.tsx)"
     ]
   }
 }

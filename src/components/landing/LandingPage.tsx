@@ -449,7 +449,7 @@ const COPY = {
       { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/patrimoine-actifs.png' },
       { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/patrimoine-overview.png' },
       { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/dashboard-mobile.png' },
-      { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/dashboard-desktop.png' },
+      { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/heritage.jpg' },
     ],
     v_foot_l: 'Patrimo · Méthode propriétaire · 2024',
     v_foot_r_a: 'Résultat immédiat · ', v_foot_r_b: 'Zéro compte requis',
@@ -591,7 +591,7 @@ const COPY = {
       { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/patrimoine-actifs.png' },
       { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/patrimoine-overview.png' },
       { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/dashboard-mobile.png' },
-      { n:'iv',  t:'Decision',  b:'Wealth score across 7 dimensions. Actionable recommendations. You decide — with full clarity.', img:'/dashboard-desktop.png' },
+      { n:'iv',  t:'Decision',  b:'Wealth score across 7 dimensions. Actionable recommendations. You decide — with full clarity.', img:'/heritage.jpg' },
     ],
     v_foot_l: 'Patrimo · Proprietary method · 2024',
     v_foot_r_a: 'Instant results · ', v_foot_r_b: 'No account required',
@@ -875,7 +875,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-aart" data-az="right">
-                <Plate label="ABOUT" src="/dashboard-desktop.png" />
+                <Plate label="ABOUT" src="/heritage.jpg" />
                 <div className="az-acapt"><b>{t.ii_capt_b}</b>{t.ii_capt}</div>
               </div>
             </div>

@@ -111,42 +111,45 @@ export function SplashScreen() {
           <span>Free · 2026</span>
         </div>
 
-        {/* PATRIMO display */}
-        <div style={{
-          padding: '48px 40px 40px',
-          textAlign: 'center',
-        }}>
+        {/* Hero image */}
+        <div style={{ position: 'relative', overflow: 'hidden', height: 'clamp(260px, 40vw, 380px)' }}>
+          <img
+            src="/hero.jpg"
+            alt="Patrimo"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+          />
+          {/* Overlay gradient bottom */}
           <div style={{
-            fontSize: 9, letterSpacing: '0.22em',
-            color: 'rgba(21,20,15,0.35)', textTransform: 'uppercase',
-            marginBottom: 28,
-          }}>
-            Bienvenue sur
-          </div>
-
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
+            background: 'linear-gradient(to top, rgba(21,20,15,0.72) 0%, transparent 100%)',
+            pointerEvents: 'none',
+          }} />
+          {/* PATRIMO text over image */}
           <div style={{
-            fontFamily: F_SERIF,
-            fontStyle: 'italic',
-            fontSize: 'clamp(72px, 15vw, 112px)',
-            lineHeight: 0.9,
-            letterSpacing: '-0.02em',
-            userSelect: 'none',
+            position: 'absolute', bottom: 24, left: 0, right: 0,
+            textAlign: 'center', userSelect: 'none',
           }}>
-            <span style={{ color: INK }}>PATRI</span><span style={{ color: CORAL }}>MO</span>
-          </div>
-
-          <div style={{
-            marginTop: 28,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-          }}>
-            <div style={{ height: 1, width: 40, background: LINE }} />
-            <span style={{
-              fontSize: 9, letterSpacing: '0.18em',
-              color: 'rgba(21,20,15,0.38)', textTransform: 'uppercase',
+            <div style={{
+              fontFamily: F_SERIF, fontStyle: 'italic',
+              fontSize: 'clamp(56px, 12vw, 90px)',
+              lineHeight: 0.9, letterSpacing: '-0.02em',
+            }}>
+              <span style={{ color: '#efe7d2' }}>PATRI</span><span style={{ color: CORAL }}>MO</span>
+            </div>
+            <div style={{
+              marginTop: 10, fontSize: 9, letterSpacing: '0.2em',
+              color: 'rgba(239,231,210,0.55)', textTransform: 'uppercase', fontFamily: F_MONO,
             }}>
               Gestion patrimoniale augmentée
-            </span>
-            <div style={{ height: 1, width: 40, background: LINE }} />
+            </div>
+          </div>
+          {/* HERO label top-right */}
+          <div style={{
+            position: 'absolute', top: 12, right: 14,
+            fontFamily: F_MONO, fontSize: 8, letterSpacing: '0.18em',
+            color: 'rgba(239,231,210,0.45)', textTransform: 'uppercase',
+          }}>
+            HERO
           </div>
         </div>
 

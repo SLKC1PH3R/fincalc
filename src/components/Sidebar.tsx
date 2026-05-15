@@ -108,22 +108,14 @@ function SidebarLogo({ collapsed, onToggle }: { collapsed: boolean; onToggle: ()
       <button
         onClick={onToggle}
         title="Déplier"
-        style={{
-          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
+        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
-        <svg width={32} height={36} viewBox="0 0 34 40" fill="none" aria-hidden>
-          <defs>
-            <linearGradient id="sbLogoGrad2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f1c086" />
-              <stop offset="100%" stopColor="#c8922a" />
-            </linearGradient>
-          </defs>
-          <circle cx="9" cy="5" r="4" fill="url(#sbLogoGrad2)" />
-          <text x="0" y="38" fontFamily="Geist, Inter, sans-serif" fontWeight="900" fontSize="36"
-            fill="url(#sbLogoGrad2)" letterSpacing="-2">P</text>
-        </svg>
+        <div style={{
+          width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '1.5px solid var(--p-text)', borderRadius: '50%',
+          fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+          fontSize: 17, color: 'var(--p-text)',
+        }}>P</div>
       </button>
     )
   }
@@ -131,28 +123,20 @@ function SidebarLogo({ collapsed, onToggle }: { collapsed: boolean; onToggle: ()
     <button
       onClick={onToggle}
       title="Réduire"
-      style={{
-        background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 10,
-      }}
+      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
     >
-      <svg width={26} height={30} viewBox="0 0 34 40" fill="none" aria-hidden>
-        <defs>
-          <linearGradient id="sbLogoGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#D4A24C" />
-            <stop offset="100%" stopColor="#B07820" />
-          </linearGradient>
-        </defs>
-        <circle cx="9" cy="5" r="4" fill="url(#sbLogoGrad)" />
-        <text x="0" y="38" fontFamily="'Instrument Serif', Georgia, serif" fontWeight="400" fontSize="36"
-          fill="url(#sbLogoGrad)" letterSpacing="-2">P</text>
-      </svg>
-      <div style={{ textAlign: 'left' }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--p-text)', letterSpacing: '-0.02em', lineHeight: 1, fontFamily: "'Geist', system-ui, sans-serif" }}>
+      <div style={{
+        width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        border: '1.5px solid var(--p-text)', borderRadius: '50%', flexShrink: 0,
+        fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+        fontSize: 16, color: 'var(--p-text)',
+      }}>P</div>
+      <div style={{ textAlign: 'left', lineHeight: 1.3 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)', letterSpacing: '-0.01em', lineHeight: 1, fontFamily: "'Inter Tight', sans-serif" }}>
           Patrimo
         </div>
-        <div style={{ fontSize: 9, color: 'var(--p-gold)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 3, fontWeight: 700, fontFamily: "'Geist Mono', monospace" }}>
-          Finance
+        <div style={{ fontSize: 9, color: 'var(--p-gold)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 3, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>
+          finance
         </div>
       </div>
     </button>
@@ -202,9 +186,9 @@ function NavLink({
             {badge != null && (
               <span style={{
                 fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
-                background: badgeRed ? 'var(--p-red)' : (active ? 'rgba(176,120,32,0.15)' : 'rgba(0,0,0,0.06)'),
+                background: badgeRed ? 'var(--p-red)' : (active ? 'rgba(201,106,74,0.15)' : 'rgba(0,0,0,0.06)'),
                 color: badgeRed ? '#fff' : (active ? 'var(--p-gold)' : 'var(--p-text-dim)'),
-                fontFamily: "'Geist Mono', monospace",
+                fontFamily: "'JetBrains Mono', monospace",
               }}>{badge}</span>
             )}
           </>
@@ -263,9 +247,9 @@ function SectionHeader({
       {badge != null && (
         <span style={{
           fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
-          background: active ? 'rgba(176,120,32,0.15)' : 'rgba(0,0,0,0.06)',
+          background: active ? 'rgba(201,106,74,0.15)' : 'rgba(0,0,0,0.06)',
           color: active ? 'var(--p-gold)' : 'var(--p-text-dim)',
-          fontFamily: "'Geist Mono', monospace",
+          fontFamily: "'JetBrains Mono', monospace",
         }}>{badge}</span>
       )}
       <ChevronDown style={{
@@ -317,7 +301,7 @@ function SimSubItem({
           {active && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--p-gold)', flexShrink: 0 }} />}
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
           {itemSims.length > 0 && (
-            <span style={{ fontSize: 9, color: 'var(--p-text-faint)', fontFamily: "'Geist Mono', monospace" }}>
+            <span style={{ fontSize: 9, color: 'var(--p-text-faint)', fontFamily: "'JetBrains Mono', monospace" }}>
               {itemSims.length}
             </span>
           )}
@@ -432,7 +416,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         >
           <Search style={{ width: 13, height: 13, flexShrink: 0 }} />
           <span style={{ flex: 1, textAlign: 'left' }}>Recherche…</span>
-          <kbd style={{ fontSize: 9, padding: '1px 5px', border: '1px solid var(--p-line)', borderRadius: 4, background: 'var(--p-bg)', color: 'var(--p-text-dim)', fontFamily: "'Geist Mono', monospace" }}>⌘K</kbd>
+          <kbd style={{ fontSize: 9, padding: '1px 5px', border: '1px solid var(--p-line)', borderRadius: 4, background: 'var(--p-bg)', color: 'var(--p-text-dim)', fontFamily: "'JetBrains Mono', monospace" }}>⌘K</kbd>
         </button>
       )}
 
@@ -495,7 +479,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
           <div style={{ marginLeft: 10, paddingLeft: 12, borderLeft: '1px solid var(--p-line)', display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 2 }}>
             {SIMULATEURS_GROUPS.map(group => (
               <div key={group.label}>
-                <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', padding: '6px 8px 3px', fontFamily: "'Geist Mono', monospace" }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.10em', padding: '6px 8px 3px', fontFamily: "'JetBrains Mono', monospace" }}>
                   {group.label}
                 </div>
                 {group.items.map(item => (
@@ -537,7 +521,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
 
         {/* ── Outils ── */}
         {!collapsed
-          ? <div style={{ marginTop: 16, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Geist Mono', monospace" }}>Outils</div>
+          ? <div style={{ marginTop: 16, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>Outils</div>
           : <div style={{ height: 1, margin: '12px 0 6px', background: 'var(--p-line)' }} />
         }
 
@@ -558,7 +542,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {isAdmin && (
           <>
             {!collapsed
-              ? <div style={{ marginTop: 8, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Geist Mono', monospace" }}>Admin</div>
+              ? <div style={{ marginTop: 8, paddingLeft: 10, paddingBottom: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--p-text-faint)', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>Admin</div>
               : <div style={{ height: 1, margin: '8px 0 4px', background: 'var(--p-line)' }} />
             }
             <NavLink href="/dashboard/admin" label="Administration" IconComp={Shield}
@@ -610,7 +594,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             ) : (
               <div style={{
                 width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(135deg, var(--p-gold-deep), var(--p-gold-2))',
+                background: 'var(--p-gold)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, fontWeight: 700, color: '#fff',
               }}>{userInitial}</div>
@@ -633,7 +617,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
             ) : (
               <div style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--p-gold-deep), var(--p-gold-2))',
+                background: 'var(--p-gold)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 13, fontWeight: 700, color: '#fff',
               }}>{userInitial}</div>

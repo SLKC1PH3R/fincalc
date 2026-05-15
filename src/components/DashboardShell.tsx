@@ -135,7 +135,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               transition: 'all 0.15s',
               minWidth: 180,
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--p-gold-30)'; e.currentTarget.style.color = 'var(--p-text)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,106,74,0.30)'; e.currentTarget.style.color = 'var(--p-text)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--p-line-2)'; e.currentTarget.style.color = 'var(--p-text-dim)' }}
           >
             <Search className="h-3.5 w-3.5 flex-shrink-0" />
@@ -176,13 +176,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <Link href="/dashboard/profil" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 9 }}>
             {session?.user?.image ? (
               <img src={session.user.image} alt={userName}
-                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(176,120,32,0.25)' }} />
+                style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(201,106,74,0.25)' }} />
             ) : (
               <div style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #8B5E18, #D4A24C)',
+                background: 'linear-gradient(135deg, #a84f35, #d4856a)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: '2px solid var(--p-gold-30)',
+                border: '2px solid rgba(201,106,74,0.30)',
                 flexShrink: 0,
               }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a' }}>{userInitial}</span>

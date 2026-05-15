@@ -1121,7 +1121,7 @@ export function LandingPage() {
                 [t.ft_col2, t.ft_col2_links],
                 [t.ft_col3, t.ft_col3_links],
                 [t.ft_col4, t.ft_col4_links],
-              ] as [string, [string,string][]][]).map(([title, links], ci) => (
+              ] as unknown as [string, [string,string][]][]).map(([title, links], ci) => (
                 <div key={ci} className="az-fcol">
                   <h5>{title}</h5>
                   <ul>

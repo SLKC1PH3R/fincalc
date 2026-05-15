@@ -835,7 +835,7 @@ export function LandingPage() {
               {[t.wire_row1, t.wire_row2].map((row, ri) => (
                 <div key={ri} className={`az-wrow${ri === 1 ? ' rev' : ''}`}>
                   <div className="az-mtrack" aria-hidden="true">
-                    {(row as [string,string][]).map(([coord, name], i) => (
+                    {(row as unknown as [string,string][]).map(([coord, name], i) => (
                       <span key={i} className="az-witem">
                         <span className="az-wdot">·</span>
                         <span className="az-wcoord">{coord}</span>

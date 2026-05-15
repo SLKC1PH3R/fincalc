@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { Search, TrendingUp, TrendingDown, ChevronRight, Star, Filter, RefreshCw, Wifi } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Star, Filter, RefreshCw, Wifi, ExternalLink } from 'lucide-react'
 import { ETF_DATABASE } from '@/lib/etf-database'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -150,6 +150,97 @@ const SORT_OPTIONS = {
   scpi:    [{ key: 'name', label: 'Nom' }, { key: 'yield', label: 'Rendement' }, { key: 'aum', label: 'AUM' }],
 }
 
+// ── TradingView symbol helpers ─────────────────────────────────────────────────
+const NASDAQ_STOCKS = new Set(['AAPL','MSFT','NVDA','AMZN','META','GOOGL','TSLA','ASML','AVGO','NFLX','AMD','ORCL','INTC','QCOM','GOOG'])
+
+function toTVSymbol(yahooTicker: string): string {
+  if (yahooTicker.endsWith('-USD')) {
+    const base = yahooTicker.replace('-USD', '')
+    // Special cases
+    if (base === 'MATIC') return 'BINANCE:MATICUSDT'
+    return `BINANCE:${base}USDT`
+  }
+  if (yahooTicker.endsWith('.PA')) return `EURONEXT:${yahooTicker.slice(0, -3)}`
+  if (yahooTicker.endsWith('.DE')) return `XETRA:${yahooTicker.slice(0, -3)}`
+  if (yahooTicker.endsWith('.AS')) return `EURONEXT:${yahooTicker.slice(0, -3)}`
+  if (NASDAQ_STOCKS.has(yahooTicker)) return `NASDAQ:${yahooTicker}`
+  return `NYSE:${yahooTicker}`
+}
+
+// ── TradingView mini chart widget ──────────────────────────────────────────────
+function TradingViewChart({ symbol }: { symbol: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.innerHTML = ''
+
+    const container = document.createElement('div')
+    container.className = 'tradingview-widget-container'
+
+    const inner = document.createElement('div')
+    inner.className = 'tradingview-widget-container__widget'
+    container.appendChild(inner)
+
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js'
+    script.async = true
+    script.textContent = JSON.stringify({
+      symbol,
+      width: '100%',
+      height: 220,
+      locale: 'fr_FR',
+      dateRange: '1D',
+      colorTheme: 'light',
+      isTransparent: true,
+      autosize: true,
+      largeChartUrl: `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`,
+    })
+    container.appendChild(script)
+    el.appendChild(container)
+
+    return () => { el.innerHTML = '' }
+  }, [symbol])
+
+  return <div ref={ref} style={{ width: '100%', height: 220 }} />
+}
+
+// ── Inline chart panel ─────────────────────────────────────────────────────────
+function ChartPanel({ symbol, detailHref }: { symbol: string; detailHref?: string }) {
+  return (
+    <div style={{
+      borderBottom: '1px solid var(--p-line)',
+      background: 'var(--p-card-2)',
+      padding: '12px 20px 16px',
+      animation: 'expandIn 0.18s ease',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--p-text-faint)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          Graphique temps réel · {symbol}
+        </span>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {detailHref && (
+            <Link href={detailHref} onClick={e => e.stopPropagation()}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--p-gold)', textDecoration: 'none', fontWeight: 600 }}>
+              <ExternalLink style={{ width: 11, height: 11 }} />
+              Fiche complète
+            </Link>
+          )}
+          <a href={`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`}
+            target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--p-text-faint)', textDecoration: 'none' }}>
+            <ExternalLink style={{ width: 11, height: 11 }} />
+            TradingView
+          </a>
+        </div>
+      </div>
+      <TradingViewChart symbol={symbol} />
+    </div>
+  )
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function MarchePage() {
   const [tab, setTab] = useState<Category>('etf')
@@ -159,7 +250,10 @@ export default function MarchePage() {
   const [livePrices, setLivePrices] = useState<Map<string, LivePrice>>(new Map())
   const [loading, setLoading] = useState(false)
   const [updatedAt, setUpdatedAt] = useState<number | null>(null)
+  const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const refreshTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const toggleExpand = (key: string) => setExpandedKey(prev => prev === key ? null : key)
 
   // Fetch live prices for current tab
   const fetchPrices = useCallback(async (currentTab: Category) => {
@@ -405,35 +499,44 @@ export default function MarchePage() {
           {etfFiltered.map((etf, i) => {
             const yahoo = ETF_YAHOO[etf.ticker]
             const live = yahoo ? livePrices.get(yahoo) : undefined
+            const isOpen = expandedKey === etf.ticker
+            const tvSym = yahoo ? toTVSymbol(yahoo) : null
             return (
-              <Link key={etf.isin} href={`/dashboard/marche/etf/${etf.ticker}`}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: i < etfFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, textDecoration: 'none', alignItems: 'center', transition: 'background 0.12s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(176,120,32,0.08)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
-                    {etf.distributing && <span style={{ fontSize: 9, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '1px 5px' }}>DIST</span>}
+              <div key={etf.isin}>
+                <div
+                  onClick={() => toggleExpand(etf.ticker)}
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 140px 90px 90px 80px 80px 36px', gap: 12, padding: '13px 20px', borderBottom: !isOpen && i < etfFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'pointer', background: isOpen ? 'var(--p-row-hover)' : 'transparent' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(176,120,32,0.08)', border: '1px solid rgba(176,120,32,0.15)', borderRadius: 5, padding: '1px 7px' }}>{etf.ticker}</span>
+                      {etf.distributing && <span style={{ fontSize: 9, fontWeight: 600, color: '#34d399', background: 'rgba(52,211,153,0.1)', borderRadius: 4, padding: '1px 5px' }}>DIST</span>}
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.name}</p>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
+                  <div style={{ textAlign: 'right' }}>
+                    {live ? (
+                      <>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(live.price)}</p>
+                        <ChangeChip v={live.changePercent} />
+                      </>
+                    ) : (
+                      <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>—</span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#B07820' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: etf.replication === 'physical' ? '#38bdf8' : '#a78bfa', background: etf.replication === 'physical' ? 'rgba(56,189,248,0.1)' : 'rgba(167,139,250,0.1)', borderRadius: 5, padding: '2px 6px', textAlign: 'right', whiteSpace: 'nowrap' }}>{etf.replication === 'physical' ? 'Physique' : 'Synthétique'}</span>
+                  {isOpen
+                    ? <ChevronDown style={{ width: 14, height: 14, color: 'var(--p-gold)', flexShrink: 0 }} />
+                    : <ChevronRight style={{ width: 14, height: 14, color: 'var(--p-text-faint)', flexShrink: 0 }} />}
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{etf.benchmark}</span>
-                {/* Live price */}
-                <div style={{ textAlign: 'right' }}>
-                  {live ? (
-                    <>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(live.price)}</p>
-                      <ChangeChip v={live.changePercent} />
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>—</span>
-                  )}
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: etf.ter <= 0.001 ? '#34d399' : etf.ter <= 0.003 ? '#B07820' : '#f87171', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{(etf.ter * 100).toFixed(2)}%</span>
-                <span style={{ fontSize: 11, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{etf.aum >= 1000 ? `${(etf.aum / 1000).toFixed(1)}B€` : `${etf.aum}M€`}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, color: etf.replication === 'physical' ? '#38bdf8' : '#a78bfa', background: etf.replication === 'physical' ? 'rgba(56,189,248,0.1)' : 'rgba(167,139,250,0.1)', borderRadius: 5, padding: '2px 6px', textAlign: 'right', whiteSpace: 'nowrap' }}>{etf.replication === 'physical' ? 'Physique' : 'Synthétique'}</span>
-                <ChevronRight style={{ width: 14, height: 14, color: 'var(--p-text-faint)', flexShrink: 0 }} />
-              </Link>
+                {isOpen && tvSym && (
+                  <ChartPanel symbol={tvSym} detailHref={`/dashboard/marche/etf/${etf.ticker}`} />
+                )}
+              </div>
             )
           })}
         </div>
@@ -454,23 +557,33 @@ export default function MarchePage() {
             const live = livePrices.get(stock.yahooTicker)
             const price = live?.price ?? stock.price
             const change = live?.changePercent ?? stock.change
+            const isOpen = expandedKey === stock.ticker
             return (
-              <div key={stock.ticker}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px', gap: 12, padding: '13px 20px', borderBottom: i < actionsFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
-                    {stock.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
-                    <span style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'var(--p-card-2)', border: '1px solid var(--p-line)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
+              <div key={stock.ticker}>
+                <div
+                  onClick={() => toggleExpand(stock.ticker)}
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 120px 110px 100px 80px 28px', gap: 12, padding: '13px 20px', borderBottom: !isOpen && i < actionsFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'pointer', background: isOpen ? 'var(--p-row-hover)' : 'transparent' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 2, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', fontFamily: 'Geist Mono, monospace', background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.15)', borderRadius: 5, padding: '1px 7px' }}>{stock.ticker}</span>
+                      {stock.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
+                      <span style={{ fontSize: 10, color: 'var(--p-text-faint)', background: 'var(--p-card-2)', border: '1px solid var(--p-line)', borderRadius: 4, padding: '1px 5px' }}>{stock.market}</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--p-text-dim)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.name}</p>
+                  <span style={{ fontSize: 11, color: 'var(--p-text-faint)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}</span>
+                  <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
+                  {isOpen
+                    ? <ChevronDown style={{ width: 13, height: 13, color: 'var(--p-gold)', flexShrink: 0 }} />
+                    : <ChevronRight style={{ width: 13, height: 13, color: 'var(--p-text-faint)', flexShrink: 0 }} />}
                 </div>
-                <span style={{ fontSize: 11, color: 'var(--p-text-faint)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stock.sector}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}</span>
-                <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
-                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{stock.pe}x</span>
+                {isOpen && (
+                  <ChartPanel symbol={toTVSymbol(stock.yahooTicker)} />
+                )}
               </div>
             )
           })}
@@ -489,24 +602,34 @@ export default function MarchePage() {
             const live = livePrices.get(c.yahooTicker)
             const price = live?.price ?? c.price
             const change = live?.changePercent ?? c.change
+            const isOpen = expandedKey === c.ticker
             return (
-              <div key={c.ticker}
-                style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px', gap: 12, padding: '13px 20px', borderBottom: i < cryptoFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'default' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c' }}>{c.ticker.slice(0, 3)}</span>
+              <div key={c.ticker}>
+                <div
+                  onClick={() => toggleExpand(c.ticker)}
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px 100px 28px', gap: 12, padding: '13px 20px', borderBottom: !isOpen && i < cryptoFiltered.length - 1 ? '1px solid var(--p-line)' : undefined, alignItems: 'center', transition: 'background 0.12s', cursor: 'pointer', background: isOpen ? 'var(--p-row-hover)' : 'transparent' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--p-row-hover)')}
+                  onMouseLeave={e => { if (!isOpen) e.currentTarget.style.background = 'transparent' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#fb923c' }}>{c.ticker.slice(0, 3)}</span>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>{c.name}</p>
+                      <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{c.ticker}</p>
+                    </div>
+                    {c.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
                   </div>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text-em)', margin: 0 }}>{c.name}</p>
-                    <p style={{ fontSize: 11, color: 'var(--p-text-faint)', margin: 0, fontFamily: 'Geist Mono, monospace' }}>{c.ticker}</p>
-                  </div>
-                  {c.popular && <Star style={{ width: 11, height: 11, color: '#B07820' }} />}
+                  <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}&nbsp;$</span>
+                  <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
+                  {isOpen
+                    ? <ChevronDown style={{ width: 13, height: 13, color: 'var(--p-gold)', flexShrink: 0 }} />
+                    : <ChevronRight style={{ width: 13, height: 13, color: 'var(--p-text-faint)', flexShrink: 0 }} />}
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--p-text-dim)', fontFamily: 'Geist Mono, monospace' }}>{c.cap}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: live ? (change > 0 ? '#34d399' : change < 0 ? '#f87171' : 'var(--p-text-em)') : 'var(--p-text-em)', textAlign: 'right', fontFamily: 'Geist Mono, monospace' }}>{fmtPrice(price)}&nbsp;$</span>
-                <div style={{ textAlign: 'right' }}><ChangeChip v={change} /></div>
+                {isOpen && (
+                  <ChartPanel symbol={toTVSymbol(c.yahooTicker)} />
+                )}
               </div>
             )
           })}
@@ -550,6 +673,7 @@ export default function MarchePage() {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes expandIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </div>
   )

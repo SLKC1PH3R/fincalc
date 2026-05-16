@@ -944,9 +944,7 @@ export function LandingPage() {
               {t.iv_labs.map((lab, i) => (
                 <div key={i} className="az-lab" data-az>
                   <div className="az-limg">
-                    {lab.img
-                      ? <NextImage src={lab.img} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
-                      : <Plate label={`ENV-${lab.n}`} />}
+                    <NextImage src={lab.img as string} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
                     <span className="az-badge">{lab.badge}</span>
                   </div>
                   <div className="nrow"><span>PTM-{lab.n}</span><span>2026</span></div>

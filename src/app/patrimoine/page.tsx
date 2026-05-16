@@ -3,53 +3,39 @@ import type { Metadata } from 'next'
 import {
   TrendingUp, Building2, Home, PiggyBank, Bitcoin,
   Wallet, Receipt, Layers, BarChart3, RefreshCw,
-  Star, BookOpen, Calculator, Award, Globe, ArrowRight,
+  Star, BookOpen, Calculator, Award, Globe,
 } from 'lucide-react'
-import { Nav } from '@/components/landing/Nav'
 
 export const metadata: Metadata = {
-  title: 'Outils patrimoniaux — PatrImo',
+  title: '15 modules patrimoniaux gratuits — Patrimo',
   description:
     'Suivez et gérez votre patrimoine en temps réel : immobilier, actions, livrets, crypto, PEA, assurance vie. 15 outils de gestion patrimoniale gratuits.',
   openGraph: {
-    title: 'Outils patrimoniaux — PatrImo',
+    title: '15 modules patrimoniaux gratuits — Patrimo',
     description:
       '15 outils pour piloter votre patrimoine : bilan complet, suivi de portefeuille, rééquilibrage, score patrimonial et rapport fiscal.',
     url: 'https://finance.digitalstack.cloud/patrimoine',
   },
 }
 
-const BG      = '#F3EEE4'
-const SURFACE = '#FFFFFF'
-const INK     = '#0A0A0A'
-const MUTED   = '#6B6356'
-const LINE    = 'rgba(10,10,10,0.08)'
-const LINE_S  = 'rgba(10,10,10,0.14)'
-const GOLD    = '#B07820'
-const GOLD_D  = '#8B5E18'
-const GOLD_T  = 'rgba(176,120,32,0.09)'
-const F_SANS  = "'Geist', system-ui, -apple-system, sans-serif"
-const F_SERIF = "'Instrument Serif', Georgia, serif"
-const F_MONO  = "'Geist Mono', ui-monospace, monospace"
-
 const GROUPS = [
   {
     label: 'Patrimoine',
-    color: '#B07820',
+    num: '01',
     pages: [
-      { slug: 'vue-ensemble',    label: "Vue d'ensemble",  desc: 'Bilan patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.', icon: Layers },
-      { slug: 'immobilier',      label: 'Immobilier',       desc: 'Suivez vos biens immobiliers, valeur estimée, crédits en cours et patrimoine net immobilier.', icon: Home },
-      { slug: 'actions-fonds',   label: 'Actions & Fonds',  desc: 'Gérez vos lignes en PEA, CTO et assurance vie avec valorisation en temps réel.', icon: TrendingUp },
-      { slug: 'livrets',         label: 'Livrets',          desc: "Centralisez vos livrets d'épargne (Livret A, LDDS, LEP…) et suivez les intérêts générés.", icon: PiggyBank },
-      { slug: 'autres-actifs',   label: 'Autres actifs',    desc: 'Crypto-monnaies, métaux précieux, parts de SCPI et tous vos actifs alternatifs.', icon: Bitcoin },
-      { slug: 'comptes-bancaires', label: 'Comptes bancaires', desc: 'Soldes de vos comptes courants et épargne liquide intégrés dans votre bilan global.', icon: Wallet },
-      { slug: 'emprunts',        label: 'Emprunts',         desc: 'Tableau de bord de vos dettes : capital restant dû, mensualités et date de fin prévue.', icon: Receipt },
-      { slug: 'detail-enveloppe', label: 'Détail enveloppe', desc: "Fiche complète d'une enveloppe avec historique, performances et métadonnées personnalisées.", icon: Building2 },
+      { slug: 'vue-ensemble',     label: "Vue d'ensemble",   desc: 'Bilan patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.', icon: Layers },
+      { slug: 'immobilier',       label: 'Immobilier',        desc: 'Suivez vos biens immobiliers, valeur estimée, crédits en cours et patrimoine net immobilier.', icon: Home },
+      { slug: 'actions-fonds',    label: 'Actions & Fonds',   desc: 'Gérez vos lignes en PEA, CTO et assurance vie avec valorisation en temps réel.', icon: TrendingUp },
+      { slug: 'livrets',          label: 'Livrets',           desc: "Centralisez vos livrets d'épargne (Livret A, LDDS, LEP...) et suivez les intérêts générés.", icon: PiggyBank },
+      { slug: 'autres-actifs',    label: 'Autres actifs',     desc: 'Crypto-monnaies, métaux précieux, parts de SCPI et tous vos actifs alternatifs.', icon: Bitcoin },
+      { slug: 'comptes-bancaires',label: 'Comptes bancaires', desc: 'Soldes de vos comptes courants et épargne liquide intégrés dans votre bilan global.', icon: Wallet },
+      { slug: 'emprunts',         label: 'Emprunts',          desc: 'Tableau de bord de vos dettes : capital restant dû, mensualités et date de fin prévue.', icon: Receipt },
+      { slug: 'detail-enveloppe', label: 'Détail enveloppe',  desc: "Fiche complète d'une enveloppe avec historique, performances et métadonnées personnalisées.", icon: Building2 },
     ],
   },
   {
     label: 'Suivi & Trading',
-    color: '#38bdf8',
+    num: '02',
     pages: [
       { slug: 'mon-portefeuille', label: 'Mon Portefeuille', desc: 'Tracker de positions en temps réel : prix, variation, poids et performance globale.', icon: BarChart3 },
       { slug: 'reequilibrage',    label: 'Rééquilibrage',    desc: 'Calculez les achats et ventes nécessaires pour revenir à votre allocation cible.', icon: RefreshCw },
@@ -59,129 +45,157 @@ const GROUPS = [
   },
   {
     label: 'Analyse & Fiscal',
-    color: '#818cf8',
+    num: '03',
     pages: [
-      { slug: 'rapport-fiscal',     label: 'Rapport Fiscal',      desc: 'Synthèse annuelle de vos revenus de capitaux : dividendes, coupons et plus-values réalisées.', icon: Calculator },
-      { slug: 'score-patrimonial',  label: 'Score Patrimonial',   desc: 'Note globale de la santé de votre patrimoine basée sur diversification, liquidité et risque.', icon: Award },
-      { slug: 'gestion-personnelle', label: 'Gestion personnelle', desc: "Vue personnalisée : taux d'épargne, budget mensuel et projections FIRE.", icon: Globe },
+      { slug: 'rapport-fiscal',      label: 'Rapport Fiscal',      desc: 'Synthèse annuelle de vos revenus de capitaux : dividendes, coupons et plus-values réalisées.', icon: Calculator },
+      { slug: 'score-patrimonial',   label: 'Score Patrimonial',   desc: 'Note globale de la santé de votre patrimoine basée sur diversification, liquidité et risque.', icon: Award },
+      { slug: 'gestion-personnelle', label: 'Gestion personnelle',  desc: "Vue personnalisée : taux d'épargne, budget mensuel et projections FIRE.", icon: Globe },
     ],
   },
 ]
 
+const STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.pp-root{background:#efe7d2;color:#15140f;font-family:'Inter','Inter Tight',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.pp-c{max-width:1160px;margin:0 auto;padding:0 40px}
+
+.pp-nav{position:sticky;top:0;z-index:50;background:#efe7d2;border-bottom:1px solid rgba(21,20,15,.10);padding:18px 0}
+.pp-nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
+.pp-logo{font-family:'Inter Tight',sans-serif;font-weight:800;font-size:17px;color:#15140f;text-decoration:none;letter-spacing:-.02em}
+.pp-logo em{font-style:normal;color:#c96a4a}
+.pp-nav-links{display:flex;align-items:center;gap:28px}
+.pp-nav-links a{font-family:'Inter',sans-serif;font-size:13px;color:#5a5448;text-decoration:none;transition:color .15s}
+.pp-nav-links a:hover{color:#15140f}
+.pp-nav-cta{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:#15140f;color:#efe7d2;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;text-decoration:none;transition:background .18s}
+.pp-nav-cta:hover{background:#c96a4a}
+
+.pp-rule{display:flex;align-items:center;gap:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8b8676;text-transform:uppercase;border-bottom:1px solid rgba(21,20,15,.10);padding-bottom:14px;margin-bottom:48px}
+.pp-rule-sep{flex:1;height:1px;background:rgba(21,20,15,.10)}
+
+.pp-hero{padding:64px 0 56px}
+.pp-hero h1{font-family:'Inter Tight',sans-serif;font-size:clamp(42px,5.5vw,72px);font-weight:800;letter-spacing:-.032em;line-height:1.0;margin:0 0 20px;color:#15140f}
+.pp-hero h1 em{font-style:italic;font-family:'Playfair Display',serif;font-weight:500;color:#c96a4a}
+.pp-hero p{font-size:16px;color:#5a5448;max-width:520px;line-height:1.65;margin:0 0 36px}
+.pp-hero-meta{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.pp-hero-stat{display:flex;align-items:baseline;gap:6px}
+.pp-hero-stat strong{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:#c96a4a}
+.pp-hero-stat span{font-size:12px;color:#8b8676;font-family:'Inter',sans-serif}
+
+.pp-sec{padding:0 0 96px}
+.pp-group{margin-bottom:64px}
+.pp-group-rule{display:flex;align-items:center;gap:16px;border-bottom:1px solid rgba(21,20,15,.10);padding-bottom:14px;margin-bottom:24px}
+.pp-group-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#c96a4a;text-transform:uppercase}
+.pp-group-sep{height:1px;flex:1;background:rgba(21,20,15,.08)}
+.pp-group-name{font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#15140f}
+.pp-group-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b8676;margin-left:auto}
+.pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:16px}
+.pp-card{background:#faf6ec;border:1px solid rgba(21,20,15,.10);border-radius:16px;padding:22px 22px 24px;cursor:pointer;transition:transform .22s,box-shadow .22s,border-color .22s;text-decoration:none;color:#15140f;display:block}
+.pp-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(21,20,15,.10),0 2px 8px rgba(21,20,15,.06);border-color:rgba(201,106,74,.25)}
+.pp-card-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;background:rgba(201,106,74,.10);border:1px solid rgba(201,106,74,.16);flex-shrink:0}
+.pp-card-label{font-family:'Inter Tight',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.012em;margin-bottom:8px;color:#15140f}
+.pp-card-desc{font-size:13px;color:#5a5448;line-height:1.55;margin:0 0 16px}
+.pp-card-arrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:#c96a4a;letter-spacing:.04em}
+.pp-card-meta{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;color:#8b8676;text-transform:uppercase;margin-bottom:10px}
+
+.pp-cta-block{background:#15140f;border-radius:24px;padding:64px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:16px;margin-bottom:96px}
+.pp-cta-block h3{font-family:'Inter Tight',sans-serif;font-size:clamp(22px,2.5vw,32px);font-weight:800;letter-spacing:-.022em;color:#efe7d2;margin:0 0 10px}
+.pp-cta-block p{font-size:14px;color:#8b8676;margin:0;line-height:1.6;max-width:440px}
+.pp-cta-btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;background:#c96a4a;color:#efe7d2;font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:background .18s}
+.pp-cta-btn:hover{background:#a84f35}
+
+@media(max-width:768px){
+  .pp-c{padding:0 20px}
+  .pp-hero{padding:40px 0 36px}
+  .pp-cta-block{flex-direction:column;align-items:flex-start;padding:36px 28px}
+  .pp-nav-links{display:none}
+  .pp-grid{grid-template-columns:1fr}
+}
+`
+
 export default function PatrimoinePage() {
   return (
-    <div className="patrimo-landing" style={{ minHeight: '100vh', background: BG, color: INK, fontFamily: F_SANS }}>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
+      <div className="pp-root">
 
-      <Nav />
-
-      <main style={{ maxWidth: 1060, margin: '0 auto', padding: '0 24px 100px' }}>
+        {/* Nav */}
+        <nav className="pp-nav">
+          <div className="pp-c">
+            <div className="pp-nav-inner">
+              <Link href="/" className="pp-logo">Patri<em>mo</em></Link>
+              <div className="pp-nav-links">
+                <Link href="/#enveloppes">Enveloppes</Link>
+                <Link href="/tools">Simulateurs</Link>
+                <Link href="/patrimoine">Patrimoine</Link>
+              </div>
+              <Link href="/login" className="pp-nav-cta">Démarrer →</Link>
+            </div>
+          </div>
+        </nav>
 
         {/* Hero */}
-        <div style={{ paddingTop: 64, marginBottom: 72, maxWidth: 720 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <span style={{ width: 6, height: 6, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
-            <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>15 outils de gestion</span>
+        <section className="pp-hero">
+          <div className="pp-c">
+            <div className="pp-rule">
+              <span>Modules / 15 pages</span>
+              <span className="pp-rule-sep" />
+              <span>015 / 015</span>
+            </div>
+            <h1>15 modules.<br /><em>Votre patrimoine,</em> piloté.</h1>
+            <p>Bilan complet, suivi de portefeuille, rééquilibrage, score patrimonial. Tous les outils pour gérer votre patrimoine — gratuit, sans connexion bancaire.</p>
+            <div className="pp-hero-meta">
+              <div className="pp-hero-stat"><strong>15</strong><span>modules</span></div>
+              <div className="pp-hero-stat"><strong>0</strong><span>donnée bancaire</span></div>
+              <div className="pp-hero-stat"><strong>100%</strong><span>gratuit</span></div>
+            </div>
           </div>
-          <h1 style={{ fontFamily: F_SERIF, fontSize: 'clamp(2.2rem, 5vw, 3.4rem)', fontWeight: 400, margin: '0 0 20px', letterSpacing: '-0.025em', lineHeight: 1.08, color: INK }}>
-            Gérez votre patrimoine,{' '}
-            <span style={{ fontStyle: 'italic', color: GOLD }}>en temps réel.</span>
-          </h1>
-          <p style={{ fontSize: 18, color: MUTED, maxWidth: 560, margin: '0 0 36px', lineHeight: 1.65 }}>
-            Un tableau de bord complet pour piloter vos actifs, suivre vos investissements et optimiser votre fiscalité. Sans connexion bancaire.
-          </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/login" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              textDecoration: 'none', padding: '13px 26px', borderRadius: 999,
-              background: GOLD_D, color: '#fff', fontWeight: 600, fontSize: 14, fontFamily: F_SANS,
-            }}>
-              Créer mon espace gratuit <ArrowRight style={{ width: 15, height: 15 }} />
-            </Link>
-            <Link href="/tools" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              textDecoration: 'none', padding: '13px 26px', borderRadius: 999,
-              background: SURFACE, border: `1px solid ${LINE_S}`,
-              color: MUTED, fontWeight: 500, fontSize: 14, fontFamily: F_SANS,
-            }}>
-              Voir les simulateurs
-            </Link>
-          </div>
-        </div>
+        </section>
 
         {/* Groups */}
-        {GROUPS.map(group => (
-          <div key={group.label} style={{ marginBottom: 56 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-              <span style={{ width: 6, height: 6, borderRadius: 99, background: group.color, display: 'inline-block' }} />
-              <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: group.color, textTransform: 'uppercase', letterSpacing: '0.14em' }}>
-                {group.label}
-              </span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-              {group.pages.map(page => {
-                const Icon = page.icon
-                return (
-                  <Link key={page.slug} href={`/patrimoine/${page.slug}`} style={{ textDecoration: 'none' }}>
-                    <div className="patr-card" style={{
-                      padding: '22px 24px',
-                      borderRadius: 14,
-                      background: SURFACE,
-                      border: `1px solid ${LINE_S}`,
-                      height: '100%',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                        <div style={{
-                          width: 34, height: 34, borderRadius: 9, flexShrink: 0,
-                          background: group.color + '14', border: `1px solid ${group.color}25`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <Icon style={{ width: 15, height: 15, color: group.color }} />
+        <section className="pp-sec">
+          <div className="pp-c">
+            {GROUPS.map(group => (
+              <div key={group.label} className="pp-group">
+                <div className="pp-group-rule">
+                  <span className="pp-group-num">{group.num}</span>
+                  <span className="pp-group-sep" />
+                  <span className="pp-group-name">{group.label}</span>
+                  <span className="pp-group-count">{String(group.pages.length).padStart(2,'0')}</span>
+                </div>
+                <div className="pp-grid">
+                  {group.pages.map((page, pi) => {
+                    const Icon = page.icon
+                    return (
+                      <Link key={page.slug} href={`/patrimoine/${page.slug}`} className="pp-card">
+                        <div className="pp-card-meta">PTM-{String(GROUPS.slice(0, GROUPS.indexOf(group)).reduce((acc, g) => acc + g.pages.length, 0) + pi + 1).padStart(2,'0')}</div>
+                        <div className="pp-card-icon">
+                          <Icon style={{ width: 15, height: 15, color: '#c96a4a' }} />
                         </div>
-                        <span style={{ fontSize: 14, fontWeight: 600, color: INK, lineHeight: 1.2, fontFamily: F_SANS }}>{page.label}</span>
-                      </div>
-                      <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, margin: 0, fontFamily: F_SANS }}>{page.desc}</p>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
+                        <div className="pp-card-label">{page.label}</div>
+                        <p className="pp-card-desc">{page.desc}</p>
+                        <span className="pp-card-arrow">Voir la fiche →</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </section>
 
-        <style>{`
-          .patr-card { transition: box-shadow .2s, border-color .2s; cursor: pointer; }
-          .patr-card:hover { box-shadow: 0 6px 24px rgba(10,10,10,0.08); border-color: rgba(176,120,32,0.35) !important; }
-        `}</style>
-
-        {/* CTA final */}
-        <div style={{
-          textAlign: 'center', padding: '56px 32px', borderRadius: 24,
-          background: SURFACE, border: `1px solid ${LINE_S}`,
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: '-40%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '200%', background: `radial-gradient(ellipse, rgba(176,120,32,0.10) 0%, transparent 60%)`, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
-              <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Compte gratuit</span>
+        {/* CTA */}
+        <div className="pp-c">
+          <div className="pp-cta-block">
+            <div>
+              <h3>Commencez à piloter votre patrimoine.</h3>
+              <p>Créez un compte gratuit pour accéder à toutes les pages de gestion, suivre vos actifs et obtenir votre score patrimonial sur 6 dimensions.</p>
             </div>
-            <h3 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 400, margin: '0 0 12px', letterSpacing: '-0.02em', color: INK }}>
-              Commencez à piloter votre patrimoine
-            </h3>
-            <p style={{ fontSize: 15, color: MUTED, margin: '0 0 28px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65, fontFamily: F_SANS }}>
-              Créez un compte gratuit pour accéder à toutes les pages de gestion, suivre vos actifs et votre score patrimonial.
-            </p>
-            <Link href="/login" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              textDecoration: 'none', padding: '13px 30px', borderRadius: 999,
-              background: GOLD_D, color: '#fff', fontWeight: 600, fontSize: 15, fontFamily: F_SANS,
-            }}>
-              Démarrer gratuitement <ArrowRight style={{ width: 15, height: 15 }} />
-            </Link>
+            <Link href="/login" className="pp-cta-btn">Démarrer gratuitement →</Link>
           </div>
         </div>
 
-      </main>
-    </div>
+      </div>
+    </>
   )
 }

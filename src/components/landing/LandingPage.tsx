@@ -233,7 +233,7 @@ const STYLES = `
 .az-mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:50px;position:relative}
 .az-mgrid::before{content:'';position:absolute;top:60px;left:50px;right:50px;height:1px;background:var(--line-soft)}
 .az-mstep{position:relative}
-.az-mstep .snum{font-family:var(--serif);font-style:italic;font-weight:500;font-size:78px;color:var(--ink);line-height:.85;margin-bottom:24px;letter-spacing:-.02em;background:var(--paper);display:inline-block;padding:4px 14px 4px 10px;border-radius:6px;position:relative;z-index:1}
+.az-mstep .snum{font-family:var(--serif);font-style:italic;font-weight:500;font-size:78px;color:var(--paper);line-height:.85;margin-bottom:24px;letter-spacing:-.02em;background:var(--coral);display:inline-block;padding:4px 14px 4px 10px;border-radius:6px;position:relative;z-index:1}
 .az-mstep h4{font-family:var(--sans);font-size:30px;font-weight:800;letter-spacing:-.022em;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;padding-right:18px}
 .az-mstep h4 .arr-r{color:var(--ink-faint);font-size:22px;line-height:1}
 .az-mstep:last-child h4 .arr-r{display:none}

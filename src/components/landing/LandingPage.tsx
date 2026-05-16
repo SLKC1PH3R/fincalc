@@ -1098,7 +1098,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-caart" data-az="right">
-                <Plate label="CTA" src="/patrimoine-actifs.png" />
+                <Plate label="CTA" src="/cta.jpg" />
                 <span className="ribbon">{t.viii_ribbon}</span>
               </div>
             </div>

@@ -125,7 +125,8 @@
       "Bash(Sort-Object FullName)",
       "Bash(Get-Content -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\globals.css\" -TotalCount 150)",
       "Bash(git push *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(python -c ' *)"
     ]
   }
 }

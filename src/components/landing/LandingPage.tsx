@@ -209,6 +209,7 @@ const STYLES = `
 .az-pill{padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-family:var(--sans);font-size:13px;color:var(--ink-soft);background:transparent;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
 .az-pill:hover{background:rgba(21,20,15,.04)}
 .az-pill.active{background:var(--coral);border-color:var(--coral);color:#fff}
+.az-pill-count{font-family:var(--mono);font-size:11px;opacity:.75;letter-spacing:.04em}
 .az-lgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
 .az-lab{display:flex;flex-direction:column}
 .az-limg{aspect-ratio:4/5;background:var(--bone);border-radius:14px;overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow);position:relative}
@@ -418,26 +419,26 @@ const COPY = {
     iii_h2_a: 'Quatre modules,', iii_h2_em: 'une vision', iii_h2_b: 'unifiée',
     iii_ribbon: 'Plateforme Patrimo · 2026',
     iii_cards: [
-      { n:'01', tag:'Suivre',    title:'Vision patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, patrimoine net, performance." },
-      { n:'02', tag:'Optimiser', title:'Chaque frais compte',           body:"ETFs comparés aux meilleures alternatives. Sur 20 ans, 0,18 % de moins = des milliers d’euros récupérés." },
-      { n:'03', tag:'Simuler',   title:'18 simulateurs fiscaux',        body:"Flat tax vs barème, PEA vs CTO, IFI, transmission, retraite. Tout en un seul endroit." },
-      { n:'04', tag:'Éduquer',   title:"Comprendre avant d’agir",  body:"Guides pratiques, glossaire interactif, fiches enveloppe. L’éducation financière française." },
+      { n:'01', tag:'Suivre',    title:'Vision patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, patrimoine net, performance.",    href:'/dashboard/patrimoine' },
+      { n:'02', tag:'Optimiser', title:'Chaque frais compte',           body:"ETFs comparés aux meilleures alternatives. Sur 20 ans, 0,18 % de moins = des milliers d'euros récupérés.", href:'/tools/optimiseur-etf' },
+      { n:'03', tag:'Simuler',   title:'18 simulateurs fiscaux',        body:"Flat tax vs barème, PEA vs CTO, IFI, transmission, retraite. Tout en un seul endroit.",    href:'/tools' },
+      { n:'04', tag:'Éduquer',   title:"Comprendre avant d'agir",       body:"Guides pratiques, glossaire interactif, fiches enveloppe. L'éducation financière française.", href:'#enveloppes' },
     ],
     // IV
     iv_rule_sub: 'Enveloppes / 8 classes',
     iv_rule_tag: '8 fiches',
     iv_label: '8 enveloppes analysées',
     iv_h2_a: 'Chaque enveloppe,', iv_h2_em: 'maîtrisée',
-    iv_pills: ['Toutes 08','Actions','Épargne','Immobilier'],
+    iv_pills: ['Toutes','Actions','Épargne','Immobilier'],
     iv_labs: [
-      { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.jpg' },
-      { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.", img:'/PEA.jpg' },
-      { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.", img:'/AV.jpg' },
-      { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.", img:'/CTO.jpg' },
-      { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.", img:'/PER.jpg' },
-      { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.", img:'/immobilliers.jpg' },
-      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.jpg' },
-      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.jpg' },
+      { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.jpg',      cat:'epargne' },
+      { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.", img:'/PEA.jpg',           cat:'actions' },
+      { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.", img:'/AV.jpg',            cat:'epargne' },
+      { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.", img:'/CTO.jpg',          cat:'actions' },
+      { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.", img:'/PER.jpg',           cat:'epargne' },
+      { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.", img:'/immobilliers.jpg', cat:'immobilier' },
+      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.jpg',       cat:'actions' },
+      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.jpg',   cat:'epargne' },
     ],
     iv_foot: '8 enveloppes · Fiches complètes',
     // V
@@ -560,26 +561,26 @@ const COPY = {
     iii_h2_a: 'Four modules,', iii_h2_em: 'one unified', iii_h2_b: 'vision',
     iii_ribbon: 'Patrimo Platform · 2026',
     iii_cards: [
-      { n:'01', tag:'Track',    title:'Complete wealth overview', body:'Real-time mapping of your assets. 8 wrappers, net worth, performance.' },
-      { n:'02', tag:'Optimise', title:'Every fee matters',        body:'ETFs compared to best alternatives. Over 20 years, 0.18% less = thousands of euros recovered.' },
-      { n:'03', tag:'Simulate', title:'18 tax simulators',        body:'Flat tax vs progressive, PEA vs CTO, wealth tax, estate, retirement. All in one place.' },
-      { n:'04', tag:'Educate',  title:'Understand before acting', body:'Practical guides, interactive glossary, wrapper fact sheets. French financial education.' },
+      { n:'01', tag:'Track',    title:'Complete wealth overview', body:'Real-time mapping of your assets. 8 wrappers, net worth, performance.',                        href:'/dashboard/patrimoine' },
+      { n:'02', tag:'Optimise', title:'Every fee matters',        body:'ETFs compared to best alternatives. Over 20 years, 0.18% less = thousands of euros recovered.', href:'/tools/optimiseur-etf' },
+      { n:'03', tag:'Simulate', title:'18 tax simulators',        body:'Flat tax vs progressive, PEA vs CTO, wealth tax, estate, retirement. All in one place.',        href:'/tools' },
+      { n:'04', tag:'Educate',  title:'Understand before acting', body:'Practical guides, interactive glossary, wrapper fact sheets. French financial education.',       href:'#enveloppes' },
     ],
     // IV
     iv_rule_sub: 'Wrappers / 8 classes',
     iv_rule_tag: '8 fact sheets',
     iv_label: '8 wrappers analysed',
     iv_h2_a: 'Every wrapper,', iv_h2_em: 'mastered',
-    iv_pills: ['All 08','Equities','Savings','Real Estate'],
+    iv_pills: ['All','Equities','Savings','Real Estate'],
     iv_labs: [
-      { n:'01', badge:'Tax-free',         title:'Savings accounts',    body:'Livret A · LDDS · LEP. Regulated savings available at any time.', img:'/livrets.jpg' },
-      { n:'02', badge:'Exempt 5y+',       title:'PEA',                 body:'The prime wrapper for French and European equity investment.', img:'/PEA.jpg' },
-      { n:'03', badge:'Allowance 8y',     title:'Life Insurance',      body:'Euro funds · Units. Optimised inheritance, softened tax after 8 years.', img:'/AV.jpg' },
-      { n:'04', badge:'Flat Tax 30%',     title:'CTO',                 body:'All asset classes, no ceiling. Absolute freedom.', img:'/CTO.jpg' },
-      { n:'05', badge:'Tax deduction',    title:'PER',                 body:'Deduct today at your marginal rate, capitalise tomorrow.', img:'/PER.jpg' },
-      { n:'06', badge:'Bank leverage',    title:'Real Estate',         body:'SCPI · Direct · LMNP. Recurring rental income.', img:'/immobilliers.jpg' },
-      { n:'07', badge:'Annual report',    title:'Crypto assets',       body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.', img:'/crypto.jpg' },
-      { n:'08', badge:'Safety net',       title:'Cash',                body:'3 to 6 months of expenses. Opportunity reserve.', img:'/liquidites.jpg' },
+      { n:'01', badge:'Tax-free',         title:'Savings accounts',    body:'Livret A · LDDS · LEP. Regulated savings available at any time.', img:'/livrets.jpg',      cat:'epargne' },
+      { n:'02', badge:'Exempt 5y+',       title:'PEA',                 body:'The prime wrapper for French and European equity investment.', img:'/PEA.jpg',           cat:'actions' },
+      { n:'03', badge:'Allowance 8y',     title:'Life Insurance',      body:'Euro funds · Units. Optimised inheritance, softened tax after 8 years.', img:'/AV.jpg',            cat:'epargne' },
+      { n:'04', badge:'Flat Tax 30%',     title:'CTO',                 body:'All asset classes, no ceiling. Absolute freedom.', img:'/CTO.jpg',          cat:'actions' },
+      { n:'05', badge:'Tax deduction',    title:'PER',                 body:'Deduct today at your marginal rate, capitalise tomorrow.', img:'/PER.jpg',           cat:'epargne' },
+      { n:'06', badge:'Bank leverage',    title:'Real Estate',         body:'SCPI · Direct · LMNP. Recurring rental income.', img:'/immobilliers.jpg', cat:'immobilier' },
+      { n:'07', badge:'Annual report',    title:'Crypto assets',       body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.', img:'/crypto.jpg',       cat:'actions' },
+      { n:'08', badge:'Safety net',       title:'Cash',                body:'3 to 6 months of expenses. Opportunity reserve.', img:'/liquidites.jpg',   cat:'epargne' },
     ],
     iv_foot: '8 wrappers · Full fact sheets',
     // V
@@ -667,6 +668,7 @@ const Arr = () => (
 /* ── Component ────────────────────────────────────────────────────────────── */
 export function LandingPage() {
   const [lang, setLang] = useState<Lang>('fr')
+  const [envFilter, setEnvFilter] = useState<'all'|'actions'|'epargne'|'immobilier'>('all')
   const t = COPY[lang]
 
   useEffect(() => {
@@ -729,9 +731,9 @@ export function LandingPage() {
                 <span className="az-pulse" />{t.top_email}
               </a>
               <span>
-                <button className={`az-lang-btn${lang === 'fr' ? ' active' : ''}`} onClick={() => setLang('fr')}>FR</button>
+                <button className={`az-lang-btn${lang === 'fr' ? ' active' : ''}`} onClick={() => { setLang('fr'); setEnvFilter('all') }}>FR</button>
                 {' · '}
-                <button className={`az-lang-btn${lang === 'en' ? ' active' : ''}`} onClick={() => setLang('en')}>EN</button>
+                <button className={`az-lang-btn${lang === 'en' ? ' active' : ''}`} onClick={() => { setLang('en'); setEnvFilter('all') }}>EN</button>
               </span>
             </span>
           </div>
@@ -906,12 +908,12 @@ export function LandingPage() {
                 </h2>
                 <div className="az-cards">
                   {t.iii_cards.map((c, i) => (
-                    <div key={i} className="az-card" data-az>
+                    <a key={i} className="az-card" data-az href={c.href} style={{ textDecoration:'none', display:'block' }}>
                       <div className="cnum">{c.n}<span className="ctag">{c.tag}</span></div>
                       <h3>{c.title}</h3>
                       <p>{c.body}</p>
                       <div className="az-arr-c"><Arr /></div>
-                    </div>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -934,14 +936,23 @@ export function LandingPage() {
               </div>
               <div>
                 <div className="az-pills">
-                  {t.iv_pills.map((p, i) => (
-                    <button key={i} className={`az-pill${i === 0 ? ' active' : ''}`}>{p}</button>
-                  ))}
+                  {(['all','actions','epargne','immobilier'] as const).map((key, i) => {
+                    const count = key === 'all' ? t.iv_labs.length : t.iv_labs.filter(l => l.cat === key).length
+                    return (
+                      <button
+                        key={i}
+                        className={`az-pill${envFilter === key ? ' active' : ''}`}
+                        onClick={() => setEnvFilter(key)}
+                      >
+                        {t.iv_pills[i]} <span className="az-pill-count">{String(count).padStart(2,'0')}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </div>
             <div className="az-lgrid">
-              {t.iv_labs.map((lab, i) => (
+              {t.iv_labs.filter(lab => envFilter === 'all' || lab.cat === envFilter).map((lab, i) => (
                 <div key={i} className="az-lab" data-az>
                   <div className="az-limg">
                     <NextImage src={lab.img as string} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />

@@ -1,31 +1,12 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Check, ArrowRight, ChevronLeft } from 'lucide-react'
-import { Nav } from '@/components/landing/Nav'
 import { ToolPreview } from '@/components/landing/ToolPreview'
 import type { Metadata } from 'next'
-
-const BG       = '#F3EEE4'
-const SURFACE  = '#FFFFFF'
-const SURF2    = '#FBF7EF'
-const INK      = '#0A0A0A'
-const MUTED    = '#6B6356'
-const MUTED2   = '#9A907F'
-const LINE     = 'rgba(10,10,10,0.08)'
-const LINE_STR = 'rgba(10,10,10,0.14)'
-const GOLD     = '#B07820'
-const GOLD_D   = '#8B5E18'
-const GOLD_T   = 'rgba(176,120,32,0.09)'
-const GOLD_T2  = 'rgba(176,120,32,0.18)'
-const F_SANS   = "'Geist', system-ui, -apple-system, sans-serif"
-const F_SERIF  = "'Instrument Serif', Georgia, serif"
-const F_MONO   = "'Geist Mono', ui-monospace, monospace"
 
 type ToolContent = {
   title: string
   tag: string
-  em: string
-  color: string
+  tagNum: string
   desc: string
   why: string[]
   steps: string[]
@@ -35,8 +16,8 @@ type ToolContent = {
 
 const TOOL_CONTENT: Record<string, ToolContent> = {
   'interets-composes': {
-    title: 'Calculateur intérêts composés',
-    tag: 'Épargne & Investissement', em: '📈', color: '#7c3aed',
+    title: 'Intérêts composés',
+    tag: 'Épargne & Investissement', tagNum: '01',
     desc: 'Visualisez l\'effet boule de neige sur votre épargne. Simulez la croissance de votre capital sur 40 ans avec versements mensuels.',
     why: [
       'Comprendre pourquoi commencer tôt fait une différence de 300%',
@@ -55,8 +36,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/compound',
   },
   'fire': {
-    title: 'Simulateur FI/RE',
-    tag: 'Épargne & Investissement', em: '🔥', color: '#fb923c',
+    title: 'FI/RE — Indépendance financière',
+    tag: 'Épargne & Investissement', tagNum: '01',
     desc: 'Calculez votre date d\'indépendance financière. Combien épargner chaque mois pour ne plus jamais travailler par nécessité.',
     why: [
       'Fixer un objectif FIRE concret basé sur vos dépenses réelles',
@@ -75,8 +56,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/fire',
   },
   'pret-immobilier': {
-    title: 'Simulateur crédit immobilier',
-    tag: 'Immobilier', em: '🏠', color: '#a78bfa',
+    title: 'Crédit immobilier',
+    tag: 'Immobilier', tagNum: '02',
     desc: 'Calculez vos mensualités, le coût total et le tableau d\'amortissement complet de votre prêt immobilier.',
     why: [
       'Comparer plusieurs offres de crédit en quelques secondes',
@@ -96,7 +77,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'acheter-ou-louer': {
     title: 'Acheter ou louer ?',
-    tag: 'Immobilier', em: '🔑', color: '#38bdf8',
+    tag: 'Immobilier', tagNum: '02',
     desc: 'Comparez le coût total sur 20 ans entre achat et location selon votre situation personnelle et le marché local.',
     why: [
       'Dépasser les idées reçues sur l\'immobilier avec des chiffres réels',
@@ -115,8 +96,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/buyrent',
   },
   'impots-ir': {
-    title: 'Calculateur impôts sur le revenu',
-    tag: 'Fiscalité', em: '🧾', color: '#10b981',
+    title: 'Calcul impôts sur le revenu',
+    tag: 'Fiscalité', tagNum: '03',
     desc: 'Estimez votre impôt sur le revenu 2026 avec les tranches officielles, vos déductions et parts fiscales.',
     why: [
       'Anticiper votre imposition avant la déclaration',
@@ -136,7 +117,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'flat-tax-bareme': {
     title: 'Flat Tax vs Barème progressif',
-    tag: 'Fiscalité', em: '⚖️', color: '#818cf8',
+    tag: 'Fiscalité', tagNum: '03',
     desc: 'Comparez le Prélèvement Forfaitaire Unique (30%) et le barème progressif pour vos revenus de capitaux mobiliers.',
     why: [
       'Choisir l\'option la moins taxée selon votre TMI',
@@ -156,7 +137,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'retraite': {
     title: 'Simulateur retraite',
-    tag: 'Budget & Retraite', em: '🎯', color: '#a78bfa',
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Estimez votre future pension de retraite et calculez l\'épargne supplémentaire nécessaire pour maintenir votre niveau de vie.',
     why: [
       'Visualiser l\'écart entre pension et revenus actuels',
@@ -175,8 +156,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/retirement',
   },
   'taux-epargne': {
-    title: 'Calculateur taux d\'épargne',
-    tag: 'Budget & Retraite', em: '💰', color: '#60a5fa',
+    title: "Taux d'épargne",
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Analysez la répartition de vos revenus et calculez votre taux d\'épargne mensuel pour optimiser votre situation financière.',
     why: [
       'Identifier les postes de dépenses à optimiser',
@@ -196,7 +177,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'budget-50-30-20': {
     title: 'Budget 50/30/20',
-    tag: 'Budget & Retraite', em: '📋', color: '#34d399',
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Appliquez la règle budgétaire 50/30/20 à vos revenus : 50% besoins, 30% envies, 20% épargne.',
     why: [
       'Structurer son budget simplement sans tableur complexe',
@@ -215,8 +196,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/budget',
   },
   'dca': {
-    title: 'Simulateur DCA',
-    tag: 'Épargne & Investissement', em: '🔄', color: '#22c55e',
+    title: 'Dollar Cost Averaging',
+    tag: 'Épargne & Investissement', tagNum: '01',
     desc: 'Simulez l\'impact du Dollar Cost Averaging : investir un montant fixe chaque mois pour lisser le prix de revient.',
     why: [
       'Comprendre pourquoi les versements réguliers battent le market timing',
@@ -236,7 +217,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'pea-cto-av': {
     title: 'PEA vs CTO vs Assurance Vie',
-    tag: 'Fiscalité', em: '📊', color: '#fb923c',
+    tag: 'Fiscalité', tagNum: '03',
     desc: 'Comparez les trois principales enveloppes d\'investissement sur le rendement net après fiscalité sur 15 ans.',
     why: [
       'Choisir la meilleure enveloppe selon son horizon et ses objectifs',
@@ -255,8 +236,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/envelope-compare',
   },
   'epargne-urgence': {
-    title: 'Calculateur épargne d\'urgence',
-    tag: 'Budget & Retraite', em: '🛡️', color: '#f59e0b',
+    title: "Épargne d'urgence",
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Calculez le montant idéal de votre matelas de sécurité financière selon vos dépenses mensuelles et situation professionnelle.',
     why: [
       'Savoir exactement combien mettre de côté en livret A',
@@ -275,8 +256,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/emergency-fund',
   },
   'rentabilite-locative': {
-    title: 'Simulateur rentabilité locative',
-    tag: 'Immobilier', em: '🏢', color: '#34d399',
+    title: 'Rentabilité locative',
+    tag: 'Immobilier', tagNum: '02',
     desc: 'Calculez le rendement brut, net et le cash-flow mensuel de votre investissement locatif.',
     why: [
       'Comparer plusieurs biens sur leur rentabilité réelle',
@@ -295,8 +276,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/rental',
   },
   'succession': {
-    title: 'Simulateur succession & donations',
-    tag: 'Fiscalité', em: '🏛', color: '#fb7185',
+    title: 'Succession & Donations',
+    tag: 'Fiscalité', tagNum: '03',
     desc: 'Estimez les droits de succession selon le lien de parenté et optimisez votre stratégie de transmission patrimoniale.',
     why: [
       'Anticiper l\'impôt sur la succession pour ses héritiers',
@@ -315,8 +296,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/succession',
   },
   'score-patrimonial': {
-    title: 'Score patrimonial PatrImo',
-    tag: 'Budget & Retraite', em: '🏆', color: '#7c3aed',
+    title: 'Score patrimonial',
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Obtenez une notation 0-100 de votre santé financière sur 6 piliers : épargne, dettes, diversification, fiscal, prévoyance, FIRE.',
     why: [
       'Identifier vos points forts et axes d\'amélioration',
@@ -335,8 +316,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/score',
   },
   'revenus-passifs': {
-    title: 'Simulateur revenus passifs & dividendes',
-    tag: 'Épargne & Investissement', em: '💸', color: '#c084fc',
+    title: 'Revenus passifs & dividendes',
+    tag: 'Épargne & Investissement', tagNum: '01',
     desc: 'Calculez vos futurs dividendes et revenus passifs selon votre capital investi et votre stratégie de distribution.',
     why: [
       'Visualiser quand vos dividendes couvriront vos charges',
@@ -356,7 +337,7 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
   'optimiseur-etf': {
     title: 'Optimiseur ETF & comparateur TER',
-    tag: 'Épargne & Investissement', em: '⚖️', color: '#7c3aed',
+    tag: 'Épargne & Investissement', tagNum: '01',
     desc: 'Comparez les ETF par TER, benchmark et impact des frais sur la performance sur 20 ans.',
     why: [
       'Choisir l\'ETF le moins cher à exposition équivalente',
@@ -375,8 +356,8 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
     href: '/dashboard/etf-optimizer',
   },
   'credit-conso': {
-    title: 'Calculateur coût réel crédit conso',
-    tag: 'Budget & Retraite', em: '💳', color: '#fb7185',
+    title: 'Coût réel crédit conso',
+    tag: 'Budget & Retraite', tagNum: '04',
     desc: 'Visualisez le coût total réel de vos crédits à la consommation : intérêts, assurance et impact sur votre patrimoine.',
     why: [
       'Comprendre le vrai coût d\'un crédit revolving ou auto',
@@ -396,20 +377,80 @@ const TOOL_CONTENT: Record<string, ToolContent> = {
   },
 }
 
+const STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.ts-root{background:#efe7d2;color:#15140f;font-family:'Inter','Inter Tight',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.ts-c{max-width:860px;margin:0 auto;padding:0 40px}
+
+.ts-nav{position:sticky;top:0;z-index:50;background:#efe7d2;border-bottom:1px solid rgba(21,20,15,.10);padding:18px 0}
+.ts-nav-inner{display:flex;align-items:center;justify-content:space-between}
+.ts-logo{font-family:'Inter Tight',sans-serif;font-weight:800;font-size:17px;color:#15140f;text-decoration:none;letter-spacing:-.02em}
+.ts-logo em{font-style:normal;color:#c96a4a}
+.ts-nav-cta{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;background:#15140f;color:#efe7d2;font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;text-decoration:none;transition:background .18s}
+.ts-nav-cta:hover{background:#c96a4a}
+
+.ts-back{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:#8b8676;text-decoration:none;text-transform:uppercase;transition:color .15s;padding:40px 0 0}
+.ts-back:hover{color:#15140f}
+
+.ts-rule{display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#8b8676;text-transform:uppercase;border-bottom:1px solid rgba(21,20,15,.10);padding:0 0 14px;margin:32px 0 48px}
+.ts-rule-sep{flex:1;height:1px;background:rgba(21,20,15,.10)}
+
+.ts-hero{margin-bottom:64px}
+.ts-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;color:#c96a4a;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ts-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:#c96a4a;flex-shrink:0}
+.ts-hero h1{font-family:'Inter Tight',sans-serif;font-size:clamp(32px,4.5vw,52px);font-weight:800;letter-spacing:-.028em;line-height:1.05;margin:0 0 20px;color:#15140f}
+.ts-hero p{font-size:17px;color:#5a5448;max-width:560px;line-height:1.65;margin:0 0 36px}
+.ts-btns{display:flex;gap:12px;flex-wrap:wrap}
+.ts-btn-primary{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;background:#c96a4a;color:#efe7d2;font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;text-decoration:none;transition:background .18s;white-space:nowrap}
+.ts-btn-primary:hover{background:#a84f35}
+.ts-btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:13px 26px;border-radius:999px;background:transparent;border:1px solid rgba(21,20,15,.14);color:#5a5448;font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:500;text-decoration:none;transition:background .15s;white-space:nowrap}
+.ts-btn-ghost:hover{background:rgba(21,20,15,.05)}
+
+.ts-section{margin-bottom:72px}
+.ts-section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(22px,3vw,30px);font-weight:400;letter-spacing:-.01em;color:#15140f;margin:0 0 28px}
+
+.ts-why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.ts-why-card{padding:22px 20px;border-radius:14px;background:#faf6ec;border:1px solid rgba(21,20,15,.10)}
+.ts-why-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#c96a4a;margin-bottom:12px;text-transform:uppercase}
+.ts-why-card p{margin:0;font-size:14px;line-height:1.65;color:#5a5448}
+
+.ts-steps{display:flex;flex-direction:column;gap:0}
+.ts-step{display:flex;gap:28px;align-items:flex-start;padding-bottom:32px;border-bottom:1px solid rgba(21,20,15,.08);margin-bottom:32px}
+.ts-step:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.ts-step-num{font-family:'Playfair Display',serif;font-style:italic;font-size:56px;font-weight:400;line-height:1;color:#c96a4a;opacity:.6;flex-shrink:0;min-width:52px;letter-spacing:-.04em}
+.ts-step p{margin:0;font-size:15.5px;color:#5a5448;line-height:1.65;padding-top:10px}
+
+.ts-cases{padding:28px;border-radius:16px;background:#faf6ec;border:1px solid rgba(21,20,15,.10)}
+.ts-case{display:flex;gap:14px;align-items:flex-start;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid rgba(21,20,15,.06)}
+.ts-case:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.ts-case-arr{font-family:'JetBrains Mono',monospace;font-size:13px;color:#c96a4a;flex-shrink:0;line-height:1.65}
+.ts-case p{margin:0;font-size:14.5px;color:#5a5448;line-height:1.65}
+
+.ts-cta-block{background:#15140f;border-radius:24px;padding:56px 48px;text-align:center;margin-bottom:80px}
+.ts-cta-block h3{font-family:'Inter Tight',sans-serif;font-size:clamp(22px,2.5vw,30px);font-weight:800;letter-spacing:-.022em;color:#efe7d2;margin:0 0 10px}
+.ts-cta-block p{font-size:14px;color:#8b8676;margin:0 0 28px;line-height:1.65;max-width:440px;margin-left:auto;margin-right:auto}
+
+@media(max-width:640px){
+  .ts-c{padding:0 20px}
+  .ts-cta-block{padding:36px 24px}
+  .ts-why-grid{grid-template-columns:1fr}
+}
+`
+
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const tool = TOOL_CONTENT[slug]
-  if (!tool) return { title: 'Simulateur — PatrImo' }
+  if (!tool) return { title: 'Simulateur — Patrimo' }
   return {
-    title: `${tool.title} — PatrImo`,
+    title: `${tool.title} — Patrimo`,
     description: tool.desc,
     openGraph: {
-      title: `${tool.title} — PatrImo`,
+      title: `${tool.title} — Patrimo`,
       description: tool.desc,
       url: `https://finance.digitalstack.cloud/tools/${slug}`,
-      images: [{ url: `https://finance.digitalstack.cloud/api/og?type=${slug}&title=${encodeURIComponent(tool.title)}`, width: 1200, height: 630 }],
     },
   }
 }
@@ -423,187 +464,96 @@ export default async function ToolSlugPage({ params }: Props) {
   const tool = TOOL_CONTENT[slug]
   if (!tool) redirect('/tools')
 
-  const { title, tag, em, color, desc, why, steps, cases, href } = tool
+  const { title, tag, tagNum, desc, why, steps, cases, href } = tool
 
   return (
-    <div className="patrimo-landing" style={{ minHeight: '100vh', background: BG, color: INK, fontFamily: F_SANS }}>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
+      <div className="ts-root">
 
-      <Nav />
+        {/* Nav */}
+        <nav className="ts-nav">
+          <div className="ts-c">
+            <div className="ts-nav-inner">
+              <a href="/" className="ts-logo">Patri<em>mo</em></a>
+              <a href="/login" className="ts-nav-cta">Démarrer →</a>
+            </div>
+          </div>
+        </nav>
 
-      <main style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px 100px' }}>
+        <div className="ts-c">
+          {/* Back */}
+          <a href="/tools" className="ts-back">← Tous les simulateurs</a>
 
-        {/* Back link */}
-        <div style={{ paddingTop: 40, marginBottom: 48 }}>
-          <Link href="/tools" className="tool-back-link">
-            <ChevronLeft style={{ width: 14, height: 14 }} />
-            Tous les simulateurs
-          </Link>
+          {/* Rule */}
+          <div className="ts-rule">
+            <span>{tagNum} · {tag}</span>
+            <span className="ts-rule-sep" />
+            <span>Simulateur</span>
+          </div>
+
+          {/* Hero */}
+          <section className="ts-hero">
+            <div className="ts-tag">{tag}</div>
+            <h1>{title}</h1>
+            <p>{desc}</p>
+            <div className="ts-btns">
+              <a href={href} className="ts-btn-primary">Essayer maintenant →</a>
+              <a href="/tools" className="ts-btn-ghost">Tous les simulateurs</a>
+            </div>
+          </section>
+
+          {/* Mini simulator preview */}
+          <ToolPreview slug={slug} color="#c96a4a" />
+
+          {/* Pourquoi */}
+          <section className="ts-section">
+            <h2>Pourquoi ce simulateur ?</h2>
+            <div className="ts-why-grid">
+              {why.map((reason, i) => (
+                <div key={i} className="ts-why-card">
+                  <div className="ts-why-num">{String(i + 1).padStart(2,'0')}</div>
+                  <p>{reason}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Comment ça marche */}
+          <section className="ts-section">
+            <h2>Comment ça marche ?</h2>
+            <div className="ts-steps">
+              {steps.map((step, i) => (
+                <div key={i} className="ts-step">
+                  <div className="ts-step-num">{String(i + 1).padStart(2,'0')}</div>
+                  <p>{step}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Cas d'usage */}
+          <section className="ts-section">
+            <h2>Cas d&apos;usage</h2>
+            <div className="ts-cases">
+              {cases.map((c, i) => (
+                <div key={i} className="ts-case">
+                  <span className="ts-case-arr">→</span>
+                  <p>{c}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA */}
+          <div className="ts-cta-block">
+            <h3>Prêt à simuler votre situation ?</h3>
+            <p>Créez un compte gratuit pour sauvegarder vos simulations, suivre votre patrimoine et accéder à toutes les fonctionnalités.</p>
+            <a href="/login" className="ts-btn-primary">Commencer gratuitement →</a>
+          </div>
         </div>
 
-        {/* Hero */}
-        <section style={{ marginBottom: 80 }}>
-          {/* Eyebrow */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <span style={{ width: 6, height: 6, borderRadius: 99, background: color, display: 'inline-block' }} />
-            <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color, textTransform: 'uppercase', letterSpacing: '0.16em' }}>{tag}</span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, marginBottom: 22 }}>
-            <div style={{
-              width: 56, height: 56, borderRadius: 14, flexShrink: 0, marginTop: 4,
-              background: `${color}12`, border: `1px solid ${color}25`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
-            }}>{em}</div>
-            <h1 style={{ fontFamily: F_SERIF, fontSize: 'clamp(2rem, 4.5vw, 3rem)', fontWeight: 400, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1, color: INK }}>
-              {title}
-            </h1>
-          </div>
-
-          <p style={{ fontSize: 18, color: MUTED, maxWidth: 580, margin: '0 0 36px', lineHeight: 1.65 }}>
-            {desc}
-          </p>
-
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Link href={href} className="tool-btn-primary">
-              Essayer maintenant
-              <ArrowRight style={{ width: 15, height: 15 }} />
-            </Link>
-            <Link href="/tools" className="tool-btn-ghost">
-              Voir tous les simulateurs
-            </Link>
-          </div>
-        </section>
-
-        {/* Mini simulator preview */}
-        <ToolPreview slug={slug} color={color} />
-
-        {/* Pourquoi ce simulateur */}
-        <section style={{ marginBottom: 80 }}>
-          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 28px', letterSpacing: '-0.02em', color: INK }}>
-            Pourquoi ce simulateur ?
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-            {why.map((reason, i) => (
-              <div key={i} style={{
-                padding: '22px 20px',
-                borderRadius: 14,
-                background: SURFACE,
-                border: `1px solid ${LINE_STR}`,
-                boxShadow: `0 2px 8px ${LINE}`,
-              }}>
-                <div style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: `${color}14`, border: `1px solid ${color}25`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
-                }}>
-                  <Check style={{ width: 14, height: 14, color }} />
-                </div>
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: MUTED, fontWeight: 500 }}>
-                  {reason}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Comment ça marche */}
-        <section style={{ marginBottom: 80 }}>
-          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 36px', letterSpacing: '-0.02em', color: INK }}>
-            Comment ça marche ?
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {steps.map((step, i) => (
-              <div key={i} style={{ display: 'flex', gap: 24, alignItems: 'flex-start', paddingBottom: 32, borderBottom: i < steps.length - 1 ? `1px solid ${LINE}` : 'none', marginBottom: i < steps.length - 1 ? 32 : 0 }}>
-                <div style={{
-                  flexShrink: 0, fontFamily: F_SERIF,
-                  fontSize: 48, fontWeight: 400, lineHeight: 1,
-                  color, letterSpacing: '-0.04em', opacity: 0.7, minWidth: 52,
-                }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div style={{ paddingTop: 8, flex: 1 }}>
-                  <p style={{ margin: 0, fontSize: 16, color: MUTED, lineHeight: 1.65, fontWeight: 400 }}>
-                    {step}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Cas d'usage */}
-        <section style={{ marginBottom: 80 }}>
-          <h2 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.5vw, 1.8rem)', fontWeight: 400, margin: '0 0 24px', letterSpacing: '-0.02em', color: INK }}>
-            Cas d&apos;usage
-          </h2>
-          <div style={{
-            padding: '28px 28px',
-            borderRadius: 16,
-            background: SURFACE,
-            border: `1px solid ${LINE_STR}`,
-          }}>
-            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {cases.map((c, i) => (
-                <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                  <span style={{ color, fontSize: 18, lineHeight: 1.4, flexShrink: 0, fontWeight: 700 }}>→</span>
-                  <span style={{ fontSize: 15, color: MUTED, lineHeight: 1.65 }}>{c}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* CTA final */}
-        <section style={{
-          textAlign: 'center', padding: '56px 32px', borderRadius: 24,
-          background: SURFACE, border: `1px solid ${LINE_STR}`,
-          position: 'relative', overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: '-40%', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '200%', background: `radial-gradient(ellipse, ${GOLD_T2} 0%, transparent 60%)`, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <span style={{ width: 5, height: 5, borderRadius: 99, background: GOLD, display: 'inline-block' }} />
-              <span style={{ fontFamily: F_MONO, fontSize: 10, fontWeight: 600, color: GOLD_D, textTransform: 'uppercase', letterSpacing: '0.16em' }}>Compte gratuit</span>
-            </div>
-            <h3 style={{ fontFamily: F_SERIF, fontSize: 'clamp(1.4rem, 2.8vw, 2rem)', fontWeight: 400, margin: '0 0 12px', letterSpacing: '-0.02em', color: INK }}>
-              Prêt à simuler votre situation ?
-            </h3>
-            <p style={{ fontSize: 15, color: MUTED, margin: '0 0 28px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.65, fontFamily: F_SANS }}>
-              Créez un compte gratuit pour sauvegarder vos simulations, suivre votre patrimoine et accéder à toutes les fonctionnalités.
-            </p>
-            <Link href="/login" className="tool-btn-primary">
-              Commencer gratuitement
-              <ArrowRight style={{ width: 15, height: 15 }} />
-            </Link>
-          </div>
-        </section>
-
-      </main>
-
-      <style>{`
-        .tool-btn-primary {
-          display: inline-flex; align-items: center; gap: 8px;
-          text-decoration: none; padding: 13px 26px; border-radius: 999px;
-          background: #8B5E18; color: #FFFFFF !important;
-          font-weight: 600; font-size: 14px; font-family: 'Geist', system-ui;
-          transition: transform .15s, box-shadow .15s;
-        }
-        .tool-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,94,24,0.35); background: #B07820; }
-        .tool-btn-ghost {
-          display: inline-flex; align-items: center; gap: 6px;
-          text-decoration: none; padding: 13px 26px; border-radius: 999px;
-          background: #FFFFFF; border: 1px solid rgba(10,10,10,0.14);
-          color: #6B6356; font-weight: 500; font-size: 14px; font-family: 'Geist', system-ui;
-          transition: background .15s;
-        }
-        .tool-btn-ghost:hover { background: #FBF7EF; }
-        .tool-back-link {
-          text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
-          color: #9A907F; font-size: 13px; font-weight: 500;
-          font-family: 'Geist Mono', monospace; transition: color 0.15s;
-        }
-        .tool-back-link:hover { color: #0A0A0A; }
-      `}</style>
-    </div>
+      </div>
+    </>
   )
 }

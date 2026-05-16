@@ -196,7 +196,6 @@ function TradingViewChart({ symbol }: { symbol: string }) {
       colorTheme: 'light',
       isTransparent: true,
       autosize: true,
-      largeChartUrl: `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`,
     })
     container.appendChild(script)
     el.appendChild(container)

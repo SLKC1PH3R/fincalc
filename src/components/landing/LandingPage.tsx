@@ -447,9 +447,9 @@ const COPY = {
     v_h2_a: 'Quatre étapes.', v_h2_em: 'Un résultat', v_h2_b: 'mesurable',
     v_sub_p: 'Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.',
     v_steps: [
-      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/inventaire.jpg' },
-      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/analyse.jpg' },
-      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/simulation.jpg' },
+      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/Inventaire.jpg' },
+      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/Analyse.jpg' },
+      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/Simulation.jpg' },
       { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Méthode propriétaire · 2024',
@@ -1067,7 +1067,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-tart" data-az="right">
-                <Plate label="SECURITE" src="/dashboard-mobile.png" />
+                <Plate label="SECURITE" src="/section2.jpg" />
               </div>
             </div>
           </div>

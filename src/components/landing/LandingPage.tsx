@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import NextImage from 'next/image'
 
 /* ─────────────────────────────────────────────────────────────────
    Patrimo — landing page
@@ -435,8 +436,8 @@ const COPY = {
       { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.", img:'/CTO.jpg' },
       { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.", img:'/PER.jpg' },
       { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.", img:'/immobilliers.jpg' },
-      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.png' },
-      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.png' },
+      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.", img:'/crypto.jpg' },
+      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.", img:'/liquidites.jpg' },
     ],
     iv_foot: '8 enveloppes · Fiches complètes',
     // V
@@ -577,8 +578,8 @@ const COPY = {
       { n:'04', badge:'Flat Tax 30%',     title:'CTO',                 body:'All asset classes, no ceiling. Absolute freedom.', img:'/CTO.jpg' },
       { n:'05', badge:'Tax deduction',    title:'PER',                 body:'Deduct today at your marginal rate, capitalise tomorrow.', img:'/PER.jpg' },
       { n:'06', badge:'Bank leverage',    title:'Real Estate',         body:'SCPI · Direct · LMNP. Recurring rental income.', img:'/immobilliers.jpg' },
-      { n:'07', badge:'Annual report',    title:'Crypto assets',       body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.', img:'/crypto.png' },
-      { n:'08', badge:'Safety net',       title:'Cash',                body:'3 to 6 months of expenses. Opportunity reserve.', img:'/liquidites.png' },
+      { n:'07', badge:'Annual report',    title:'Crypto assets',       body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.', img:'/crypto.jpg' },
+      { n:'08', badge:'Safety net',       title:'Cash',                body:'3 to 6 months of expenses. Opportunity reserve.', img:'/liquidites.jpg' },
     ],
     iv_foot: '8 wrappers · Full fact sheets',
     // V
@@ -650,7 +651,7 @@ type Lang = keyof typeof COPY
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 function Plate({ label, src }: { label: string; src?: string }) {
-  if (src) return <img src={src} alt={label} className="az-pimg" />
+  if (src) return <NextImage src={src} alt={label} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
   return (
     <div className="az-plate">
       <span className="phc" />

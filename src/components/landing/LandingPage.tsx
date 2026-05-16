@@ -651,7 +651,7 @@ type Lang = keyof typeof COPY
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 function Plate({ label, src }: { label: string; src?: string }) {
-  if (src) return <NextImage src={src} alt={label} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
+  if (src) return <img src={src} alt={label} className="az-pimg" />
   return (
     <div className="az-plate">
       <span className="phc" />
@@ -944,7 +944,9 @@ export function LandingPage() {
               {t.iv_labs.map((lab, i) => (
                 <div key={i} className="az-lab" data-az>
                   <div className="az-limg">
-                    <Plate label={`ENV-${lab.n}`} src={lab.img} />
+                    {lab.img
+                      ? <NextImage src={lab.img} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
+                      : <Plate label={`ENV-${lab.n}`} />}
                     <span className="az-badge">{lab.badge}</span>
                   </div>
                   <div className="nrow"><span>PTM-{lab.n}</span><span>2026</span></div>

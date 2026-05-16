@@ -686,17 +686,19 @@ export function LandingPage() {
 
     const nav = document.querySelector<HTMLElement>('.az-nav')
     if (!nav) return () => io.disconnect()
-    let lastY = window.scrollY, ticking = false
+    let lastY = window.scrollY, ticking = false, dir = 0, dirStart = window.scrollY
     const onScroll = () => {
       if (ticking) return
       ticking = true
       requestAnimationFrame(() => {
         const y = window.scrollY, delta = y - lastY
-        if (Math.abs(delta) > 6) {
-          nav.classList.toggle('hidden', delta > 0 && y > 120)
-          nav.classList.toggle('scrolled', y > 40)
-          lastY = y
-        }
+        lastY = y
+        nav.classList.toggle('scrolled', y > 40)
+        if (delta > 2 && dir !== 1)  { dir = 1;  dirStart = y }
+        if (delta < -2 && dir !== -1) { dir = -1; dirStart = y }
+        const dist = Math.abs(y - dirStart)
+        if (dir === 1  && dist > 80 && y > 120) nav.classList.add('hidden')
+        if (dir === -1 && dist > 15) nav.classList.remove('hidden')
         ticking = false
       })
     }

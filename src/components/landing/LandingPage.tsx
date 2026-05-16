@@ -447,7 +447,7 @@ const COPY = {
     v_sub_p: 'Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.',
     v_steps: [
       { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/patrimoine-actifs.png' },
-      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/patrimoine-overview.png' },
+      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/section2.jpg' },
       { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/dashboard-mobile.png' },
       { n:'iv',  t:'Décision',   b:"Score patrimonial sur 7 dimensions. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/heritage.jpg' },
     ],
@@ -589,7 +589,7 @@ const COPY = {
     v_sub_p: 'Every simulation starts with simple inputs. Results are instant, visual and exportable.',
     v_steps: [
       { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/patrimoine-actifs.png' },
-      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/patrimoine-overview.png' },
+      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/section2.jpg' },
       { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/dashboard-mobile.png' },
       { n:'iv',  t:'Decision',  b:'Wealth score across 7 dimensions. Actionable recommendations. You decide — with full clarity.', img:'/heritage.jpg' },
     ],
@@ -892,7 +892,7 @@ export function LandingPage() {
             </div>
             <div className="az-cgrid">
               <div className="az-cart" data-az="left">
-                <Plate label="PLATEFORME" src="/patrimoine-overview.png" />
+                <Plate label="PLATEFORME" src="/section2.jpg" />
                 <span className="ribbon">{t.iii_ribbon}</span>
                 <span className="az-corner tl" /><span className="az-corner br" />
               </div>
@@ -1022,7 +1022,7 @@ export function LandingPage() {
               </a>
               <a className="az-wcard rot2" href="/login" data-az>
                 <div className="wlrow"><span className="wsl">{t.vi_card2_sl}</span><span className="widx">DIM-02</span></div>
-                <div className="wimg"><Plate label="SCORE-2" src="/patrimoine-overview.png" /></div>
+                <div className="wimg"><Plate label="SCORE-2" src="/section2.jpg" /></div>
                 <h3>{t.vi_card2_h3}</h3>
                 <p>{t.vi_card2_p}</p>
                 <div className="wmrow"><span>{t.vi_card2_foot}</span><span className="wyr">2026</span></div>

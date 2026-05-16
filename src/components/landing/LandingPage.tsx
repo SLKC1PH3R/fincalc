@@ -589,9 +589,9 @@ const COPY = {
     v_h2_a: 'Four steps.', v_h2_em: 'One measurable', v_h2_b: 'outcome',
     v_sub_p: 'Every simulation starts with simple inputs. Results are instant, visual and exportable.',
     v_steps: [
-      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/inventaire.jpg' },
-      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/analyse.jpg' },
-      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/simulation.jpg' },
+      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/Inventaire.jpg' },
+      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/Analyse.jpg' },
+      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/Simulation.jpg' },
       { n:'iv',  t:'Decision',  b:'Wealth score across 7 dimensions. Actionable recommendations. You decide — with full clarity.', img:'/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Proprietary method · 2024',

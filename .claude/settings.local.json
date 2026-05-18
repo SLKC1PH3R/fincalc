@@ -126,7 +126,14 @@
       "Bash(Get-Content -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\globals.css\" -TotalCount 150)",
       "Bash(git push *)",
       "Bash(git rm *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(cgu)",
+      "Bash(mentions)",
+      "Bash(politique)",
+      "Bash(contact)",
+      "Bash(rgpd\")",
+      "Bash(ls /mnt/c/Users/jerem/Downloads/fincalc/src/app/)",
+      "Read(//mnt/c/Users/jerem/Downloads/fincalc/src/**)"
     ]
   }
 }

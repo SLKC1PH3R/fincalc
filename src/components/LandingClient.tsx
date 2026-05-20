@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { HeroShutterText } from '@/components/ui/hero-shutter-text'
-import { PatrimoHeader } from '@/components/ui/Patrimo-header'
+import { PatrimoHeader } from '@/components/ui/patrimo-header'
 
 // ─── Data ─────────────────────────────────────────────────────────────────
 

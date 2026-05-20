@@ -8,7 +8,7 @@ import {
   lookupByIsin, lookupByTicker, getAlternatives, calcFeeImpact,
   type ETFInfo,
 } from '@/lib/etf-database'
-import { type Position, type PriceData, fmtEur, fmtCompact } from '@/components/Patrimoine/types'
+import { type Position, type PriceData, fmtEur, fmtCompact } from '@/components/patrimoine/types'
 
 function GrowthChart({ data, currentLabel, altLabel }: { data: { year: number; current: number; alternative: number }[]; currentLabel: string; altLabel: string }) {
   const W = 600, H = 160, PAD = { l: 56, r: 16, t: 10, b: 30 }

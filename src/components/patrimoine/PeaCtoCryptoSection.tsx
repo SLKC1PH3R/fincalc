@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
-import { PositionsTable } from '@/components/Patrimoine/PositionsTable'
-import { EtfOptimizerSection } from '@/components/Patrimoine/EtfOptimizerSection'
+import { PositionsTable } from '@/components/patrimoine/PositionsTable'
+import { EtfOptimizerSection } from '@/components/patrimoine/EtfOptimizerSection'
 import {
   type Envelope, type Position, type PriceData,
   PEA_MAX, fmtCompact,
-} from '@/components/Patrimoine/types'
+} from '@/components/patrimoine/types'
 import { TransactionJournal } from '@/components/TransactionJournal'
 
 export function PeaCtoCryptoSection({

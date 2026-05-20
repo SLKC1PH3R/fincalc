@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { Info } from 'lucide-react'
-import { type Envelope, fmtEur } from '@/components/Patrimoine/types'
+import { type Envelope, fmtEur } from '@/components/patrimoine/types'
 
 export function PERSection({ envelope, onSave }: {
   envelope: Envelope

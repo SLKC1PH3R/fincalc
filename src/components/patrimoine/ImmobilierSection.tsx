@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { ChevronRight } from 'lucide-react'
-import { type Envelope, fmtEur, fmtCompact } from '@/components/Patrimoine/types'
+import { type Envelope, fmtEur, fmtCompact } from '@/components/patrimoine/types'
 
 function EquityChart({ data }: { data: { year: number; equity: number; credit: number }[] }) {
   const W = 700, H = 220, PAD = { l: 60, r: 16, t: 12, b: 36 }

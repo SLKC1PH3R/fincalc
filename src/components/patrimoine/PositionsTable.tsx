@@ -13,7 +13,7 @@ import {
 import {
   type Envelope, type Position, type PriceData, type AssetType,
   ASSET_LABELS, ASSET_COLORS, fmtEur,
-} from '@/components/Patrimoine/types'
+} from '@/components/patrimoine/types'
 import { FinTip } from '@/components/FinTip'
 
 type SearchResult = { symbol: string; name: string; type: 'ETF' | 'STOCK' | 'CRYPTO'; isin?: string }

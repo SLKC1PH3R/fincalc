@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import dynamic from 'next/dynamic'
 import { calcPortfolioGeo } from '@/lib/etf-database'
-import { type Position, type PriceData, fmtCompact } from '@/components/Patrimoine/types'
+import { type Position, type PriceData, fmtCompact } from '@/components/patrimoine/types'
 
 const WorldMapChart = dynamic(
   () => import('@/components/WorldMapChart').then(m => m.WorldMapChart),

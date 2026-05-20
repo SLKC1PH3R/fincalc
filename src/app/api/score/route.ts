@@ -175,7 +175,7 @@ export async function GET() {
 
   // Fetch envelopes + user financial profile in parallel
   const [envelopes, user] = await Promise.all([
-    prisma.PatrimoineEnvelope.findMany({
+    prisma.patrimoineEnvelope.findMany({
       where: { portfolio: { userId } },
       include: { positions: true },
     }),
@@ -239,10 +239,10 @@ export async function GET() {
   }
 
   // Store score
-  await prisma.PatrimoineScore.create({ data: { userId, score: total, details: details as object } })
+  await prisma.patrimoineScore.create({ data: { userId, score: total, details: details as object } })
 
   // History (last 12)
-  const history = await prisma.PatrimoineScore.findMany({
+  const history = await prisma.patrimoineScore.findMany({
     where: { userId },
     orderBy: { createdAt: 'desc' },
     take: 12,

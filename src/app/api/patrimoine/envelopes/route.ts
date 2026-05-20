@@ -92,11 +92,11 @@ export async function POST(req: NextRequest) {
   })
 
   // Déterminer le sortOrder (après la dernière enveloppe)
-  const count = await prisma.PatrimoineEnvelope.count({
+  const count = await prisma.patrimoineEnvelope.count({
     where: { portfolioId: portfolio.id },
   })
 
-  const envelope = await prisma.PatrimoineEnvelope.create({
+  const envelope = await prisma.patrimoineEnvelope.create({
     data: {
       portfolioId: portfolio.id,
       type,

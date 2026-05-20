@@ -12,7 +12,7 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
-  const goals = await prisma.PatrimoineGoal.findMany({
+  const goals = await prisma.patrimoineGoal.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
   })
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Le montant cible est requis' }, { status: 400 })
   }
 
-  const goal = await prisma.PatrimoineGoal.create({
+  const goal = await prisma.patrimoineGoal.create({
     data: {
       userId: session.user.id,
       title: title.trim(),

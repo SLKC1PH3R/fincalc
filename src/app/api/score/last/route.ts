@@ -7,7 +7,7 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ score: null })
 
-  const last = await prisma.PatrimoineScore.findFirst({
+  const last = await prisma.patrimoineScore.findFirst({
     where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
     select: { score: true },

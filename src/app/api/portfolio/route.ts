@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
   // Vérifier que l'enveloppe appartient bien à cet utilisateur
   if (envelopeId) {
-    const env = await prisma.PatrimoineEnvelope.findFirst({
+    const env = await prisma.patrimoineEnvelope.findFirst({
       where: { id: envelopeId, portfolio: { userId: session.user.id } },
     })
     if (!env) return NextResponse.json({ error: 'Enveloppe introuvable' }, { status: 404 })

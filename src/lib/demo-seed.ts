@@ -137,7 +137,7 @@ export async function runDemoSeed(): Promise<{ simulations: number; envelopes: n
   const oldPortfolio = await prisma.portfolio.findUnique({ where: { userId: demoUser.id } })
   if (oldPortfolio) {
     await prisma.portfolioPosition.deleteMany({ where: { portfolioId: oldPortfolio.id } })
-    await prisma.PatrimoineEnvelope.deleteMany({ where: { portfolioId: oldPortfolio.id } })
+    await prisma.patrimoineEnvelope.deleteMany({ where: { portfolioId: oldPortfolio.id } })
     await prisma.portfolio.delete({ where: { id: oldPortfolio.id } })
   }
 
@@ -146,7 +146,7 @@ export async function runDemoSeed(): Promise<{ simulations: number; envelopes: n
   // Create envelopes
   const envelopeMap: Record<string, string> = {}
   for (const def of ENVELOPE_DEFS) {
-    const env = await prisma.PatrimoineEnvelope.create({
+    const env = await prisma.patrimoineEnvelope.create({
       data: { portfolioId: portfolio.id, type: def.type, name: def.name, sortOrder: def.sortOrder, metadata: def.metadata as object },
     })
     envelopeMap[def.name] = env.id

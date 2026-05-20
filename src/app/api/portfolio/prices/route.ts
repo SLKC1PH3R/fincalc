@@ -96,7 +96,7 @@ async function yahooQuote(symbol: string): Promise<{ price: number; changePct: n
       `${YAHOO}/${encodeURIComponent(symbol)}?interval=1d&range=1d`,
       {
         next: { revalidate: 60 },
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PatrImo/1.0)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Patrimo/1.0)' },
       }
     )
     if (!res.ok) return null
@@ -151,7 +151,7 @@ async function usdToEur(): Promise<number> {
   try {
     const res = await fetch(
       `${YAHOO}/EURUSD=X?interval=1d&range=1d`,
-      { next: { revalidate: 3600 }, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PatrImo/1.0)' } }
+      { next: { revalidate: 3600 }, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Patrimo/1.0)' } }
     )
     if (!res.ok) return 0.92
     const d = await res.json()

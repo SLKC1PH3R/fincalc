@@ -47,24 +47,24 @@ const SIMS_CATS = [
       { name: 'PEA vs CTO vs AV', href: '/tools/pea-cto-av' },
       { name: 'Revenus passifs', href: '/tools/revenus-passifs' },
       { name: 'Benchmarks', href: '/tools/benchmarks' },
-      { name: 'Score Patrimonial', href: '/tools/score-patrimonial' },
+      { name: 'Score Patrimonial', href: '/tools/score-Patrimonial' },
     ],
   },
 ]
 
 const PATRI_LEFT = [
-  { ic: '🏛', nm: "Vue d'ensemble", href: '/dashboard/patrimoine' },
-  { ic: '🏠', nm: 'Immobilier', href: '/dashboard/patrimoine' },
-  { ic: '📈', nm: 'Actions & Fonds', href: '/dashboard/patrimoine' },
-  { ic: '💳', nm: 'Livrets', href: '/dashboard/patrimoine' },
-  { ic: '₿', nm: 'Autres actifs', href: '/dashboard/patrimoine' },
+  { ic: '🏛', nm: "Vue d'ensemble", href: '/dashboard/Patrimoine' },
+  { ic: '🏠', nm: 'Immobilier', href: '/dashboard/Patrimoine' },
+  { ic: '📈', nm: 'Actions & Fonds', href: '/dashboard/Patrimoine' },
+  { ic: '💳', nm: 'Livrets', href: '/dashboard/Patrimoine' },
+  { ic: '₿', nm: 'Autres actifs', href: '/dashboard/Patrimoine' },
 ]
 const PATRI_RIGHT = [
   { ic: '📊', nm: 'Mon Portefeuille', href: '/dashboard/portfolio' },
   { ic: '🏆', nm: 'Score Patrimonial', href: '/dashboard/score' },
-  { ic: '⚖️', nm: 'Rééquilibrage', href: '/dashboard/patrimoine' },
-  { ic: '🧾', nm: 'Rapport Fiscal', href: '/dashboard/patrimoine' },
-  { ic: '🎯', nm: 'Mes Objectifs', href: '/dashboard/patrimoine' },
+  { ic: '⚖️', nm: 'Rééquilibrage', href: '/dashboard/Patrimoine' },
+  { ic: '🧾', nm: 'Rapport Fiscal', href: '/dashboard/Patrimoine' },
+  { ic: '🎯', nm: 'Mes Objectifs', href: '/dashboard/Patrimoine' },
 ]
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ export function PatrimoHeader() {
           {/* Logo */}
           <Link href="/" className="ph-logo">
             <span className="ph-logo-mark">P</span>
-            PatrImo
+            Patrimo
           </Link>
 
           {/* Desktop nav */}

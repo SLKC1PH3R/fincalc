@@ -133,7 +133,8 @@
       "Bash(contact)",
       "Bash(rgpd\")",
       "Bash(ls /mnt/c/Users/jerem/Downloads/fincalc/src/app/)",
-      "Read(//mnt/c/Users/jerem/Downloads/fincalc/src/**)"
+      "Read(//mnt/c/Users/jerem/Downloads/fincalc/src/**)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\confidentialite\" -Force)"
     ]
   }
 }

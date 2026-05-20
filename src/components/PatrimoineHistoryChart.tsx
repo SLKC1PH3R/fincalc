@@ -31,7 +31,7 @@ export function PatrimoineHistoryChart() {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch('/api/patrimoine/snapshots?days=365')
+      const r = await fetch('/api/Patrimoine/snapshots?days=365')
       if (r.ok) setSnapshots(await r.json())
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ export function PatrimoineHistoryChart() {
   const saveSnapshot = async () => {
     setSaving(true)
     try {
-      const envRes = await fetch('/api/patrimoine/envelopes')
+      const envRes = await fetch('/api/Patrimoine/envelopes')
       if (!envRes.ok) return
       const envelopes: Record<string, unknown>[] = await envRes.json()
 
@@ -64,7 +64,7 @@ export function PatrimoineHistoryChart() {
         totalValue += val
       }
 
-      const res = await fetch('/api/patrimoine/snapshot', {
+      const res = await fetch('/api/Patrimoine/snapshot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ totalValue, byEnvelope }),
@@ -97,7 +97,7 @@ export function PatrimoineHistoryChart() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
         <div>
           <p style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500, marginBottom: 6 }}>
-            Évolution patrimoniale
+            Évolution Patrimoniale
           </p>
           {snapshots.length > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

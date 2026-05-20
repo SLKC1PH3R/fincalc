@@ -730,7 +730,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
     if (!type || !name.trim()) return
     setSaving(true)
     try {
-      const res = await fetch('/api/patrimoine/envelopes', {
+      const res = await fetch('/api/Patrimoine/envelopes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, name: name.trim(), metadata: meta }),
@@ -1098,7 +1098,7 @@ function PortfolioPageInner() {
   }, [])
 
   const loadEnvelopes = useCallback(async () => {
-    const res = await fetch('/api/patrimoine/envelopes')
+    const res = await fetch('/api/Patrimoine/envelopes')
     if (res.ok) setEnvelopes(await res.json())
   }, [])
 
@@ -1423,13 +1423,13 @@ function PortfolioPageInner() {
       {totalValue > 0 && (
         <div>
           <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--p-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-            Aller plus loin avec PatrImo
+            Aller plus loin avec Patrimo
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
                 icon: TrendingUp, color: '#818cf8',
-                title: 'Projetez votre patrimoine',
+                title: 'Projetez votre Patrimoine',
                 desc: `Vos ${fmtCompact(totalValue)} actuels investis à 7 %/an pendant 20 ans…`,
                 href: `/dashboard/compound?restore=${encodeURIComponent(JSON.stringify({ capital: Math.round(totalValue), monthly: 500, rate: 7, years: 20, frequency: 12 }))}`,
                 cta: 'Simuler les intérêts composés',

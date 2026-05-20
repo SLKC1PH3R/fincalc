@@ -95,10 +95,10 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             Lancez votre propre simulation
           </p>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.38)', marginBottom: 20 }}>
-            PatrImo est 100% gratuit. 9 calculateurs financiers, historique illimité, partage de simulations.
+            Patrimo est 100% gratuit. 9 calculateurs financiers, historique illimité, partage de simulations.
           </p>
           <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 12, background: '#B07820', color: '#111', textDecoration: 'none', fontSize: 14, fontWeight: 700 }}>
-            Créer mon compte PatrImo gratuit →
+            Créer mon compte Patrimo gratuit →
           </Link>
         </div>
       </div>
@@ -109,7 +109,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
   const sim = await getSharedSim(token)
-  if (!sim) return { title: 'Simulation introuvable · PatrImo' }
+  if (!sim) return { title: 'Simulation introuvable · Patrimo' }
   const baseUrl = process.env.NEXTAUTH_URL ?? 'https://finance.digitalstack.cloud'
   const firstValue = Object.values(sim.results ?? {}).find(v => typeof v === 'number') as number | undefined
   const ogParams = new URLSearchParams({
@@ -119,16 +119,16 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
     ...(firstValue != null ? { value: String(Math.round(firstValue)) } : {}),
   })
   return {
-    title: `${sim.name} · PatrImo`,
-    description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via PatrImo — calculateur financier gratuit.`,
+    title: `${sim.name} · Patrimo`,
+    description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via Patrimo — calculateur financier gratuit.`,
     openGraph: {
-      title: `${sim.name} · PatrImo`,
-      description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via PatrImo`,
+      title: `${sim.name} · Patrimo`,
+      description: `Simulation ${TYPE_LABELS[sim.type] ?? sim.type} partagée via Patrimo`,
       images: [{ url: `${baseUrl}/api/og?${ogParams}`, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${sim.name} · PatrImo`,
+      title: `${sim.name} · Patrimo`,
       images: [`${baseUrl}/api/og?${ogParams}`],
     },
   }

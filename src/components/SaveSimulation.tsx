@@ -21,7 +21,7 @@ const SIM_RECOMMENDATIONS: Record<string, Array<{ href: string; label: string; d
   buyrent:           [{ href: '/dashboard/mortgage',   label: 'Prêt immobilier',   desc: 'Simulez votre financement' },
                       { href: '/dashboard/rental',     label: 'Locatif',           desc: 'Et si vous investissiez ?' }],
   rental:            [{ href: '/dashboard/mortgage',   label: 'Prêt immobilier',   desc: 'Optimisez votre financement' },
-                      { href: '/dashboard/buyrent',    label: 'Acheter vs Louer',  desc: 'Comparaison patrimoniale' }],
+                      { href: '/dashboard/buyrent',    label: 'Acheter vs Louer',  desc: 'Comparaison Patrimoniale' }],
   tax:               [{ href: '/dashboard/flat-tax',   label: 'Flat Tax vs Barème',desc: 'Optimisez vos plus-values' },
                       { href: '/dashboard/retirement', label: 'Retraite',          desc: 'Préparez votre retraite fiscalement' }],
   'flat-tax':        [{ href: '/dashboard/envelope-compare', label: 'PEA vs CTO vs AV', desc: 'Choisissez la bonne enveloppe' },

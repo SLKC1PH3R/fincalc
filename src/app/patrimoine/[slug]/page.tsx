@@ -283,7 +283,7 @@ const PAGE_CONTENT: Record<string, PageContent> = {
       "Suivre votre progression dans le temps avec un score trimestriel",
     ],
     steps: [
-      "Renseignez ou mettez à jour votre situation patrimoniale dans PatrImo",
+      "Renseignez ou mettez à jour votre situation patrimoniale dans Patrimo",
       "L'algorithme analyse automatiquement les 6 piliers de votre situation",
       "Recevez votre score, le détail pilier par pilier et des recommandations",
     ],

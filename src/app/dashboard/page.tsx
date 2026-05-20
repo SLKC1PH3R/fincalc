@@ -314,8 +314,8 @@ export default function HomePage() {
   const [goals, setGoals] = useState<Goal[]>([])
   const [loaded, setLoaded] = useState(false)
   const [scoreWidget, setScoreWidget] = useState<ScoreWidget | null>(null)
-  const [patrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
-  const [patrimoineTimeline, setPatrimoineTimeline] = useState<PatrimoineSnapshot[]>([])
+  const [PatrimoineKPI, setPatrimoineKPI] = useState<PatrimoineKPI | null>(null)
+  const [PatrimoineTimeline, setPatrimoineTimeline] = useState<PatrimoineSnapshot[]>([])
   const [period, setPeriod] = useState('1A')
   const [onboardingDismissed, setOnboardingDismissed] = useState(true)
 
@@ -323,7 +323,7 @@ export default function HomePage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/simulations').then(r => r.json()).catch(() => []),
-      fetch('/api/patrimoine/envelopes').then(r => r.json()).catch(() => []),
+      fetch('/api/Patrimoine/envelopes').then(r => r.json()).catch(() => []),
       fetch('/api/goals').then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([simsData, envData, goalsData]) => {
       if (Array.isArray(simsData)) setSims(simsData)
@@ -349,9 +349,9 @@ export default function HomePage() {
     setOnboardingDismissed(localStorage.getItem('onboarding_dismissed') === '1')
   }, [])
 
-  // Load snapshots (historical patrimoine)
+  // Load snapshots (historical Patrimoine)
   useEffect(() => {
-    fetch('/api/patrimoine/snapshots?days=1825')
+    fetch('/api/Patrimoine/snapshots?days=1825')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (Array.isArray(d)) {
@@ -361,7 +361,7 @@ export default function HomePage() {
       .catch(() => {})
   }, [])
 
-  // Compute patrimoine KPI from envelopes
+  // Compute Patrimoine KPI from envelopes
   useEffect(() => {
     if (envelopes.length === 0) return
     let brut = 0, dettes = 0
@@ -382,14 +382,14 @@ export default function HomePage() {
 
   // Auto-save today's snapshot + append to local timeline
   useEffect(() => {
-    if (!patrimoineKPI || envelopes.length === 0) return
+    if (!PatrimoineKPI || envelopes.length === 0) return
     const byEnvelope = Object.fromEntries(
       envelopes.map(e => [e.id, e.totalValue ?? 0])
     )
-    fetch('/api/patrimoine/snapshot', {
+    fetch('/api/Patrimoine/snapshot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ totalValue: patrimoineKPI.brut, byEnvelope }),
+      body: JSON.stringify({ totalValue: PatrimoineKPI.brut, byEnvelope }),
     })
       .then(r => r.ok ? r.json() : null)
       .then((snap: { totalValue: number; date: string } | null) => {
@@ -403,27 +403,27 @@ export default function HomePage() {
       })
       .catch(() => {})
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patrimoineKPI])
+  }, [PatrimoineKPI])
 
   // Derived values
   const firstName = session?.user?.name?.split(' ')[0] || ''
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
 
-  const animatedNet = useCountUp(patrimoineKPI?.net ?? 0, 1400, loaded && !!patrimoineKPI)
+  const animatedNet = useCountUp(PatrimoineKPI?.net ?? 0, 1400, loaded && !!PatrimoineKPI)
 
   // Period filter
   const PERIOD_DAYS: Record<string, number> = { '1M': 30, '6M': 180, '1A': 365, '3A': 1095, '5A': 1825, 'Tout': Infinity }
   const filteredTimeline = (() => {
     const days = PERIOD_DAYS[period] ?? 365
     const cutoff = days === Infinity ? 0 : Date.now() - days * 86400000
-    return patrimoineTimeline.filter(s => new Date(s.createdAt).getTime() >= cutoff)
+    return PatrimoineTimeline.filter(s => new Date(s.createdAt).getTime() >= cutoff)
   })()
 
   // Synthesize chart data when history is sparse
   const chartData = (() => {
     if (filteredTimeline.length >= 2) return filteredTimeline
-    const currentVal = patrimoineKPI?.net ?? patrimoineKPI?.brut ?? 0
+    const currentVal = PatrimoineKPI?.net ?? PatrimoineKPI?.brut ?? 0
     if (currentVal === 0) return filteredTimeline
     const days = PERIOD_DAYS[period] ?? 365
     const spanDays = days === Infinity ? 365 : days
@@ -527,7 +527,7 @@ export default function HomePage() {
               </div>
               {loaded ? (
                 <div style={{ fontFamily: 'var(--p-serif)', fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 400, letterSpacing: '-0.045em', lineHeight: 0.95, color: 'var(--p-text)' }}>
-                  {patrimoineKPI ? fmt(animatedNet) : <span style={{ color: 'var(--p-text-faint)' }}>—</span>}
+                  {PatrimoineKPI ? fmt(animatedNet) : <span style={{ color: 'var(--p-text-faint)' }}>—</span>}
                 </div>
               ) : (
                 <div className="skeleton" style={{ height: 56, width: 220, borderRadius: 8 }} />
@@ -535,8 +535,8 @@ export default function HomePage() {
               <div style={{ display: 'flex', gap: 20, marginTop: 22, flexWrap: 'wrap' }}>
                 {deltaMonth != null && <Stat label="Variation 30j" value={`${deltaMonth >= 0 ? '+' : ''}${fmtCompact(deltaMonth)}`} positive={deltaMonth >= 0} />}
                 {deltaPct != null && <Stat label="Variation 12m" value={`${Number(deltaPct) >= 0 ? '+' : ''}${deltaPct}%`} positive={Number(deltaPct) >= 0} />}
-                {patrimoineKPI && <Stat label="Brut" value={fmtCompact(patrimoineKPI.brut)} />}
-                {patrimoineKPI && patrimoineKPI.dettes > 0 && <Stat label="Dettes" value={fmtCompact(patrimoineKPI.dettes)} muted />}
+                {PatrimoineKPI && <Stat label="Brut" value={fmtCompact(PatrimoineKPI.brut)} />}
+                {PatrimoineKPI && PatrimoineKPI.dettes > 0 && <Stat label="Dettes" value={fmtCompact(PatrimoineKPI.dettes)} muted />}
               </div>
             </div>
             {/* Right: chart */}
@@ -567,7 +567,7 @@ export default function HomePage() {
 
         {/* SCORE */}
         <div style={{ ...card, gridColumn: 'span 5', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <CardHeader eyebrow="Score patrimonial" sub="Votre santé financière en 5 piliers" href="/dashboard/score" hrefLabel="Détail" />
+          <CardHeader eyebrow="Score Patrimonial" sub="Votre santé financière en 5 piliers" href="/dashboard/score" hrefLabel="Détail" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 20px 16px' }}>
             {scoreDisplay ? (
               <>
@@ -597,7 +597,7 @@ export default function HomePage() {
 
         {/* ALLOCATION */}
         <div style={{ ...card, gridColumn: 'span 4', padding: 0, overflow: 'hidden' }}>
-          <CardHeader eyebrow="Allocation" sub={`${nbEnvelopes} enveloppe${nbEnvelopes > 1 ? 's' : ''}`} href="/dashboard/patrimoine" hrefLabel="Tout" />
+          <CardHeader eyebrow="Allocation" sub={`${nbEnvelopes} enveloppe${nbEnvelopes > 1 ? 's' : ''}`} href="/dashboard/Patrimoine" hrefLabel="Tout" />
           <div style={{ padding: '12px 16px' }}>
             {donutData.length > 0 ? (
               <>
@@ -611,7 +611,7 @@ export default function HomePage() {
                     </div>
                   ))}
                   {donutData.length > 4 && (
-                    <Link href="/dashboard/patrimoine" style={{ ...linkSubtle, marginTop: 4 }}>
+                    <Link href="/dashboard/Patrimoine" style={{ ...linkSubtle, marginTop: 4 }}>
                       + {donutData.length - 4} autres
                     </Link>
                   )}
@@ -620,7 +620,7 @@ export default function HomePage() {
             ) : loaded ? (
               <div style={{ padding: '30px 0', textAlign: 'center' }}>
                 <p style={{ fontSize: 12, color: 'var(--p-text-faint)', margin: '0 0 12px' }}>Aucune enveloppe ajoutée</p>
-                <Link href="/dashboard/patrimoine" style={{ fontSize: 12, color: GOLD, textDecoration: 'none', fontWeight: 600 }}>
+                <Link href="/dashboard/Patrimoine" style={{ fontSize: 12, color: GOLD, textDecoration: 'none', fontWeight: 600 }}>
                   Ajouter une enveloppe →
                 </Link>
               </div>

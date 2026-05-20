@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     if (totalValue <= 0) continue
 
-    await prisma.patrimoineSnapshot.upsert({
+    await prisma.PatrimoineSnapshot.upsert({
       where: { userId_date: { userId: portfolio.userId, date: today } },
       update: { totalValue, byEnvelope },
       create: { userId: portfolio.userId, date: today, totalValue, byEnvelope },

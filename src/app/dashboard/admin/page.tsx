@@ -143,7 +143,7 @@ export default function AdminPage() {
   const [loadingDemo, setLoadingDemo] = useState(true)
   const [resetting, setResetting] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
-  const [activeTab, setActiveTab] = useState<'simulations' | 'patrimoine'>('simulations')
+  const [activeTab, setActiveTab] = useState<'simulations' | 'Patrimoine'>('simulations')
   const [modal, setModal] = useState<{ kind: 'sim' | 'env'; id: string; title: string; field: string; value: unknown } | null>(null)
 
   // Guard
@@ -382,7 +382,7 @@ export default function AdminPage() {
           </div>
           {/* Tabs */}
           <div className="flex gap-1 mt-3" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 3, width: 'fit-content' }}>
-            {(['simulations', 'patrimoine'] as const).map(tab => (
+            {(['simulations', 'Patrimoine'] as const).map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)} style={{
                 padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500,
                 background: activeTab === tab ? 'rgba(129,140,248,0.15)' : 'none',

@@ -742,7 +742,7 @@ function EtfSim({ color }: { color: string }) {
 }
 
 function SuccessionSim({ color }: { color: string }) {
-  const [patrimoine, setPatrimoine] = useState(250000)
+  const [Patrimoine, setPatrimoine] = useState(250000)
   const [lien, setLien] = useState<'enfant'|'conjoint'|'frere'|'neveu'|'tiers'>('enfant')
 
   const LINKS = {
@@ -754,7 +754,7 @@ function SuccessionSim({ color }: { color: string }) {
   }
 
   const { abatt, taux: slabs } = LINKS[lien]
-  const taxableBase = Math.max(0, patrimoine - Math.min(abatt, patrimoine))
+  const taxableBase = Math.max(0, Patrimoine - Math.min(abatt, Patrimoine))
   let droits = 0
   for (const [lo, hi, r] of slabs) {
     if (taxableBase > lo) droits += (Math.min(taxableBase, hi) - lo) * r
@@ -763,7 +763,7 @@ function SuccessionSim({ color }: { color: string }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
       <div>
-        <Sl label="Patrimoine transmis" value={patrimoine} min={10000} max={2000000} step={10000} onChange={setPatrimoine} display={fmtEur(patrimoine)} color={color} />
+        <Sl label="Patrimoine transmis" value={Patrimoine} min={10000} max={2000000} step={10000} onChange={setPatrimoine} display={fmtEur(Patrimoine)} color={color} />
         <div style={{ marginTop: 8 }}>
           <div style={{ fontSize: 11, color: MUTED, fontFamily: F_MONO, marginBottom: 8 }}>Lien de parenté</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
@@ -782,11 +782,11 @@ function SuccessionSim({ color }: { color: string }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <BigResult label="Droits de succession"
           value={lien === 'conjoint' ? 'Exonéré' : fmtEur(droits)}
-          sub={lien !== 'conjoint' ? `Base taxable ${fmtEur(taxableBase)} · Abatt. ${fmtEur(Math.min(abatt, patrimoine))}` : 'Conjoint exonéré de droits'}
+          sub={lien !== 'conjoint' ? `Base taxable ${fmtEur(taxableBase)} · Abatt. ${fmtEur(Math.min(abatt, Patrimoine))}` : 'Conjoint exonéré de droits'}
           color={color} />
         {lien !== 'conjoint' && <KpiRow items={[
-          { label: 'Reçu net', value: fmtEur(patrimoine - droits), color: UP },
-          { label: 'Tx effectif', value: fmtPct(droits / patrimoine * 100) },
+          { label: 'Reçu net', value: fmtEur(Patrimoine - droits), color: UP },
+          { label: 'Tx effectif', value: fmtPct(droits / Patrimoine * 100) },
         ]} />}
       </div>
     </div>
@@ -822,7 +822,7 @@ function CreditConsoSim({ color }: { color: string }) {
   )
 }
 
-/* ── Score patrimonial — SPECIAL ── */
+/* ── Score Patrimonial — SPECIAL ── */
 function ScoreRingSvg({ value, color, size = 56 }: { value: number; color: string; size?: number }) {
   const r = size / 2 - 5
   const c = 2 * Math.PI * r
@@ -847,7 +847,7 @@ function ScorePatrimonialSim({ color }: { color: string }) {
     { key: 'diversif', label: 'Diversif.',    tip: 'Répartissez sur au moins 3 classes d\'actifs (actions, immo, obligations).', init: 74 },
     { key: 'fiscal',   label: 'Fiscal',       tip: 'Maximisez vos versements PEA et PER pour réduire votre imposition.', init: 48 },
     { key: 'prevoy',   label: 'Prévoyance',   tip: 'Constituez 3 à 6 mois de dépenses en épargne d\'urgence liquide.', init: 40 },
-    { key: 'fire',     label: 'FIRE',         tip: 'Calculez votre nombre de mois de liberté : patrimoine ÷ dépenses mensuelles.', init: 32 },
+    { key: 'fire',     label: 'FIRE',         tip: 'Calculez votre nombre de mois de liberté : Patrimoine ÷ dépenses mensuelles.', init: 32 },
   ]
   const [scores, setScores] = useState<Record<string, number>>(Object.fromEntries(pillars.map(p => [p.key, p.init])))
   const total = Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / pillars.length)
@@ -929,7 +929,7 @@ const PREVIEW_MAP: Record<string, (color: string) => React.ReactNode> = {
   'epargne-urgence':    c => <EpargneUrgenceSim color={c} />,
   'rentabilite-locative': c => <RentaSim color={c} />,
   'succession':         c => <SuccessionSim color={c} />,
-  'score-patrimonial':  c => <ScorePatrimonialSim color={c} />,
+  'score-Patrimonial':  c => <ScorePatrimonialSim color={c} />,
   'revenus-passifs':    c => <RevenuPassifSim color={c} />,
   'optimiseur-etf':     c => <EtfSim color={c} />,
   'credit-conso':       c => <CreditConsoSim color={c} />,

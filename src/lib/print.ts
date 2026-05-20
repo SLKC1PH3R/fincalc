@@ -73,7 +73,7 @@ export function printReport(config: PrintConfig) {
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>PatrImo — ${config.title}</title>
+  <title>Patrimo — ${config.title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -189,7 +189,7 @@ export function printReport(config: PrintConfig) {
         </svg>
       </div>
       <div>
-        <div class="brand-name">PatrImo</div>
+        <div class="brand-name">Patrimo</div>
         <div class="brand-tag">Outils de Finance Personnelle</div>
       </div>
     </div>
@@ -207,7 +207,7 @@ export function printReport(config: PrintConfig) {
 
   <div class="footer">
     <div class="footer-left">
-      <span class="footer-brand">PatrImo</span>
+      <span class="footer-brand">Patrimo</span>
       <span class="footer-url">finance.digitalstack.cloud</span>
     </div>
     <div class="footer-right">

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   startDate.setDate(startDate.getDate() - days)
   startDate.setHours(0, 0, 0, 0)
 
-  const snapshots = await prisma.patrimoineSnapshot.findMany({
+  const snapshots = await prisma.PatrimoineSnapshot.findMany({
     where: { userId: user.id, date: { gte: startDate } },
     orderBy: { date: 'asc' },
     select: { id: true, date: true, totalValue: true, byEnvelope: true, createdAt: true },

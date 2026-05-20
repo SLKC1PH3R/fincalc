@@ -16,7 +16,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Apply local cache immediately to avoid flash
-    const local = localStorage.getItem('patrimo-theme') as Theme | null
+    const local = localStorage.getItem('Patrimo-theme') as Theme | null
     const initial = local || 'light'
     setThemeState(initial)
     applyTheme(initial)
@@ -29,7 +29,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (serverTheme === 'dark' || serverTheme === 'light') {
           setThemeState(serverTheme)
           applyTheme(serverTheme)
-          localStorage.setItem('patrimo-theme', serverTheme)
+          localStorage.setItem('Patrimo-theme', serverTheme)
         }
       })
       .catch(() => {})
@@ -38,7 +38,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const persistTheme = (next: Theme) => {
     setThemeState(next)
     applyTheme(next)
-    localStorage.setItem('patrimo-theme', next)
+    localStorage.setItem('Patrimo-theme', next)
     // Persist to DB — fire and forget
     fetch('/api/profile', {
       method: 'PATCH',

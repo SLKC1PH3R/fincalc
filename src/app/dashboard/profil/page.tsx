@@ -14,7 +14,7 @@ const PROFILES: UserProfile[] = ['beginner', 'owner', 'active', 'fire']
 const FIELD_HINTS: Record<string, string> = {
   netMonthlySalary: 'Utilisé dans les simulateurs Impôts IR, Budget 50/30/20, Taux d\'épargne',
   monthlySavings:   'Utilisé dans DCA, Intérêts composés, FI/RE',
-  currentAssets:    'Utilisé dans le Score patrimonial, FI/RE, Revenus passifs',
+  currentAssets:    'Utilisé dans le Score Patrimonial, FI/RE, Revenus passifs',
   monthlyExpenses:  'Utilisé dans FI/RE, Budget, Épargne de précaution',
   age:              'Utilisé dans FI/RE, Retraite, Intérêts composés',
 }

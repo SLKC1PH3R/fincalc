@@ -34,8 +34,8 @@ export function SplashScreen() {
   const [phase, setPhase] = useState<'visible' | 'fading' | 'gone'>('gone')
 
   useEffect(() => {
-    if (sessionStorage.getItem('patrimo-splash')) { setPhase('gone'); return }
-    sessionStorage.setItem('patrimo-splash', '1')
+    if (sessionStorage.getItem('Patrimo-splash')) { setPhase('gone'); return }
+    sessionStorage.setItem('Patrimo-splash', '1')
     setPhase('visible')
     const t1 = setTimeout(() => setPhase('fading'), 2200)
     const t2 = setTimeout(() => setPhase('gone'),   2900)
@@ -111,7 +111,7 @@ export function SplashScreen() {
           <span>Free · 2026</span>
         </div>
 
-        {/* PATRIMO display */}
+        {/* Patrimo display */}
         <div style={{ padding: '48px 40px 40px', textAlign: 'center' }}>
           <div style={{
             fontSize: 9, letterSpacing: '0.22em',
@@ -130,7 +130,7 @@ export function SplashScreen() {
           <div style={{ marginTop: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <div style={{ height: 1, width: 40, background: LINE }} />
             <span style={{ fontSize: 9, letterSpacing: '0.18em', color: 'rgba(21,20,15,0.38)', textTransform: 'uppercase' }}>
-              Gestion patrimoniale augmentée
+              Gestion Patrimoniale augmentée
             </span>
             <div style={{ height: 1, width: 40, background: LINE }} />
           </div>

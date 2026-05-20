@@ -59,18 +59,6 @@ export function PatrimoLogo({
         letterSpacing: '-0.02em',
       }}>atrimo</span>
 
-      <span style={{
-        marginLeft: Math.round(fs * 0.38),
-        paddingLeft: Math.round(fs * 0.38),
-        borderLeft: `1px solid ${line}`,
-        fontFamily: "'Geist Mono', ui-monospace, monospace",
-        fontSize: Math.max(9, Math.round(fs * 0.55)),
-        fontWeight: 500,
-        color: muted,
-        textTransform: 'uppercase',
-        letterSpacing: '0.14em',
-        alignSelf: 'center',
-      }}>finance</span>
     </div>
   )
 }

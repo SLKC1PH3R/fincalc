@@ -16,7 +16,7 @@ interface PaletteItem {
 const ITEMS: PaletteItem[] = [
   { label: 'Tableau de bord',       href: '/dashboard',                  icon: BarChart3,  color: '#B07820' },
   { label: 'Score Patrimonial',     href: '/dashboard/score',            icon: Award,      color: '#B07820' },
-  { label: 'Mon patrimoine',        href: '/dashboard/patrimoine',       icon: BarChart3,  color: '#B07820', keywords: 'patrimoine enveloppes actifs' },
+  { label: 'Mon Patrimoine',        href: '/dashboard/Patrimoine',       icon: BarChart3,  color: '#B07820', keywords: 'Patrimoine enveloppes actifs' },
   { label: 'Mon profil',            href: '/dashboard/profil',           icon: User,       color: '#94a3b8' },
   { label: 'Historique',            href: '/dashboard/history',          icon: History,    color: '#94a3b8' },
   { label: 'Intérêts Composés',     sub: 'Effet boule de neige',         href: '/dashboard/compound',         icon: TrendingUp, color: '#34d399', keywords: 'intérêts composés épargne' },
@@ -30,7 +30,7 @@ const ITEMS: PaletteItem[] = [
   { label: 'Flat Tax vs Barème',    sub: 'PFU 30% ou progressif',        href: '/dashboard/flat-tax',         icon: Scale,      color: '#38bdf8', keywords: 'flat tax pfu dividendes plus-values' },
   { label: 'PEA vs CTO vs AV',      sub: 'Comparaison fiscale enveloppes', href: '/dashboard/envelope-compare', icon: Wallet,  color: '#818cf8', keywords: 'pea cto assurance vie enveloppe' },
   { label: 'Prêt immobilier',       sub: 'Mensualités & amortissement',  href: '/dashboard/mortgage',         icon: Building2, color: '#f472b6', keywords: 'prêt crédit immobilier mensualités' },
-  { label: 'Acheter vs Louer',      sub: 'Comparaison patrimoniale',     href: '/dashboard/buyrent',          icon: Home,      color: '#a78bfa', keywords: 'achat location immobilier' },
+  { label: 'Acheter vs Louer',      sub: 'Comparaison Patrimoniale',     href: '/dashboard/buyrent',          icon: Home,      color: '#a78bfa', keywords: 'achat location immobilier' },
   { label: 'Rentabilité locative',  sub: 'Rendement & cashflow',         href: '/dashboard/rental',           icon: Wallet,    color: '#2dd4bf', keywords: 'locatif rental rendement' },
   { label: 'Crédit consommation',   sub: 'Coût réel & TAEG',             href: '/dashboard/consumer-credit', icon: CreditCard, color: '#fb7185', keywords: 'crédit consommation coût' },
   { label: 'Succession & Donation', sub: 'Droits de mutation DMTG',      href: '/dashboard/succession',       icon: Receipt,   color: '#60a5fa', keywords: 'succession donation héritage' },

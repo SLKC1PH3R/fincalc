@@ -360,12 +360,12 @@ function SCPIPageInner() {
             </div>
           </div>
 
-          {/* Évolution du patrimoine — inline SVG */}
+          {/* Évolution du Patrimoine — inline SVG */}
           <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <div style={eyebrow}>Trajectoire</div>
-                <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Évolution du patrimoine — {inputs.duration} ans</div>
+                <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Évolution du Patrimoine — {inputs.duration} ans</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 {[

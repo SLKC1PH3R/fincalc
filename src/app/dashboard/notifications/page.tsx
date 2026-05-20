@@ -55,7 +55,7 @@ const SEED: Omit<Notification, 'id'>[] = [
     icon: 'calendar',
   },
   {
-    title: 'Score patrimonial amélioré',
+    title: 'Score Patrimonial amélioré',
     body: 'Votre score est passé de 68 à 74/100 ce mois-ci. Poste gagnant : diversification géographique.',
     category: 'score',
     priority: 'medium',
@@ -140,7 +140,7 @@ const DEFAULT_PREFS: PrefToggle[] = [
   { key: 'portfolio',  label: 'Portefeuille & Rééquilibrage', detail: "Dérives d'allocation, seuils, performances",   enabled: true  },
   { key: 'calendar',  label: 'Calendrier financier',          detail: 'Dividendes, résultats, splits à venir',        enabled: true  },
   { key: 'budget',    label: 'Budget & Épargne',              detail: 'Objectifs, dépassements, taux mensuels',       enabled: true  },
-  { key: 'score',     label: 'Score patrimonial',             detail: 'Évolutions de score, recommandations',         enabled: true  },
+  { key: 'score',     label: 'Score Patrimonial',             detail: 'Évolutions de score, recommandations',         enabled: true  },
   { key: 'alert',     label: 'Alertes fiscales & macro',      detail: 'Fiscalité, inflation, taux directeurs',        enabled: false },
 ]
 
@@ -480,7 +480,7 @@ export default function NotificationsPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
           {[
             { label: 'Rééquilibrer',           detail: 'Allocation hors cible',       href: '/dashboard/rebalancing',   icon: <RefreshCw width={15} height={15} />,   color: '#818cf8' },
-            { label: 'Voir le score',           detail: 'Santé patrimoniale globale',  href: '/dashboard/score',          icon: <Award     width={15} height={15} />,   color: '#f472b6' },
+            { label: 'Voir le score',           detail: 'Santé Patrimoniale globale',  href: '/dashboard/score',          icon: <Award     width={15} height={15} />,   color: '#f472b6' },
             { label: 'Calendrier financier',    detail: 'Dividendes & résultats',      href: '/dashboard/calendar',       icon: <Calendar  width={15} height={15} />,   color: '#B07820' },
             { label: 'Rapport fiscal',          detail: 'Résumé enveloppes fiscales',  href: '/dashboard/tax-report',     icon: <Shield    width={15} height={15} />,   color: '#34d399' },
             { label: "Taux d'épargne",          detail: 'Suivi mensuel',               href: '/dashboard/savings-rate',   icon: <Target    width={15} height={15} />,   color: '#f87171' },

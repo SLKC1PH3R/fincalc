@@ -7,14 +7,14 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: '15 modules patrimoniaux gratuits — Patrimo',
+  title: '15 modules Patrimoniaux gratuits — Patrimo',
   description:
-    'Suivez et gérez votre patrimoine en temps réel : immobilier, actions, livrets, crypto, PEA, assurance vie. 15 outils de gestion patrimoniale gratuits.',
+    'Suivez et gérez votre Patrimoine en temps réel : immobilier, actions, livrets, crypto, PEA, assurance vie. 15 outils de gestion Patrimoniale gratuits.',
   openGraph: {
-    title: '15 modules patrimoniaux gratuits — Patrimo',
+    title: '15 modules Patrimoniaux gratuits — Patrimo',
     description:
-      '15 outils pour piloter votre patrimoine : bilan complet, suivi de portefeuille, rééquilibrage, score patrimonial et rapport fiscal.',
-    url: 'https://finance.digitalstack.cloud/patrimoine',
+      '15 outils pour piloter votre Patrimoine : bilan complet, suivi de portefeuille, rééquilibrage, score Patrimonial et rapport fiscal.',
+    url: 'https://finance.digitalstack.cloud/Patrimoine',
   },
 }
 
@@ -23,8 +23,8 @@ const GROUPS = [
     label: 'Patrimoine',
     num: '01',
     pages: [
-      { slug: 'vue-ensemble',     label: "Vue d'ensemble",   desc: 'Bilan patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.', icon: Layers },
-      { slug: 'immobilier',       label: 'Immobilier',        desc: 'Suivez vos biens immobiliers, valeur estimée, crédits en cours et patrimoine net immobilier.', icon: Home },
+      { slug: 'vue-ensemble',     label: "Vue d'ensemble",   desc: 'Bilan Patrimonial complet : actifs, passifs, répartition par enveloppe et évolution dans le temps.', icon: Layers },
+      { slug: 'immobilier',       label: 'Immobilier',        desc: 'Suivez vos biens immobiliers, valeur estimée, crédits en cours et Patrimoine net immobilier.', icon: Home },
       { slug: 'actions-fonds',    label: 'Actions & Fonds',   desc: 'Gérez vos lignes en PEA, CTO et assurance vie avec valorisation en temps réel.', icon: TrendingUp },
       { slug: 'livrets',          label: 'Livrets',           desc: "Centralisez vos livrets d'épargne (Livret A, LDDS, LEP...) et suivez les intérêts générés.", icon: PiggyBank },
       { slug: 'autres-actifs',    label: 'Autres actifs',     desc: 'Crypto-monnaies, métaux précieux, parts de SCPI et tous vos actifs alternatifs.', icon: Bitcoin },
@@ -48,7 +48,7 @@ const GROUPS = [
     num: '03',
     pages: [
       { slug: 'rapport-fiscal',      label: 'Rapport Fiscal',      desc: 'Synthèse annuelle de vos revenus de capitaux : dividendes, coupons et plus-values réalisées.', icon: Calculator },
-      { slug: 'score-patrimonial',   label: 'Score Patrimonial',   desc: 'Note globale de la santé de votre patrimoine basée sur diversification, liquidité et risque.', icon: Award },
+      { slug: 'score-Patrimonial',   label: 'Score Patrimonial',   desc: 'Note globale de la santé de votre Patrimoine basée sur diversification, liquidité et risque.', icon: Award },
       { slug: 'gestion-personnelle', label: 'Gestion personnelle',  desc: "Vue personnalisée : taux d'épargne, budget mensuel et projections FIRE.", icon: Globe },
     ],
   },
@@ -127,7 +127,7 @@ export default function PatrimoinePage() {
               <div className="pp-nav-links">
                 <Link href="/#enveloppes">Enveloppes</Link>
                 <Link href="/tools">Simulateurs</Link>
-                <Link href="/patrimoine">Patrimoine</Link>
+                <Link href="/Patrimoine">Patrimoine</Link>
               </div>
               <Link href="/login" className="pp-nav-cta">Démarrer →</Link>
             </div>
@@ -142,8 +142,8 @@ export default function PatrimoinePage() {
               <span className="pp-rule-sep" />
               <span>015 / 015</span>
             </div>
-            <h1>15 modules.<br /><em>Votre patrimoine,</em> piloté.</h1>
-            <p>Bilan complet, suivi de portefeuille, rééquilibrage, score patrimonial. Tous les outils pour gérer votre patrimoine — gratuit, sans connexion bancaire.</p>
+            <h1>15 modules.<br /><em>Votre Patrimoine,</em> piloté.</h1>
+            <p>Bilan complet, suivi de portefeuille, rééquilibrage, score Patrimonial. Tous les outils pour gérer votre Patrimoine — gratuit, sans connexion bancaire.</p>
             <div className="pp-hero-meta">
               <div className="pp-hero-stat"><strong>15</strong><span>modules</span></div>
               <div className="pp-hero-stat"><strong>0</strong><span>donnée bancaire</span></div>
@@ -167,7 +167,7 @@ export default function PatrimoinePage() {
                   {group.pages.map((page, pi) => {
                     const Icon = page.icon
                     return (
-                      <Link key={page.slug} href={`/patrimoine/${page.slug}`} className="pp-card">
+                      <Link key={page.slug} href={`/Patrimoine/${page.slug}`} className="pp-card">
                         <div className="pp-card-meta">PTM-{String(GROUPS.slice(0, GROUPS.indexOf(group)).reduce((acc, g) => acc + g.pages.length, 0) + pi + 1).padStart(2,'0')}</div>
                         <div className="pp-card-icon">
                           <Icon style={{ width: 15, height: 15, color: '#c96a4a' }} />
@@ -188,8 +188,8 @@ export default function PatrimoinePage() {
         <div className="pp-c">
           <div className="pp-cta-block">
             <div>
-              <h3>Commencez à piloter votre patrimoine.</h3>
-              <p>Créez un compte gratuit pour accéder à toutes les pages de gestion, suivre vos actifs et obtenir votre score patrimonial sur 6 dimensions.</p>
+              <h3>Commencez à piloter votre Patrimoine.</h3>
+              <p>Créez un compte gratuit pour accéder à toutes les pages de gestion, suivre vos actifs et obtenir votre score Patrimonial sur 6 dimensions.</p>
             </div>
             <Link href="/login" className="pp-cta-btn">Démarrer gratuitement →</Link>
           </div>

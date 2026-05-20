@@ -48,7 +48,7 @@ export default function SuccessionPage() {
   const tips = [
     { title: 'Renouvellement 15 ans', body: `L'abattement de ${fmt(res.abattementMax)} par bénéficiaire se renouvelle tous les 15 ans. Anticipez les donations par tranches.`, color: C },
     { title: 'Assurance-vie hors succession', body: 'L\'assurance-vie permet de transmettre jusqu\'à 152 500€ par bénéficiaire hors succession, avec une fiscalité avantageuse.', color: '#fb923c' },
-    { title: 'Démembrement de propriété', body: 'Transmettre la nue-propriété tout en conservant l\'usufruit réduit l\'assiette taxable et optimise la transmission patrimoniale.', color: '#4ade80' },
+    { title: 'Démembrement de propriété', body: 'Transmettre la nue-propriété tout en conservant l\'usufruit réduit l\'assiette taxable et optimise la transmission Patrimoniale.', color: '#4ade80' },
   ]
 
   const GAP = 16
@@ -66,7 +66,7 @@ export default function SuccessionPage() {
             Succession &amp; Donations<span style={{ color: C }}>.</span>
           </h1>
           <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 8 }}>
-            Droits de mutation · Abattements légaux. <span style={{ color: 'var(--p-text-mid)', fontWeight: 600 }}>Simulez votre transmission patrimoniale.</span>
+            Droits de mutation · Abattements légaux. <span style={{ color: 'var(--p-text-mid)', fontWeight: 600 }}>Simulez votre transmission Patrimoniale.</span>
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
@@ -306,7 +306,7 @@ export default function SuccessionPage() {
           {/* Conseils */}
           <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--p-line)' }}>
-              <div style={eyebrow}>Conseils patrimoniaux</div>
+              <div style={eyebrow}>Conseils Patrimoniaux</div>
             </div>
             <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {tips.map((t, i) => (

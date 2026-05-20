@@ -38,7 +38,7 @@ const STYLES = `
 const SECTIONS = [
   {
     title: '1. Éditeur du site',
-    content: `Le site PatrImo (accessible à l'adresse finance.digitalstack.cloud) est édité par DigitalStack, entreprise individuelle immatriculée en France.\n\nResponsable de la publication : Jeremy\nContact : contact@digitalstack.cloud`,
+    content: `Le site Patrimo (accessible à l'adresse finance.digitalstack.cloud) est édité par DigitalStack, entreprise individuelle immatriculée en France.\n\nResponsable de la publication : Jeremy\nContact : contact@digitalstack.cloud`,
   },
   {
     title: '2. Hébergement',
@@ -46,11 +46,11 @@ const SECTIONS = [
   },
   {
     title: '3. Propriété intellectuelle',
-    content: `L'ensemble du contenu de ce site (textes, graphismes, logotypes, icônes, images) est la propriété exclusive de PatrImo ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est interdite.`,
+    content: `L'ensemble du contenu de ce site (textes, graphismes, logotypes, icônes, images) est la propriété exclusive de Patrimo ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est interdite.`,
   },
   {
     title: '4. Limitation de responsabilité',
-    content: `Les calculs et simulations fournis par PatrImo sont à titre purement indicatif. Ils ne constituent pas un conseil financier, fiscal ou juridique. PatrImo décline toute responsabilité pour les décisions prises sur la base de ces simulations. Consultez un professionnel agréé pour vos décisions d'investissement.`,
+    content: `Les calculs et simulations fournis par Patrimo sont à titre purement indicatif. Ils ne constituent pas un conseil financier, fiscal ou juridique. Patrimo décline toute responsabilité pour les décisions prises sur la base de ces simulations. Consultez un professionnel agréé pour vos décisions d'investissement.`,
   },
   {
     title: '5. Données personnelles',
@@ -58,7 +58,7 @@ const SECTIONS = [
   },
   {
     title: '6. Cookies',
-    content: `PatrImo utilise uniquement des cookies techniques nécessaires au fonctionnement du service (authentification, session). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.`,
+    content: `Patrimo utilise uniquement des cookies techniques nécessaires au fonctionnement du service (authentification, session). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.`,
   },
   {
     title: '7. Droit applicable',

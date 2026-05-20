@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const byEnvelopeJson = byEnvelope as any
 
-  const snapshot = await prisma.patrimoineSnapshot.upsert({
+  const snapshot = await prisma.PatrimoineSnapshot.upsert({
     where: { userId_date: { userId: user.id, date: today } },
     update: { totalValue, byEnvelope: byEnvelopeJson },
     create: { userId: user.id, date: today, totalValue, byEnvelope: byEnvelopeJson },

@@ -8,7 +8,7 @@ interface HeroShutterTextProps {
   onComplete?: () => void
 }
 
-export function HeroShutterText({ text = 'PatrImo', onComplete }: HeroShutterTextProps) {
+export function HeroShutterText({ text = 'Patrimo', onComplete }: HeroShutterTextProps) {
   const [show, setShow] = useState(true)
   const letters = text.split('')
 

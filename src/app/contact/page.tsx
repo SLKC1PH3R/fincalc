@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Contact — Patrimo',
-  description: 'Contactez l\'équipe PatrImo pour toute question, suggestion ou signalement de bug.',
+  description: 'Contactez l\'équipe Patrimo pour toute question, suggestion ou signalement de bug.',
 }
 
 const STYLES = `
@@ -78,7 +78,7 @@ export default function Contact() {
               <span>Contact</span>
             </div>
             <h1>Une question ?<br /><em>On répond.</em></h1>
-            <p>L&apos;équipe PatrImo est joignable par e-mail pour toute question, suggestion ou signalement de bug. Nous répondons sous 48h ouvrées.</p>
+            <p>L&apos;équipe Patrimo est joignable par e-mail pour toute question, suggestion ou signalement de bug. Nous répondons sous 48h ouvrées.</p>
           </div>
         </section>
 
@@ -99,7 +99,7 @@ export default function Contact() {
                 <div>
                   <p className="ct-channel-label">Bug ou erreur de calcul</p>
                   <p className="ct-channel-desc">Précisez le simulateur concerné, les paramètres utilisés et le résultat attendu.</p>
-                  <a href="mailto:contact@digitalstack.cloud?subject=Bug%20PatrImo" className="ct-channel-link">Signaler un bug →</a>
+                  <a href="mailto:contact@digitalstack.cloud?subject=Bug%20Patrimo" className="ct-channel-link">Signaler un bug →</a>
                 </div>
               </div>
 
@@ -108,7 +108,7 @@ export default function Contact() {
                 <div>
                   <p className="ct-channel-label">Suggestion de fonctionnalité</p>
                   <p className="ct-channel-desc">Un simulateur manquant, une enveloppe non couverte ? Vos retours façonnent la roadmap.</p>
-                  <a href="mailto:contact@digitalstack.cloud?subject=Suggestion%20PatrImo" className="ct-channel-link">Faire une suggestion →</a>
+                  <a href="mailto:contact@digitalstack.cloud?subject=Suggestion%20Patrimo" className="ct-channel-link">Faire une suggestion →</a>
                 </div>
               </div>
 
@@ -126,7 +126,7 @@ export default function Contact() {
                 <div>
                   <p className="ct-channel-label">Partenariat ou presse</p>
                   <p className="ct-channel-desc">Pour tout autre sujet professionnel, mentionnez l&apos;objet dans votre e-mail.</p>
-                  <a href="mailto:contact@digitalstack.cloud?subject=Partenariat%20PatrImo" className="ct-channel-link">Nous contacter →</a>
+                  <a href="mailto:contact@digitalstack.cloud?subject=Partenariat%20Patrimo" className="ct-channel-link">Nous contacter →</a>
                 </div>
               </div>
             </div>

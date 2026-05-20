@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { ChevronRight } from 'lucide-react'
-import { type Envelope, fmtEur, fmtCompact } from '@/components/patrimoine/types'
+import { type Envelope, fmtEur, fmtCompact } from '@/components/Patrimoine/types'
 
 function EquityChart({ data }: { data: { year: number; equity: number; credit: number }[] }) {
   const W = 700, H = 220, PAD = { l: 60, r: 16, t: 12, b: 36 }
@@ -497,7 +497,7 @@ export function ImmobilierSection({ envelope, onSave }: {
         <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)' }}>
           <CardContent style={{ padding: 20 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)', marginBottom: 16 }}>
-              Évolution du patrimoine net (projection)
+              Évolution du Patrimoine net (projection)
             </div>
             <EquityChart data={equityData} />
           </CardContent>

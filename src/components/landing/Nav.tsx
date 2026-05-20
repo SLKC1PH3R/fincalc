@@ -41,7 +41,7 @@ const SIM_GROUPS = [
     color: '#0ea5e9',
     items: [
       { em: '🏠', n: 'Crédit immobilier',    sub: 'Mensualités & amortissement',  href: '/tools/pret-immobilier' },
-      { em: '🔑', n: 'Acheter vs Louer',     sub: 'Comparaison patrimoniale',     href: '/tools/acheter-ou-louer' },
+      { em: '🔑', n: 'Acheter vs Louer',     sub: 'Comparaison Patrimoniale',     href: '/tools/acheter-ou-louer' },
       { em: '🏢', n: 'Rentabilité locative', sub: 'Rendement net & cash-flow',    href: '/tools/rentabilite-locative' },
     ],
   },
@@ -63,22 +63,22 @@ const SIM_GROUPS = [
       { em: '📋', n: 'Budget 50/30/20',      sub: 'Règle budgétaire',             href: '/tools/budget-50-30-20' },
       { em: '🛡️', n: "Épargne d'urgence",    sub: 'Matelas de sécurité',          href: '/tools/epargne-urgence' },
       { em: '🎯', n: 'Simulateur retraite',  sub: 'Pension & épargne nécessaire', href: '/tools/retraite' },
-      { em: '🏆', n: 'Score patrimonial',    sub: 'Notation 0-100 · 6 piliers',   href: '/tools/score-patrimonial' },
+      { em: '🏆', n: 'Score Patrimonial',    sub: 'Notation 0-100 · 6 piliers',   href: '/tools/score-Patrimonial' },
     ],
   },
 ];
 
 const PATR_LEFT = [
-  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/patrimoine/vue-ensemble' },
-  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/patrimoine/immobilier' },
-  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/patrimoine/actions-fonds' },
-  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/patrimoine/livrets' },
+  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/Patrimoine/vue-ensemble' },
+  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/Patrimoine/immobilier' },
+  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/Patrimoine/actions-fonds' },
+  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/Patrimoine/livrets' },
 ];
 const PATR_RIGHT = [
-  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/patrimoine/autres-actifs' },
-  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/patrimoine/comptes-bancaires' },
-  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/patrimoine/emprunts' },
-  { ic: '🏆', n: 'Score patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/patrimoine/score-patrimonial' },
+  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/Patrimoine/autres-actifs' },
+  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/Patrimoine/comptes-bancaires' },
+  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/Patrimoine/emprunts' },
+  { ic: '🏆', n: 'Score Patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/Patrimoine/score-Patrimonial' },
 ];
 
 /* ── Dropdown wrapper (desktop only) ── */
@@ -205,7 +205,7 @@ function PatrimoineMenu() {
           ))}
         </div>
         <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
-          <Link href="/patrimoine" style={{
+          <Link href="/Patrimoine" style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontSize: 12.5, fontWeight: 600, color: 'var(--gold-deep)',
             fontFamily: "'Geist Mono', monospace", letterSpacing: '0.02em',
@@ -215,7 +215,7 @@ function PatrimoineMenu() {
             onMouseEnter={e => (e.currentTarget.style.gap = '10px')}
             onMouseLeave={e => (e.currentTarget.style.gap = '6px')}
           >
-            Voir les outils patrimoniaux <I.arrow size={13} />
+            Voir les outils Patrimoniaux <I.arrow size={13} />
           </Link>
         </div>
       </div>
@@ -385,7 +385,7 @@ function ThemeToggle() {
   React.useEffect(() => {
     const saved = localStorage.getItem('landing-theme');
     if (saved === 'dark') {
-      document.querySelector('.patrimo-landing')?.setAttribute('data-palette', 'dark');
+      document.querySelector('.Patrimo-landing')?.setAttribute('data-palette', 'dark');
       setDark(true);
     }
   }, []);
@@ -393,7 +393,7 @@ function ThemeToggle() {
   const toggle = () => {
     const next = !dark;
     setDark(next);
-    const el = document.querySelector('.patrimo-landing');
+    const el = document.querySelector('.Patrimo-landing');
     if (next) el?.setAttribute('data-palette', 'dark');
     else el?.removeAttribute('data-palette');
     localStorage.setItem('landing-theme', next ? 'dark' : 'light');

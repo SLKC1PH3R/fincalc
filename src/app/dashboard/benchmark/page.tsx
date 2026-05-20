@@ -80,7 +80,7 @@ export default function BenchmarkPage() {
     setLoading(true)
     Promise.all([
       fetch(`/api/portfolio/benchmark?days=${d}`).then(r => r.json()),
-      fetch(`/api/patrimoine/snapshots?days=${d}`).then(r => r.json()),
+      fetch(`/api/Patrimoine/snapshots?days=${d}`).then(r => r.json()),
     ])
       .then(([bench, snaps]: [BenchmarkData, Snapshot[]]) => {
         setBenchData(bench)
@@ -163,7 +163,7 @@ export default function BenchmarkPage() {
           {!hasPortfolio && !loading && (
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(176,120,32,0.06)', border: '1px solid rgba(176,120,32,0.17)', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: 'var(--p-text-dim)', lineHeight: 1.5 }}>
               <Info style={{ width: 16, height: 16, color: '#B07820', flexShrink: 0, marginTop: 1 }} />
-              <span>Aucun snapshot de patrimoine disponible. La courbe <span style={{ color: '#B07820', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.</span>
+              <span>Aucun snapshot de Patrimoine disponible. La courbe <span style={{ color: '#B07820', fontWeight: 600 }}>Portfolio</span> s'accumule au fil du temps à partir des snapshots quotidiens.</span>
             </div>
           )}
 
@@ -298,7 +298,7 @@ export default function BenchmarkPage() {
                 'La base 100 normalise les performances pour une comparaison équitable quelle que soit la valeur initiale',
                 'Le MSCI World couvre 85% de la capitalisation mondiale des marchés développés',
                 'Un portefeuille diversifié sur ETF MSCI World bat ~80% des gérants actifs sur 10 ans',
-                'Les snapshots du patrimoine sont pris quotidiennement pour construire la courbe Portfolio',
+                'Les snapshots du Patrimoine sont pris quotidiennement pour construire la courbe Portfolio',
               ].map((tip, i) => (
                 <div key={i} style={{ display: 'flex', gap: 8, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--p-line)' }}>
                   <div style={{ width: 16, height: 16, borderRadius: '50%', background: `${COLOR}18`, border: `1px solid ${COLOR}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>

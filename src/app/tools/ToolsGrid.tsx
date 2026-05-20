@@ -286,7 +286,7 @@ const TOOLS = [
   { slug: 'revenus-passifs',   label: 'Revenus passifs & dividendes', desc: 'Simulez vos dividendes et revenus passifs futurs.',     tag: 'Épargne & Investissement', href: '/tools/revenus-passifs',      Preview: PreviewDividends },
   { slug: 'optimiseur-etf',    label: 'Optimiseur ETF',               desc: 'Comparez TER et impact des frais sur 20 ans.',          tag: 'Épargne & Investissement', href: '/tools/optimiseur-etf',       Preview: PreviewEtf },
   { slug: 'pret-immobilier',   label: 'Crédit immobilier',            desc: "Mensualités, coût total, tableau d'amortissement.",     tag: 'Immobilier',               href: '/tools/pret-immobilier',      Preview: PreviewMortgage },
-  { slug: 'acheter-ou-louer',  label: 'Acheter vs Louer',             desc: 'Comparaison patrimoniale sur 20 ans.',                  tag: 'Immobilier',               href: '/tools/acheter-ou-louer',     Preview: PreviewBuyRent },
+  { slug: 'acheter-ou-louer',  label: 'Acheter vs Louer',             desc: 'Comparaison Patrimoniale sur 20 ans.',                  tag: 'Immobilier',               href: '/tools/acheter-ou-louer',     Preview: PreviewBuyRent },
   { slug: 'rentabilite-locative', label: 'Rentabilité locative',      desc: 'Rendement brut, net, cash-flow et TRI.',                tag: 'Immobilier',               href: '/tools/rentabilite-locative', Preview: PreviewRental },
   { slug: 'impots-ir',         label: 'Calcul impôts IR',             desc: 'Impôt sur le revenu avec tranches et parts fiscales.',  tag: 'Fiscalité',                href: '/tools/impots-ir',            Preview: PreviewTax },
   { slug: 'flat-tax-bareme',   label: 'Flat Tax vs Barème',           desc: 'Optimisez vos revenus de capitaux mobiliers.',          tag: 'Fiscalité',                href: '/tools/flat-tax-bareme',      Preview: PreviewFlatTax },
@@ -296,7 +296,7 @@ const TOOLS = [
   { slug: 'budget-50-30-20',   label: 'Budget 50/30/20',              desc: 'Règle budgétaire appliquée à vos revenus.',             tag: 'Budget & Retraite',        href: '/tools/budget-50-30-20',      Preview: PreviewBudget },
   { slug: 'epargne-urgence',   label: "Épargne d'urgence",            desc: 'Matelas de sécurité idéal selon vos dépenses.',         tag: 'Budget & Retraite',        href: '/tools/epargne-urgence',      Preview: PreviewEmergencyFund },
   { slug: 'retraite',          label: 'Simulateur retraite',          desc: 'Pension estimée et épargne nécessaire à la retraite.',  tag: 'Budget & Retraite',        href: '/tools/retraite',             Preview: PreviewRetirement },
-  { slug: 'score-patrimonial', label: 'Score patrimonial',            desc: 'Notation 0-100 sur 6 piliers de votre situation.',      tag: 'Budget & Retraite',        href: '/tools/score-patrimonial',    Preview: PreviewScore },
+  { slug: 'score-Patrimonial', label: 'Score Patrimonial',            desc: 'Notation 0-100 sur 6 piliers de votre situation.',      tag: 'Budget & Retraite',        href: '/tools/score-Patrimonial',    Preview: PreviewScore },
   { slug: 'credit-conso',      label: 'Coût réel crédit conso',       desc: 'Visualisez le vrai coût de vos crédits à la consommation.', tag: 'Budget & Retraite',    href: '/tools/credit-conso',         Preview: PreviewCreditConso },
 ]
 

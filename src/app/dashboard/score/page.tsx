@@ -72,11 +72,11 @@ function PyramidBar({
 // ── Pillar detail rows ─────────────────────────────────────────────────────────
 
 const PILLAR_META = {
-  security:        { label: 'Niveau 1 — Sécurité de base',       icon: Shield,        color: '#38bdf8', href: '/dashboard/patrimoine/livrets', desc: 'Épargne de précaution (LIVRET + CASH) · Objectif : 3-6 mois de dépenses' },
-  realestate:      { label: 'Niveau 2 — Immobilier',             icon: Building2,     color: '#34d399', href: '/dashboard/patrimoine/immobilier', desc: 'Résidence principale · LTV (dette / valeur du bien)' },
-  longterm:        { label: 'Niveau 3 — Enveloppes long terme',  icon: TrendingUp,    color: '#B07820', href: '/dashboard/patrimoine', desc: 'Assurance-vie · PEA · PER' },
-  diversification: { label: 'Niveau 4 — Diversification',        icon: LayoutGrid,    color: '#fb923c', href: '/dashboard/patrimoine', desc: 'Variété d\'enveloppes · Mix immobilier + financier' },
-  risk:            { label: 'Niveau 5 — Maîtrise du risque',     icon: AlertTriangle, color: '#f87171', href: '/dashboard/patrimoine', desc: 'Exposition crypto · Sommet de la pyramide' },
+  security:        { label: 'Niveau 1 — Sécurité de base',       icon: Shield,        color: '#38bdf8', href: '/dashboard/Patrimoine/livrets', desc: 'Épargne de précaution (LIVRET + CASH) · Objectif : 3-6 mois de dépenses' },
+  realestate:      { label: 'Niveau 2 — Immobilier',             icon: Building2,     color: '#34d399', href: '/dashboard/Patrimoine/immobilier', desc: 'Résidence principale · LTV (dette / valeur du bien)' },
+  longterm:        { label: 'Niveau 3 — Enveloppes long terme',  icon: TrendingUp,    color: '#B07820', href: '/dashboard/Patrimoine', desc: 'Assurance-vie · PEA · PER' },
+  diversification: { label: 'Niveau 4 — Diversification',        icon: LayoutGrid,    color: '#fb923c', href: '/dashboard/Patrimoine', desc: 'Variété d\'enveloppes · Mix immobilier + financier' },
+  risk:            { label: 'Niveau 5 — Maîtrise du risque',     icon: AlertTriangle, color: '#f87171', href: '/dashboard/Patrimoine', desc: 'Exposition crypto · Sommet de la pyramide' },
 }
 
 function PillarRow({ pillarKey, detail }: { pillarKey: string; detail: PillarDetail }) {
@@ -162,10 +162,10 @@ export default function ScorePage() {
       <div style={{ marginBottom: 32 }}>
         <p style={{ fontSize: 12, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Patrimoine</p>
         <h1 style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 600, color: 'var(--p-text-em)', letterSpacing: '-0.03em' }}>
-          Score Patrimonial PatrImo
+          Score Patrimonial Patrimo
         </h1>
         <p style={{ fontSize: 14, color: 'var(--p-text-dim)', marginTop: 8 }}>
-          Calculé exclusivement à partir de votre <Link href="/dashboard/patrimoine" style={{ color: '#B07820', textDecoration: 'none' }}>tableau patrimonial</Link>, selon les 5 niveaux de la pyramide d'investissement.
+          Calculé exclusivement à partir de votre <Link href="/dashboard/Patrimoine" style={{ color: '#B07820', textDecoration: 'none' }}>tableau Patrimonial</Link>, selon les 5 niveaux de la pyramide d'investissement.
           Se met à jour à chaque consultation.
         </p>
       </div>

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'À propos — Patrimo',
-  description: 'PatrImo est une plateforme patrimoniale gratuite, conçue pour démocratiser la planification financière personnelle en France.',
+  description: 'Patrimo est une plateforme Patrimoniale gratuite, conçue pour démocratiser la planification financière personnelle en France.',
 }
 
 const STYLES = `
@@ -70,7 +70,7 @@ const VALUES = [
   { num: '01', title: 'Simplicité', desc: 'Des outils puissants accessibles à tous, sans jargon inutile.' },
   { num: '02', title: 'Confidentialité', desc: 'Vos données ne sont jamais vendues ni partagées. Point final.' },
   { num: '03', title: 'Précision', desc: 'Modèles financiers précis, mis à jour chaque année avec la fiscalité française.' },
-  { num: '04', title: 'Gratuité', desc: "PatrImo sera toujours gratuit. C'est une promesse, pas un argument marketing." },
+  { num: '04', title: 'Gratuité', desc: "Patrimo sera toujours gratuit. C'est une promesse, pas un argument marketing." },
 ]
 
 const TECHS = ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'NextAuth', 'PostgreSQL', 'Vercel', 'Recharts', 'Prisma']
@@ -97,14 +97,14 @@ export default function About() {
               <span>À propos</span>
             </div>
             <h1>La finance,<br /><em>démocratisée.</em></h1>
-            <p>PatrImo est né d&apos;un constat simple : les outils de simulation financière disponibles en France sont soit trop complexes, soit trop imprécis, soit noyés dans la publicité. Nous avons voulu créer l&apos;alternative.</p>
+            <p>Patrimo est né d&apos;un constat simple : les outils de simulation financière disponibles en France sont soit trop complexes, soit trop imprécis, soit noyés dans la publicité. Nous avons voulu créer l&apos;alternative.</p>
           </div>
         </section>
 
         <div className="ab-c">
           <div className="ab-stats">
             <div className="ab-stat"><strong>18</strong><span>simulateurs fiscaux</span></div>
-            <div className="ab-stat"><strong>15</strong><span>modules patrimoniaux</span></div>
+            <div className="ab-stat"><strong>15</strong><span>modules Patrimoniaux</span></div>
             <div className="ab-stat"><strong>100%</strong><span>gratuit, sans publicité</span></div>
           </div>
 
@@ -130,7 +130,7 @@ export default function About() {
           <div className="ab-tech">
             <div className="ab-tech-tag">Stack technique</div>
             <h2>Open-source par nature</h2>
-            <p>PatrImo est construit avec des technologies modernes et éprouvées. Transparence technique totale.</p>
+            <p>Patrimo est construit avec des technologies modernes et éprouvées. Transparence technique totale.</p>
             <div className="ab-tech-tags">
               {TECHS.map(t => (
                 <span key={t} className="ab-tech-tag-item">{t}</span>
@@ -140,7 +140,7 @@ export default function About() {
 
           <div className="ab-cta">
             <div>
-              <h2>Essayer PatrImo</h2>
+              <h2>Essayer Patrimo</h2>
               <p>Gratuit, sans connexion bancaire, sans publicité.</p>
             </div>
             <Link href="/login" className="ab-cta-btn">Créer un compte →</Link>

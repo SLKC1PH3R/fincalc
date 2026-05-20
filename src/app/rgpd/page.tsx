@@ -61,7 +61,7 @@ const RIGHTS = [
 const SECTIONS = [
   {
     title: '1. Responsable du traitement',
-    content: `PatrImo (DigitalStack) est le responsable du traitement de vos données personnelles au sens du RGPD (Règlement (UE) 2016/679).\n\nNom du responsable : Jeremy\nContact DPO : contact@digitalstack.cloud\nAdresse : France`,
+    content: `Patrimo (DigitalStack) est le responsable du traitement de vos données personnelles au sens du RGPD (Règlement (UE) 2016/679).\n\nNom du responsable : Jeremy\nContact DPO : contact@digitalstack.cloud\nAdresse : France`,
   },
   {
     title: '2. Données que nous traitons',
@@ -69,7 +69,7 @@ const SECTIONS = [
   },
   {
     title: '3. Base légale du traitement',
-    content: `• Exécution du contrat (art. 6.1.b) : pour fournir le service PatrImo\n• Consentement (art. 6.1.a) : pour les communications marketing optionnelles\n• Intérêt légitime (art. 6.1.f) : pour la sécurité et l'amélioration du service`,
+    content: `• Exécution du contrat (art. 6.1.b) : pour fournir le service Patrimo\n• Consentement (art. 6.1.a) : pour les communications marketing optionnelles\n• Intérêt légitime (art. 6.1.f) : pour la sécurité et l'amélioration du service`,
   },
   {
     title: '4. Durée de conservation',
@@ -81,7 +81,7 @@ const SECTIONS = [
   },
   {
     title: '6. Comment exercer vos droits',
-    content: `Pour exercer l'un de vos droits, envoyez un e-mail à contact@digitalstack.cloud en précisant :\n• Le droit que vous souhaitez exercer\n• Votre adresse e-mail associée au compte PatrImo\n\nNous nous engageons à répondre dans un délai d'un mois (art. 12 RGPD). En cas de demande complexe, ce délai peut être porté à trois mois avec notification préalable.`,
+    content: `Pour exercer l'un de vos droits, envoyez un e-mail à contact@digitalstack.cloud en précisant :\n• Le droit que vous souhaitez exercer\n• Votre adresse e-mail associée au compte Patrimo\n\nNous nous engageons à répondre dans un délai d'un mois (art. 12 RGPD). En cas de demande complexe, ce délai peut être porté à trois mois avec notification préalable.`,
   },
   {
     title: '7. Droit de réclamation',
@@ -89,7 +89,7 @@ const SECTIONS = [
   },
   {
     title: '8. Sécurité des données',
-    content: `PatrImo met en oeuvre des mesures de sécurité adaptées au risque : chiffrement TLS en transit, accès restreint aux bases de données, authentification renforcée via OAuth 2.0, journalisation des accès.\n\nEn cas de violation de données susceptible d'engendrer un risque élevé pour vos droits, vous serez notifié dans les 72 heures conformément à l'art. 34 du RGPD.`,
+    content: `Patrimo met en oeuvre des mesures de sécurité adaptées au risque : chiffrement des données au repos (AES-256), chiffrement en transit (HTTPS/TLS 1.3), authentification renforcée via OAuth 2.0, accès restreint aux bases de données, journalisation des accès. Vos données ne sont jamais partagées avec des tiers à des fins commerciales.\n\nEn cas de violation de données susceptible d'engendrer un risque élevé pour vos droits, vous serez notifié dans les 72 heures conformément à l'art. 34 du RGPD.`,
   },
 ]
 
@@ -115,7 +115,7 @@ export default function RGPD() {
               <span>RGPD · UE 2016/679</span>
             </div>
             <h1>Vos <em>données,</em> vos droits.</h1>
-            <p>PatrImo respecte pleinement le Règlement Général sur la Protection des Données. Voici tout ce que vous devez savoir sur la manière dont nous traitons vos informations et comment exercer vos droits.</p>
+            <p>Patrimo respecte pleinement le Règlement Général sur la Protection des Données. Voici tout ce que vous devez savoir sur la manière dont nous traitons vos informations et comment exercer vos droits.</p>
           </div>
         </section>
 

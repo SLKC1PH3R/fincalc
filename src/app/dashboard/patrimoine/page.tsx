@@ -130,7 +130,7 @@ function generateEvolutionData(totalValue: number, range: TimeRange) {
   return pts
 }
 
-function getPercentile(patrimoine: number): number {
+function getPercentile(Patrimoine: number): number {
   const INSEE = [
     { pct: 10, value: 0 },
     { pct: 25, value: 28_000 },
@@ -139,14 +139,14 @@ function getPercentile(patrimoine: number): number {
     { pct: 90, value: 810_000 },
     { pct: 99, value: 4_000_000 },
   ]
-  if (patrimoine <= 0) return 5
+  if (Patrimoine <= 0) return 5
   for (let i = 0; i < INSEE.length - 1; i++) {
-    if (patrimoine >= INSEE[i].value && patrimoine <= INSEE[i + 1].value) {
-      const t = (patrimoine - INSEE[i].value) / (INSEE[i + 1].value - INSEE[i].value)
+    if (Patrimoine >= INSEE[i].value && Patrimoine <= INSEE[i + 1].value) {
+      const t = (Patrimoine - INSEE[i].value) / (INSEE[i + 1].value - INSEE[i].value)
       return Math.round(INSEE[i].pct + t * (INSEE[i + 1].pct - INSEE[i].pct))
     }
   }
-  return patrimoine < 0 ? 5 : 99
+  return Patrimoine < 0 ? 5 : 99
 }
 
 // ── Shared UI ──────────────────────────────────────────────────────────────────
@@ -464,8 +464,8 @@ function TabOverview({ envelopes, router }: {
   const [range, setRange] = useState<TimeRange>('1a')
   const [chartCat, setChartCat] = useState('Tout')
 
-  const patrimoineNet = useMemo(() => envelopes.reduce((s, e) => s + computeMarketValue(e), 0), [envelopes])
-  const pct = getPercentile(patrimoineNet)
+  const PatrimoineNet = useMemo(() => envelopes.reduce((s, e) => s + computeMarketValue(e), 0), [envelopes])
+  const pct = getPercentile(PatrimoineNet)
   const pctColor = pct >= 90 ? T.purple : pct >= 75 ? T.green : pct >= 50 ? T.gold : pct >= 25 ? T.orange : T.red
 
   const filteredEnvelopes = chartCat === 'Tout' ? envelopes : envelopes.filter(e => CHART_CATS[chartCat]?.includes(e.type))
@@ -493,7 +493,7 @@ function TabOverview({ envelopes, router }: {
       <SectionCard>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Évolution du patrimoine</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Évolution du Patrimoine</div>
             <div style={{ fontSize: 11, color: 'var(--p-text-faint)' }}>Données simulées · mise à jour automatique</div>
           </div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -525,9 +525,9 @@ function TabOverview({ envelopes, router }: {
       {/* Bottom 2-col */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* Pyramid */}
-        <SectionCard title="Pyramide patrimoniale française">
+        <SectionCard title="Pyramide Patrimoniale française">
           <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginBottom: 14 }}>
-            Votre position : <span style={{ color: pctColor, fontWeight: 700 }}>{pct}ème percentile</span> sur {fmtCompact(patrimoineNet)}
+            Votre position : <span style={{ color: pctColor, fontWeight: 700 }}>{pct}ème percentile</span> sur {fmtCompact(PatrimoineNet)}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
             {PYRAMID_TIERS.map((tier, i) => {
@@ -570,15 +570,15 @@ function TabOverview({ envelopes, router }: {
             )}
           </SectionCard>
 
-          {/* Paliers patrimoniaux */}
-          <SectionCard title="Paliers patrimoniaux">
+          {/* Paliers Patrimoniaux */}
+          <SectionCard title="Paliers Patrimoniaux">
             {[
               { label: 'Médiane FR',    value: 183_000, color: T.orange },
               { label: '3ème quartile', value: 440_000, color: T.gold   },
               { label: '9ème décile',   value: 810_000, color: T.green  },
               { label: 'Top 1%',        value: 4_000_000, color: T.purple },
             ].map(b => (
-              <BarProgress key={b.label} label={b.label} value={Math.min(patrimoineNet, b.value)} max={b.value} color={b.color} />
+              <BarProgress key={b.label} label={b.label} value={Math.min(PatrimoineNet, b.value)} max={b.value} color={b.color} />
             ))}
             <div style={{ marginTop: 6, fontSize: 11, color: 'var(--p-text-faint)' }}>
               Prochain palier : {fmtCompact(Math.max(0, (PYRAMID_TIERS.find((_, i) => i === Math.max(0, userTierIdx - 1))?.minPct ?? 100)))} pct
@@ -661,7 +661,7 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
               const cfg = ENV_CFG[env.type]
               return (
                 <tr key={env.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer' }}
-                  onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}>
+                  onClick={() => router.push(`/dashboard/Patrimoine/${env.id}`)}>
                   <td style={{ padding: '12px 8px' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{env.name}</div>
                     <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{env.positions.length} position{env.positions.length !== 1 ? 's' : ''}</div>
@@ -781,31 +781,31 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
   const [rendement, setRendement] = useState(5)
   const [epargneAnnuelle, setEpargneAnnuelle] = useState(12_000)
 
-  const patrimoineNet = envelopes.reduce((s, e) => s + computeMarketValue(e), 0)
+  const PatrimoineNet = envelopes.reduce((s, e) => s + computeMarketValue(e), 0)
   const fireTarget = depensesAnnuelles * 25 // règle des 4%
-  const progress = fireTarget > 0 ? Math.min(100, (patrimoineNet / fireTarget) * 100) : 0
+  const progress = fireTarget > 0 ? Math.min(100, (PatrimoineNet / fireTarget) * 100) : 0
 
   // Simulation projection FIRE
   const projectionData = useMemo((): FirePoint[] => {
     const pts: FirePoint[] = []
-    let v = patrimoineNet
+    let v = PatrimoineNet
     const r = rendement / 100
     for (let yr = 0; yr <= 30; yr++) {
       pts.push({ year: `+${yr}a`, value: Math.round(v), target: fireTarget })
       v = v * (1 + r) + epargneAnnuelle
     }
     return pts
-  }, [patrimoineNet, rendement, epargneAnnuelle, fireTarget])
+  }, [PatrimoineNet, rendement, epargneAnnuelle, fireTarget])
 
   const yearsToFire = useMemo(() => {
-    let v = patrimoineNet
+    let v = PatrimoineNet
     const r = rendement / 100
     for (let yr = 0; yr <= 50; yr++) {
       if (v >= fireTarget) return yr
       v = v * (1 + r) + epargneAnnuelle
     }
     return null
-  }, [patrimoineNet, rendement, epargneAnnuelle, fireTarget])
+  }, [PatrimoineNet, rendement, epargneAnnuelle, fireTarget])
 
   const leanFireTarget = depensesAnnuelles * 0.75 * 25
   const fatFireTarget = depensesAnnuelles * 2 * 25
@@ -837,7 +837,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         <StatCard label="Objectif FIRE" value={fmtCompact(fireTarget)} color={T.gold} sub="Règle des 4%" />
-        <StatCard label="Progression" value={`${progress.toFixed(1)}%`} color={progress >= 100 ? T.green : T.orange} sub={`${fmtCompact(patrimoineNet)} / ${fmtCompact(fireTarget)}`} />
+        <StatCard label="Progression" value={`${progress.toFixed(1)}%`} color={progress >= 100 ? T.green : T.orange} sub={`${fmtCompact(PatrimoineNet)} / ${fmtCompact(fireTarget)}`} />
         <StatCard label="Années restantes" value={yearsToFire != null ? `${yearsToFire} ans` : '> 50 ans'} color={T.blue} />
         <StatCard label="Revenus passifs cibles" value={fmtCompact(depensesAnnuelles / 12)} color={T.green} sub="4% de retrait mensuel" />
       </div>
@@ -846,7 +846,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
       <SectionCard>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--p-text)' }}>Progression vers FIRE</span>
-          <span style={{ fontSize: 13, color: T.gold, fontWeight: 700 }}>{fmtCompact(patrimoineNet)} / {fmtCompact(fireTarget)}</span>
+          <span style={{ fontSize: 13, color: T.gold, fontWeight: 700 }}>{fmtCompact(PatrimoineNet)} / {fmtCompact(fireTarget)}</span>
         </div>
         <div style={{ height: 12, background: 'var(--p-line)', borderRadius: 99, overflow: 'hidden', marginBottom: 16 }}>
           <div style={{
@@ -861,7 +861,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
             { label: 'FIRE',      target: fireTarget,     desc: 'Dépenses actuelles',     color: T.gold   },
             { label: 'Fat FIRE',  target: fatFireTarget,  desc: '2× dépenses actuelles',  color: T.green  },
           ].map(ms => {
-            const pct = fireTarget > 0 ? Math.min(100, (patrimoineNet / ms.target) * 100) : 0
+            const pct = fireTarget > 0 ? Math.min(100, (PatrimoineNet / ms.target) * 100) : 0
             return (
               <div key={ms.label} style={{ padding: '12px 14px', background: 'var(--p-card-2)', borderRadius: 10, border: `1px solid ${pct >= 100 ? ms.color : 'var(--p-line)'}` }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: pct >= 100 ? ms.color : 'var(--p-text)', marginBottom: 4 }}>
@@ -880,7 +880,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
       </SectionCard>
 
       {/* Projection chart */}
-      <SectionCard title="Projection patrimoniale (30 ans)">
+      <SectionCard title="Projection Patrimoniale (30 ans)">
         <FireProjectionChart data={projectionData} />
         <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
           <span style={{ fontSize: 11, color: T.gold, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -899,7 +899,7 @@ function TabFire({ envelopes }: { envelopes: Envelope[] }) {
 function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
   const allPositions = envelopes.flatMap(e => e.positions)
   const geoAlloc = calcPortfolioGeo(allPositions.map(p => ({ ticker: p.symbol, value: p.quantity * p.pru })))
-  const patrimoineNet = envelopes.reduce((s, e) => s + computeMarketValue(e), 0)
+  const PatrimoineNet = envelopes.reduce((s, e) => s + computeMarketValue(e), 0)
 
   // Build for display
   const REGIONS: Array<{ key: keyof GeoAllocation; label: string; color: string }> = [
@@ -945,7 +945,7 @@ function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
           <WorldMapChart
             allocation={geoAlloc}
             values={Object.fromEntries(REGIONS.map(r => [r.key, (geoAlloc[r.key] ?? 0) * geoAlloc.totalValue])) as Partial<Record<keyof GeoAllocation, number>>}
-            totalValue={patrimoineNet}
+            totalValue={PatrimoineNet}
           />
         )}
       </SectionCard>
@@ -982,12 +982,12 @@ function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
 
 // ── Category shortcuts ─────────────────────────────────────────────────────────
 const CAT_LINKS = [
-  { label: 'Immobilier',    href: '/dashboard/patrimoine/immobilier', icon: Building2,  color: T.pink,   types: ['IMMOBILIER'] as EnvelopeType[] },
-  { label: 'Actions & Fonds', href: '/dashboard/patrimoine/actions', icon: TrendingUp, color: T.purple, types: ['PEA', 'CTO', 'AV', 'PER'] as EnvelopeType[] },
-  { label: 'Livrets',       href: '/dashboard/patrimoine/livrets',    icon: PiggyBank,  color: T.green,  types: ['LIVRET'] as EnvelopeType[] },
-  { label: 'Crypto',        href: '/dashboard/patrimoine/autres',     icon: Bitcoin,    color: T.amber,  types: ['CRYPTO'] as EnvelopeType[] },
-  { label: 'Comptes',       href: '/dashboard/patrimoine/comptes',    icon: Wallet,     color: T.gray,   types: ['CASH'] as EnvelopeType[] },
-  { label: 'Emprunts',      href: '/dashboard/patrimoine/emprunts',   icon: CreditCard, color: T.red,    types: [] as EnvelopeType[] },
+  { label: 'Immobilier',    href: '/dashboard/Patrimoine/immobilier', icon: Building2,  color: T.pink,   types: ['IMMOBILIER'] as EnvelopeType[] },
+  { label: 'Actions & Fonds', href: '/dashboard/Patrimoine/actions', icon: TrendingUp, color: T.purple, types: ['PEA', 'CTO', 'AV', 'PER'] as EnvelopeType[] },
+  { label: 'Livrets',       href: '/dashboard/Patrimoine/livrets',    icon: PiggyBank,  color: T.green,  types: ['LIVRET'] as EnvelopeType[] },
+  { label: 'Crypto',        href: '/dashboard/Patrimoine/autres',     icon: Bitcoin,    color: T.amber,  types: ['CRYPTO'] as EnvelopeType[] },
+  { label: 'Comptes',       href: '/dashboard/Patrimoine/comptes',    icon: Wallet,     color: T.gray,   types: ['CASH'] as EnvelopeType[] },
+  { label: 'Emprunts',      href: '/dashboard/Patrimoine/emprunts',   icon: CreditCard, color: T.red,    types: [] as EnvelopeType[] },
 ]
 
 // ── Modal ajout enveloppe (simplifié) ─────────────────────────────────────────
@@ -1010,13 +1010,13 @@ export default function PatrimoinePage() {
   useEffect(() => {
     loadEnvelopes()
     const handler = () => loadEnvelopes()
-    window.addEventListener('patrimoine-updated', handler)
-    return () => window.removeEventListener('patrimoine-updated', handler)
+    window.addEventListener('Patrimoine-updated', handler)
+    return () => window.removeEventListener('Patrimoine-updated', handler)
   }, [])
 
   async function loadEnvelopes() {
     try {
-      const res = await fetch('/api/patrimoine/envelopes')
+      const res = await fetch('/api/Patrimoine/envelopes')
       if (!res.ok) throw new Error('fetch failed')
       const data = await res.json()
       setEnvelopes(data)
@@ -1031,7 +1031,7 @@ export default function PatrimoinePage() {
     if (!newName.trim()) return
     setCreating(true)
     try {
-      const res = await fetch('/api/patrimoine/envelopes', {
+      const res = await fetch('/api/Patrimoine/envelopes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: newType, name: newName.trim(), metadata: {} }),
@@ -1040,8 +1040,8 @@ export default function PatrimoinePage() {
       const env: Envelope = await res.json()
       setShowModal(false)
       setNewName('')
-      window.dispatchEvent(new Event('patrimoine-updated'))
-      router.push(`/dashboard/patrimoine/${env.id}`)
+      window.dispatchEvent(new Event('Patrimoine-updated'))
+      router.push(`/dashboard/Patrimoine/${env.id}`)
     } catch {
       toast({ title: 'Erreur', description: "Impossible de créer l'enveloppe", variant: 'destructive' })
     } finally {
@@ -1049,8 +1049,8 @@ export default function PatrimoinePage() {
     }
   }
 
-  const patrimoineNet = useMemo(() => envelopes.reduce((s, e) => s + computeMarketValue(e), 0), [envelopes])
-  const pct = getPercentile(patrimoineNet)
+  const PatrimoineNet = useMemo(() => envelopes.reduce((s, e) => s + computeMarketValue(e), 0), [envelopes])
+  const pct = getPercentile(PatrimoineNet)
   const pctColor = pct >= 90 ? T.purple : pct >= 75 ? T.green : pct >= 50 ? T.gold : pct >= 25 ? T.orange : T.red
 
   const tabs: Array<{ id: TabId; label: string; icon: typeof Eye }> = [
@@ -1083,7 +1083,7 @@ export default function PatrimoinePage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 10, flexShrink: 0 }}>
         <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
           <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Patrimoine net</div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(patrimoineNet)}</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: T.gold, fontVariantNumeric: 'tabular-nums' }}>{fmtCompact(PatrimoineNet)}</div>
           <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{envelopes.length} enveloppe{envelopes.length !== 1 ? 's' : ''}</div>
         </div>
         <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
@@ -1096,7 +1096,7 @@ export default function PatrimoinePage() {
         <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 12, padding: '10px 16px' }}>
           <div style={{ fontSize: 10, color: 'var(--p-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>FIRE (règle 4%)</div>
           <div style={{ fontSize: 24, fontWeight: 800, color: T.blue, fontVariantNumeric: 'tabular-nums' }}>
-            {patrimoineNet > 0 ? `${Math.min(100, ((patrimoineNet / (36_000 * 25)) * 100)).toFixed(0)}%` : '0%'}
+            {PatrimoineNet > 0 ? `${Math.min(100, ((PatrimoineNet / (36_000 * 25)) * 100)).toFixed(0)}%` : '0%'}
           </div>
           <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>Objectif : {fmtCompact(36_000 * 25)}</div>
         </div>

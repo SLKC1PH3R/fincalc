@@ -165,13 +165,13 @@ function BuyRentPageInner() {
             Acheter vs Louer<span style={{ color: C }}>.</span>
           </h1>
           <p style={{ fontSize: 12, color: 'var(--p-text-dim)', marginTop: 8 }}>
-            Comparaison patrimoniale sur {inputs.years} ans. <span style={{ color: 'var(--p-text-mid)', fontWeight: 600 }}>Modèle déterministe — net de frais.</span>
+            Comparaison Patrimoniale sur {inputs.years} ans. <span style={{ color: 'var(--p-text-mid)', fontWeight: 600 }}>Modèle déterministe — net de frais.</span>
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flexShrink: 0 }}>
           <Button variant="outline" size="sm" onClick={() => printReport({
             title: 'Acheter vs Louer',
-            subtitle: `Comparaison patrimoniale sur ${inputs.years} ans`,
+            subtitle: `Comparaison Patrimoniale sur ${inputs.years} ans`,
             kpis: [
               { label: r.buyWins ? 'Avantage achat' : 'Avantage location', value: fmt(Math.abs(r.delta)), highlight: true },
               { label: 'Patrimoine si achat', value: fmt(r.buyNetWorth) },
@@ -342,7 +342,7 @@ function BuyRentPageInner() {
               <div style={{ borderLeft: '1px solid var(--p-line)', padding: '20px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 14, background: 'var(--p-card-2)' }}>
                 {[
                   { label: 'Verdict', value: r.buyWins ? 'Achat gagne' : 'Location gagne', color: verdictColor },
-                  { label: 'Écart patrimonial', value: fmtK(Math.abs(r.delta)) },
+                  { label: 'Écart Patrimonial', value: fmtK(Math.abs(r.delta)) },
                   { label: 'Seuil rentabilité', value: `${r.breakevenYears} ans` },
                   { label: 'Valeur bien final', value: fmtK(r.propertyValue) },
                 ].map((k, i) => (
@@ -359,7 +359,7 @@ function BuyRentPageInner() {
           <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div style={eyebrow}>Évolution patrimoniale</div>
+                <div style={eyebrow}>Évolution Patrimoniale</div>
                 <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Achat vs location sur {inputs.years} ans</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -382,7 +382,7 @@ function BuyRentPageInner() {
           {/* COMPARAISON TABLE */}
           <div style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--p-line)' }}>
-              <div style={eyebrow}>Comparaison patrimoniale</div>
+              <div style={eyebrow}>Comparaison Patrimoniale</div>
               <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Détail à {inputs.years} ans</div>
             </div>
             <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -478,7 +478,7 @@ function BuyRentPageInner() {
             <div style={{ padding: '14px 18px' }}>
               <div style={{ fontSize: 12, color: 'var(--p-text-dim)', lineHeight: 1.6 }}>
                 {r.buyWins
-                  ? `L'achat génère ${fmt(r.delta)} de patrimoine supplémentaire sur ${inputs.years} ans. Le seuil de rentabilité est atteint en ${r.breakevenYears} ans.`
+                  ? `L'achat génère ${fmt(r.delta)} de Patrimoine supplémentaire sur ${inputs.years} ans. Le seuil de rentabilité est atteint en ${r.breakevenYears} ans.`
                   : `Louer et investir la différence génère ${fmt(Math.abs(r.delta))} de capital supplémentaire. Le rendement du placement (${inputs.investReturn}%) surpasse la valorisation immobilière (${inputs.appreciation}%).`}
               </div>
             </div>

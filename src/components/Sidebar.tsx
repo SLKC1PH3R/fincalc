@@ -18,13 +18,13 @@ import { useTheme } from '@/contexts/ThemeContext'
 type Icon = (props: any) => any
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-const PATRIMOINE_CATEGORIES = [
-  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
-  { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
-  { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
-  { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
-  { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
-  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
+const PatrimoINE_CATEGORIES = [
+  { href: '/dashboard/Patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
+  { href: '/dashboard/Patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
+  { href: '/dashboard/Patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
+  { href: '/dashboard/Patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
+  { href: '/dashboard/Patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
+  { href: '/dashboard/Patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
 ]
 
 const SIMULATEURS_GROUPS = [
@@ -80,7 +80,7 @@ const SIMULATEURS_GROUPS = [
 ]
 
 const ALL_SIM_HREFS = SIMULATEURS_GROUPS.flatMap(g => g.items.map(i => i.href))
-const ALL_PATRI_HREFS = PATRIMOINE_CATEGORIES.map(c => c.href)
+const ALL_PATRI_HREFS = PatrimoINE_CATEGORIES.map(c => c.href)
 const SIM_COUNT = ALL_SIM_HREFS.length
 
 interface SimEntry { id: string; type: string; name: string; inputs: Record<string, unknown> }
@@ -341,7 +341,7 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
   const { theme, toggleTheme } = useTheme()
 
   const [sims, setSims] = useState<SimEntry[]>([])
-  const [patrimoineExpanded, setPatrimoineExpanded] = useState(true)
+  const [PatrimoineExpanded, setPatrimoineExpanded] = useState(true)
   const [simulateursExpanded, setSimulateursExpanded] = useState(true)
   const [tooltip, setTooltip] = useState<{ label: string; y: number } | null>(null)
 
@@ -439,12 +439,12 @@ function SidebarInner({ user, isAdmin, isDemo }: SidebarProps) {
         {/* Patrimoine — header only, no link */}
         <SectionHeader
           label="Patrimoine" IconComp={Home}
-          expanded={patrimoineExpanded} onToggle={() => setPatrimoineExpanded(v => !v)}
-          collapsed={collapsed} badge={PATRIMOINE_CATEGORIES.length} active={isPatrimoineActive}
+          expanded={PatrimoineExpanded} onToggle={() => setPatrimoineExpanded(v => !v)}
+          collapsed={collapsed} badge={PatrimoINE_CATEGORIES.length} active={isPatrimoineActive}
         />
-        {!collapsed && patrimoineExpanded && (
+        {!collapsed && PatrimoineExpanded && (
           <div style={{ marginLeft: 10, paddingLeft: 12, borderLeft: '1px solid var(--p-line)', display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 2 }}>
-            {PATRIMOINE_CATEGORIES.map(cat => {
+            {PatrimoINE_CATEGORIES.map(cat => {
               const active = pathname.startsWith(cat.href)
               const Ic = cat.icon
               return (

@@ -151,7 +151,7 @@ const PROOFS = [
 ]
 const FEATURES = [
   { t: '18 simulateurs',     d: 'Intérêts · FIRE · IR · prêt · locatif' },
-  { t: 'Score patrimonial',  d: '6 piliers · sécurité, immo, long terme' },
+  { t: 'Score Patrimonial',  d: '6 piliers · sécurité, immo, long terme' },
   { t: 'Données chiffrées',  d: 'TLS · OAuth 2.0 · zéro accès bancaire'  },
   { t: 'Vos données privées',d: 'Stockées sur votre compte · jamais revendues' },
 ]
@@ -262,14 +262,14 @@ function AuthForm() {
             {/* Heading */}
             <h1 style={{ fontFamily: F_SERIF, fontSize: 42, fontWeight: 400, letterSpacing: '-0.03em', lineHeight: 1.06, color: INK, margin: '0 0 12px' }}>
               {isReg ? (
-                <>Pilotez votre<br /><em style={{ fontStyle: 'italic', color: CORAL }}>patrimoine</em>.</>
+                <>Pilotez votre<br /><em style={{ fontStyle: 'italic', color: CORAL }}>Patrimoine</em>.</>
               ) : (
-                <>Votre espace<br /><em style={{ fontStyle: 'italic', color: CORAL }}>patrimonial</em>.</>
+                <>Votre espace<br /><em style={{ fontStyle: 'italic', color: CORAL }}>Patrimonial</em>.</>
               )}
             </h1>
             <p style={{ fontSize: 13.5, color: INK_M, marginBottom: 28, lineHeight: 1.6, maxWidth: 320, fontFamily: F_SANS }}>
               {isReg
-                ? "Gratuit, sans carte bancaire. 18 simulateurs et un score patrimonial inclus."
+                ? "Gratuit, sans carte bancaire. 18 simulateurs et un score Patrimonial inclus."
                 : "Simulez, optimisez, suivez. Tout vous attend exactement là où vous l'avez laissé."}
             </p>
 

@@ -59,7 +59,7 @@ export default function GestionPage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/goals').then(r => r.json()),
-      fetch('/api/patrimoine/envelopes').then(r => r.json()),
+      fetch('/api/Patrimoine/envelopes').then(r => r.json()),
     ]).then(([goalsData, envData]) => {
       const g: Goal[] = Array.isArray(goalsData) ? goalsData : []
       const e: Envelope[] = Array.isArray(envData) ? envData : []
@@ -67,7 +67,7 @@ export default function GestionPage() {
       setEnvelopes(e)
       const prog: Record<string, number> = {}
       for (const goal of g) {
-        const stored = localStorage.getItem(`patrimo_goal_progress_${goal.id}`)
+        const stored = localStorage.getItem(`Patrimo_goal_progress_${goal.id}`)
         if (stored) prog[goal.id] = Number(stored)
       }
       setGoalProgress(prog)
@@ -161,7 +161,7 @@ export default function GestionPage() {
           {
             label: 'Allocation',
             value: allocation.length > 0 ? `${allocation.length} classe${allocation.length > 1 ? 's' : ''}` : '—',
-            sub: totalWealth > 0 ? `${fmtK(totalWealth)} patrimoine total` : 'Aucun actif enregistré',
+            sub: totalWealth > 0 ? `${fmtK(totalWealth)} Patrimoine total` : 'Aucun actif enregistré',
             color: '#3b82f6',
             href: '/dashboard/rebalancing',
           },
@@ -298,9 +298,9 @@ export default function GestionPage() {
           {totalWealth === 0 ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
               <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
-                Aucun actif enregistré dans le patrimoine.
+                Aucun actif enregistré dans le Patrimoine.
               </p>
-              <Link href="/dashboard/patrimoine"
+              <Link href="/dashboard/Patrimoine"
                 style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
@@ -362,7 +362,7 @@ export default function GestionPage() {
               <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucune enveloppe fiscale (PEA, Assurance-Vie, PER) enregistrée.
               </p>
-              <Link href="/dashboard/patrimoine"
+              <Link href="/dashboard/Patrimoine"
                 style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>

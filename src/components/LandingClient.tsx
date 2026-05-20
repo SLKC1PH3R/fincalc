@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { HeroShutterText } from '@/components/ui/hero-shutter-text'
-import { PatrimoHeader } from '@/components/ui/patrimo-header'
+import { PatrimoHeader } from '@/components/ui/Patrimo-header'
 
 // ─── Data ─────────────────────────────────────────────────────────────────
 
@@ -11,7 +11,7 @@ const TOOLS = [
   { tag:'te', cat:'Épargne',        name:'FI/RE',                  desc:'Calculez votre objectif FIRE et date de liberté financière.',     href:'/tools/fire' },
   { tag:'ti', cat:'Immobilier',     name:'Prêt Immobilier',        desc:"Mensualités, TAEG, tableau d'amortissement complet.",            href:'/tools/pret-immobilier' },
   { tag:'te', cat:'Épargne',        name:'DCA',                    desc:"Simulez un plan d'investissement régulier vs lump sum.",         href:'/tools/dca' },
-  { tag:'ti', cat:'Immobilier',     name:'Acheter vs Louer',       desc:'Comparez le patrimoine généré selon votre stratégie.',           href:'/tools/acheter-ou-louer' },
+  { tag:'ti', cat:'Immobilier',     name:'Acheter vs Louer',       desc:'Comparez le Patrimoine généré selon votre stratégie.',           href:'/tools/acheter-ou-louer' },
   { tag:'ti', cat:'Immobilier',     name:'Rentabilité Locative',   desc:'Cashflow, rendement net et fiscalité locative.',                 href:'/tools/rentabilite-locative' },
   { tag:'tf', cat:'Fiscal',         name:'Impôts IR',              desc:"Calcul IR, TMI, frais réels vs abattement 10%.",                href:'/tools/impots-ir' },
   { tag:'tf', cat:'Fiscal',         name:'Simulateur Retraite',    desc:'Pension estimée et optimisation de votre PER 2026.',            href:'/tools/retraite' },
@@ -19,7 +19,7 @@ const TOOLS = [
   { tag:'tf', cat:'Fiscal',         name:'Flat Tax vs Barème',     desc:'Comparez le PFU 30% au barème progressif.',                     href:'/tools/flat-tax-bareme' },
   { tag:'tv', cat:'Investissement', name:'PEA vs CTO vs AV',       desc:'Fiscalité nette de chaque enveloppe sur la durée.',             href:'/tools/pea-cto-av' },
   { tag:'tb', cat:'Budget',         name:"Taux d'épargne",         desc:"Calculez et optimisez votre taux d'épargne mensuel.",           href:'/tools/taux-epargne' },
-  { tag:'tv', cat:'Investissement', name:'Score Patrimonial',      desc:'Score global sur 6 piliers avec recommandations.',              href:'/tools/score-patrimonial' },
+  { tag:'tv', cat:'Investissement', name:'Score Patrimonial',      desc:'Score global sur 6 piliers avec recommandations.',              href:'/tools/score-Patrimonial' },
   { tag:'tb', cat:'Budget',         name:"Épargne de précaution",  desc:"Fonds d'urgence optimal selon votre situation.",                href:'/tools/epargne-urgence' },
   { tag:'tf', cat:'Fiscal',         name:'Coût réel crédit conso', desc:'TAEG → mensualité, coût total, opportunité.',                   href:'/tools/credit-conso' },
   { tag:'tf', cat:'Fiscal',         name:'Succession & Donations', desc:'DMTG, abattements, barème progressif, 15 ans.',                href:'/tools/succession' },
@@ -28,23 +28,23 @@ const TOOLS = [
 ]
 
 const PL = [
-  { ic:'🏛', nm:"Vue d'ensemble",   sb:'Dashboard global : valeur, répartition, carte monde', href:'/dashboard/patrimoine' },
-  { ic:'🏠', nm:'Immobilier',       sb:'Biens, valeur de marché, crédit restant et loyers',   href:'/dashboard/patrimoine' },
-  { ic:'📈', nm:'Actions & Fonds',  sb:'PEA, CTO, AV, PER — valeur en temps réel',            href:'/dashboard/patrimoine' },
-  { ic:'💳', nm:'Livrets',          sb:'Livret A, LDDS, LEP — plafonds et intérêts',          href:'/dashboard/patrimoine' },
-  { ic:'₿',  nm:'Autres actifs',    sb:'Crypto, métaux précieux et actifs alternatifs',       href:'/dashboard/patrimoine' },
-  { ic:'🏦', nm:'Comptes bancaires',sb:'Soldes et suivi de vos comptes courants',             href:'/dashboard/patrimoine' },
-  { ic:'📋', nm:'Emprunts',         sb:'Vue consolidée de tous vos crédits',                   href:'/dashboard/patrimoine' },
+  { ic:'🏛', nm:"Vue d'ensemble",   sb:'Dashboard global : valeur, répartition, carte monde', href:'/dashboard/Patrimoine' },
+  { ic:'🏠', nm:'Immobilier',       sb:'Biens, valeur de marché, crédit restant et loyers',   href:'/dashboard/Patrimoine' },
+  { ic:'📈', nm:'Actions & Fonds',  sb:'PEA, CTO, AV, PER — valeur en temps réel',            href:'/dashboard/Patrimoine' },
+  { ic:'💳', nm:'Livrets',          sb:'Livret A, LDDS, LEP — plafonds et intérêts',          href:'/dashboard/Patrimoine' },
+  { ic:'₿',  nm:'Autres actifs',    sb:'Crypto, métaux précieux et actifs alternatifs',       href:'/dashboard/Patrimoine' },
+  { ic:'🏦', nm:'Comptes bancaires',sb:'Soldes et suivi de vos comptes courants',             href:'/dashboard/Patrimoine' },
+  { ic:'📋', nm:'Emprunts',         sb:'Vue consolidée de tous vos crédits',                   href:'/dashboard/Patrimoine' },
 ]
 
 const PR = [
   { ic:'📊', nm:'Mon Portefeuille',   sb:'Prix live via Finnhub & CoinGecko',               href:'/dashboard/portfolio' },
-  { ic:'⚖️', nm:'Rééquilibrage',     sb:'Arbitrages vers votre allocation cible',            href:'/dashboard/patrimoine' },
-  { ic:'🎯', nm:'Mes Objectifs',     sb:'Objectifs personnalisés avec progression',           href:'/dashboard/patrimoine' },
-  { ic:'📓', nm:"Carnet d'ordres",   sb:'Journal BUY / SELL / DIVIDEND — P&L',              href:'/dashboard/patrimoine' },
-  { ic:'🧾', nm:'Rapport Fiscal',    sb:'Plus-values, durées de détention, optimisation',    href:'/dashboard/patrimoine' },
+  { ic:'⚖️', nm:'Rééquilibrage',     sb:'Arbitrages vers votre allocation cible',            href:'/dashboard/Patrimoine' },
+  { ic:'🎯', nm:'Mes Objectifs',     sb:'Objectifs personnalisés avec progression',           href:'/dashboard/Patrimoine' },
+  { ic:'📓', nm:"Carnet d'ordres",   sb:'Journal BUY / SELL / DIVIDEND — P&L',              href:'/dashboard/Patrimoine' },
+  { ic:'🧾', nm:'Rapport Fiscal',    sb:'Plus-values, durées de détention, optimisation',    href:'/dashboard/Patrimoine' },
   { ic:'🏆', nm:'Score Patrimonial', sb:'Notation 0-100 sur 6 piliers',                      href:'/dashboard/score' },
-  { ic:'👤', nm:'Gestion personnelle',sb:'Vue synthétique : allocation, objectifs, fiscal',  href:'/dashboard/patrimoine' },
+  { ic:'👤', nm:'Gestion personnelle',sb:'Vue synthétique : allocation, objectifs, fiscal',  href:'/dashboard/Patrimoine' },
 ]
 
 const TESTIS = [
@@ -56,17 +56,17 @@ const TESTIS = [
   { av:'AG', bg:'#0a1a0a', q:"« Le simulateur IR m'a économisé 900 €/an grâce aux frais réels. Je ne savais même pas que c'était possible. »",                           nm:'Antoine G.',  rl:'Commercial terrain, 27 ans' },
 ]
 
-const RMAP_DONE = ['Connexion Google OAuth','32 simulateurs','Historique simulations','Mode sombre/clair','Tableau patrimonial','Portefeuille temps réel','Score Patrimonial','Flat Tax vs Barème','PEA/CTO/AV','Partage simulation','Glossaire contextuel','Taux en direct',"Carnet d'ordres",'Timeline patrimoine','Revenus passifs','Connexion FIRE ↔ Patrimoine',"Épargne d'urgence","Crédit conso","Succession & Donations",'Catégories patrimoniales']
+const RMAP_DONE = ['Connexion Google OAuth','32 simulateurs','Historique simulations','Mode sombre/clair','Tableau Patrimonial','Portefeuille temps réel','Score Patrimonial','Flat Tax vs Barème','PEA/CTO/AV','Partage simulation','Glossaire contextuel','Taux en direct',"Carnet d'ordres",'Timeline Patrimoine','Revenus passifs','Connexion FIRE ↔ Patrimoine',"Épargne d'urgence","Crédit conso","Succession & Donations",'Catégories Patrimoniales']
 const RMAP_WIP  = ['Export PDF','Livrets réglementés','Impact des frais',"Inflation & pouvoir d'achat",'Remboursement dettes','Plus-value immobilière','SCPI','Déficit foncier','Viager','Auto-entrepreneur','IFI','Stock-options / BSPCE']
 const RMAP_SOON = ['Comparateur de scénarios','Calculatrice rapide','Mode reverse','Alertes paramétrables','Rapport mensuel email','Mode présentation','Articles & guides','Application mobile','Intégrations bancaires']
 
 const FAQ_ITEMS = [
-  { q:'Est-ce vraiment gratuit, pour toujours ?',      a:'Oui. Les 18 simulateurs et les fonctionnalités de base sont et resteront gratuits. PatrImo ne vit ni de la pub, ni de la revente de données.' },
-  { q:'Faut-il connecter mon compte bancaire ?',       a:"Non. PatrImo ne demande jamais vos coordonnées bancaires, RIB ou accès à vos comptes. Vous saisissez uniquement les données que vous souhaitez renseigner." },
+  { q:'Est-ce vraiment gratuit, pour toujours ?',      a:'Oui. Les 18 simulateurs et les fonctionnalités de base sont et resteront gratuits. Patrimo ne vit ni de la pub, ni de la revente de données.' },
+  { q:'Faut-il connecter mon compte bancaire ?',       a:"Non. Patrimo ne demande jamais vos coordonnées bancaires, RIB ou accès à vos comptes. Vous saisissez uniquement les données que vous souhaitez renseigner." },
   { q:'Où sont stockées mes données ?',                a:'Vos données sont chiffrées (AES-256) et stockées sur des serveurs hébergés en Europe. Elles ne sont jamais partagées ni vendues à des tiers.' },
   { q:'Les calculs sont-ils fiables ?',                a:'Les modèles sont validés sur plus de 40 scénarios réels, avec une fiscalité française 2026 à jour (TMI, PFU, abattements, etc.). Ils sont fournis à titre indicatif.' },
-  { q:"PatrImo est-il adapté aux débutants ?",         a:"Absolument. Chaque simulateur est conçu pour être compris en moins de 30 secondes, avec un glossaire contextuel intégré." },
-  { q:'Puis-je utiliser PatrImo sur mobile ?',         a:"Oui. L'interface est entièrement responsive et optimisée pour mobile, sans appli dédiée à installer." },
+  { q:"Patrimo est-il adapté aux débutants ?",         a:"Absolument. Chaque simulateur est conçu pour être compris en moins de 30 secondes, avec un glossaire contextuel intégré." },
+  { q:'Puis-je utiliser Patrimo sur mobile ?',         a:"Oui. L'interface est entièrement responsive et optimisée pour mobile, sans appli dédiée à installer." },
   { q:'Les calculs reflètent-ils la fiscalité 2026 ?', a:"Oui. Taux IR, PFU 30%, abattements PEA/AV, barèmes successoraux — tout est à jour pour 2026 et mis à jour à chaque modification législative." },
 ]
 
@@ -322,7 +322,7 @@ const CSS = `
 .lp-tool-card h3{font-size:0.92rem;font-weight:600;margin-top:0.6rem;color:var(--lp-white)}
 .lp-tool-card p{font-size:0.79rem;color:var(--lp-g2);line-height:1.5;margin:0}
 
-/* ── PATRIMOINE ── */
+/* ── PatrimoINE ── */
 .lp-patri-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
 .lp-pcol{background:var(--lp-glass);backdrop-filter:blur(20px);border:1px solid var(--lp-gb);border-radius:var(--lp-r3);overflow:hidden}
 .lp-pcol-hd{padding:1rem 1.25rem;border-bottom:1px solid var(--lp-gb);font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lp-g3)}
@@ -486,7 +486,7 @@ export function LandingClient() {
 
   return (
     <>
-      <HeroShutterText text="PatrImo" onComplete={() => setSplashDone(true)} />
+      <HeroShutterText text="Patrimo" onComplete={() => setSplashDone(true)} />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <div className="lp-wrap">
 
@@ -511,7 +511,7 @@ export function LandingClient() {
                 </div>
                 <h1>Le couteau suisse<br />de <span className="lp-grad">l&apos;investisseur français.</span></h1>
                 <p className="lp-hero-sub">
-                  Simulez, analysez et suivez l&apos;intégralité de votre patrimoine depuis une seule plateforme. Gratuit, sans données bancaires.
+                  Simulez, analysez et suivez l&apos;intégralité de votre Patrimoine depuis une seule plateforme. Gratuit, sans données bancaires.
                 </p>
                 <div className="lp-hero-ctas">
                   <Link href="/login" className="lp-btn lp-gold-btn lp-lg">Commencer gratuitement →</Link>
@@ -537,7 +537,7 @@ export function LandingClient() {
                       <div className="lp-mock-dot" style={{ background:'#febc2e' }} />
                       <div className="lp-mock-dot" style={{ background:'#28c840' }} />
                     </div>
-                    <div className="lp-mock-url">finance.digitalstack.cloud/patrimoine</div>
+                    <div className="lp-mock-url">finance.digitalstack.cloud/Patrimoine</div>
                   </div>
                   <div className="lp-mock-body">
                     <div className="lp-mock-panel">
@@ -562,7 +562,7 @@ export function LandingClient() {
                       </tbody></table>
                     </div>
                     <div className="lp-mock-panel">
-                      <div className="lp-panel-lbl">Score patrimonial</div>
+                      <div className="lp-panel-lbl">Score Patrimonial</div>
                       <div className="lp-score-ring">74</div>
                       <div style={{ fontSize:'0.65rem', color:'#7b88aa', textAlign:'center', marginTop:'0.25rem' }}>sur 100 · 6 piliers</div>
                       <table className="lp-mock-tbl" style={{ marginTop:'0.6rem' }}><tbody>
@@ -606,7 +606,7 @@ export function LandingClient() {
               </div>
               <div className="lp-stat-cell">
                 <div className="lp-stat-n"><span>15</span></div>
-                <div className="lp-stat-l">Pages gestion patrimoine</div>
+                <div className="lp-stat-l">Pages gestion Patrimoine</div>
               </div>
               <div className="lp-stat-cell">
                 <div className="lp-stat-n"><span>0</span></div>
@@ -621,7 +621,7 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-s-head fade">
               <div className="lp-s-label">Plateforme</div>
-              <h2>Quatre piliers pour<br />maîtriser votre patrimoine</h2>
+              <h2>Quatre piliers pour<br />maîtriser votre Patrimoine</h2>
               <p>Des outils complets pour simuler, analyser, suivre et sécuriser votre situation financière.</p>
             </div>
             <div className="lp-pcards-grid fade">
@@ -723,7 +723,7 @@ export function LandingClient() {
                           <div className="lp-pmini-dot" style={{ background:'#ff5f57' }} />
                           <div className="lp-pmini-dot" style={{ background:'#febc2e' }} />
                           <div className="lp-pmini-dot" style={{ background:'#28c840' }} />
-                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Répartition patrimoine</span>
+                          <span style={{ fontSize:10, color:'#3d4d6a', marginLeft:6 }}>Répartition Patrimoine</span>
                         </div>
                         <div className="lp-pmini-body">
                           <div className="lp-pmini-donut-row">
@@ -923,13 +923,13 @@ export function LandingClient() {
           </div>
         </section>
 
-        {/* ── PATRIMOINE ── */}
-        <section id="patrimoine" className="lp-section">
+        {/* ── PatrimoINE ── */}
+        <section id="Patrimoine" className="lp-section">
           <div className="lp-container">
             <div className="lp-s-head fade">
               <div className="lp-s-label">Gestion & Suivi</div>
-              <h2>Votre patrimoine<br />centralisé en temps réel</h2>
-              <p>15 pages de gestion incluses dans votre compte PatrImo.</p>
+              <h2>Votre Patrimoine<br />centralisé en temps réel</h2>
+              <p>15 pages de gestion incluses dans votre compte Patrimo.</p>
             </div>
             <div className="lp-patri-2col fade">
               {([{ items:PL, title:'Patrimoine' },{ items:PR, title:'Suivi · Analyse · Fiscal' }] as const).map(col => (
@@ -951,7 +951,7 @@ export function LandingClient() {
               ))}
             </div>
             <div style={{ textAlign:'center', marginTop:'2rem' }}>
-              <Link href="/dashboard/patrimoine" className="lp-btn lp-outline lp-lg">Accéder à toutes les pages →</Link>
+              <Link href="/dashboard/Patrimoine" className="lp-btn lp-outline lp-lg">Accéder à toutes les pages →</Link>
             </div>
           </div>
         </section>
@@ -1009,14 +1009,14 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-s-head fade">
               <div className="lp-s-label">Pour qui</div>
-              <h2>PatrImo s&apos;adapte<br />à votre profil</h2>
+              <h2>Patrimo s&apos;adapte<br />à votre profil</h2>
             </div>
             <div className="lp-profiles-grid fade">
               {[
                 { em:'🌱', role:'Jeune actif 25–35 ans',  t:"Commencer à investir",    p:"Visualisez la puissance des intérêts composés et planifiez votre indépendance financière.", tags:['Intérêts composés','DCA','FI/RE'] },
                 { em:'🏠', role:'Propriétaire',            t:"Optimiser l'immobilier",  p:'Calculez la rentabilité locative, le crédit et comparez achat vs location.',              tags:['Prêt immo','Acheter vs Louer','Locatif'] },
                 { em:'📈', role:'Investisseur',            t:"Optimiser la fiscalité",  p:'Suivez votre portefeuille et choisissez la meilleure enveloppe fiscale.',                tags:['PEA vs CTO vs AV','Flat Tax','Portfolio'] },
-                { em:'🔥', role:'Futur retraité',          t:"Planifier la retraite",   p:'Calculez votre score patrimonial et simulez votre succession.',                           tags:['FI/RE','Retraite','Score 0-100'] },
+                { em:'🔥', role:'Futur retraité',          t:"Planifier la retraite",   p:'Calculez votre score Patrimonial et simulez votre succession.',                           tags:['FI/RE','Retraite','Score 0-100'] },
               ].map(prof => (
                 <div key={prof.role} className="lp-profile">
                   <div className="lp-p-em">{prof.em}</div>
@@ -1035,8 +1035,8 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-s-head fade">
               <div className="lp-s-label">Évolution continue</div>
-              <h2>Ce qui arrive sur PatrImo</h2>
-              <p>PatrImo évolue en continu. Fonctionnalités disponibles et à venir.</p>
+              <h2>Ce qui arrive sur Patrimo</h2>
+              <p>Patrimo évolue en continu. Fonctionnalités disponibles et à venir.</p>
             </div>
             <div className="lp-rmap fade">
               {[
@@ -1067,14 +1067,14 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-s-head fade">
               <div className="lp-s-label">Comparatif</div>
-              <h2>PatrImo vs les alternatives</h2>
+              <h2>Patrimo vs les alternatives</h2>
             </div>
             <div className="lp-cmp-wrap fade">
               <table className="lp-cmp">
                 <thead>
                   <tr>
                     <th>Fonctionnalité</th>
-                    <th className="hl">★ PatrImo</th>
+                    <th className="hl">★ Patrimo</th>
                     <th>Simulateur banque</th>
                     <th>Google Sheets</th>
                   </tr>
@@ -1102,15 +1102,15 @@ export function LandingClient() {
             <div className="lp-s-head fade" style={{ textAlign:'center' }}>
               <div className="lp-s-label" style={{ margin:'0 auto 0.9rem' }}>Confiance & RGPD</div>
               <h2>Vos données restent<br /><span className="lp-grad">vos données.</span></h2>
-              <p style={{ margin:'0 auto' }}>PatrImo ne demande jamais vos coordonnées bancaires. Aucune revente, aucune publicité ciblée.</p>
+              <p style={{ margin:'0 auto' }}>Patrimo ne demande jamais vos coordonnées bancaires. Aucune revente, aucune publicité ciblée.</p>
             </div>
             <div className="fade" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'1.25rem', marginBottom:'2rem' }}>
               {[
-                { ic:'🔒', title:'Chiffrement AES-256',     body:"Toutes vos données sont chiffrées au repos et en transit. Même nos équipes ne peuvent pas lire vos informations patrimoniales." },
+                { ic:'🔒', title:'Chiffrement AES-256',     body:"Toutes vos données sont chiffrées au repos et en transit. Même nos équipes ne peuvent pas lire vos informations Patrimoniales." },
                 { ic:'🇪🇺', title:'Hébergé en Europe',       body:"Nos serveurs sont situés en Union Européenne, conformes au RGPD. Aucune donnée n'est transférée hors UE sans votre consentement." },
-                { ic:'🚫', title:'Zéro donnée bancaire',    body:"PatrImo ne demande jamais votre RIB, identifiants bancaires ou accès Open Banking. Vous saisissez uniquement ce que vous voulez." },
+                { ic:'🚫', title:'Zéro donnée bancaire',    body:"Patrimo ne demande jamais votre RIB, identifiants bancaires ou accès Open Banking. Vous saisissez uniquement ce que vous voulez." },
                 { ic:'🔑', title:'OAuth 2.0 Google SSO',    body:"Authentification déléguée à Google. Vos mots de passe ne nous sont jamais transmis ni stockés. Connexion sécurisée en un clic." },
-                { ic:'📵', title:'Sans publicité',          body:"PatrImo ne vend pas vos données à des annonceurs. Aucun tracking publicitaire, aucun cookie tiers non fonctionnel." },
+                { ic:'📵', title:'Sans publicité',          body:"Patrimo ne vend pas vos données à des annonceurs. Aucun tracking publicitaire, aucun cookie tiers non fonctionnel." },
                 { ic:'📋', title:'Conformité RGPD',         body:"Droit d'accès, de rectification et de suppression garantis. Export de vos données à tout moment depuis votre profil." },
               ].map(card => (
                 <div key={card.title} style={{ background:'var(--lp-glass)', border:'1px solid var(--lp-gb)', borderRadius:'var(--lp-r3)', padding:'1.75rem', backdropFilter:'blur(20px)' }}>
@@ -1163,7 +1163,7 @@ export function LandingClient() {
                 18 simulateurs · 100 % gratuit · sans carte bancaire
               </span>
               <h2>Prenez le contrôle total<br /><span className="lp-grad">de votre vie financière.</span></h2>
-              <p>Impôts, FIRE, patrimoine. Sans carte bancaire, sans engagement.</p>
+              <p>Impôts, FIRE, Patrimoine. Sans carte bancaire, sans engagement.</p>
               <div className="lp-cta-acts">
                 <Link href="/login" className="lp-btn lp-gold-btn lp-lg">Créer un compte gratuit →</Link>
                 <Link href="/login" className="lp-btn lp-ghost lp-lg">Se connecter</Link>
@@ -1177,14 +1177,14 @@ export function LandingClient() {
           <div className="lp-container">
             <div className="lp-ft-grid">
               <div className="lp-ft-brand">
-                <Link href="/" className="lp-logo"><span className="lp-logo-mark">P</span> PatrImo</Link>
-                <p>Outils de finance personnelle pour investisseurs français. Simulateurs, patrimoine, fiscalité.</p>
+                <Link href="/" className="lp-logo"><span className="lp-logo-mark">P</span> Patrimo</Link>
+                <p>Outils de finance personnelle pour investisseurs français. Simulateurs, Patrimoine, fiscalité.</p>
               </div>
               <div className="lp-ft-col">
                 <h5>Produit</h5>
                 <ul>
                   <li><Link href="/tools">Simulateurs</Link></li>
-                  <li><Link href="/dashboard/patrimoine">Patrimoine</Link></li>
+                  <li><Link href="/dashboard/Patrimoine">Patrimoine</Link></li>
                   <li><a href="#roadmap">Roadmap</a></li>
                   <li><a href="#fonctionnalites">Fonctionnalités</a></li>
                   <li><Link href="/login">Créer un compte</Link></li>
@@ -1209,7 +1209,7 @@ export function LandingClient() {
               </div>
             </div>
             <div className="lp-ft-bottom">
-              <span>© 2026 PatrImo · Tous droits réservés</span>
+              <span>© 2026 Patrimo · Tous droits réservés</span>
               <span>Calculs fournis à titre indicatif. Consultez un conseiller agréé pour vos décisions d&apos;investissement.</span>
             </div>
           </div>

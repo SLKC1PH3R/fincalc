@@ -24,21 +24,21 @@ const fmtK = (n: number) => {
   return Math.round(n) + ' €'
 }
 
-function FireChart({ data, target }: { data: { year: number; patrimoine: number }[]; target: number }) {
+function FireChart({ data, target }: { data: { year: number; Patrimoine: number }[]; target: number }) {
   const W = 800, H = 260, PAD = { l: 52, r: 16, t: 16, b: 44 }
   const w = W - PAD.l - PAD.r, h = H - PAD.t - PAD.b
-  const maxV = Math.max(...data.map(d => d.patrimoine), target) * 1.06 || 1
+  const maxV = Math.max(...data.map(d => d.Patrimoine), target) * 1.06 || 1
   const N = data.length - 1
   const xOf = (i: number) => PAD.l + (i / (N || 1)) * w
   const yOf = (v: number) => PAD.t + h - Math.min(v / maxV, 1) * h
-  const pts = data.map((d, i) => ({ x: xOf(i), y: yOf(d.patrimoine) }))
+  const pts = data.map((d, i) => ({ x: xOf(i), y: yOf(d.Patrimoine) }))
   const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
   const area = `${line} L${pts[N].x},${PAD.t + h} L${pts[0].x},${PAD.t + h} Z`
   const targetY = yOf(target)
   const mDots: { x: number; y: number; label: string }[] = []
   ;[0.25, 0.5, 0.75, 1].forEach(pct => {
     const t = target * pct
-    const idx = data.findIndex(d => d.patrimoine >= t)
+    const idx = data.findIndex(d => d.Patrimoine >= t)
     if (idx > 0) mDots.push({ x: pts[Math.min(idx, N)].x, y: pts[Math.min(idx, N)].y, label: `${pct * 100 | 0}%` })
   })
   const yTicks = [0, maxV * 0.25, maxV * 0.5, maxV * 0.75, maxV]
@@ -108,7 +108,7 @@ function FirePageInner() {
   const [inputs, setInputs] = useState<FireInputs>(DEFAULTS)
   const set = (k: keyof FireInputs) => (v: any) => setInputs(p => ({ ...p, [k]: v }))
   const [importingPatrimoine, setImportingPatrimoine] = useState(false)
-  const [patrimoineImported, setPatrimoineImported] = useState<number | null>(null)
+  const [PatrimoineImported, setPatrimoineImported] = useState<number | null>(null)
   const [guidedMode, setGuidedMode] = useState(() => {
     if (typeof window === 'undefined') return false
     return !localStorage.getItem('fire-guided-done')
@@ -126,7 +126,7 @@ function FirePageInner() {
   const importFromPatrimoine = async () => {
     setImportingPatrimoine(true)
     try {
-      const res = await fetch('/api/patrimoine/envelopes')
+      const res = await fetch('/api/Patrimoine/envelopes')
       if (!res.ok) return
       const envelopes: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
       const total = envelopes.reduce((sum, e) => {
@@ -161,7 +161,7 @@ function FirePageInner() {
     return Array.from({ length: years + 1 }, (_, y) => {
       let nw = inputs.netWorth
       for (let i = 0; i < y; i++) nw = nw * (1 + inputs.rate / 100) + r.annualSavings
-      return { year: y, patrimoine: Math.round(Math.max(nw, 0)) }
+      return { year: y, Patrimoine: Math.round(Math.max(nw, 0)) }
     })
   }, [inputs, r])
 
@@ -185,9 +185,9 @@ function FirePageInner() {
   const guidedSteps: GuidedStep[] = [
     { question: 'Quel est votre revenu annuel net ?', hint: 'Total perçu chaque année après impôts et cotisations.', ref: 'Salaire médian France net : ~28 000 €/an.', suffix: '€/an', value: inputs.income, onChange: v => set('income')(v) },
     { question: 'Combien dépensez-vous par an ?', hint: "Vos dépenses totales annuelles. C'est aussi le revenu passif dont vous aurez besoin à la retraite.", ref: 'Chaque 100 €/mois économisé raccourcit votre chemin FIRE de ~3 ans.', suffix: '€/an', value: inputs.expenses, onChange: v => set('expenses')(v) },
-    { question: 'Quel est votre patrimoine actuel investi ?', hint: 'Total de vos actifs : PEA, assurance-vie, épargne, immo locatif…', ref: 'Patrimoine médian France (35-44 ans) : ~120 000 €.', suffix: '€', value: inputs.netWorth, onChange: v => { set('netWorth')(v); setPatrimoineImported(null) } },
+    { question: 'Quel est votre Patrimoine actuel investi ?', hint: 'Total de vos actifs : PEA, assurance-vie, épargne, immo locatif…', ref: 'Patrimoine médian France (35-44 ans) : ~120 000 €.', suffix: '€', value: inputs.netWorth, onChange: v => { set('netWorth')(v); setPatrimoineImported(null) } },
     { type: 'slider', question: 'Quel rendement annuel attendez-vous ?', hint: 'Rendement moyen de votre portefeuille. Soyez conservateur.', ref: 'ETF MSCI World historique : ~7-8%/an sur 30 ans.', suffix: '%', value: inputs.rate, onChange: v => set('rate')(v), min: 1, max: 15, stepSize: 0.5 },
-    { type: 'slider', question: 'Quel taux de retrait envisagez-vous ?', hint: 'Pourcentage du patrimoine retiré chaque année à la retraite. 4% est la règle classique.', ref: 'Règle des 4% (Trinity Study) : durable sur 30 ans. 3.5% pour une longue retraite.', suffix: '%', value: inputs.withdrawalRate, onChange: v => set('withdrawalRate')(v), min: 2, max: 6, stepSize: 0.1 },
+    { type: 'slider', question: 'Quel taux de retrait envisagez-vous ?', hint: 'Pourcentage du Patrimoine retiré chaque année à la retraite. 4% est la règle classique.', ref: 'Règle des 4% (Trinity Study) : durable sur 30 ans. 3.5% pour une longue retraite.', suffix: '%', value: inputs.withdrawalRate, onChange: v => set('withdrawalRate')(v), min: 2, max: 6, stepSize: 0.1 },
   ]
 
   const GAP = 16
@@ -256,7 +256,7 @@ function FirePageInner() {
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--p-text-em)', marginBottom: 2, fontFamily: 'var(--p-mono)', letterSpacing: '0.08em' }}>FI/RE — La règle des 4%</p>
             <p style={{ fontSize: 11, color: 'var(--p-text-dim)', margin: 0, lineHeight: 1.5 }}>
-              La Trinity Study suggère qu&apos;un patrimoine dure 30 ans si vous retirez 4%/an. Ajustez : 3.5% pour une retraite de 40 ans+, 5% si vous avez d&apos;autres revenus.
+              La Trinity Study suggère qu&apos;un Patrimoine dure 30 ans si vous retirez 4%/an. Ajustez : 3.5% pour une retraite de 40 ans+, 5% si vous avez d&apos;autres revenus.
             </p>
           </div>
           <button onClick={() => { localStorage.setItem('fire-banner-dismissed', '1'); setBannerDismissed(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--p-text-faint)', fontSize: 16, padding: '0 2px', lineHeight: 1 }}>×</button>
@@ -316,9 +316,9 @@ function FirePageInner() {
                       Patrimoine actuel<FieldTooltip text="Total de vos actifs investis : épargne, PEA, assurance-vie, immo locatif..." />
                     </label>
                     <button onClick={importFromPatrimoine} disabled={importingPatrimoine}
-                      style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 6, border: `1px solid ${C}30`, background: patrimoineImported ? `${C}10` : 'transparent', color: C, fontSize: 11, fontWeight: 600, cursor: 'pointer', opacity: importingPatrimoine ? 0.6 : 1, fontFamily: 'var(--p-mono)' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 6, border: `1px solid ${C}30`, background: PatrimoineImported ? `${C}10` : 'transparent', color: C, fontSize: 11, fontWeight: 600, cursor: 'pointer', opacity: importingPatrimoine ? 0.6 : 1, fontFamily: 'var(--p-mono)' }}>
                       <RefreshCw style={{ width: 11, height: 11, animation: importingPatrimoine ? 'spin 1s linear infinite' : 'none' }} />
-                      {patrimoineImported ? `${(patrimoineImported / 1000).toFixed(0)}k€` : 'Importer'}
+                      {PatrimoineImported ? `${(PatrimoineImported / 1000).toFixed(0)}k€` : 'Importer'}
                     </button>
                   </div>
                   <div style={{ position: 'relative' }}>
@@ -465,7 +465,7 @@ function FirePageInner() {
               <div style={{ padding: '14px 18px 12px', borderBottom: '1px solid var(--p-line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <div style={eyebrow}>Trajectoire</div>
-                  <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Projection patrimoine vers l&apos;objectif FIRE</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--p-text-dim)', marginTop: 4 }}>Projection Patrimoine vers l&apos;objectif FIRE</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   {[{ color: C, label: 'Patrimoine' }, { color: '#f87171', label: 'Objectif FIRE', dashed: true }].map((l, i) => (
@@ -474,7 +474,7 @@ function FirePageInner() {
                       <span style={{ fontWeight: 600 }}>{l.label}</span>
                     </div>
                   ))}
-                  <CsvExport data={projectionData.map(d => ({ 'Année': d.year, 'Patrimoine': d.patrimoine, 'Objectif FIRE': Math.round(r.target) }))} filename="fire-projection.csv" />
+                  <CsvExport data={projectionData.map(d => ({ 'Année': d.year, 'Patrimoine': d.Patrimoine, 'Objectif FIRE': Math.round(r.target) }))} filename="fire-projection.csv" />
                 </div>
               </div>
               <div style={{ padding: '10px 12px 6px' }}>

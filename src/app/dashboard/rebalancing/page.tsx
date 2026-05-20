@@ -81,7 +81,7 @@ export default function RebalancingPage() {
   const [totalInvest, setTotalInvest] = useState('')
 
   useEffect(() => {
-    fetch('/api/patrimoine/envelopes')
+    fetch('/api/Patrimoine/envelopes')
       .then(r => r.json())
       .then((data: Envelope[]) => {
         setEnvelopes(data)
@@ -107,7 +107,7 @@ export default function RebalancingPage() {
     [currentByClass]
   )
 
-  // Total to invest (optional: can be total patrimoine or custom)
+  // Total to invest (optional: can be total Patrimoine or custom)
   const investBase = useMemo(() => {
     const custom = parseFloat(totalInvest.replace(/\s/g, '').replace(',', '.'))
     return custom > 0 ? custom : totalPatrimoine
@@ -147,7 +147,7 @@ export default function RebalancingPage() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300, color: 'var(--p-text-faint)', gap: 10 }}>
         <RefreshCw style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />
-        Chargement du patrimoine…
+        Chargement du Patrimoine…
       </div>
     )
   }
@@ -200,8 +200,8 @@ export default function RebalancingPage() {
 
       {totalPatrimoine === 0 && (
         <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', textAlign: 'center', padding: '32px 24px' }}>
-          <p style={{ color: 'var(--p-text-faint)', fontSize: 14, marginBottom: 12 }}>Aucune enveloppe trouvée. Commencez par renseigner votre patrimoine.</p>
-          <Link href="/dashboard/patrimoine" style={{ color: '#B07820', fontWeight: 600, fontSize: 13 }}>→ Aller au patrimoine</Link>
+          <p style={{ color: 'var(--p-text-faint)', fontSize: 14, marginBottom: 12 }}>Aucune enveloppe trouvée. Commencez par renseigner votre Patrimoine.</p>
+          <Link href="/dashboard/Patrimoine" style={{ color: '#B07820', fontWeight: 600, fontSize: 13 }}>→ Aller au Patrimoine</Link>
         </Card>
       )}
 
@@ -283,7 +283,7 @@ export default function RebalancingPage() {
                   <span style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>€</span>
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--p-text-faint)', marginTop: 4 }}>
-                  Laissez vide pour utiliser le patrimoine actuel ({fmtCompact(totalPatrimoine)})
+                  Laissez vide pour utiliser le Patrimoine actuel ({fmtCompact(totalPatrimoine)})
                 </div>
               </div>
             </CardContent>

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 // Sources : INSEE 2021 (enquête Patrimoine), Banque de France 2024
-const INSEE_PATRIMOINE = [
+const INSEE_PatrimoINE = [
   { pct: 10, label: '10ème pct', value: 0 },
   { pct: 25, label: '1er quartile', value: 28_000 },
   { pct: 50, label: 'Médiane', value: 183_000 },
@@ -12,7 +12,7 @@ const INSEE_PATRIMOINE = [
 
 const FRENCH_AVERAGES = {
   tauxEpargne: 17.8, // % du revenu disponible brut (Banque de France 2024)
-  patrimoineNet: 183_000, // médiane INSEE 2021
+  PatrimoineNet: 183_000, // médiane INSEE 2021
   revenusMedian: 25_560, // revenu médian individuel INSEE 2022
 }
 
@@ -23,28 +23,28 @@ function fmtK(n: number) {
 }
 
 function percentileOf(value: number): number {
-  for (let i = 0; i < INSEE_PATRIMOINE.length - 1; i++) {
-    const lo = INSEE_PATRIMOINE[i]
-    const hi = INSEE_PATRIMOINE[i + 1]
+  for (let i = 0; i < INSEE_PatrimoINE.length - 1; i++) {
+    const lo = INSEE_PatrimoINE[i]
+    const hi = INSEE_PatrimoINE[i + 1]
     if (value >= lo.value && value <= hi.value) {
       const t = (value - lo.value) / (hi.value - lo.value)
       return Math.round(lo.pct + t * (hi.pct - lo.pct))
     }
   }
-  if (value < INSEE_PATRIMOINE[0].value) return 5
+  if (value < INSEE_PatrimoINE[0].value) return 5
   return 95
 }
 
 interface Props {
-  patrimoineNet?: number
+  PatrimoineNet?: number
   tauxEpargne?: number
   label?: string
 }
 
-export function FrenchAverageWidget({ patrimoineNet, tauxEpargne, label = 'votre situation' }: Props) {
-  const [tab, setTab] = useState<'patrimoine' | 'epargne'>(patrimoineNet != null ? 'patrimoine' : 'epargne')
+export function FrenchAverageWidget({ PatrimoineNet, tauxEpargne, label = 'votre situation' }: Props) {
+  const [tab, setTab] = useState<'Patrimoine' | 'epargne'>(PatrimoineNet != null ? 'Patrimoine' : 'epargne')
 
-  const pct = patrimoineNet != null ? percentileOf(patrimoineNet) : null
+  const pct = PatrimoineNet != null ? percentileOf(PatrimoineNet) : null
   const pctColor = pct == null ? '#94a3b8' : pct >= 75 ? '#34d399' : pct >= 50 ? '#B07820' : pct >= 25 ? '#fb923c' : '#f87171'
 
   const epargneLabel = tauxEpargne != null
@@ -67,16 +67,16 @@ export function FrenchAverageWidget({ patrimoineNet, tauxEpargne, label = 'votre
           <div style={{ fontSize: 12, color: 'var(--p-text-faint)' }}>Sources : INSEE 2021 · Banque de France 2024</div>
         </div>
         {/* Tab toggle */}
-        {patrimoineNet != null && tauxEpargne != null && (
+        {PatrimoineNet != null && tauxEpargne != null && (
           <div style={{ display: 'flex', gap: 4 }}>
-            {(['patrimoine', 'epargne'] as const).map(t => (
+            {(['Patrimoine', 'epargne'] as const).map(t => (
               <button key={t} onClick={() => setTab(t)} style={{
                 padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
                 border: '1px solid var(--p-line)', cursor: 'pointer',
                 background: tab === t ? 'rgba(176,120,32,0.10)' : 'transparent',
                 color: tab === t ? '#B07820' : 'var(--p-text-dim)',
               }}>
-                {t === 'patrimoine' ? 'Patrimoine' : 'Épargne'}
+                {t === 'Patrimoine' ? 'Patrimoine' : 'Épargne'}
               </button>
             ))}
           </div>
@@ -84,11 +84,11 @@ export function FrenchAverageWidget({ patrimoineNet, tauxEpargne, label = 'votre
       </div>
 
       {/* Patrimoine view */}
-      {tab === 'patrimoine' && patrimoineNet != null && (
+      {tab === 'Patrimoine' && PatrimoineNet != null && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
             <span style={{ fontSize: 28, fontWeight: 800, color: pctColor, fontVariantNumeric: 'tabular-nums' }}>{pct}ème percentile</span>
-            <span style={{ fontSize: 13, color: 'var(--p-text-dim)' }}>sur {fmtK(patrimoineNet)} de patrimoine net</span>
+            <span style={{ fontSize: 13, color: 'var(--p-text-dim)' }}>sur {fmtK(PatrimoineNet)} de Patrimoine net</span>
           </div>
 
           {/* Distribution bar */}
@@ -116,16 +116,16 @@ export function FrenchAverageWidget({ patrimoineNet, tauxEpargne, label = 'votre
           </div>
 
           <div style={{ fontSize: 12, color: 'var(--p-text-faint)', borderTop: '1px solid var(--p-line)', paddingTop: 10 }}>
-            {(pct ?? 0) >= 75 ? '🎯 Excellent niveau de patrimoine — vous êtes dans le quart supérieur des Français.'
+            {(pct ?? 0) >= 75 ? '🎯 Excellent niveau de Patrimoine — vous êtes dans le quart supérieur des Français.'
               : (pct ?? 0) >= 50 ? '📈 Au-dessus de la médiane nationale — continuez sur votre lancée.'
-              : (pct ?? 0) >= 25 ? '💡 Sous la médiane — des simulations PatrImo peuvent vous aider à optimiser.'
+              : (pct ?? 0) >= 25 ? '💡 Sous la médiane — des simulations Patrimo peuvent vous aider à optimiser.'
               : '🚀 Fort potentiel de progression — l\'effet des intérêts composés jouera en votre faveur.'}
           </div>
         </div>
       )}
 
       {/* Épargne view */}
-      {(tab === 'epargne' || patrimoineNet == null) && tauxEpargne != null && (
+      {(tab === 'epargne' || PatrimoineNet == null) && tauxEpargne != null && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             <div>

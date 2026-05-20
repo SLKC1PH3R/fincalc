@@ -1,4 +1,4 @@
-const CACHE_KEY = 'patrimo_price_cache'
+const CACHE_KEY = 'Patrimo_price_cache'
 const TTL_MS = 60_000
 
 interface CachedEntry { priceEur: number; changePct: number; fetchedAt: number }

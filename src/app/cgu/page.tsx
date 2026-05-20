@@ -38,39 +38,39 @@ const STYLES = `
 const SECTIONS = [
   {
     title: '1. Objet',
-    content: `Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation du service PatrImo, accessible à l'adresse finance.digitalstack.cloud. En accédant au service, vous acceptez sans réserve les présentes CGU.`,
+    content: `Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation du service Patrimo, accessible à l'adresse finance.digitalstack.cloud. En accédant au service, vous acceptez sans réserve les présentes CGU.`,
   },
   {
     title: '2. Description du service',
-    content: `PatrImo est une application web de simulation financière personnelle. Elle propose des calculateurs pour l'épargne, l'immobilier, la fiscalité et le budget. Les résultats fournis sont des estimations à titre indicatif uniquement et ne constituent pas des conseils financiers professionnels.`,
+    content: `Patrimo est une application web de simulation financière personnelle. Elle propose des calculateurs pour l'épargne, l'immobilier, la fiscalité et le budget. Les résultats fournis sont des estimations à titre indicatif uniquement et ne constituent pas des conseils financiers professionnels.`,
   },
   {
     title: '3. Accès au service',
-    content: `L'accès au service est gratuit et nécessite la création d'un compte via Google OAuth. Vous devez avoir au moins 18 ans pour utiliser PatrImo. Vous êtes responsable de la confidentialité de votre compte.`,
+    content: `L'accès au service est gratuit et nécessite la création d'un compte via Google OAuth. Vous devez avoir au moins 18 ans pour utiliser Patrimo. Vous êtes responsable de la confidentialité de votre compte.`,
   },
   {
     title: '4. Utilisation acceptable',
-    content: `Vous vous engagez à utiliser PatrImo uniquement à des fins personnelles et légales. Il est interdit de :\n• Tenter de compromettre la sécurité du service\n• Utiliser le service à des fins commerciales sans autorisation\n• Soumettre des données fausses ou trompeuses\n• Contourner les mesures d'accès au service`,
+    content: `Vous vous engagez à utiliser Patrimo uniquement à des fins personnelles et légales. Il est interdit de :\n• Tenter de compromettre la sécurité du service\n• Utiliser le service à des fins commerciales sans autorisation\n• Soumettre des données fausses ou trompeuses\n• Contourner les mesures d'accès au service`,
   },
   {
     title: '5. Données et simulations',
-    content: `Les simulations que vous sauvegardez restent votre propriété. PatrImo se réserve le droit de supprimer des données inactives après 12 mois sans connexion, après notification préalable par e-mail.`,
+    content: `Les simulations que vous sauvegardez restent votre propriété. Patrimo se réserve le droit de supprimer des données inactives après 12 mois sans connexion, après notification préalable par e-mail.`,
   },
   {
     title: '6. Limitation de responsabilité',
-    content: `PatrImo fournit ses calculateurs "en l'état". Les résultats sont des estimations basées sur les paramètres fournis. PatrImo ne garantit pas l'exactitude, l'exhaustivité ou l'adéquation des résultats à votre situation personnelle.\n\nPatrImo ne saurait être tenu responsable de décisions financières prises sur la base de ces simulations. Consultez un conseiller financier, fiscal ou juridique agréé pour toute décision importante.`,
+    content: `Patrimo fournit ses calculateurs "en l'état". Les résultats sont des estimations basées sur les paramètres fournis. Patrimo ne garantit pas l'exactitude, l'exhaustivité ou l'adéquation des résultats à votre situation personnelle.\n\nPatrimo ne saurait être tenu responsable de décisions financières prises sur la base de ces simulations. Consultez un conseiller financier, fiscal ou juridique agréé pour toute décision importante.`,
   },
   {
     title: '7. Disponibilité du service',
-    content: `PatrImo s'efforce d'assurer une disponibilité maximale du service mais ne peut garantir un accès ininterrompu. Des maintenances peuvent être planifiées avec préavis.`,
+    content: `Patrimo s'efforce d'assurer une disponibilité maximale du service mais ne peut garantir un accès ininterrompu. Des maintenances peuvent être planifiées avec préavis.`,
   },
   {
     title: '8. Modification des CGU',
-    content: `PatrImo se réserve le droit de modifier les présentes CGU. En cas de modification substantielle, les utilisateurs seront notifiés par e-mail. La poursuite de l'utilisation du service après notification vaut acceptation des nouvelles CGU.`,
+    content: `Patrimo se réserve le droit de modifier les présentes CGU. En cas de modification substantielle, les utilisateurs seront notifiés par e-mail. La poursuite de l'utilisation du service après notification vaut acceptation des nouvelles CGU.`,
   },
   {
     title: '9. Résiliation',
-    content: `Vous pouvez supprimer votre compte à tout moment depuis les paramètres de votre compte. PatrImo se réserve le droit de suspendre ou résilier un compte en cas de violation des présentes CGU.`,
+    content: `Vous pouvez supprimer votre compte à tout moment depuis les paramètres de votre compte. Patrimo se réserve le droit de suspendre ou résilier un compte en cas de violation des présentes CGU.`,
   },
   {
     title: '10. Droit applicable',

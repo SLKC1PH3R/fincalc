@@ -38,7 +38,7 @@ const STYLES = `
 const SECTIONS = [
   {
     title: '1. Responsable du traitement',
-    content: `PatrImo (DigitalStack) est responsable du traitement de vos données personnelles.\nContact : contact@digitalstack.cloud`,
+    content: `Patrimo (DigitalStack) est responsable du traitement de vos données personnelles.\nContact : contact@digitalstack.cloud`,
   },
   {
     title: '2. Données collectées',
@@ -46,7 +46,7 @@ const SECTIONS = [
   },
   {
     title: '3. Finalités du traitement',
-    content: `Vos données sont utilisées pour :\n• Fournir et améliorer le service PatrImo\n• Sauvegarder et restaurer vos simulations\n• Vous envoyer des communications liées au service (si vous y avez consenti)\n• Assurer la sécurité du service`,
+    content: `Vos données sont utilisées pour :\n• Fournir et améliorer le service Patrimo\n• Sauvegarder et restaurer vos simulations\n• Vous envoyer des communications liées au service (si vous y avez consenti)\n• Assurer la sécurité du service`,
   },
   {
     title: '4. Base légale',
@@ -66,7 +66,7 @@ const SECTIONS = [
   },
   {
     title: '8. Sécurité',
-    content: `Nous mettons en oeuvre des mesures techniques et organisationnelles appropriées pour protéger vos données : chiffrement HTTPS/TLS, authentification OAuth 2.0 via Google, accès restreint aux bases de données.`,
+    content: `Nous mettons en oeuvre des mesures techniques et organisationnelles appropriées pour protéger vos données : chiffrement des données au repos (AES-256), chiffrement en transit (HTTPS/TLS 1.3), authentification renforcée via OAuth 2.0 (Google), accès restreint aux bases de données. Vos données ne sont jamais partagées avec des tiers à des fins commerciales.`,
   },
   {
     title: '9. Cookies',

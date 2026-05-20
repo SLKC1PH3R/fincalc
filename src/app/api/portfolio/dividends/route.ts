@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 const YAHOO_SUMMARY = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary'
 const YAHOO_CHART = 'https://query1.finance.yahoo.com/v8/finance/chart'
-const HEADERS = { 'User-Agent': 'Mozilla/5.0 (compatible; PatrImo/1.0)' }
+const HEADERS = { 'User-Agent': 'Mozilla/5.0 (compatible; Patrimo/1.0)' }
 
 async function fetchDividendYield(symbol: string): Promise<number> {
   try {

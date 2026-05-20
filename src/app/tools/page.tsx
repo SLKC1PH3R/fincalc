@@ -4,10 +4,10 @@ import { ToolsGrid } from './ToolsGrid'
 
 export const metadata: Metadata = {
   title: '18 Simulateurs fiscaux gratuits — Patrimo',
-  description: 'Flat tax vs barème, PEA vs CTO, FIRE, retraite, immobilier. 18 simulateurs pour piloter votre patrimoine. Gratuit, sans inscription.',
+  description: 'Flat tax vs barème, PEA vs CTO, FIRE, retraite, immobilier. 18 simulateurs pour piloter votre Patrimoine. Gratuit, sans inscription.',
   openGraph: {
     title: '18 Simulateurs fiscaux gratuits — Patrimo',
-    description: '18 simulateurs pour piloter votre patrimoine, vos investissements et votre fiscalité.',
+    description: '18 simulateurs pour piloter votre Patrimoine, vos investissements et votre fiscalité.',
     url: 'https://finance.digitalstack.cloud/tools',
   },
 }
@@ -113,7 +113,7 @@ export default function ToolsPage() {
           <div className="tz-cta-block">
             <div>
               <h3>Sauvegardez vos simulations.</h3>
-              <p>Créez un compte gratuit pour accéder à votre historique, votre patrimoine et votre score patrimonial sur 7 dimensions.</p>
+              <p>Créez un compte gratuit pour accéder à votre historique, votre Patrimoine et votre score Patrimonial sur 7 dimensions.</p>
             </div>
             <Link href="/login" className="tz-cta-btn">Démarrer gratuitement →</Link>
           </div>

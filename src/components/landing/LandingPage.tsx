@@ -514,9 +514,9 @@ const COPY = {
     v_h2_a: 'Quatre étapes.', v_h2_em: 'Un résultat', v_h2_b: 'mesurable',
     v_sub_p: 'Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.',
     v_steps: [
-      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/Inventaire.jpg' },
+      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/inventaire.jpg' },
       { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/Analyse.jpg' },
-      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/Simulation.jpg' },
+      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/simulation.jpg' },
       { n:'iv',  t:'Décision',   b:"Score Patrimonial sur 5 piliers. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Méthode propriétaire · 2024',
@@ -695,9 +695,9 @@ const COPY = {
     v_h2_a: 'Four steps.', v_h2_em: 'One measurable', v_h2_b: 'outcome',
     v_sub_p: 'Every simulation starts with simple inputs. Results are instant, visual and exportable.',
     v_steps: [
-      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/Inventaire.jpg' },
+      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/inventaire.jpg' },
       { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/Analyse.jpg' },
-      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/Simulation.jpg' },
+      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/simulation.jpg' },
       { n:'iv',  t:'Decision',  b:'Wealth score across 5 pillars. Actionable recommendations. You decide — with full clarity.', img:'/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Proprietary method · 2024',
@@ -1219,7 +1219,7 @@ export function LandingPage() {
               </div>
               <a className="az-wcard rot1" href="/Patrimoine/score-Patrimonial" data-az>
                 <div className="wlrow"><span className="wsl">{t.vi_card1_sl}</span><span className="widx">DIM-01</span></div>
-                <div className="wimg"><Plate label="SCORE-1" src="/Patrimoine-actifs.jpg" /></div>
+                <div className="wimg"><Plate label="SCORE-1" src="/patrimoine-actifs.jpg" /></div>
                 <h3>{t.vi_card1_h3}</h3>
                 <p>{t.vi_card1_p}</p>
                 <div className="wmrow"><span>{t.vi_card1_foot}</span><span className="wyr">2026</span></div>

@@ -126,7 +126,7 @@ function FirePageInner() {
   const importFromPatrimoine = async () => {
     setImportingPatrimoine(true)
     try {
-      const res = await fetch('/api/Patrimoine/envelopes')
+      const res = await fetch('/api/patrimoine/envelopes')
       if (!res.ok) return
       const envelopes: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
       const total = envelopes.reduce((sum, e) => {

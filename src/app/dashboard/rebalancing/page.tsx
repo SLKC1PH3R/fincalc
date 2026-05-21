@@ -81,7 +81,7 @@ export default function RebalancingPage() {
   const [totalInvest, setTotalInvest] = useState('')
 
   useEffect(() => {
-    fetch('/api/Patrimoine/envelopes')
+    fetch('/api/patrimoine/envelopes')
       .then(r => r.json())
       .then((data: Envelope[]) => {
         setEnvelopes(data)

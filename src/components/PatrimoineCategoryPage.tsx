@@ -266,7 +266,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
 
   const load = async () => {
     try {
-      const res = await fetch('/api/Patrimoine/envelopes')
+      const res = await fetch('/api/patrimoine/envelopes')
       if (res.ok) setAllEnvelopes(await res.json())
     } catch { /* ignore */ }
     finally { setLoading(false) }
@@ -370,7 +370,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
         const bal = parseFloat(envelopeBalance.replace(',', '.').replace(/\s/g, ''))
         if (!isNaN(bal) && bal > 0) metadata.balance = bal
       }
-      const res = await fetch('/api/Patrimoine/envelopes', {
+      const res = await fetch('/api/patrimoine/envelopes', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: selectedType, name: envelopeName.trim(), metadata }),
       })

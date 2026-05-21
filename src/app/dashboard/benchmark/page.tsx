@@ -80,7 +80,7 @@ export default function BenchmarkPage() {
     setLoading(true)
     Promise.all([
       fetch(`/api/portfolio/benchmark?days=${d}`).then(r => r.json()),
-      fetch(`/api/Patrimoine/snapshots?days=${d}`).then(r => r.json()),
+      fetch(`/api/patrimoine/snapshots?days=${d}`).then(r => r.json()),
     ])
       .then(([bench, snaps]: [BenchmarkData, Snapshot[]]) => {
         setBenchData(bench)

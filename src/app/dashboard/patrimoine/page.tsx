@@ -1016,7 +1016,7 @@ export default function PatrimoinePage() {
 
   async function loadEnvelopes() {
     try {
-      const res = await fetch('/api/Patrimoine/envelopes')
+      const res = await fetch('/api/patrimoine/envelopes')
       if (!res.ok) throw new Error('fetch failed')
       const data = await res.json()
       setEnvelopes(data)
@@ -1031,7 +1031,7 @@ export default function PatrimoinePage() {
     if (!newName.trim()) return
     setCreating(true)
     try {
-      const res = await fetch('/api/Patrimoine/envelopes', {
+      const res = await fetch('/api/patrimoine/envelopes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: newType, name: newName.trim(), metadata: {} }),

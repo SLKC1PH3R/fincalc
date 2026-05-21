@@ -92,7 +92,7 @@ export default function TaxReportPage() {
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
-    fetch('/api/Patrimoine/envelopes')
+    fetch('/api/patrimoine/envelopes')
       .then(r => r.json())
       .then((data: Envelope[]) => { if (Array.isArray(data)) setEnvelopes(data) })
       .catch(() => {})

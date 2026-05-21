@@ -127,7 +127,7 @@ function DCAPageInner() {
   const importPatrimoine = async () => {
     setLoadingPatrimoine(true)
     try {
-      const res = await fetch('/api/Patrimoine/envelopes')
+      const res = await fetch('/api/patrimoine/envelopes')
       if (!res.ok) return
       const data: { type: string; totalValue: number | null; metadata: Record<string, unknown>; positions: { pru: number; quantity: number }[] }[] = await res.json()
       const total = data.reduce((s, e) => {

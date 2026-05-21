@@ -94,7 +94,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/transactions').then(r => r.json()),
-      fetch('/api/Patrimoine/envelopes').then(r => r.json()),
+      fetch('/api/patrimoine/envelopes').then(r => r.json()),
     ]).then(([txs, envs]) => {
       setTransactions(Array.isArray(txs) ? txs : [])
       setEnvelopes(Array.isArray(envs) ? envs : [])

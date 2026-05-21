@@ -59,7 +59,7 @@ export default function GestionPage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/goals').then(r => r.json()),
-      fetch('/api/Patrimoine/envelopes').then(r => r.json()),
+      fetch('/api/patrimoine/envelopes').then(r => r.json()),
     ]).then(([goalsData, envData]) => {
       const g: Goal[] = Array.isArray(goalsData) ? goalsData : []
       const e: Envelope[] = Array.isArray(envData) ? envData : []

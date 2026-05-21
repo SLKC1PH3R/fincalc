@@ -31,7 +31,7 @@ export function PatrimoineHistoryChart() {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch('/api/Patrimoine/snapshots?days=365')
+      const r = await fetch('/api/patrimoine/snapshots?days=365')
       if (r.ok) setSnapshots(await r.json())
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ export function PatrimoineHistoryChart() {
   const saveSnapshot = async () => {
     setSaving(true)
     try {
-      const envRes = await fetch('/api/Patrimoine/envelopes')
+      const envRes = await fetch('/api/patrimoine/envelopes')
       if (!envRes.ok) return
       const envelopes: Record<string, unknown>[] = await envRes.json()
 
@@ -64,7 +64,7 @@ export function PatrimoineHistoryChart() {
         totalValue += val
       }
 
-      const res = await fetch('/api/Patrimoine/snapshot', {
+      const res = await fetch('/api/patrimoine/snapshot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ totalValue, byEnvelope }),

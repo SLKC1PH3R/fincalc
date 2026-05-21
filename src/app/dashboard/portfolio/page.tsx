@@ -730,7 +730,7 @@ function CreateEnvelopeWizard({ open, onClose, onCreated }: {
     if (!type || !name.trim()) return
     setSaving(true)
     try {
-      const res = await fetch('/api/Patrimoine/envelopes', {
+      const res = await fetch('/api/patrimoine/envelopes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, name: name.trim(), metadata: meta }),
@@ -1098,7 +1098,7 @@ function PortfolioPageInner() {
   }, [])
 
   const loadEnvelopes = useCallback(async () => {
-    const res = await fetch('/api/Patrimoine/envelopes')
+    const res = await fetch('/api/patrimoine/envelopes')
     if (res.ok) setEnvelopes(await res.json())
   }, [])
 

@@ -323,7 +323,7 @@ export default function HomePage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/simulations').then(r => r.json()).catch(() => []),
-      fetch('/api/Patrimoine/envelopes').then(r => r.json()).catch(() => []),
+      fetch('/api/patrimoine/envelopes').then(r => r.json()).catch(() => []),
       fetch('/api/goals').then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([simsData, envData, goalsData]) => {
       if (Array.isArray(simsData)) setSims(simsData)
@@ -351,7 +351,7 @@ export default function HomePage() {
 
   // Load snapshots (historical Patrimoine)
   useEffect(() => {
-    fetch('/api/Patrimoine/snapshots?days=1825')
+    fetch('/api/patrimoine/snapshots?days=1825')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (Array.isArray(d)) {
@@ -386,7 +386,7 @@ export default function HomePage() {
     const byEnvelope = Object.fromEntries(
       envelopes.map(e => [e.id, e.totalValue ?? 0])
     )
-    fetch('/api/Patrimoine/snapshot', {
+    fetch('/api/patrimoine/snapshot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ totalValue: PatrimoineKPI.brut, byEnvelope }),

@@ -485,7 +485,7 @@ export default function GoalsPage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/goals').then(r => r.json()),
-      fetch('/api/Patrimoine/envelopes').then(r => r.json()),
+      fetch('/api/patrimoine/envelopes').then(r => r.json()),
     ])
       .then(([goalsData, envData]) => {
         if (Array.isArray(goalsData)) setGoals(goalsData)

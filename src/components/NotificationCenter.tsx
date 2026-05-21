@@ -25,7 +25,7 @@ const TYPE_STYLE: Record<NotifType, { color: string; Icon: React.ComponentType<{
 
 async function fetchNotifications(): Promise<Notification[]> {
   const [envelopes, simulations] = await Promise.all([
-    fetch('/api/Patrimoine/envelopes').then(r => r.ok ? r.json() : []).catch(() => []),
+    fetch('/api/patrimoine/envelopes').then(r => r.ok ? r.json() : []).catch(() => []),
     fetch('/api/simulations').then(r => r.ok ? r.json() : []).catch(() => []),
   ])
 

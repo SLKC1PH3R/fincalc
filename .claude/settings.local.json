@@ -138,7 +138,8 @@
       "Bash(cat next.config.ts)",
       "Bash(cat next.config.js)",
       "Bash(cat next.config.mjs)",
-      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\legacy\" | Out-Null; Get-ChildItem \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\\" -File | Where-Object { $_.Extension -match '\\\\.\\(jpg|jpeg|png\\)$' } | Select-Object Name)"
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\legacy\" | Out-Null; Get-ChildItem \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\\" -File | Where-Object { $_.Extension -match '\\\\.\\(jpg|jpeg|png\\)$' } | Select-Object Name)",
+      "Bash(git revert *)"
     ]
   }
 }

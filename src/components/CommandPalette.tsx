@@ -16,7 +16,7 @@ interface PaletteItem {
 const ITEMS: PaletteItem[] = [
   { label: 'Tableau de bord',       href: '/dashboard',                  icon: BarChart3,  color: '#B07820' },
   { label: 'Score Patrimonial',     href: '/dashboard/score',            icon: Award,      color: '#B07820' },
-  { label: 'Mon Patrimoine',        href: '/dashboard/Patrimoine',       icon: BarChart3,  color: '#B07820', keywords: 'Patrimoine enveloppes actifs' },
+  { label: 'Mon Patrimoine',        href: '/dashboard/patrimoine',       icon: BarChart3,  color: '#B07820', keywords: 'Patrimoine enveloppes actifs' },
   { label: 'Mon profil',            href: '/dashboard/profil',           icon: User,       color: '#94a3b8' },
   { label: 'Historique',            href: '/dashboard/history',          icon: History,    color: '#94a3b8' },
   { label: 'Intérêts Composés',     sub: 'Effet boule de neige',         href: '/dashboard/compound',         icon: TrendingUp, color: '#34d399', keywords: 'intérêts composés épargne' },

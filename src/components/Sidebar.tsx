@@ -19,12 +19,12 @@ type Icon = (props: any) => any
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const PatrimoINE_CATEGORIES = [
-  { href: '/dashboard/Patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
-  { href: '/dashboard/Patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
-  { href: '/dashboard/Patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
-  { href: '/dashboard/Patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
-  { href: '/dashboard/Patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
-  { href: '/dashboard/Patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
+  { href: '/dashboard/patrimoine/immobilier', label: 'Immobilier',        icon: Home       },
+  { href: '/dashboard/patrimoine/actions',    label: 'Actions & Fonds',   icon: TrendingUp },
+  { href: '/dashboard/patrimoine/livrets',    label: 'Livrets',           icon: PiggyBank  },
+  { href: '/dashboard/patrimoine/comptes',    label: 'Comptes bancaires', icon: Wallet     },
+  { href: '/dashboard/patrimoine/emprunts',   label: 'Emprunts',          icon: CreditCard },
+  { href: '/dashboard/patrimoine/autres',     label: 'Autres actifs',     icon: Bitcoin    },
 ]
 
 const SIMULATEURS_GROUPS = [

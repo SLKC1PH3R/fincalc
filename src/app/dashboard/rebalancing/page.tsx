@@ -201,7 +201,7 @@ export default function RebalancingPage() {
       {totalPatrimoine === 0 && (
         <Card style={{ background: 'var(--p-card)', border: '1px solid var(--p-line)', textAlign: 'center', padding: '32px 24px' }}>
           <p style={{ color: 'var(--p-text-faint)', fontSize: 14, marginBottom: 12 }}>Aucune enveloppe trouvée. Commencez par renseigner votre Patrimoine.</p>
-          <Link href="/dashboard/Patrimoine" style={{ color: '#B07820', fontWeight: 600, fontSize: 13 }}>→ Aller au Patrimoine</Link>
+          <Link href="/dashboard/patrimoine" style={{ color: '#B07820', fontWeight: 600, fontSize: 13 }}>→ Aller au Patrimoine</Link>
         </Card>
       )}
 

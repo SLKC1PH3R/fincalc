@@ -378,7 +378,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
       const created = await res.json()
       window.dispatchEvent(new Event('Patrimoine-updated'))
       setShowModal(false)
-      router.push(`/dashboard/Patrimoine/${created.id}`)
+      router.push(`/dashboard/patrimoine/${created.id}`)
     } catch {
       toast({ title: 'Erreur lors de la création', variant: 'destructive' })
     } finally { setCreating(false) }
@@ -412,7 +412,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', marginBottom: 4 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10.5, color: 'var(--p-text-faint)', fontFamily: 'var(--p-mono)', letterSpacing: '0.10em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>
-              <Link href="/dashboard/Patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
+              <Link href="/dashboard/patrimoine" style={{ color: 'var(--p-text-faint)', textDecoration: 'none' }}>Mon Patrimoine</Link>
               <span style={{ opacity: 0.5 }}>›</span>
               <span style={{ color: catCfg.color }}>{catCfg.label}</span>
             </div>
@@ -478,7 +478,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                   const plEnv = value - invested
                   const pct = totalValue > 0 ? (value / totalValue) * 100 : 0
                   return (
-                    <Link key={env.id} href={`/dashboard/Patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
+                    <Link key={env.id} href={`/dashboard/patrimoine/${env.id}`} style={{ textDecoration: 'none' }}>
                       <div
                         style={{ padding: '12px 14px', borderRadius: 14, background: 'var(--p-card)', border: '1px solid var(--p-line)', cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = envColor + '60'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 3px ${envColor}12` }}
@@ -661,7 +661,7 @@ export default function PatrimoineCategoryPage({ category }: Props) {
                             style={{ borderBottom: '1px solid var(--p-line)', cursor: 'pointer', transition: 'background 0.12s' }}
                             onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = envColor + '0a'}
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-                            onClick={() => router.push(`/dashboard/Patrimoine/${env.id}`)}
+                            onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}
                           >
                             <td style={{ padding: '10px 14px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

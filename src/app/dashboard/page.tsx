@@ -597,7 +597,7 @@ export default function HomePage() {
 
         {/* ALLOCATION */}
         <div style={{ ...card, gridColumn: 'span 4', padding: 0, overflow: 'hidden' }}>
-          <CardHeader eyebrow="Allocation" sub={`${nbEnvelopes} enveloppe${nbEnvelopes > 1 ? 's' : ''}`} href="/dashboard/Patrimoine" hrefLabel="Tout" />
+          <CardHeader eyebrow="Allocation" sub={`${nbEnvelopes} enveloppe${nbEnvelopes > 1 ? 's' : ''}`} href="/dashboard/patrimoine" hrefLabel="Tout" />
           <div style={{ padding: '12px 16px' }}>
             {donutData.length > 0 ? (
               <>
@@ -611,7 +611,7 @@ export default function HomePage() {
                     </div>
                   ))}
                   {donutData.length > 4 && (
-                    <Link href="/dashboard/Patrimoine" style={{ ...linkSubtle, marginTop: 4 }}>
+                    <Link href="/dashboard/patrimoine" style={{ ...linkSubtle, marginTop: 4 }}>
                       + {donutData.length - 4} autres
                     </Link>
                   )}
@@ -620,7 +620,7 @@ export default function HomePage() {
             ) : loaded ? (
               <div style={{ padding: '30px 0', textAlign: 'center' }}>
                 <p style={{ fontSize: 12, color: 'var(--p-text-faint)', margin: '0 0 12px' }}>Aucune enveloppe ajoutée</p>
-                <Link href="/dashboard/Patrimoine" style={{ fontSize: 12, color: GOLD, textDecoration: 'none', fontWeight: 600 }}>
+                <Link href="/dashboard/patrimoine" style={{ fontSize: 12, color: GOLD, textDecoration: 'none', fontWeight: 600 }}>
                   Ajouter une enveloppe →
                 </Link>
               </div>

@@ -42,7 +42,7 @@ async function fetchNotifications(): Promise<Notification[]> {
         type: 'warning',
         title: `PEA "${env.name}" — plafond atteint`,
         description: `Vous avez versé ${fmt(deposited)} sur ce PEA. Aucun nouveau versement possible (plafond légal 150 000€).`,
-        href: `/dashboard/Patrimoine/${env.id}`,
+        href: `/dashboard/patrimoine/${env.id}`,
       })
     } else if (deposited >= 120_000) {
       notifs.push({
@@ -50,7 +50,7 @@ async function fetchNotifications(): Promise<Notification[]> {
         type: 'warning',
         title: `PEA "${env.name}" — proche du plafond`,
         description: `${fmt(deposited)} versés · il reste ${fmt(150_000 - deposited)} avant le plafond de 150 000€.`,
-        href: `/dashboard/Patrimoine/${env.id}`,
+        href: `/dashboard/patrimoine/${env.id}`,
       })
     }
   }
@@ -68,7 +68,7 @@ async function fetchNotifications(): Promise<Notification[]> {
         type: 'success',
         title: `"${env.name}" plein à ${pct}%`,
         description: `${fmt(balance)} / ${fmt(maxBalance)} — Chaque euro supplémentaire peut être investi.`,
-        href: `/dashboard/Patrimoine/${env.id}`,
+        href: `/dashboard/patrimoine/${env.id}`,
       })
     }
   }

@@ -661,7 +661,7 @@ function TabActifs({ envelopes, router }: { envelopes: Envelope[]; router: Retur
               const cfg = ENV_CFG[env.type]
               return (
                 <tr key={env.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer' }}
-                  onClick={() => router.push(`/dashboard/Patrimoine/${env.id}`)}>
+                  onClick={() => router.push(`/dashboard/patrimoine/${env.id}`)}>
                   <td style={{ padding: '12px 8px' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--p-text)' }}>{env.name}</div>
                     <div style={{ fontSize: 11, color: 'var(--p-text-faint)', marginTop: 2 }}>{env.positions.length} position{env.positions.length !== 1 ? 's' : ''}</div>
@@ -982,12 +982,12 @@ function TabGeo({ envelopes }: { envelopes: Envelope[] }) {
 
 // ── Category shortcuts ─────────────────────────────────────────────────────────
 const CAT_LINKS = [
-  { label: 'Immobilier',    href: '/dashboard/Patrimoine/immobilier', icon: Building2,  color: T.pink,   types: ['IMMOBILIER'] as EnvelopeType[] },
-  { label: 'Actions & Fonds', href: '/dashboard/Patrimoine/actions', icon: TrendingUp, color: T.purple, types: ['PEA', 'CTO', 'AV', 'PER'] as EnvelopeType[] },
-  { label: 'Livrets',       href: '/dashboard/Patrimoine/livrets',    icon: PiggyBank,  color: T.green,  types: ['LIVRET'] as EnvelopeType[] },
-  { label: 'Crypto',        href: '/dashboard/Patrimoine/autres',     icon: Bitcoin,    color: T.amber,  types: ['CRYPTO'] as EnvelopeType[] },
-  { label: 'Comptes',       href: '/dashboard/Patrimoine/comptes',    icon: Wallet,     color: T.gray,   types: ['CASH'] as EnvelopeType[] },
-  { label: 'Emprunts',      href: '/dashboard/Patrimoine/emprunts',   icon: CreditCard, color: T.red,    types: [] as EnvelopeType[] },
+  { label: 'Immobilier',    href: '/dashboard/patrimoine/immobilier', icon: Building2,  color: T.pink,   types: ['IMMOBILIER'] as EnvelopeType[] },
+  { label: 'Actions & Fonds', href: '/dashboard/patrimoine/actions', icon: TrendingUp, color: T.purple, types: ['PEA', 'CTO', 'AV', 'PER'] as EnvelopeType[] },
+  { label: 'Livrets',       href: '/dashboard/patrimoine/livrets',    icon: PiggyBank,  color: T.green,  types: ['LIVRET'] as EnvelopeType[] },
+  { label: 'Crypto',        href: '/dashboard/patrimoine/autres',     icon: Bitcoin,    color: T.amber,  types: ['CRYPTO'] as EnvelopeType[] },
+  { label: 'Comptes',       href: '/dashboard/patrimoine/comptes',    icon: Wallet,     color: T.gray,   types: ['CASH'] as EnvelopeType[] },
+  { label: 'Emprunts',      href: '/dashboard/patrimoine/emprunts',   icon: CreditCard, color: T.red,    types: [] as EnvelopeType[] },
 ]
 
 // ── Modal ajout enveloppe (simplifié) ─────────────────────────────────────────
@@ -1041,7 +1041,7 @@ export default function PatrimoinePage() {
       setShowModal(false)
       setNewName('')
       window.dispatchEvent(new Event('Patrimoine-updated'))
-      router.push(`/dashboard/Patrimoine/${env.id}`)
+      router.push(`/dashboard/patrimoine/${env.id}`)
     } catch {
       toast({ title: 'Erreur', description: "Impossible de créer l'enveloppe", variant: 'destructive' })
     } finally {

@@ -53,18 +53,18 @@ const SIMS_CATS = [
 ]
 
 const PATRI_LEFT = [
-  { ic: '🏛', nm: "Vue d'ensemble", href: '/dashboard/Patrimoine' },
-  { ic: '🏠', nm: 'Immobilier', href: '/dashboard/Patrimoine' },
-  { ic: '📈', nm: 'Actions & Fonds', href: '/dashboard/Patrimoine' },
-  { ic: '💳', nm: 'Livrets', href: '/dashboard/Patrimoine' },
-  { ic: '₿', nm: 'Autres actifs', href: '/dashboard/Patrimoine' },
+  { ic: '🏛', nm: "Vue d'ensemble", href: '/dashboard/patrimoine' },
+  { ic: '🏠', nm: 'Immobilier', href: '/dashboard/patrimoine' },
+  { ic: '📈', nm: 'Actions & Fonds', href: '/dashboard/patrimoine' },
+  { ic: '💳', nm: 'Livrets', href: '/dashboard/patrimoine' },
+  { ic: '₿', nm: 'Autres actifs', href: '/dashboard/patrimoine' },
 ]
 const PATRI_RIGHT = [
   { ic: '📊', nm: 'Mon Portefeuille', href: '/dashboard/portfolio' },
   { ic: '🏆', nm: 'Score Patrimonial', href: '/dashboard/score' },
-  { ic: '⚖️', nm: 'Rééquilibrage', href: '/dashboard/Patrimoine' },
-  { ic: '🧾', nm: 'Rapport Fiscal', href: '/dashboard/Patrimoine' },
-  { ic: '🎯', nm: 'Mes Objectifs', href: '/dashboard/Patrimoine' },
+  { ic: '⚖️', nm: 'Rééquilibrage', href: '/dashboard/patrimoine' },
+  { ic: '🧾', nm: 'Rapport Fiscal', href: '/dashboard/patrimoine' },
+  { ic: '🎯', nm: 'Mes Objectifs', href: '/dashboard/patrimoine' },
 ]
 
 // ── CSS ───────────────────────────────────────────────────────────────────────

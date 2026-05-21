@@ -300,7 +300,7 @@ export default function GestionPage() {
               <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucun actif enregistré dans le Patrimoine.
               </p>
-              <Link href="/dashboard/Patrimoine"
+              <Link href="/dashboard/patrimoine"
                 style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>
@@ -362,7 +362,7 @@ export default function GestionPage() {
               <p style={{ fontSize: 13, color: 'var(--p-text-dim)', marginBottom: 8 }}>
                 Aucune enveloppe fiscale (PEA, Assurance-Vie, PER) enregistrée.
               </p>
-              <Link href="/dashboard/Patrimoine"
+              <Link href="/dashboard/patrimoine"
                 style={{ fontSize: 12, color: '#B07820', fontWeight: 600 }}>
                 Ajouter des enveloppes →
               </Link>

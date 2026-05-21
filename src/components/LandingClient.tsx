@@ -28,23 +28,23 @@ const TOOLS = [
 ]
 
 const PL = [
-  { ic:'🏛', nm:"Vue d'ensemble",   sb:'Dashboard global : valeur, répartition, carte monde', href:'/dashboard/Patrimoine' },
-  { ic:'🏠', nm:'Immobilier',       sb:'Biens, valeur de marché, crédit restant et loyers',   href:'/dashboard/Patrimoine' },
-  { ic:'📈', nm:'Actions & Fonds',  sb:'PEA, CTO, AV, PER — valeur en temps réel',            href:'/dashboard/Patrimoine' },
-  { ic:'💳', nm:'Livrets',          sb:'Livret A, LDDS, LEP — plafonds et intérêts',          href:'/dashboard/Patrimoine' },
-  { ic:'₿',  nm:'Autres actifs',    sb:'Crypto, métaux précieux et actifs alternatifs',       href:'/dashboard/Patrimoine' },
-  { ic:'🏦', nm:'Comptes bancaires',sb:'Soldes et suivi de vos comptes courants',             href:'/dashboard/Patrimoine' },
-  { ic:'📋', nm:'Emprunts',         sb:'Vue consolidée de tous vos crédits',                   href:'/dashboard/Patrimoine' },
+  { ic:'🏛', nm:"Vue d'ensemble",   sb:'Dashboard global : valeur, répartition, carte monde', href:'/dashboard/patrimoine' },
+  { ic:'🏠', nm:'Immobilier',       sb:'Biens, valeur de marché, crédit restant et loyers',   href:'/dashboard/patrimoine' },
+  { ic:'📈', nm:'Actions & Fonds',  sb:'PEA, CTO, AV, PER — valeur en temps réel',            href:'/dashboard/patrimoine' },
+  { ic:'💳', nm:'Livrets',          sb:'Livret A, LDDS, LEP — plafonds et intérêts',          href:'/dashboard/patrimoine' },
+  { ic:'₿',  nm:'Autres actifs',    sb:'Crypto, métaux précieux et actifs alternatifs',       href:'/dashboard/patrimoine' },
+  { ic:'🏦', nm:'Comptes bancaires',sb:'Soldes et suivi de vos comptes courants',             href:'/dashboard/patrimoine' },
+  { ic:'📋', nm:'Emprunts',         sb:'Vue consolidée de tous vos crédits',                   href:'/dashboard/patrimoine' },
 ]
 
 const PR = [
   { ic:'📊', nm:'Mon Portefeuille',   sb:'Prix live via Finnhub & CoinGecko',               href:'/dashboard/portfolio' },
-  { ic:'⚖️', nm:'Rééquilibrage',     sb:'Arbitrages vers votre allocation cible',            href:'/dashboard/Patrimoine' },
-  { ic:'🎯', nm:'Mes Objectifs',     sb:'Objectifs personnalisés avec progression',           href:'/dashboard/Patrimoine' },
-  { ic:'📓', nm:"Carnet d'ordres",   sb:'Journal BUY / SELL / DIVIDEND — P&L',              href:'/dashboard/Patrimoine' },
-  { ic:'🧾', nm:'Rapport Fiscal',    sb:'Plus-values, durées de détention, optimisation',    href:'/dashboard/Patrimoine' },
+  { ic:'⚖️', nm:'Rééquilibrage',     sb:'Arbitrages vers votre allocation cible',            href:'/dashboard/patrimoine' },
+  { ic:'🎯', nm:'Mes Objectifs',     sb:'Objectifs personnalisés avec progression',           href:'/dashboard/patrimoine' },
+  { ic:'📓', nm:"Carnet d'ordres",   sb:'Journal BUY / SELL / DIVIDEND — P&L',              href:'/dashboard/patrimoine' },
+  { ic:'🧾', nm:'Rapport Fiscal',    sb:'Plus-values, durées de détention, optimisation',    href:'/dashboard/patrimoine' },
   { ic:'🏆', nm:'Score Patrimonial', sb:'Notation 0-100 sur 6 piliers',                      href:'/dashboard/score' },
-  { ic:'👤', nm:'Gestion personnelle',sb:'Vue synthétique : allocation, objectifs, fiscal',  href:'/dashboard/Patrimoine' },
+  { ic:'👤', nm:'Gestion personnelle',sb:'Vue synthétique : allocation, objectifs, fiscal',  href:'/dashboard/patrimoine' },
 ]
 
 const TESTIS = [
@@ -951,7 +951,7 @@ export function LandingClient() {
               ))}
             </div>
             <div style={{ textAlign:'center', marginTop:'2rem' }}>
-              <Link href="/dashboard/Patrimoine" className="lp-btn lp-outline lp-lg">Accéder à toutes les pages →</Link>
+              <Link href="/dashboard/patrimoine" className="lp-btn lp-outline lp-lg">Accéder à toutes les pages →</Link>
             </div>
           </div>
         </section>
@@ -1184,7 +1184,7 @@ export function LandingClient() {
                 <h5>Produit</h5>
                 <ul>
                   <li><Link href="/tools">Simulateurs</Link></li>
-                  <li><Link href="/dashboard/Patrimoine">Patrimoine</Link></li>
+                  <li><Link href="/dashboard/patrimoine">Patrimoine</Link></li>
                   <li><a href="#roadmap">Roadmap</a></li>
                   <li><a href="#fonctionnalites">Fonctionnalités</a></li>
                   <li><Link href="/login">Créer un compte</Link></li>

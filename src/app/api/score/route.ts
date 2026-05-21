@@ -148,20 +148,20 @@ function getQuickActions(details: ScoreDetails): { label: string; href: string; 
   const gap = (max: number, score: number) => Math.max(0, max - score)
 
   if (details.security.score < 15)
-    actions.push({ label: 'Alimenter votre épargne de précaution (livrets)', href: '/dashboard/Patrimoine/livrets', pts: gap(25, details.security.score) })
+    actions.push({ label: 'Alimenter votre épargne de précaution (livrets)', href: '/dashboard/patrimoine/livrets', pts: gap(25, details.security.score) })
 
   if (!details.longterm.hasAV)
-    actions.push({ label: 'Déclarer une Assurance-vie dans votre Patrimoine', href: '/dashboard/Patrimoine', pts: 10 })
+    actions.push({ label: 'Déclarer une Assurance-vie dans votre Patrimoine', href: '/dashboard/patrimoine', pts: 10 })
   else if (!details.longterm.hasPEA)
-    actions.push({ label: 'Déclarer un PEA dans votre Patrimoine', href: '/dashboard/Patrimoine/actions', pts: 8 })
+    actions.push({ label: 'Déclarer un PEA dans votre Patrimoine', href: '/dashboard/patrimoine/actions', pts: 8 })
   else if (!details.longterm.hasPER)
-    actions.push({ label: 'Déclarer un PER dans votre Patrimoine', href: '/dashboard/Patrimoine', pts: 7 })
+    actions.push({ label: 'Déclarer un PER dans votre Patrimoine', href: '/dashboard/patrimoine', pts: 7 })
 
   if (details.diversification.score < 10)
-    actions.push({ label: 'Diversifier vos enveloppes Patrimoniales', href: '/dashboard/Patrimoine', pts: 5 })
+    actions.push({ label: 'Diversifier vos enveloppes Patrimoniales', href: '/dashboard/patrimoine', pts: 5 })
 
   if (details.risk.cryptoRatio > 0.20)
-    actions.push({ label: 'Réduire l\'exposition crypto (objectif <10%)', href: '/dashboard/Patrimoine', pts: 7 })
+    actions.push({ label: 'Réduire l\'exposition crypto (objectif <10%)', href: '/dashboard/patrimoine', pts: 7 })
 
   return actions.slice(0, 3)
 }

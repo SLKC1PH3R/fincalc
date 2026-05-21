@@ -134,7 +134,11 @@
       "Bash(rgpd\")",
       "Bash(ls /mnt/c/Users/jerem/Downloads/fincalc/src/app/)",
       "Read(//mnt/c/Users/jerem/Downloads/fincalc/src/**)",
-      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\confidentialite\" -Force)"
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\src\\\\app\\\\confidentialite\" -Force)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat next.config.js)",
+      "Bash(cat next.config.mjs)",
+      "PowerShell(New-Item -ItemType Directory -Force \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\legacy\" | Out-Null; Get-ChildItem \"c:\\\\Users\\\\jerem\\\\Downloads\\\\fincalc\\\\public\\\\\" -File | Where-Object { $_.Extension -match '\\\\.\\(jpg|jpeg|png\\)$' } | Select-Object Name)"
     ]
   }
 }

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 510">
+<style>
+.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
+.srf{font-family:Georgia,serif}
+.sans{font-family:-apple-system,system-ui,sans-serif}
+</style>
+<rect width="680" height="510" fill="#070910"/>
+<line x1="32" y1="34" x2="648" y2="34" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="24" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · PTM-04 · 2026</text>
+<text x="648" y="24" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">FIG. 04 — PLANCHE 004 / 008</text>
+<text x="32" y="58" fill="#8a8276" class="mono">V. — MÉTHODE · ÉTAPE i · INVENTAIRE</text>
+<line x1="32" y1="68" x2="648" y2="68" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- Column headers -->
+<text x="44" y="88" fill="#6b7280" class="mono">ENVELOPPE</text>
+<text x="220" y="88" fill="#6b7280" class="mono">TYPE</text>
+<text x="360" y="88" fill="#6b7280" class="mono">VALEUR ACTUELLE</text>
+<text x="540" y="88" fill="#6b7280" class="mono">PERF. M</text>
+<line x1="32" y1="94" x2="648" y2="94" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- Row 1: PEA (filled) -->
+<rect x="32" y="97" width="616" height="28" rx="0" fill="#0c0f1c"/>
+<rect x="32" y="97" width="3" height="28" fill="#f1c086"/>
+<text x="44" y="116" fill="#a8a092" class="mono">PTM-ENV-01</text>
+<text x="220" y="116" fill="#f1c086" class="mono">PEA</text>
+<text x="360" y="116" fill="#a8a092" class="srf" font-size="13">184 200 €</text>
+<text x="540" y="116" fill="#7a9b6e" class="mono">▲ +3,1 %</text>
+<text x="630" y="116" fill="#7a9b6e" class="mono">✓</text>
+
+<!-- Row 2: AV (filled) -->
+<rect x="32" y="127" width="616" height="28" rx="0" fill="#070910"/>
+<rect x="32" y="127" width="3" height="28" fill="#c4a378"/>
+<text x="44" y="146" fill="#a8a092" class="mono">PTM-ENV-02</text>
+<text x="220" y="146" fill="#c4a378" class="mono">AV</text>
+<text x="360" y="146" fill="#a8a092" class="srf" font-size="13">116 700 €</text>
+<text x="540" y="146" fill="#7a9b6e" class="mono">▲ +1,8 %</text>
+<text x="630" y="146" fill="#7a9b6e" class="mono">✓</text>
+
+<!-- Row 3: SCPI (filled) -->
+<rect x="32" y="157" width="616" height="28" rx="0" fill="#0c0f1c"/>
+<rect x="32" y="157" width="3" height="28" fill="#8a7656"/>
+<text x="44" y="176" fill="#a8a092" class="mono">PTM-ENV-03</text>
+<text x="220" y="176" fill="#8a7656" class="mono">SCPI</text>
+<text x="360" y="176" fill="#a8a092" class="srf" font-size="13">97 250 €</text>
+<text x="540" y="176" fill="#a8a092" class="mono">— stable</text>
+<text x="630" y="176" fill="#7a9b6e" class="mono">✓</text>
+
+<!-- Row 4: Cash (filled) -->
+<rect x="32" y="187" width="616" height="28" rx="0" fill="#070910"/>
+<rect x="32" y="187" width="3" height="28" fill="#6b7280"/>
+<text x="44" y="206" fill="#a8a092" class="mono">PTM-ENV-04</text>
+<text x="220" y="206" fill="#a8a092" class="mono">CASH</text>
+<text x="360" y="206" fill="#a8a092" class="srf" font-size="13">88 100 €</text>
+<text x="540" y="206" fill="#7a9b6e" class="mono">▲ +0,3 %</text>
+<text x="630" y="206" fill="#7a9b6e" class="mono">✓</text>
+
+<!-- Row 5: Livrets (filled) -->
+<rect x="32" y="217" width="616" height="28" rx="0" fill="#0c0f1c"/>
+<rect x="32" y="217" width="3" height="28" fill="#6b7280"/>
+<text x="44" y="236" fill="#a8a092" class="mono">PTM-ENV-05</text>
+<text x="220" y="236" fill="#a8a092" class="mono">LIVRET</text>
+<text x="360" y="236" fill="#a8a092" class="srf" font-size="13">24 000 €</text>
+<text x="540" y="236" fill="#7a9b6e" class="mono">▲ +0,3 %</text>
+<text x="630" y="236" fill="#7a9b6e" class="mono">✓</text>
+
+<line x1="32" y1="247" x2="648" y2="247" stroke="#1a1d28" stroke-width="1" stroke-dasharray="4 4"/>
+
+<!-- Row 6: CTO (pending) -->
+<rect x="32" y="249" width="616" height="28" rx="0" fill="#070910"/>
+<rect x="32" y="249" width="3" height="28" fill="#1a1d28"/>
+<text x="44" y="268" fill="#3e3a32" class="mono">PTM-ENV-06</text>
+<text x="220" y="268" fill="#3e3a32" class="mono">CTO</text>
+<text x="360" y="268" fill="#3e3a32" class="mono">— À RENSEIGNER</text>
+<text x="630" y="268" fill="#3e3a32" class="mono">○</text>
+
+<!-- Row 7: PER (pending) -->
+<rect x="32" y="279" width="616" height="28" rx="0" fill="#0c0f1c"/>
+<rect x="32" y="279" width="3" height="28" fill="#1a1d28"/>
+<text x="44" y="298" fill="#3e3a32" class="mono">PTM-ENV-07</text>
+<text x="220" y="298" fill="#3e3a32" class="mono">PER</text>
+<text x="360" y="298" fill="#3e3a32" class="mono">— À RENSEIGNER</text>
+<text x="630" y="298" fill="#3e3a32" class="mono">○</text>
+
+<!-- Row 8: Crypto (pending) -->
+<rect x="32" y="309" width="616" height="28" rx="0" fill="#070910"/>
+<rect x="32" y="309" width="3" height="28" fill="#1a1d28"/>
+<text x="44" y="328" fill="#3e3a32" class="mono">PTM-ENV-08</text>
+<text x="220" y="328" fill="#3e3a32" class="mono">CRYPTO</text>
+<text x="360" y="328" fill="#3e3a32" class="mono">— À RENSEIGNER</text>
+<text x="630" y="328" fill="#3e3a32" class="mono">○</text>
+
+<line x1="32" y1="340" x2="648" y2="340" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- Sub-total -->
+<text x="220" y="356" fill="#8a8276" class="mono">SOUS-TOTAL SAISI</text>
+<text x="360" y="356" fill="#f1c086" class="srf" font-size="16">510 250 €</text>
+
+<!-- Progress bar -->
+<text x="32" y="388" fill="#8a8276" class="mono">PROGRESSION DE L'INVENTAIRE</text>
+
+<!-- 8 segments, 5 filled -->
+<rect x="32" y="396" width="73" height="8" rx="1" fill="#f1c086"/>
+<rect x="109" y="396" width="73" height="8" rx="1" fill="#f1c086"/>
+<rect x="186" y="396" width="73" height="8" rx="1" fill="#f1c086"/>
+<rect x="263" y="396" width="73" height="8" rx="1" fill="#f1c086"/>
+<rect x="340" y="396" width="73" height="8" rx="1" fill="#f1c086"/>
+<rect x="417" y="396" width="73" height="8" rx="1" fill="#1a1d28" stroke="#3e3a32" stroke-width="0.5"/>
+<rect x="494" y="396" width="73" height="8" rx="1" fill="#1a1d28" stroke="#3e3a32" stroke-width="0.5"/>
+<rect x="571" y="396" width="73" height="8" rx="1" fill="#1a1d28" stroke="#3e3a32" stroke-width="0.5"/>
+
+<text x="32" y="416" fill="#7a9b6e" class="mono">5 / 8 ENVELOPPES SAISIES · ~ 2 MIN</text>
+<text x="648" y="416" fill="#8a8276" class="mono" text-anchor="end">3 RESTANTES</text>
+
+<!-- Quick add prompt -->
+<rect x="32" y="428" width="616" height="30" rx="3" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="340" y="448" fill="#3e3a32" class="mono" text-anchor="middle">+ AJOUTER UNE ENVELOPPE</text>
+
+<!-- Bottom frame -->
+<line x1="32" y1="488" x2="648" y2="488" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="502" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · 2026</text>
+<text x="648" y="502" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">004 / FIN</text>
+</svg>

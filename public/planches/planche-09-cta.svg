@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460">
+<style>
+.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
+.srf{font-family:Georgia,serif}
+.sans{font-family:-apple-system,system-ui,sans-serif}
+</style>
+<rect width="680" height="460" fill="#070910"/>
+<line x1="32" y1="34" x2="648" y2="34" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="24" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · PTM-09 · 2026</text>
+<text x="648" y="24" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">FIG. 09 — PLANCHE 009 / 008</text>
+<text x="32" y="58" fill="#8a8276" class="mono">VIII. — ENTRÉE · ACCÈS IMMÉDIAT</text>
+<line x1="32" y1="68" x2="648" y2="68" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- Wordmark centered -->
+<text x="340" y="148" fill="#f1c086" class="srf" font-size="100" font-style="italic" text-anchor="middle">Patrimo</text>
+
+<!-- Tagline -->
+<text x="340" y="176" fill="#a8a092" class="mono" text-anchor="middle">100 % GRATUIT · ZÉRO DONNÉE BANCAIRE · ACCÈS IMMÉDIAT</text>
+
+<!-- Three value pills -->
+<rect x="152" y="188" width="112" height="22" rx="11" fill="#1a1d28"/>
+<text x="208" y="203" fill="#f1c086" class="mono" text-anchor="middle">SÉCURISÉ</text>
+
+<rect x="284" y="188" width="112" height="22" rx="11" fill="#1a1d28"/>
+<text x="340" y="203" fill="#f1c086" class="mono" text-anchor="middle">OPEN-SOURCE</text>
+
+<rect x="416" y="188" width="112" height="22" rx="11" fill="#1a1d28"/>
+<text x="472" y="203" fill="#f1c086" class="mono" text-anchor="middle">MADE IN FR</text>
+
+<!-- Divider -->
+<line x1="32" y1="222" x2="648" y2="222" stroke="#1a1d28" stroke-width="1"/>
+<text x="32" y="238" fill="#8a8276" class="mono">ÉVOLUTION D'UN PATRIMOINE TYPE · 12 MOIS · MARC D.</text>
+
+<!-- Sparkline (x=32 to x=648, y area ~250 to 380) -->
+<polygon points="32,370 85,364 138,358 191,354 244,357 297,349 350,342 403,337 456,331 509,326 562,320 615,314 648,308 648,385 32,385" fill="#f1c086" opacity="0.04"/>
+<polyline points="32,370 85,364 138,358 191,354 244,357 297,349 350,342 403,337 456,331 509,326 562,320 615,314 648,308" fill="none" stroke="#f1c086" stroke-width="1.5" opacity="0.9"/>
+
+<!-- Grid lines -->
+<line x1="32" y1="340" x2="648" y2="340" stroke="#1a1d28" stroke-width="0.5" stroke-dasharray="3 6"/>
+<text x="26" y="344" fill="#3e3a32" class="mono" text-anchor="end">+5 %</text>
+<line x1="32" y1="370" x2="648" y2="370" stroke="#1a1d28" stroke-width="0.5" stroke-dasharray="3 6"/>
+<text x="26" y="374" fill="#3e3a32" class="mono" text-anchor="end">0 %</text>
+
+<!-- Month markers -->
+<text x="32" y="395" fill="#6b7280" class="mono">J</text>
+<text x="85" y="395" fill="#6b7280" class="mono">J</text>
+<text x="138" y="395" fill="#6b7280" class="mono">A</text>
+<text x="191" y="395" fill="#6b7280" class="mono">S</text>
+<text x="244" y="395" fill="#6b7280" class="mono">O</text>
+<text x="297" y="395" fill="#6b7280" class="mono">N</text>
+<text x="350" y="395" fill="#6b7280" class="mono">D</text>
+<text x="403" y="395" fill="#6b7280" class="mono">J</text>
+<text x="456" y="395" fill="#6b7280" class="mono">F</text>
+<text x="509" y="395" fill="#6b7280" class="mono">M</text>
+<text x="562" y="395" fill="#6b7280" class="mono">A</text>
+<text x="615" y="395" fill="#6b7280" class="mono">M</text>
+<text x="648" y="395" fill="#6b7280" class="mono">M</text>
+
+<!-- Start/end markers -->
+<circle cx="32" cy="370" r="3.5" fill="#f1c086"/>
+<text x="32" y="413" fill="#8a8276" class="mono">MAI 2025</text>
+<text x="32" y="425" fill="#8a8276" class="mono">486 250 €</text>
+
+<circle cx="648" cy="308" r="3.5" fill="#f1c086"/>
+<text x="648" y="413" fill="#7a9b6e" class="mono" text-anchor="end">MAI 2026</text>
+<text x="648" y="425" fill="#7a9b6e" class="mono" text-anchor="end">+9,4 % · +41 690 €</text>
+
+<!-- Bottom frame -->
+<line x1="32" y1="438" x2="648" y2="438" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="452" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · 2026</text>
+<text x="648" y="452" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">009 / FIN</text>
+</svg>

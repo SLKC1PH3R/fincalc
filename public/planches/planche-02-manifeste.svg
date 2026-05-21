@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470">
+<style>
+.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
+.srf{font-family:Georgia,serif}
+.sans{font-family:-apple-system,system-ui,sans-serif}
+</style>
+<rect width="680" height="470" fill="#070910"/>
+<line x1="32" y1="34" x2="648" y2="34" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="24" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · PTM-02 · 2026</text>
+<text x="648" y="24" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">FIG. 02 — PLANCHE 002 / 008</text>
+<text x="32" y="58" fill="#8a8276" class="mono">II. — MANIFESTE · IDENTITÉ</text>
+<line x1="32" y1="68" x2="648" y2="68" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- Decorative quote mark -->
+<text x="28" y="148" fill="#f1c086" class="srf" font-size="100" opacity="0.08">«</text>
+
+<!-- Quote lines -->
+<text x="340" y="120" fill="#f1c086" class="srf" font-size="23" font-style="italic" text-anchor="middle">« Patrimo n'est pas un outil de plus.</text>
+<text x="340" y="150" fill="#f1c086" class="srf" font-size="23" font-style="italic" text-anchor="middle">C'est une couche d'intelligence</text>
+<text x="340" y="180" fill="#f1c086" class="srf" font-size="23" font-style="italic" text-anchor="middle">qui transforme la complexité</text>
+<text x="340" y="210" fill="#f1c086" class="srf" font-size="23" font-style="italic" text-anchor="middle">patrimoniale en décisions claires. »</text>
+
+<!-- Attribution -->
+<text x="340" y="238" fill="#8a8276" class="mono" text-anchor="middle">— FONDÉ EN 2024 · FRANCE · OPEN-SOURCE</text>
+
+<!-- Divider -->
+<line x1="32" y1="258" x2="648" y2="258" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- 4 stats -->
+<!-- 18 SIMULATEURS -->
+<text x="32" y="300" fill="#f1c086" class="srf" font-size="40">18</text>
+<text x="32" y="318" fill="#8a8276" class="mono">SIMULATEURS</text>
+<line x1="32" y1="330" x2="128" y2="330" stroke="#f1c086" stroke-width="0.5" opacity="0.35"/>
+<text x="32" y="344" fill="#6b7280" class="mono">Impôts, retraite,</text>
+<text x="32" y="357" fill="#6b7280" class="mono">optimisation…</text>
+
+<!-- 8 ENVELOPPES -->
+<text x="186" y="300" fill="#f1c086" class="srf" font-size="40">8</text>
+<text x="186" y="318" fill="#8a8276" class="mono">ENVELOPPES</text>
+<line x1="186" y1="330" x2="282" y2="330" stroke="#f1c086" stroke-width="0.5" opacity="0.35"/>
+<text x="186" y="344" fill="#6b7280" class="mono">PEA, AV, PER, CTO,</text>
+<text x="186" y="357" fill="#6b7280" class="mono">SCPI, LMNP…</text>
+
+<!-- 7 DIMENSIONS -->
+<text x="340" y="300" fill="#f1c086" class="srf" font-size="40">7</text>
+<text x="340" y="318" fill="#8a8276" class="mono">DIMENSIONS</text>
+<line x1="340" y1="330" x2="436" y2="330" stroke="#f1c086" stroke-width="0.5" opacity="0.35"/>
+<text x="340" y="344" fill="#6b7280" class="mono">Score patrimonial</text>
+<text x="340" y="357" fill="#6b7280" class="mono">0 → 100 pts</text>
+
+<!-- 0 DONNÉE BANCAIRE -->
+<text x="494" y="300" fill="#f1c086" class="srf" font-size="40">0</text>
+<text x="494" y="318" fill="#8a8276" class="mono">DONNÉE BANCAIRE</text>
+<line x1="494" y1="330" x2="648" y2="330" stroke="#f1c086" stroke-width="0.5" opacity="0.35"/>
+<text x="494" y="344" fill="#6b7280" class="mono">Aucun accès requis</text>
+<text x="494" y="357" fill="#6b7280" class="mono">ni stocké</text>
+
+<!-- Bottom rule -->
+<line x1="32" y1="388" x2="648" y2="388" stroke="#1a1d28" stroke-width="1"/>
+<text x="32" y="404" fill="#8a8276" class="mono">MIT LICENSE · CODE SOURCE OUVERT</text>
+<text x="648" y="404" fill="#8a8276" class="mono" text-anchor="end">MADE IN FRANCE</text>
+
+<!-- Confidence bar: 4 pillars -->
+<rect x="32" y="416" width="148" height="4" rx="2" fill="#f1c086" opacity="0.7"/>
+<rect x="188" y="416" width="148" height="4" rx="2" fill="#c4a378" opacity="0.7"/>
+<rect x="344" y="416" width="148" height="4" rx="2" fill="#8a7656" opacity="0.7"/>
+<rect x="500" y="416" width="148" height="4" rx="2" fill="#3e3a32"/>
+<text x="32" y="430" fill="#6b7280" class="mono">SIMULER</text>
+<text x="188" y="430" fill="#6b7280" class="mono">INVENTORIER</text>
+<text x="344" y="430" fill="#6b7280" class="mono">ANALYSER</text>
+<text x="500" y="430" fill="#6b7280" class="mono">DÉCIDER</text>
+
+<!-- Bottom frame -->
+<line x1="32" y1="448" x2="648" y2="448" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="462" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · 2026</text>
+<text x="648" y="462" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">002 / FIN</text>
+</svg>

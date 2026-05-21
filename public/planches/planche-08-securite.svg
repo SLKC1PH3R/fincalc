@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 480">
+<style>
+.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
+.srf{font-family:Georgia,serif}
+.sans{font-family:-apple-system,system-ui,sans-serif}
+</style>
+<rect width="680" height="480" fill="#070910"/>
+<line x1="32" y1="34" x2="648" y2="34" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="24" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · PTM-08 · 2026</text>
+<text x="648" y="24" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">FIG. 08 — PLANCHE 008 / 008</text>
+<text x="32" y="58" fill="#8a8276" class="mono">VII. — SÉCURITÉ · CONFIANCE · ARCHITECTURE</text>
+<line x1="32" y1="68" x2="648" y2="68" stroke="#1a1d28" stroke-width="1"/>
+
+<!-- LEFT: API BANCAIRES — blocked -->
+<rect x="32" y="90" width="178" height="240" rx="5" fill="#0c0f1c" stroke="#c46a5a" stroke-width="1" opacity="0.6"/>
+<text x="121" y="112" fill="#c46a5a" class="mono" text-anchor="middle">API BANCAIRES</text>
+<line x1="50" y1="120" x2="192" y2="120" stroke="#c46a5a" stroke-width="0.5" opacity="0.5"/>
+
+<!-- X icon -->
+<line x1="91" y1="148" x2="151" y2="208" stroke="#c46a5a" stroke-width="2.5"/>
+<line x1="151" y1="148" x2="91" y2="208" stroke="#c46a5a" stroke-width="2.5"/>
+<circle cx="121" cy="178" r="36" fill="none" stroke="#c46a5a" stroke-width="1.5" opacity="0.4"/>
+
+<text x="121" y="240" fill="#c46a5a" class="mono" text-anchor="middle">BLOQUÉ</text>
+<text x="121" y="256" fill="#6b7280" class="mono" text-anchor="middle">Aucun accès</text>
+<text x="121" y="270" fill="#6b7280" class="mono" text-anchor="middle">à vos comptes</text>
+<text x="121" y="284" fill="#6b7280" class="mono" text-anchor="middle">bancaires</text>
+<text x="121" y="300" fill="#6b7280" class="mono" text-anchor="middle">réels</text>
+<text x="121" y="320" fill="#c46a5a" class="mono" text-anchor="middle">0 CONNEXION</text>
+
+<!-- Arrow blocked -->
+<line x1="210" y1="210" x2="246" y2="210" stroke="#c46a5a" stroke-width="1.5"/>
+<polygon points="246,205 256,210 246,215" fill="#c46a5a"/>
+<rect x="225" y="202" width="18" height="16" rx="2" fill="#c46a5a" opacity="0.2" stroke="#c46a5a" stroke-width="1"/>
+<line x1="225" y1="202" x2="243" y2="218" stroke="#c46a5a" stroke-width="1.5"/>
+<line x1="243" y1="202" x2="225" y2="218" stroke="#c46a5a" stroke-width="1.5"/>
+
+<!-- CENTER: VOS DONNÉES PATRIMO -->
+<rect x="260" y="90" width="160" height="240" rx="5" fill="#0c0f1c" stroke="#f1c086" stroke-width="1.5"/>
+<rect x="260" y="90" width="160" height="4" rx="3" fill="#f1c086"/>
+<text x="340" y="112" fill="#f1c086" class="mono" text-anchor="middle">VOS DONNÉES</text>
+<text x="340" y="126" fill="#f1c086" class="mono" text-anchor="middle">PATRIMO</text>
+<line x1="278" y1="134" x2="402" y2="134" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+
+<!-- Lock icon (rect body + arc shackle) -->
+<rect x="322" y="170" width="36" height="30" rx="3" fill="none" stroke="#f1c086" stroke-width="2"/>
+<path d="M328,170 v-12 a12,12 0 0,1 24,0 v12" fill="none" stroke="#f1c086" stroke-width="2"/>
+<circle cx="340" cy="186" r="4" fill="#f1c086"/>
+<line x1="340" y1="190" x2="340" y2="196" stroke="#f1c086" stroke-width="2"/>
+
+<text x="340" y="226" fill="#f1c086" class="mono" text-anchor="middle">AES-256</text>
+<text x="340" y="242" fill="#a8a092" class="mono" text-anchor="middle">CHIFFREMENT</text>
+<text x="340" y="262" fill="#f1c086" class="mono" text-anchor="middle">HÉBERGÉ EN UE</text>
+<text x="340" y="278" fill="#a8a092" class="mono" text-anchor="middle">VERCEL / NEON</text>
+<text x="340" y="298" fill="#f1c086" class="mono" text-anchor="middle">HTTPS / TLS 1.3</text>
+<text x="340" y="314" fill="#a8a092" class="mono" text-anchor="middle">EN TRANSIT</text>
+
+<!-- RIGHT: Checklist -->
+<rect x="436" y="90" width="212" height="240" rx="5" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1"/>
+<text x="448" y="112" fill="#8a8276" class="mono">GARANTIES</text>
+<line x1="448" y1="120" x2="630" y2="120" stroke="#1a1d28" stroke-width="1"/>
+
+<text x="448" y="144" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="144" fill="#a8a092" class="mono">AES-256 au repos</text>
+
+<text x="448" y="164" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="164" fill="#a8a092" class="mono">RGPD conforme</text>
+
+<text x="448" y="184" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="184" fill="#a8a092" class="mono">Hébergé en UE</text>
+
+<text x="448" y="204" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="204" fill="#a8a092" class="mono">Open-source (MIT)</text>
+
+<text x="448" y="224" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="224" fill="#a8a092" class="mono">0 donnée bancaire</text>
+
+<text x="448" y="244" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="244" fill="#a8a092" class="mono">OAuth 2.0 Google</text>
+
+<text x="448" y="264" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="264" fill="#a8a092" class="mono">Accès restreint DB</text>
+
+<text x="448" y="284" fill="#7a9b6e" class="mono">✓</text>
+<text x="470" y="284" fill="#a8a092" class="mono">Logs 12 mois max</text>
+
+<text x="448" y="308" fill="#8a8276" class="mono">8 / 8 GARANTIES</text>
+<rect x="448" y="316" width="180" height="6" rx="2" fill="#7a9b6e" opacity="0.7"/>
+
+<!-- What you enter -->
+<line x1="32" y1="350" x2="648" y2="350" stroke="#1a1d28" stroke-width="1"/>
+<text x="32" y="368" fill="#8a8276" class="mono">VOUS SAISISSEZ UNIQUEMENT</text>
+<rect x="32" y="376" width="90" height="20" rx="3" fill="#1a1d28"/>
+<text x="77" y="390" fill="#a8a092" class="mono" text-anchor="middle">Valorisations</text>
+<rect x="130" y="376" width="70" height="20" rx="3" fill="#1a1d28"/>
+<text x="165" y="390" fill="#a8a092" class="mono" text-anchor="middle">Frais ETF</text>
+<rect x="208" y="376" width="100" height="20" rx="3" fill="#1a1d28"/>
+<text x="258" y="390" fill="#a8a092" class="mono" text-anchor="middle">Type d'enveloppe</text>
+<rect x="316" y="376" width="80" height="20" rx="3" fill="#1a1d28"/>
+<text x="356" y="390" fill="#a8a092" class="mono" text-anchor="middle">TMI annuel</text>
+
+<!-- Footer message -->
+<text x="340" y="422" fill="#a8a092" class="mono" text-anchor="middle">ARCHITECTURE DE CONFIANCE · ZÉRO COMPROMIS</text>
+
+<!-- Bottom frame -->
+<line x1="32" y1="458" x2="648" y2="458" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
+<text x="32" y="472" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · 2026</text>
+<text x="648" y="472" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">008 / FIN</text>
+</svg>

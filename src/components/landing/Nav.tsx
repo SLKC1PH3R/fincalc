@@ -69,16 +69,16 @@ const SIM_GROUPS = [
 ];
 
 const PATR_LEFT = [
-  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/dashboard/patrimoine' },
-  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/dashboard/patrimoine/immobilier' },
-  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/dashboard/patrimoine/actions' },
-  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/dashboard/patrimoine/livrets' },
+  { ic: '🏛', n: "Vue d'ensemble",    sub: 'Valeur nette, répartition, carte monde', href: '/Patrimoine/vue-ensemble' },
+  { ic: '🏠', n: 'Immobilier',        sub: 'Biens, crédit restant, loyers',           href: '/Patrimoine/immobilier' },
+  { ic: '📈', n: 'Actions & Fonds',   sub: 'PEA, CTO, AV, PER en temps réel',        href: '/Patrimoine/actions-fonds' },
+  { ic: '💰', n: 'Livrets',           sub: 'Livret A, LDDS, LEP — plafonds',         href: '/Patrimoine/livrets' },
 ];
 const PATR_RIGHT = [
-  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/dashboard/patrimoine/autres' },
-  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/dashboard/patrimoine/comptes' },
-  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/dashboard/patrimoine/emprunts' },
-  { ic: '🏆', n: 'Score Patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/dashboard/score' },
+  { ic: '₿',  n: 'Autres actifs',     sub: 'Crypto, métaux, alternatifs',             href: '/Patrimoine/autres-actifs' },
+  { ic: '🏦', n: 'Comptes bancaires', sub: 'Soldes & suivi courants',                 href: '/Patrimoine/comptes-bancaires' },
+  { ic: '📋', n: 'Emprunts',          sub: 'Vue consolidée de vos crédits',           href: '/Patrimoine/emprunts' },
+  { ic: '🏆', n: 'Score Patrimonial', sub: 'Notation 0-100 sur 6 piliers',            href: '/Patrimoine/score-Patrimonial' },
 ];
 
 /* ── Dropdown wrapper (desktop only) ── */

@@ -474,39 +474,35 @@ const COPY = {
     iii_h2_a: 'Quatre modules,', iii_h2_em: 'une vision', iii_h2_b: 'unifiée',
     iii_ribbon: 'Plateforme Patrimo · 2026',
     iii_cards: [
-      { n:'01', tag:'Suivre',    title:'Vision Patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, Patrimoine net, performance.",    href:'/Patrimoine' },
+      { n:'01', tag:'Suivre',    title:'Vision Patrimoniale complète', body:"Cartographie en temps réel de vos actifs. 8 enveloppes, Patrimoine net, performance.",    href:'/patrimoine' },
       { n:'02', tag:'Optimiser', title:'Chaque frais compte',           body:"ETFs comparés aux meilleures alternatives. Sur 20 ans, 0,18 % de moins = des milliers d'euros récupérés.", href:'/tools/optimiseur-etf' },
       { n:'03', tag:'Simuler',   title:'18 simulateurs fiscaux',        body:"Flat tax vs barème, PEA vs CTO, IFI, transmission, retraite. Tout en un seul endroit.",    href:'/tools' },
       { n:'04', tag:'Éduquer',   title:"Comprendre avant d'agir",       body:"Guides pratiques, glossaire interactif, fiches enveloppe. L'éducation financière française.", href:'#enveloppes' },
     ],
     // IV
-    iv_rule_sub: 'Enveloppes / 8 disponibles',
-    iv_rule_tag: '8 actifs · 7 à venir',
-    iv_label: '8 enveloppes & modules',
+    iv_rule_sub: 'Enveloppes / 15 modules',
+    iv_rule_tag: '15 modules',
+    iv_label: '15 enveloppes & modules',
     iv_h2_a: 'Chaque outil,', iv_h2_em: 'maîtrisé',
     iv_pills: ['Toutes','Actions','Épargne','Immobilier'],
     iv_labs: [
-      { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.jpg',      cat:'epargne',   href:'/Patrimoine/livrets' },
-      { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.",         img:'/PEA.jpg',           cat:'actions',   href:'/Patrimoine/actions-fonds' },
-      { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.",   img:'/AV.jpg',            cat:'epargne',   href:'/Patrimoine/actions-fonds' },
-      { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.",             img:'/CTO.jpg',           cat:'actions',   href:'/Patrimoine/actions-fonds' },
-      { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.",             img:'/PER.jpg',           cat:'epargne',   href:'/Patrimoine/detail-enveloppe' },
-      { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.",                  img:'/immobilliers.jpg',  cat:'immobilier',href:'/Patrimoine/immobilier' },
-      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.",    img:'/crypto.jpg',        cat:'actions',   href:'/Patrimoine/autres-actifs' },
-      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.",                      img:'/liquidites.jpg',    cat:'epargne',   href:'/Patrimoine/comptes-bancaires' },
+      { n:'01', badge:'Défiscalisé',    title:"Livrets d'épargne",  body:"Livret A · LDDS · LEP. Épargne réglementée disponible à tout moment.", img:'/livrets.jpg',     cat:'epargne',   href:'/patrimoine/livrets' },
+      { n:'02', badge:'Exonéré 5a+',   title:'PEA',                body:"L'enveloppe reine de l'investissement en actions européennes.",         img:'/PEA.jpg',          cat:'actions',   href:'/patrimoine/actions-fonds' },
+      { n:'03', badge:'Abattement 8a', title:'Assurance-Vie',      body:"Fonds € · UC. Succession optimisée, fiscalité adoucie après 8 ans.",   img:'/AV.jpg',           cat:'epargne',   href:'/patrimoine/actions-fonds' },
+      { n:'04', badge:'Flat Tax 30 %', title:'CTO',                body:"Toutes classes d'actifs, aucun plafond. Liberté absolue.",             img:'/CTO.jpg',          cat:'actions',   href:'/patrimoine/actions-fonds' },
+      { n:'05', badge:'Déduction IR',  title:'PER',                body:"Déduisez aujourd'hui dans votre TMI, capitalisez demain.",             img:'/PER.jpg',          cat:'epargne',   href:'/patrimoine/detail-enveloppe' },
+      { n:'06', badge:'Levier bancaire',title:'Immobilier',        body:"SCPI · Direct · LMNP. Revenus locatifs récurrents.",                  img:'/immobilliers.jpg', cat:'immobilier',href:'/patrimoine/immobilier' },
+      { n:'07', badge:'3916-bis',      title:'Crypto-actifs',      body:"BTC · ETH. Flat tax 30 % sur les cessions, déclaration annuelle.",    img:'/crypto.jpg',       cat:'actions',   href:'/patrimoine/autres-actifs' },
+      { n:'08', badge:'Précaution',    title:'Trésorerie',         body:"3 à 6 mois de dépenses. Réserve d'opportunité.",                      img:'/liquidites.jpg',   cat:'epargne',   href:'/patrimoine/comptes-bancaires' },
+      { n:'09', badge:'Vue globale',   title:"Vue d'ensemble",     body:"Bilan Patrimonial complet : actifs, passifs, répartition et évolution dans le temps.",  cat:'',          href:'/patrimoine/vue-ensemble' },
+      { n:'10', badge:'Dettes',        title:'Emprunts',           body:"Capital restant dû, mensualités et date de fin de chaque crédit en cours.",             cat:'immobilier',href:'/patrimoine/emprunts' },
+      { n:'11', badge:'Tracker',       title:'Mon Portefeuille',   body:"Positions en temps réel : prix, variation, poids et performance globale.",              cat:'actions',   href:'/patrimoine/mon-portefeuille' },
+      { n:'12', badge:'Cible',         title:'Mes Objectifs',      body:"Définissez des objectifs d'épargne ou d'investissement et suivez votre progression.",   cat:'epargne',   href:'/patrimoine/mes-objectifs' },
+      { n:'13', badge:'Allocation',    title:'Rééquilibrage',      body:"Calculez les achats et ventes nécessaires pour revenir à votre cible.",                 cat:'actions',   href:'/patrimoine/reequilibrage' },
+      { n:'14', badge:'Déclaration',   title:'Rapport Fiscal',     body:"Synthèse annuelle : dividendes, coupons, plus-values réalisées.",                       cat:'',          href:'/patrimoine/rapport-fiscal' },
+      { n:'15', badge:'Score 0-100',   title:'Score Patrimonial',  body:"Note globale basée sur diversification, liquidité et risque de votre Patrimoine.",     cat:'',          href:'/patrimoine/score-Patrimonial' },
     ],
-    iv_roadmap: [
-      { n:'09', q:'Q2 2026', badge:'Vue globale',  title:"Vue d'ensemble",   body:"Bilan Patrimonial complet : actifs, passifs, répartition et évolution dans le temps.", href:'/Patrimoine/vue-ensemble' },
-      { n:'10', q:'Q2 2026', badge:'Dettes',       title:'Emprunts',         body:"Capital restant dû, mensualités et date de fin de chaque crédit en cours.", href:'/Patrimoine/emprunts' },
-      { n:'11', q:'Q2 2026', badge:'Tracker',      title:'Mon Portefeuille', body:"Positions en temps réel : prix, variation, poids et performance globale.", href:'/Patrimoine/mon-portefeuille' },
-      { n:'12', q:'Q3 2026', badge:'Cible',        title:'Mes Objectifs',    body:"Définissez des objectifs d'épargne ou d'investissement et suivez votre progression.", href:'/Patrimoine/mes-objectifs' },
-      { n:'13', q:'Q3 2026', badge:'Allocation',   title:'Rééquilibrage',    body:"Calculez les achats et ventes nécessaires pour revenir à votre cible.", href:'/Patrimoine/reequilibrage' },
-      { n:'14', q:'Q3 2026', badge:'Déclaration',  title:'Rapport Fiscal',   body:"Synthèse annuelle : dividendes, coupons, plus-values réalisées.", href:'/Patrimoine/rapport-fiscal' },
-      { n:'15', q:'Q4 2026', badge:'Score 0-100',  title:'Score Patrimonial',body:"Note globale basée sur diversification, liquidité et risque de votre Patrimoine.", href:'/Patrimoine/score-Patrimonial' },
-    ],
-    iv_roadmap_show: 'Voir la roadmap 2026',
-    iv_roadmap_hide: 'Masquer la roadmap',
-    iv_foot: '8 modules · Disponibles maintenant',
+    iv_foot: '15 modules · Patrimo 2026',
     // V
     v_rule_sub: 'Méthode / Simulateurs',
     v_rule_tag: '4 étapes',
@@ -584,9 +580,9 @@ const COPY = {
     // Footer
     ft_desc: "Plateforme patrimoniale gratuite — 18 simulateurs fiscaux, 15 modules et un score patrimonial sur 5 piliers. Conçue pour l'investisseur français qui veut comprendre avant d'agir.",
     ft_col1: 'Plateforme',
-    ft_col1_links: [['/Patrimoine/vue-ensemble','Vision Patrimoniale'],['/tools/optimiseur-etf','Optimisation TER'],['/tools','18 simulateurs'],['/Patrimoine/score-Patrimonial','Score Patrimonial']],
+    ft_col1_links: [['/patrimoine/vue-ensemble','Vision Patrimoniale'],['/tools/optimiseur-etf','Optimisation TER'],['/tools','18 simulateurs'],['/patrimoine/score-Patrimonial','Score Patrimonial']],
     ft_col2: 'Enveloppes',
-    ft_col2_links: [['/Patrimoine/actions-fonds','PEA · AV · PER'],['/Patrimoine/livrets','CTO · Livrets'],['/Patrimoine/immobilier','SCPI · Immobilier'],['/Patrimoine/autres-actifs','Crypto · Cash']],
+    ft_col2_links: [['/patrimoine/actions-fonds','PEA · AV · PER'],['/patrimoine/livrets','CTO · Livrets'],['/patrimoine/immobilier','SCPI · Immobilier'],['/patrimoine/autres-actifs','Crypto · Cash']],
     ft_col3: 'Ressources',
     ft_col3_links: [['/#methode','Notre approche'],['/about','À propos'],['/login','Créer un compte'],['/contact','Contact']],
     ft_col4: 'Légal',
@@ -655,39 +651,35 @@ const COPY = {
     iii_h2_a: 'Four modules,', iii_h2_em: 'one unified', iii_h2_b: 'vision',
     iii_ribbon: 'Patrimo Platform · 2026',
     iii_cards: [
-      { n:'01', tag:'Track',    title:'Complete wealth overview', body:'Real-time mapping of your assets. 8 wrappers, net worth, performance.',                        href:'/Patrimoine' },
+      { n:'01', tag:'Track',    title:'Complete wealth overview', body:'Real-time mapping of your assets. 8 wrappers, net worth, performance.',                        href:'/patrimoine' },
       { n:'02', tag:'Optimise', title:'Every fee matters',        body:'ETFs compared to best alternatives. Over 20 years, 0.18% less = thousands of euros recovered.', href:'/tools/optimiseur-etf' },
       { n:'03', tag:'Simulate', title:'18 tax simulators',        body:'Flat tax vs progressive, PEA vs CTO, wealth tax, estate, retirement. All in one place.',        href:'/tools' },
       { n:'04', tag:'Educate',  title:'Understand before acting', body:'Practical guides, interactive glossary, wrapper fact sheets. French financial education.',       href:'#enveloppes' },
     ],
     // IV
-    iv_rule_sub: 'Wrappers / 8 available',
-    iv_rule_tag: '8 live · 7 coming',
-    iv_label: '8 wrappers & modules',
+    iv_rule_sub: 'Wrappers / 15 modules',
+    iv_rule_tag: '15 modules',
+    iv_label: '15 wrappers & modules',
     iv_h2_a: 'Every tool,', iv_h2_em: 'mastered',
     iv_pills: ['All','Equities','Savings','Real Estate'],
     iv_labs: [
-      { n:'01', badge:'Tax-free',         title:'Savings accounts', body:'Livret A · LDDS · LEP. Regulated savings available at any time.',           img:'/livrets.jpg',      cat:'epargne',    href:'/Patrimoine/livrets' },
-      { n:'02', badge:'Exempt 5y+',       title:'PEA',              body:'The prime wrapper for French and European equity investment.',               img:'/PEA.jpg',           cat:'actions',    href:'/Patrimoine/actions-fonds' },
-      { n:'03', badge:'Allowance 8y',     title:'Life Insurance',   body:'Euro funds · Units. Optimised inheritance, softened tax after 8 years.',    img:'/AV.jpg',            cat:'epargne',    href:'/Patrimoine/actions-fonds' },
-      { n:'04', badge:'Flat Tax 30%',     title:'CTO',              body:'All asset classes, no ceiling. Absolute freedom.',                          img:'/CTO.jpg',           cat:'actions',    href:'/Patrimoine/actions-fonds' },
-      { n:'05', badge:'Tax deduction',    title:'PER',              body:'Deduct today at your marginal rate, capitalise tomorrow.',                  img:'/PER.jpg',           cat:'epargne',    href:'/Patrimoine/detail-enveloppe' },
-      { n:'06', badge:'Bank leverage',    title:'Real Estate',      body:'SCPI · Direct · LMNP. Recurring rental income.',                           img:'/immobilliers.jpg',  cat:'immobilier', href:'/Patrimoine/immobilier' },
-      { n:'07', badge:'Annual report',    title:'Crypto assets',    body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.',                  img:'/crypto.jpg',        cat:'actions',    href:'/Patrimoine/autres-actifs' },
-      { n:'08', badge:'Safety net',       title:'Cash',             body:'3 to 6 months of expenses. Opportunity reserve.',                          img:'/liquidites.jpg',    cat:'epargne',    href:'/Patrimoine/comptes-bancaires' },
+      { n:'01', badge:'Tax-free',     title:'Savings accounts', body:'Livret A · LDDS · LEP. Regulated savings available at any time.',           img:'/livrets.jpg',     cat:'epargne',   href:'/patrimoine/livrets' },
+      { n:'02', badge:'Exempt 5y+',   title:'PEA',              body:'The prime wrapper for French and European equity investment.',               img:'/PEA.jpg',          cat:'actions',   href:'/patrimoine/actions-fonds' },
+      { n:'03', badge:'Allowance 8y', title:'Life Insurance',   body:'Euro funds · Units. Optimised inheritance, softened tax after 8 years.',    img:'/AV.jpg',           cat:'epargne',   href:'/patrimoine/actions-fonds' },
+      { n:'04', badge:'Flat Tax 30%', title:'CTO',              body:'All asset classes, no ceiling. Absolute freedom.',                          img:'/CTO.jpg',          cat:'actions',   href:'/patrimoine/actions-fonds' },
+      { n:'05', badge:'Tax deduction',title:'PER',              body:'Deduct today at your marginal rate, capitalise tomorrow.',                  img:'/PER.jpg',          cat:'epargne',   href:'/patrimoine/detail-enveloppe' },
+      { n:'06', badge:'Bank leverage',title:'Real Estate',      body:'SCPI · Direct · LMNP. Recurring rental income.',                           img:'/immobilliers.jpg', cat:'immobilier',href:'/patrimoine/immobilier' },
+      { n:'07', badge:'Annual report',title:'Crypto assets',    body:'BTC · ETH. Flat tax 30% on disposals, annual reporting.',                  img:'/crypto.jpg',       cat:'actions',   href:'/patrimoine/autres-actifs' },
+      { n:'08', badge:'Safety net',   title:'Cash',             body:'3 to 6 months of expenses. Opportunity reserve.',                          img:'/liquidites.jpg',   cat:'epargne',   href:'/patrimoine/comptes-bancaires' },
+      { n:'09', badge:'Overview',     title:'Net Worth',        body:'Full wealth balance sheet: assets, liabilities, allocation and trend.',     cat:'',                  href:'/patrimoine/vue-ensemble' },
+      { n:'10', badge:'Liabilities',  title:'Loans',            body:'Outstanding capital, monthly payments and end date for each loan.',        cat:'immobilier',        href:'/patrimoine/emprunts' },
+      { n:'11', badge:'Tracker',      title:'My Portfolio',     body:'Real-time positions: price, change, weight and overall performance.',      cat:'actions',           href:'/patrimoine/mon-portefeuille' },
+      { n:'12', badge:'Target',       title:'My Goals',         body:'Set savings or investment goals and track your progress step by step.',    cat:'epargne',           href:'/patrimoine/mes-objectifs' },
+      { n:'13', badge:'Allocation',   title:'Rebalancing',      body:'Calculate the buys and sells needed to return to your target allocation.', cat:'actions',           href:'/patrimoine/reequilibrage' },
+      { n:'14', badge:'Tax report',   title:'Fiscal Report',    body:'Annual summary: dividends, coupons and realised capital gains.',           cat:'',                  href:'/patrimoine/rapport-fiscal' },
+      { n:'15', badge:'Score 0-100',  title:'Wealth Score',     body:'Global rating based on diversification, liquidity and risk of your wealth.',cat:'',                href:'/patrimoine/score-Patrimonial' },
     ],
-    iv_roadmap: [
-      { n:'09', q:'Q2 2026', badge:'Overview',    title:'Net Worth',      body:'Full wealth balance sheet: assets, liabilities, allocation and trend.', href:'/Patrimoine/vue-ensemble' },
-      { n:'10', q:'Q2 2026', badge:'Liabilities', title:'Loans',          body:'Outstanding capital, monthly payments and end date for each loan.', href:'/Patrimoine/emprunts' },
-      { n:'11', q:'Q2 2026', badge:'Tracker',     title:'My Portfolio',   body:'Real-time positions: price, change, weight and overall performance.', href:'/Patrimoine/mon-portefeuille' },
-      { n:'12', q:'Q3 2026', badge:'Target',      title:'My Goals',       body:'Set savings or investment goals and track your progress step by step.', href:'/Patrimoine/mes-objectifs' },
-      { n:'13', q:'Q3 2026', badge:'Allocation',  title:'Rebalancing',    body:'Calculate the buys and sells needed to return to your target allocation.', href:'/Patrimoine/reequilibrage' },
-      { n:'14', q:'Q3 2026', badge:'Tax report',  title:'Fiscal Report',  body:'Annual summary: dividends, coupons and realised capital gains.', href:'/Patrimoine/rapport-fiscal' },
-      { n:'15', q:'Q4 2026', badge:'Score 0-100', title:'Wealth Score',   body:'Global rating based on diversification, liquidity and risk of your wealth.', href:'/Patrimoine/score-Patrimonial' },
-    ],
-    iv_roadmap_show: 'View 2026 roadmap',
-    iv_roadmap_hide: 'Hide roadmap',
-    iv_foot: '8 modules · Available now',
+    iv_foot: '15 modules · Patrimo 2026',
     // V
     v_rule_sub: 'Method / Simulators',
     v_rule_tag: '4 steps',
@@ -765,9 +757,9 @@ const COPY = {
     // Footer
     ft_desc: 'Free wealth platform — 18 tax simulators, 15 modules and a wealth score across 5 pillars. Built for the French investor who wants to understand before acting.',
     ft_col1: 'Platform',
-    ft_col1_links: [['/Patrimoine/vue-ensemble','Wealth overview'],['/tools/optimiseur-etf','TER optimisation'],['/tools','18 simulators'],['/Patrimoine/score-Patrimonial','Wealth score']],
+    ft_col1_links: [['/patrimoine/vue-ensemble','Wealth overview'],['/tools/optimiseur-etf','TER optimisation'],['/tools','18 simulators'],['/patrimoine/score-Patrimonial','Wealth score']],
     ft_col2: 'Wrappers',
-    ft_col2_links: [['/Patrimoine/actions-fonds','PEA · Life ins. · PER'],['/Patrimoine/livrets','CTO · Savings'],['/Patrimoine/immobilier','SCPI · Real estate'],['/Patrimoine/autres-actifs','Crypto · Cash']],
+    ft_col2_links: [['/patrimoine/actions-fonds','PEA · Life ins. · PER'],['/patrimoine/livrets','CTO · Savings'],['/patrimoine/immobilier','SCPI · Real estate'],['/patrimoine/autres-actifs','Crypto · Cash']],
     ft_col3: 'Resources',
     ft_col3_links: [['/#methode','Our approach'],['/about','About'],['/login','Create account'],['/contact','Contact']],
     ft_col4: 'Legal',
@@ -830,7 +822,6 @@ export function LandingPage() {
   const [lang, setLang] = useState<Lang>('fr')
   const [envFilter, setEnvFilter] = useState<'all'|'actions'|'epargne'|'immobilier'>('all')
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
-  const [showRoadmap, setShowRoadmap] = useState(false)
   const t = COPY[lang]
 
   useEffect(() => {
@@ -1090,7 +1081,7 @@ export function LandingPage() {
             <div className="az-rule">
               <span className="az-roman">IV.</span>
               <span className="mg"><span>{t.iv_rule_sub}</span><span className="dm">·</span><span>{t.iv_rule_tag}</span></span>
-              <span>008 / 015</span>
+              <span>015 / 015</span>
             </div>
             <div className="az-lhead">
               <div data-az>
@@ -1118,7 +1109,7 @@ export function LandingPage() {
               {t.iv_labs.filter(lab => envFilter === 'all' || lab.cat === envFilter).map((lab) => (
                 <a key={lab.n} className="az-lab az-lab-vis" href={lab.href} style={{ textDecoration:'none', color:'inherit', display:'block' }}>
                   <div className="az-limg">
-                    <NextImage src={lab.img} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />
+                    {lab.img && <NextImage src={lab.img} alt={`ENV-${lab.n}`} fill sizes="(max-width:768px) 90vw,(max-width:1200px) 25vw,320px" quality={90} style={{ objectFit:'cover', objectPosition:'center' }} />}
                     <span className="az-badge">{lab.badge}</span>
                   </div>
                   <div className="nrow"><span>PTM-{lab.n}</span><span>2026</span></div>
@@ -1129,36 +1120,10 @@ export function LandingPage() {
               ))}
             </div>
 
-            {/* Roadmap toggle */}
-            <div className="az-roadmap-wrap">
-              <button
-                className={`az-roadmap-toggle${showRoadmap ? ' open' : ''}`}
-                onClick={() => setShowRoadmap(v => !v)}
-                aria-expanded={showRoadmap}
-              >
-                <svg viewBox="0 0 10 10" aria-hidden="true"><line x1="5" y1="1" x2="5" y2="9"/><line x1="1" y1="5" x2="9" y2="5"/></svg>
-                {showRoadmap ? t.iv_roadmap_hide : t.iv_roadmap_show}
-              </button>
-              <div className={`az-roadmap-collapse${showRoadmap ? ' open' : ''}`}>
-                <div className="az-roadmap-inner">
-                  <div className="az-roadmap-grid">
-                    {t.iv_roadmap.map(r => (
-                      <a key={r.n} className="az-ritem" href={r.href}>
-                        <div className="rq">{r.q}</div>
-                        <div className="rn"><span>PTM-{r.n}</span><span>{r.badge}</span></div>
-                        <h5>{r.title}</h5>
-                        <p>{r.body}</p>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div className="az-lfoot">
               <span className="az-meta">{t.iv_foot}</span>
               <div className="az-prog">
-                {Array.from({ length: 15 }, (_, i) => <span key={i} className={i < 8 ? 'on' : ''} />)}
+                {Array.from({ length: 15 }, (_, i) => <span key={i} className="on" />)}
               </div>
             </div>
           </div>
@@ -1217,7 +1182,7 @@ export function LandingPage() {
                 </h2>
                 <a className="az-dlink" href="/login">{t.vi_link}</a>
               </div>
-              <a className="az-wcard rot1" href="/Patrimoine/score-Patrimonial" data-az>
+              <a className="az-wcard rot1" href="/patrimoine/score-Patrimonial" data-az>
                 <div className="wlrow"><span className="wsl">{t.vi_card1_sl}</span><span className="widx">DIM-01</span></div>
                 <div className="wimg"><Plate label="SCORE-1" src="/planches/planche-07-score.svg" altText="Score patrimonial 72/100 — décomposition sur 7 piliers et 3 actions recommandées" /></div>
                 <h3>{t.vi_card1_h3}</h3>

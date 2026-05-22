@@ -1,104 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 68 680 414">
+<svg width="100%" viewBox="0 0 680 560" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Planche Patrimo — Plateforme · 24 simulateurs</title>
+<desc>Catalogue des 24 simulateurs Patrimo répartis en 5 catégories : Placements, Immobilier, Fiscalité, Budget, Outils avancés.</desc>
+<defs>
 <style>
 .mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
-.srf{font-family:Georgia,serif}
+.srf{font-family:Georgia,"Tiempos Headline",serif}
 .sans{font-family:-apple-system,system-ui,sans-serif}
 </style>
-<rect width="680" height="510" fill="#F5F0E8"/>
-
-<!-- MOD-01 SUIVRE -->
-<rect x="32" y="78" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="32" y="78" width="300" height="3" rx="2" fill="#B07820"/>
-<text x="44" y="98" fill="#7A7468" class="mono">MOD-01 — SUIVRE</text>
-<text x="44" y="114" fill="#B07820" class="sans" font-size="12" font-weight="600">Allocation patrimoniale</text>
-
-<text x="44" y="138" fill="#6B5E4E" class="mono">PEA</text>
-<rect x="100" y="128" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="100" y="128" width="76" height="7" rx="2" fill="#B07820"/>
-<text x="308" y="137" fill="#B07820" class="mono" text-anchor="end">38 %</text>
-
-<text x="44" y="157" fill="#6B5E4E" class="mono">AV</text>
-<rect x="100" y="147" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="100" y="147" width="48" height="7" rx="2" fill="#9A7840"/>
-<text x="308" y="156" fill="#9A7840" class="mono" text-anchor="end">24 %</text>
-
-<text x="44" y="176" fill="#6B5E4E" class="mono">SCPI</text>
-<rect x="100" y="166" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="100" y="166" width="40" height="7" rx="2" fill="#7A6040"/>
-<text x="308" y="175" fill="#7A6040" class="mono" text-anchor="end">20 %</text>
-
-<text x="44" y="195" fill="#6B5E4E" class="mono">CASH</text>
-<rect x="100" y="185" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="100" y="185" width="36" height="7" rx="2" fill="#C0B4A0" stroke="#B8AE9E" stroke-width="0.5"/>
-<text x="308" y="194" fill="#7A7468" class="mono" text-anchor="end">18 %</text>
-
-<text x="44" y="247" fill="#6B5E4E" class="mono">486 250 €  ·  4 ENVELOPPES  ·  SCORE 72</text>
-
-<!-- MOD-02 OPTIMISER -->
-<rect x="348" y="78" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="348" y="78" width="300" height="3" rx="2" fill="#9A7840"/>
-<text x="360" y="98" fill="#7A7468" class="mono">MOD-02 — OPTIMISER</text>
-<text x="360" y="114" fill="#B07820" class="sans" font-size="12" font-weight="600">Réduction des frais ETF</text>
-
-<text x="360" y="136" fill="#7A7468" class="mono">ETF ACTUEL</text>
-<text x="450" y="136" fill="#7A7468" class="mono">TER</text>
-<text x="508" y="136" fill="#7A7468" class="mono">ALTERNATIF</text>
-<line x1="360" y1="140" x2="636" y2="140" stroke="#C8BCAA" stroke-width="1"/>
-
-<text x="360" y="154" fill="#6B5E4E" class="mono">WORLD ETF A</text>
-<text x="450" y="154" fill="#B84030" class="mono">0,50 %</text>
-<text x="508" y="154" fill="#4A7C5C" class="mono">iShares Core 0,20 %</text>
-
-<text x="360" y="168" fill="#6B5E4E" class="mono">S&amp;P 500 B</text>
-<text x="450" y="168" fill="#B84030" class="mono">0,40 %</text>
-<text x="508" y="168" fill="#4A7C5C" class="mono">Amundi 0,15 %</text>
-
-<text x="360" y="182" fill="#6B5E4E" class="mono">EM MARKETS C</text>
-<text x="450" y="182" fill="#6B5E4E" class="mono">0,18 %</text>
-<text x="508" y="182" fill="#4A7C5C" class="mono">Xtrackers 0,18 %</text>
-
-<line x1="360" y1="196" x2="636" y2="196" stroke="#C8BCAA" stroke-width="1"/>
-<text x="360" y="218" fill="#6B5E4E" class="mono">ÉCONOMIE POTENTIELLE · 20 ANS</text>
-<text x="360" y="240" fill="#B07820" class="srf" font-size="24">8 240 €</text>
-
-<!-- MOD-03 SIMULER -->
-<rect x="32" y="274" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="32" y="274" width="300" height="3" rx="2" fill="#7A6040"/>
-<text x="44" y="294" fill="#7A7468" class="mono">MOD-03 — SIMULER</text>
-<text x="44" y="310" fill="#B07820" class="sans" font-size="12" font-weight="600">18 simulateurs disponibles</text>
-
-<text x="44" y="332" fill="#6B5E4E" class="mono">01  Flat Tax vs Barème TMI</text>
-<text x="44" y="348" fill="#6B5E4E" class="mono">02  PEA vs CTO vs AV</text>
-<text x="44" y="364" fill="#6B5E4E" class="mono">03  LMNP vs Location nue</text>
-<text x="44" y="380" fill="#6B5E4E" class="mono">04  Donation optimisée</text>
-<text x="44" y="396" fill="#6B5E4E" class="mono">05  Simulation retraite</text>
-<text x="44" y="440" fill="#7A7468" class="mono">+ 13 AUTRES SIMULATEURS</text>
-
-<!-- MOD-04 ÉDUQUER -->
-<rect x="348" y="274" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="348" y="274" width="300" height="3" rx="2" fill="#C0B4A0"/>
-<text x="360" y="294" fill="#7A7468" class="mono">MOD-04 — ÉDUQUER</text>
-<text x="360" y="310" fill="#B07820" class="sans" font-size="12" font-weight="600">Glossaire des enveloppes</text>
-
-<rect x="360" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#B07820" stroke-width="0.8"/>
-<text x="390" y="337" fill="#B07820" class="mono" text-anchor="middle">PEA</text>
-
-<rect x="428" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#9A7840" stroke-width="0.8"/>
-<text x="458" y="337" fill="#9A7840" class="mono" text-anchor="middle">AV</text>
-
-<rect x="496" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#7A6040" stroke-width="0.8"/>
-<text x="526" y="337" fill="#7A6040" class="mono" text-anchor="middle">PER</text>
-
-<rect x="360" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
-<text x="390" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">CTO</text>
-
-<rect x="428" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
-<text x="458" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">SCPI</text>
-
-<rect x="496" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
-<text x="526" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">LMNP</text>
-
-<text x="360" y="396" fill="#6B5E4E" class="mono">Fiscalité · Plafonds · Cas d'usage</text>
-<text x="360" y="410" fill="#6B5E4E" class="mono">Comparatifs · Stratégies</text>
-<text x="360" y="440" fill="#7A7468" class="mono">25+ TERMES · GLOSSAIRE INTÉGRÉ</text>
+</defs>
+<rect width="680" height="560" fill="#ece2cf"/>
+<!-- Frame top -->
+<line x1="32" y1="34" x2="648" y2="34" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="24" fill="#a3623a" class="mono" opacity="0.9">PATRIMO · PTM-03 · 2026</text>
+<text x="648" y="24" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">FIG. 03 — PLANCHE 003 / 008</text>
+<!-- Section label -->
+<text x="32" y="74" fill="#8a7f6c" class="mono">III. — PLATEFORME · 24 SIMULATEURS · 5 CATÉGORIES</text>
+<!-- Subtitle -->
+<text x="32" y="88" fill="#8a7f6c" class="srf" font-style="italic" font-size="11">17 sim. sauvegardées · 24 modules</text>
+<!-- Filter tabs -->
+<rect x="32" y="96" width="58" height="16" rx="3" fill="#c87a4d"/>
+<text x="61" y="108" fill="#f3ead9" class="mono" font-size="8.5" text-anchor="middle" font-weight="700">TOUS 24</text>
+<rect x="98" y="96" width="74" height="16" rx="3" fill="none" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="135" y="108" fill="#8a7f6c" class="mono" font-size="8.5" text-anchor="middle">PLACEMENTS 6</text>
+<rect x="180" y="96" width="70" height="16" rx="3" fill="none" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="215" y="108" fill="#8a7f6c" class="mono" font-size="8.5" text-anchor="middle">IMMOBILIER 3</text>
+<rect x="258" y="96" width="68" height="16" rx="3" fill="none" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="292" y="108" fill="#8a7f6c" class="mono" font-size="8.5" text-anchor="middle">FISCALITÉ 5</text>
+<rect x="334" y="96" width="56" height="16" rx="3" fill="none" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="362" y="108" fill="#8a7f6c" class="mono" font-size="8.5" text-anchor="middle">BUDGET 4</text>
+<rect x="398" y="96" width="62" height="16" rx="3" fill="none" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="429" y="108" fill="#8a7f6c" class="mono" font-size="8.5" text-anchor="middle">AVANCÉS 6</text>
+<!-- SECTION 1: PLACEMENTS -->
+<text x="36" y="132" fill="#564a3a" class="mono" font-weight="700">PLACEMENTS · 6 OUTILS</text>
+<line x1="36" y1="136" x2="644" y2="136" stroke="#e0d3b9" stroke-width="1"/>
+<!-- 3 mini-cards for placements -->
+<rect x="36" y="140" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="46" y="150" width="8" height="8" fill="#a8d5a8" rx="1"/>
+<text x="60" y="159" fill="#1a1612" class="sans" font-size="10">Intérêts composés</text>
+<rect x="244" y="140" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="254" y="150" width="8" height="8" fill="#88aacc" rx="1"/>
+<text x="268" y="159" fill="#1a1612" class="sans" font-size="10">DCA — Investissement régulier</text>
+<rect x="452" y="140" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="462" y="150" width="8" height="8" fill="#e89a7a" rx="1"/>
+<text x="476" y="159" fill="#1a1612" class="sans" font-size="10">Simulateur FI/RE</text>
+<!-- SECTION 2: IMMOBILIER -->
+<text x="36" y="192" fill="#564a3a" class="mono" font-weight="700">IMMOBILIER · 3 OUTILS</text>
+<line x1="36" y1="196" x2="644" y2="196" stroke="#e0d3b9" stroke-width="1"/>
+<rect x="36" y="200" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="46" y="210" width="8" height="8" fill="#e8a87a" rx="1"/>
+<text x="60" y="219" fill="#1a1612" class="sans" font-size="10">Acheter vs Louer</text>
+<rect x="244" y="200" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="254" y="210" width="8" height="8" fill="#a8c4e0" rx="1"/>
+<text x="268" y="219" fill="#1a1612" class="sans" font-size="10">Prêt immobilier</text>
+<rect x="452" y="200" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="462" y="210" width="8" height="8" fill="#9ec3a8" rx="1"/>
+<text x="476" y="219" fill="#1a1612" class="sans" font-size="10">Rentabilité locative</text>
+<!-- SECTION 3: FISCALITÉ & RETRAITE -->
+<text x="36" y="252" fill="#564a3a" class="mono" font-weight="700">FISCALITÉ &amp; RETRAITE · 5 OUTILS</text>
+<line x1="36" y1="256" x2="644" y2="256" stroke="#e0d3b9" stroke-width="1"/>
+<rect x="36" y="260" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="46" y="270" width="8" height="8" fill="#d4a5a5" rx="1"/>
+<text x="60" y="279" fill="#1a1612" class="sans" font-size="10">Flat Tax vs Barème</text>
+<rect x="244" y="260" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="254" y="270" width="8" height="8" fill="#b8a5d4" rx="1"/>
+<text x="268" y="279" fill="#1a1612" class="sans" font-size="10">PEA vs CTO vs AV</text>
+<rect x="452" y="260" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="462" y="270" width="8" height="8" fill="#e8b27a" rx="1"/>
+<text x="476" y="279" fill="#1a1612" class="sans" font-size="10">Retraite &amp; Succession</text>
+<!-- SECTION 4: BUDGET & ÉPARGNE -->
+<text x="36" y="312" fill="#564a3a" class="mono" font-weight="700">BUDGET &amp; ÉPARGNE · 4 OUTILS</text>
+<line x1="36" y1="316" x2="644" y2="316" stroke="#e0d3b9" stroke-width="1"/>
+<rect x="36" y="320" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="46" y="330" width="8" height="8" fill="#9bcc4a" rx="1"/>
+<text x="60" y="339" fill="#1a1612" class="sans" font-size="10">Taux d'épargne</text>
+<rect x="244" y="320" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="254" y="330" width="8" height="8" fill="#4ecdc4" rx="1"/>
+<text x="268" y="339" fill="#1a1612" class="sans" font-size="10">Budget 50/30/20</text>
+<rect x="452" y="320" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="462" y="330" width="8" height="8" fill="#d966a5" rx="1"/>
+<text x="476" y="339" fill="#1a1612" class="sans" font-size="10">Épargne urgence</text>
+<!-- SECTION 5: OUTILS AVANCÉS -->
+<text x="36" y="372" fill="#564a3a" class="mono" font-weight="700">OUTILS AVANCÉS · 6 OUTILS</text>
+<line x1="36" y1="376" x2="644" y2="376" stroke="#e0d3b9" stroke-width="1"/>
+<rect x="36" y="380" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="46" y="390" width="8" height="8" fill="#b594d4" rx="1"/>
+<text x="60" y="399" fill="#1a1612" class="sans" font-size="10">Impact des frais TER</text>
+<rect x="244" y="380" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="254" y="390" width="8" height="8" fill="#88aacc" rx="1"/>
+<text x="268" y="399" fill="#1a1612" class="sans" font-size="10">Inflation &amp; Pouvoir d'achat</text>
+<rect x="452" y="380" width="192" height="28" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="3"/>
+<rect x="462" y="390" width="8" height="8" fill="#5fa67a" rx="1"/>
+<text x="476" y="399" fill="#1a1612" class="sans" font-size="10">SCPI &amp; Viager</text>
+<!-- Frame bottom -->
+<line x1="32" y1="534" x2="648" y2="534" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="548" fill="#a3623a" class="mono" opacity="0.9">ACCÈS RAPIDES · MIS À JOUR EN TEMPS RÉEL</text>
+<text x="648" y="548" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">24 MODULES · 5 CATÉGORIES</text>
 </svg>

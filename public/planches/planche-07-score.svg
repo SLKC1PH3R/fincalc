@@ -1,73 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 68 680 394">
+<svg width="100%" viewBox="0 0 680 540" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Planche Patrimo — Score Patrimonial</title>
+<desc>Score patrimonial 83/100 — Très bien. Pyramide d'investissement à 5 niveaux : Sécurité 15/25, Immobilier 14/20, Long terme 25/25, Dynamique 20/20, Spéculatif 9/10.</desc>
+<defs>
 <style>
 .mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
-.srf{font-family:Georgia,serif}
+.srf{font-family:Georgia,"Tiempos Headline",serif}
 .sans{font-family:-apple-system,system-ui,sans-serif}
 </style>
-<rect width="680" height="490" fill="#F5F0E8"/>
-<text x="32" y="118" fill="#B07820" class="srf" font-size="72">72</text>
-<text x="128" y="100" fill="#DDD4C4" class="srf" font-size="48">/ 100</text>
-<text x="32" y="136" fill="#6B5E4E" class="mono">MARC D. · 38 ANS · PARIS · MAI 2026</text>
-<rect x="32" y="148" width="90" height="18" rx="2" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="0.5"/>
-<text x="40" y="161" fill="#B07820" class="mono">BON NIVEAU</text>
-<line x1="400" y1="130" x2="648" y2="130" stroke="#C8BCAA" stroke-width="1"/>
-<text x="404" y="116" fill="#7A7468" class="mono">0</text>
-<text x="444" y="116" fill="#7A7468" class="mono">25</text>
-<text x="492" y="116" fill="#7A7468" class="mono">50</text>
-<text x="540" y="116" fill="#7A7468" class="mono">75</text>
-<text x="588" y="116" fill="#7A7468" class="mono">100</text>
-<rect x="404" y="120" width="240" height="6" rx="2" fill="#DDD4C4"/>
-<rect x="404" y="120" width="173" height="6" rx="2" fill="#B07820" opacity="0.7"/>
-<line x1="577" y1="117" x2="577" y2="129" stroke="#B07820" stroke-width="1.5"/>
-<line x1="32" y1="178" x2="648" y2="178" stroke="#C8BCAA" stroke-width="1"/>
-<text x="32" y="196" fill="#6B5E4E" class="mono">7 PILIERS · DÉCOMPOSITION DU SCORE</text>
-<text x="32" y="218" fill="#4A4038" class="mono">01  SÉCURITÉ DE BASE</text>
-<rect x="220" y="208" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="220" y="208" width="176" height="7" rx="2" fill="#B07820"/>
-<text x="428" y="217" fill="#B07820" class="mono">22 / 25</text>
-<text x="530" y="217" fill="#4A7C5C" class="mono">6,2 MOIS ÉPARGNE</text>
-<text x="32" y="237" fill="#4A4038" class="mono">02  IMMOBILIER</text>
-<rect x="220" y="227" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="220" y="227" width="140" height="7" rx="2" fill="#9A7840"/>
-<text x="428" y="236" fill="#9A7840" class="mono">14 / 20</text>
-<text x="530" y="236" fill="#6B5E4E" class="mono">LTV 24 %</text>
-<text x="32" y="256" fill="#4A4038" class="mono">03  ENVELOPPES LONG TERME</text>
-<rect x="220" y="246" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="220" y="246" width="144" height="7" rx="2" fill="#9A7840"/>
-<text x="428" y="255" fill="#9A7840" class="mono">18 / 25</text>
-<text x="530" y="255" fill="#6B5E4E" class="mono">AV + PEA OK</text>
-<text x="32" y="275" fill="#4A4038" class="mono">04  DIVERSIFICATION</text>
-<rect x="220" y="265" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="220" y="265" width="100" height="7" rx="2" fill="#7A6040"/>
-<text x="428" y="274" fill="#7A6040" class="mono">10 / 20</text>
-<text x="530" y="274" fill="#B84030" class="mono">À AMÉLIORER</text>
-<text x="32" y="294" fill="#4A4038" class="mono">05  MAÎTRISE DU RISQUE</text>
-<rect x="220" y="284" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<rect x="220" y="284" width="160" height="7" rx="2" fill="#4A7C5C"/>
-<text x="428" y="293" fill="#4A7C5C" class="mono">08 / 10</text>
-<text x="530" y="293" fill="#4A7C5C" class="mono">CRYPTO 0 %</text>
-<text x="32" y="313" fill="#C0B4A0" class="mono">06  PRÉPARATION RETRAITE</text>
-<rect x="220" y="303" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<text x="428" y="312" fill="#C0B4A0" class="mono">— / —</text>
-<text x="530" y="312" fill="#C0B4A0" class="mono">À VENIR Q3</text>
-<text x="32" y="332" fill="#C0B4A0" class="mono">07  OPTIMISATION FISCALE</text>
-<rect x="220" y="322" width="200" height="7" rx="2" fill="#DDD4C4"/>
-<text x="428" y="331" fill="#C0B4A0" class="mono">— / —</text>
-<text x="530" y="331" fill="#C0B4A0" class="mono">À VENIR Q3</text>
-<line x1="32" y1="348" x2="648" y2="348" stroke="#C8BCAA" stroke-width="1"/>
-<text x="32" y="366" fill="#6B5E4E" class="mono">3 ACTIONS RECOMMANDÉES POUR PROGRESSER</text>
-<rect x="32" y="374" width="190" height="56" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<text x="42" y="390" fill="#9A7840" class="mono">+10 PTS POTENTIELS</text>
-<text x="42" y="404" fill="#4A4038" class="sans" font-size="10" font-weight="600">Déclarer une AV</text>
-<text x="42" y="418" fill="#7A7468" class="mono">Enveloppe manquante</text>
-<rect x="230" y="374" width="190" height="56" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<text x="240" y="390" fill="#7A6040" class="mono">+5 PTS POTENTIELS</text>
-<text x="240" y="404" fill="#4A4038" class="sans" font-size="10" font-weight="600">Diversifier les enveloppes</text>
-<text x="240" y="418" fill="#7A7468" class="mono">CTO, PER à explorer</text>
-<rect x="428" y="374" width="220" height="56" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<text x="438" y="390" fill="#7A6040" class="mono">+3 PTS POTENTIELS</text>
-<text x="438" y="404" fill="#4A4038" class="sans" font-size="10" font-weight="600">Alimenter l'épargne</text>
-<text x="438" y="418" fill="#7A7468" class="mono">Objectif 6 mois dépenses</text>
-<text x="32" y="448" fill="#6B5E4E" class="mono">SCORE POTENTIEL APRÈS ACTIONS</text>
-<text x="648" y="448" fill="#B07820" class="mono" text-anchor="end">72 → 90 / 100</text>
+</defs>
+<rect width="680" height="540" fill="#ece2cf"/>
+<!-- Frame top -->
+<line x1="32" y1="34" x2="648" y2="34" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="24" fill="#a3623a" class="mono" opacity="0.9">PATRIMO · PTM-07 · 2026</text>
+<text x="648" y="24" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">FIG. 07 — PLANCHE 007 / 008</text>
+<!-- Section label -->
+<text x="32" y="74" fill="#8a7f6c" class="mono">VI. — SCORE PATRIMONIAL</text>
+<!-- Score headline -->
+<text x="32" y="110" fill="#1a1612" class="srf" font-size="32">Score Patrimonial Patrimo</text>
+<text x="32" y="130" fill="#564a3a" class="sans" font-size="11">Calculé à partir de votre tableau patrimonial selon la pyramide d'investissement à 5 niveaux.</text>
+<!-- Score card (global) -->
+<rect x="32" y="144" width="616" height="90" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="4"/>
+<!-- Score ring (cx=96, cy=189, r=32, sw=9) circumference=201.1, 83%=167 -->
+<circle cx="96" cy="189" r="32" fill="none" stroke="#dccfb3" stroke-width="9"/>
+<circle cx="96" cy="189" r="32" fill="none" stroke="#5ba87a" stroke-width="9" stroke-dasharray="167 201.1" transform="rotate(-90 96 189)"/>
+<text x="96" y="194" fill="#5ba87a" class="srf" font-size="20" text-anchor="middle" font-weight="bold">83</text>
+<!-- Score description (right of ring) -->
+<text x="148" y="172" fill="#5ba87a" class="mono">TRÈS BIEN</text>
+<rect x="148" y="178" width="70" height="14" rx="7" fill="#5ba87a" opacity="0.15"/>
+<text x="183" y="189" fill="#5ba87a" class="mono" text-anchor="middle" font-size="8.5">83 / 100</text>
+<text x="236" y="172" fill="#1a1612" class="srf" font-size="18">Patrimoine bien structuré — bravo !</text>
+<text x="236" y="192" fill="#564a3a" class="sans" font-size="11">Score calculé sur 5 piliers · 15 enveloppes analysées</text>
+<text x="636" y="172" fill="#c87a4d" class="mono" text-anchor="end">MAI 2026</text>
+<!-- Pyramid card -->
+<rect x="32" y="250" width="616" height="244" fill="#f3ead9" stroke="#d4c7b0" stroke-width="0.5" rx="4"/>
+<circle cx="56" cy="276" r="3" fill="#c87a4d"/>
+<text x="68" y="280" fill="#8a7f6c" class="mono">PYRAMIDE D'INVESTISSEMENT</text>
+<text x="636" y="280" fill="#c87a4d" class="mono" text-anchor="end">EN SAVOIR PLUS →</text>
+<text x="52" y="298" fill="#8a7f6c" class="srf" font-style="italic" font-size="11">5 niveaux · du plus risqué (sommet) au plus sûr (base)</text>
+<!-- Level bars — width grows from top (level 5) to bottom (level 1) -->
+<!-- Level 5: Spéculatif (x center=340, w=280) -->
+<text x="50" y="325" fill="#8a7f6c" class="mono">5</text>
+<rect x="200" y="312" width="280" height="26" fill="#f4c5c2" rx="12"/>
+<text x="340" y="330" fill="#1a1612" class="sans" font-size="10" text-anchor="middle" font-weight="600">Spéculatif · Crypto, alternatif · 9/10</text>
+<!-- Level 4: Dynamique (w=360) -->
+<text x="50" y="358" fill="#8a7f6c" class="mono">4</text>
+<rect x="160" y="345" width="360" height="26" fill="#f0c8a0" rx="12"/>
+<text x="340" y="363" fill="#1a1612" class="sans" font-size="10" text-anchor="middle" font-weight="600">Dynamique · PEA, CTO, Locatif · 20/20</text>
+<!-- Level 3: Long terme (w=440) -->
+<text x="50" y="391" fill="#8a7f6c" class="mono">3</text>
+<rect x="120" y="378" width="440" height="26" fill="#e8d4a8" rx="12"/>
+<text x="340" y="396" fill="#1a1612" class="sans" font-size="10" text-anchor="middle" font-weight="600">Long terme · AV, PEA, PER · 25/25</text>
+<!-- Level 2: Immobilier (w=520) -->
+<text x="50" y="424" fill="#8a7f6c" class="mono">2</text>
+<rect x="80" y="411" width="520" height="26" fill="#c8e8c8" rx="12"/>
+<text x="340" y="429" fill="#1a1612" class="sans" font-size="10" text-anchor="middle" font-weight="600">Immobilier · Résidence principale · 14/20</text>
+<!-- Level 1: Sécurité (w=600) -->
+<text x="50" y="457" fill="#8a7f6c" class="mono">1</text>
+<rect x="40" y="444" width="600" height="26" fill="#b8d4e8" rx="12"/>
+<text x="340" y="462" fill="#1a1612" class="sans" font-size="10" text-anchor="middle" font-weight="600">Sécurité · Livrets, épargne précaution · 15/25</text>
+<!-- Frame bottom -->
+<line x1="32" y1="514" x2="648" y2="514" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="528" fill="#a3623a" class="mono" opacity="0.9">MÉTHODE PATRIMO · 5 PILIERS</text>
+<text x="648" y="528" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">MISE À JOUR : CHAQUE CONSULTATION</text>
 </svg>

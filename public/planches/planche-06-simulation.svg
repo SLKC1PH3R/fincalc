@@ -1,92 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 68 680 404">
+<svg width="100%" viewBox="0 0 680 520" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Planche Patrimo — Simulation fiscale Flat Tax vs Barème</title>
+<desc>Comparateur fiscal : Flat Tax 30 % (optimal, 3 000 €) vs Barème TMI 30 % (4 720 €). Économie de 1 720 € sur une plus-value de 10 000 €.</desc>
+<defs>
 <style>
 .mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
-.srf{font-family:Georgia,serif}
+.srf{font-family:Georgia,"Tiempos Headline",serif}
 .sans{font-family:-apple-system,system-ui,sans-serif}
 </style>
-<rect width="680" height="500" fill="#F5F0E8"/>
-
-<!-- Simulation context -->
-<text x="32" y="88" fill="#6B5E4E" class="mono">PLUS-VALUE RÉALISÉE : 10 000 € · TMI 30 % · MARC D. · CESSION PEA</text>
-
-<!-- LEFT: Flat Tax (winner, gold border) -->
-<rect x="32" y="102" width="288" height="250" rx="5" fill="#EDE8DF" stroke="#B07820" stroke-width="1.5"/>
-<rect x="32" y="102" width="288" height="4" rx="3" fill="#B07820"/>
-
-<!-- Winner badge -->
-<rect x="252" y="110" width="60" height="18" rx="9" fill="#B07820"/>
-<text x="282" y="123" fill="#F5F0E8" class="mono" text-anchor="middle" font-weight="700">OPTIMAL</text>
-
-<text x="44" y="124" fill="#B07820" class="mono">FLAT TAX — PRÉLÈVEMENT FORFAITAIRE</text>
-<text x="44" y="140" fill="#7A7468" class="mono">Taux unique : 30 % (IR + PS)</text>
-
-<line x1="44" y1="152" x2="308" y2="152" stroke="#C8BCAA" stroke-width="1"/>
-
-<text x="44" y="172" fill="#6B5E4E" class="mono">IR (12,8 %)</text>
-<text x="308" y="172" fill="#6B5E4E" class="mono" text-anchor="end">1 280 €</text>
-<line x1="44" y1="178" x2="308" y2="178" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="44" y="196" fill="#6B5E4E" class="mono">Prélèvements sociaux (17,2 %)</text>
-<text x="308" y="196" fill="#6B5E4E" class="mono" text-anchor="end">1 720 €</text>
-<line x1="44" y1="202" x2="308" y2="202" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="44" y="220" fill="#6B5E4E" class="mono">Abattement 40 % (dividendes)</text>
-<text x="308" y="220" fill="#4A7C5C" class="mono" text-anchor="end">— s/o</text>
-<line x1="44" y1="226" x2="308" y2="226" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="44" y="244" fill="#6B5E4E" class="mono">Déductibilité CSG (6,8 %)</text>
-<text x="308" y="244" fill="#4A7C5C" class="mono" text-anchor="end">— non</text>
-
-<line x1="44" y1="256" x2="308" y2="256" stroke="#B07820" stroke-width="0.5" opacity="0.5"/>
-
-<text x="44" y="274" fill="#B07820" class="mono">TOTAL IMPÔT</text>
-<text x="308" y="274" fill="#B07820" class="srf" font-size="22" text-anchor="end">3 000 €</text>
-
-<rect x="44" y="290" width="264" height="12" rx="2" fill="#DDD4C4"/>
-<rect x="44" y="290" width="167" height="12" rx="2" fill="#B07820" opacity="0.7"/>
-<text x="44" y="318" fill="#4A7C5C" class="mono">TAUX EFFECTIF : 30,0 %</text>
-<text x="44" y="334" fill="#4A7C5C" class="mono">NET ENCAISSÉ : 7 000 €</text>
-
-<!-- RIGHT: Barème TMI -->
-<rect x="360" y="102" width="288" height="250" rx="5" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="360" y="102" width="288" height="4" rx="3" fill="#C0B4A0"/>
-
-<text x="372" y="124" fill="#6B5E4E" class="mono">BARÈME PROGRESSIF — TMI 30 %</text>
-<text x="372" y="140" fill="#7A7468" class="mono">Option au barème de l'IR</text>
-
-<line x1="372" y1="152" x2="636" y2="152" stroke="#C8BCAA" stroke-width="1"/>
-
-<text x="372" y="172" fill="#6B5E4E" class="mono">IR TMI (30 %)</text>
-<text x="636" y="172" fill="#B84030" class="mono" text-anchor="end">3 000 €</text>
-<line x1="372" y1="178" x2="636" y2="178" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="372" y="196" fill="#6B5E4E" class="mono">Prélèvements sociaux (17,2 %)</text>
-<text x="636" y="196" fill="#6B5E4E" class="mono" text-anchor="end">1 720 €</text>
-<line x1="372" y1="202" x2="636" y2="202" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="372" y="220" fill="#6B5E4E" class="mono">Abattement 40 % (dividendes)</text>
-<text x="636" y="220" fill="#4A7C5C" class="mono" text-anchor="end">applicable</text>
-<line x1="372" y1="226" x2="636" y2="226" stroke="#DDD4C4" stroke-width="0.5"/>
-
-<text x="372" y="244" fill="#6B5E4E" class="mono">Déductibilité CSG (6,8 %)</text>
-<text x="636" y="244" fill="#4A7C5C" class="mono" text-anchor="end">possible</text>
-
-<line x1="372" y1="256" x2="636" y2="256" stroke="#C8BCAA" stroke-width="0.5"/>
-
-<text x="372" y="274" fill="#6B5E4E" class="mono">TOTAL IMPÔT</text>
-<text x="636" y="274" fill="#B84030" class="srf" font-size="22" text-anchor="end">4 720 €</text>
-
-<rect x="372" y="290" width="264" height="12" rx="2" fill="#DDD4C4"/>
-<rect x="372" y="290" width="264" height="12" rx="2" fill="#B84030" opacity="0.3"/>
-<text x="372" y="318" fill="#B84030" class="mono">TAUX EFFECTIF : 47,2 %</text>
-<text x="372" y="334" fill="#B84030" class="mono">NET ENCAISSÉ : 5 280 €</text>
-
+</defs>
+<rect width="680" height="520" fill="#ece2cf"/>
+<!-- Frame top -->
+<line x1="32" y1="34" x2="648" y2="34" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="24" fill="#a3623a" class="mono" opacity="0.9">PATRIMO · PTM-06 · 2026</text>
+<text x="648" y="24" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">FIG. 06 — PLANCHE 006 / 008</text>
+<!-- Section label -->
+<text x="32" y="74" fill="#8a7f6c" class="mono">V. — MÉTHODE · ÉTAPE iii · SIMULATION FISCALE</text>
+<!-- Context row -->
+<text x="32" y="88" fill="#8a7f6c" class="mono">PLUS-VALUE 10 000 € · TMI 30 % · CESSION PEA</text>
+<!-- LEFT: Flat Tax (winner, blue-violet border) -->
+<rect x="32" y="96" width="296" height="260" fill="#f3ead9" stroke="#6b7fc4" stroke-width="1.5" rx="4"/>
+<rect x="32" y="96" width="296" height="4" fill="#6b7fc4" rx="2"/>
+<!-- OPTIMAL badge -->
+<rect x="264" y="104" width="56" height="16" rx="8" fill="#6b7fc4"/>
+<text x="292" y="116" fill="#f0eef7" class="mono" text-anchor="middle" font-size="8.5" font-weight="700">OPTIMAL</text>
+<text x="44" y="118" fill="#6b7fc4" class="mono" font-weight="700">FLAT TAX — PRÉLÈVEMENT FORFAITAIRE</text>
+<text x="44" y="134" fill="#8a7f6c" class="mono">Taux unique : 30 % (IR + PS)</text>
+<line x1="44" y1="142" x2="316" y2="142" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="44" y="158" fill="#564a3a" class="mono">IR (12,8 %)</text>
+<text x="316" y="158" fill="#564a3a" class="mono" text-anchor="end">1 280 €</text>
+<line x1="44" y1="163" x2="316" y2="163" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="44" y="179" fill="#564a3a" class="mono">Prélèvements sociaux (17,2 %)</text>
+<text x="316" y="179" fill="#564a3a" class="mono" text-anchor="end">1 720 €</text>
+<line x1="44" y1="184" x2="316" y2="184" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="44" y="200" fill="#564a3a" class="mono">Abattement 40 % (dividendes)</text>
+<text x="316" y="200" fill="#5ba87a" class="mono" text-anchor="end">— s/o</text>
+<line x1="44" y1="205" x2="316" y2="205" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="44" y="221" fill="#564a3a" class="mono">Déductibilité CSG (6,8 %)</text>
+<text x="316" y="221" fill="#5ba87a" class="mono" text-anchor="end">— non</text>
+<line x1="44" y1="230" x2="316" y2="230" stroke="#6b7fc4" stroke-width="0.5" opacity="0.5"/>
+<text x="44" y="248" fill="#6b7fc4" class="mono" font-weight="700">TOTAL IMPÔT</text>
+<text x="316" y="248" fill="#6b7fc4" class="srf" font-size="24" text-anchor="end">3 000 €</text>
+<rect x="44" y="264" width="264" height="10" rx="2" fill="#e0d3b9"/>
+<rect x="44" y="264" width="168" height="10" rx="2" fill="#6b7fc4" opacity="0.6"/>
+<text x="44" y="290" fill="#5ba87a" class="mono">TAUX EFFECTIF : 30,0 %</text>
+<text x="44" y="306" fill="#5ba87a" class="mono">NET ENCAISSÉ : 7 000 €</text>
+<!-- RIGHT: Barème TMI (loser) -->
+<rect x="352" y="96" width="296" height="260" fill="#f3ead9" stroke="#d4c7b0" stroke-width="1" rx="4"/>
+<rect x="352" y="96" width="296" height="4" fill="#d4895a" rx="2"/>
+<text x="364" y="118" fill="#564a3a" class="mono">BARÈME PROGRESSIF — TMI 30 %</text>
+<text x="364" y="134" fill="#8a7f6c" class="mono">Option au barème de l'IR</text>
+<line x1="364" y1="142" x2="636" y2="142" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="364" y="158" fill="#564a3a" class="mono">IR TMI (30 %)</text>
+<text x="636" y="158" fill="#8a3a3a" class="mono" text-anchor="end">3 000 €</text>
+<line x1="364" y1="163" x2="636" y2="163" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="364" y="179" fill="#564a3a" class="mono">Prélèvements sociaux (17,2 %)</text>
+<text x="636" y="179" fill="#564a3a" class="mono" text-anchor="end">1 720 €</text>
+<line x1="364" y1="184" x2="636" y2="184" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="364" y="200" fill="#564a3a" class="mono">Abattement 40 % (dividendes)</text>
+<text x="636" y="200" fill="#5ba87a" class="mono" text-anchor="end">applicable</text>
+<line x1="364" y1="205" x2="636" y2="205" stroke="#e0d3b9" stroke-width="0.5"/>
+<text x="364" y="221" fill="#564a3a" class="mono">Déductibilité CSG (6,8 %)</text>
+<text x="636" y="221" fill="#5ba87a" class="mono" text-anchor="end">possible</text>
+<line x1="364" y1="230" x2="636" y2="230" stroke="#d4c7b0" stroke-width="0.5"/>
+<text x="364" y="248" fill="#564a3a" class="mono">TOTAL IMPÔT</text>
+<text x="636" y="248" fill="#8a3a3a" class="srf" font-size="24" text-anchor="end">4 720 €</text>
+<rect x="364" y="264" width="264" height="10" rx="2" fill="#e0d3b9"/>
+<rect x="364" y="264" width="264" height="10" rx="2" fill="#d4895a" opacity="0.3"/>
+<text x="364" y="290" fill="#8a3a3a" class="mono">TAUX EFFECTIF : 47,2 %</text>
+<text x="364" y="306" fill="#8a3a3a" class="mono">NET ENCAISSÉ : 5 280 €</text>
 <!-- Savings banner -->
-<rect x="32" y="368" width="616" height="52" rx="4" fill="#EDE8DF" stroke="#B07820" stroke-width="0.8" opacity="0.9"/>
-<text x="340" y="390" fill="#7A7468" class="mono" text-anchor="middle">ÉCONOMIE RÉALISÉE EN OPTANT POUR LA FLAT TAX</text>
-<text x="340" y="412" fill="#B07820" class="srf" font-size="28" text-anchor="middle">1 720 €</text>
-
+<rect x="32" y="372" width="616" height="60" fill="#f3ead9" stroke="#c87a4d" stroke-width="0.8" rx="4"/>
+<text x="340" y="396" fill="#8a7f6c" class="mono" text-anchor="middle">ÉCONOMIE RÉALISÉE EN OPTANT POUR LA FLAT TAX</text>
+<text x="340" y="422" fill="#c87a4d" class="srf" font-size="30" text-anchor="middle">1 720 €</text>
 <!-- Footer info -->
-<text x="32" y="444" fill="#7A7468" class="mono">1 SIMULATION / 18 DISPONIBLES</text>
-<text x="648" y="444" fill="#7A7468" class="mono" text-anchor="end">MARC D. · TMI 30 % · PLUS-VALUE 10 000 €</text>
+<text x="32" y="452" fill="#8a7f6c" class="mono">1 SIMULATION / 24 DISPONIBLES</text>
+<text x="648" y="452" fill="#8a7f6c" class="mono" text-anchor="end">TMI 30 % · PLUS-VALUE 10 000 €</text>
+<!-- Frame bottom -->
+<line x1="32" y1="494" x2="648" y2="494" stroke="#c87a4d" stroke-width="0.5" opacity="0.7"/>
+<text x="32" y="508" fill="#a3623a" class="mono" opacity="0.9">MÉTHODE PATRIMO · ÉTAPE iii</text>
+<text x="648" y="508" fill="#a3623a" class="mono" text-anchor="end" opacity="0.9">SIMULATEURS FISCAUX · MAI 2026</text>
 </svg>

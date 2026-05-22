@@ -1,72 +1,114 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 68 680 372">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 725 757" width="725" height="757">
 <style>
-.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
+.mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10.5px;letter-spacing:0.1em}
 .srf{font-family:Georgia,serif}
 .sans{font-family:-apple-system,system-ui,sans-serif}
 </style>
-<rect width="680" height="470" fill="#F5F0E8"/>
+<rect width="725" height="757" fill="#F5F0E8"/>
 
 <!-- Wealth number -->
-<text x="32" y="108" fill="#B07820" class="srf" font-size="44">486 250 €</text>
-<text x="32" y="126" fill="#6B5E4E" class="mono">MARC D. · 38 ANS · PARIS · TMI 30 %</text>
+<text x="36" y="72" fill="#B07820" class="srf" font-size="52">486 250 €</text>
+<text x="36" y="94" fill="#6B5E4E" class="mono">MARC D. · 38 ANS · PARIS · TMI 30 %</text>
 
 <!-- Performance badges -->
-<rect x="32" y="136" width="118" height="18" rx="2" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="0.5"/>
-<text x="40" y="149" fill="#4A7C5C" class="mono">▲ +2,6 % / 30 J</text>
-<rect x="158" y="136" width="148" height="18" rx="2" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="0.5"/>
-<text x="166" y="149" fill="#4A7C5C" class="mono">▲ +12 480 € / 12 M</text>
+<rect x="36" y="106" width="130" height="20" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="0.75"/>
+<text x="44" y="120" fill="#4A7C5C" class="mono">▲ +2,6 % / 30 J</text>
+<rect x="174" y="106" width="160" height="20" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="0.75"/>
+<text x="182" y="120" fill="#4A7C5C" class="mono">▲ +12 480 € / 12 M</text>
 
-<!-- 4 envelope cards -->
-<rect x="32" y="165" width="158" height="64" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="32" y="165" width="158" height="3" rx="2" fill="#B07820" opacity="0.7"/>
-<text x="42" y="181" fill="#7A7468" class="mono">ENV-01 · PEA</text>
-<text x="42" y="202" fill="#4A4038" class="srf" font-size="19">184 200 €</text>
-<text x="42" y="220" fill="#4A7C5C" class="mono">38 % — ACTIONS EU</text>
+<!-- ENV cards row 1 -->
+<rect x="36" y="138" width="192" height="76" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="36" y="138" width="192" height="3" rx="2" fill="#B07820" opacity="0.8"/>
+<text x="48" y="156" fill="#7A7468" class="mono">ENV-01 · PEA</text>
+<text x="48" y="182" fill="#3A3028" class="srf" font-size="22">184 200 €</text>
+<text x="48" y="203" fill="#4A7C5C" class="mono">38 % — ACTIONS EU</text>
 
-<rect x="198" y="165" width="158" height="64" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="198" y="165" width="158" height="3" rx="2" fill="#9A7840" opacity="0.8"/>
-<text x="208" y="181" fill="#7A7468" class="mono">ENV-02 · AV</text>
-<text x="208" y="202" fill="#4A4038" class="srf" font-size="19">116 700 €</text>
-<text x="208" y="220" fill="#4A7C5C" class="mono">24 % — MULTI-SUPPORT</text>
+<rect x="238" y="138" width="192" height="76" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="238" y="138" width="192" height="3" rx="2" fill="#9A7840" opacity="0.9"/>
+<text x="250" y="156" fill="#7A7468" class="mono">ENV-02 · AV</text>
+<text x="250" y="182" fill="#3A3028" class="srf" font-size="22">116 700 €</text>
+<text x="250" y="203" fill="#4A7C5C" class="mono">24 % — MULTI-SUPPORT</text>
 
-<rect x="32" y="237" width="158" height="64" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="32" y="237" width="158" height="3" rx="2" fill="#7A6040" opacity="0.9"/>
-<text x="42" y="253" fill="#7A7468" class="mono">ENV-03 · SCPI</text>
-<text x="42" y="274" fill="#4A4038" class="srf" font-size="19">97 250 €</text>
-<text x="42" y="292" fill="#6B5E4E" class="mono">20 % — IMMO PAPIER</text>
+<!-- ENV cards row 2 -->
+<rect x="36" y="224" width="192" height="76" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="36" y="224" width="192" height="3" rx="2" fill="#7A6040" opacity="0.9"/>
+<text x="48" y="242" fill="#7A7468" class="mono">ENV-03 · SCPI</text>
+<text x="48" y="268" fill="#3A3028" class="srf" font-size="22">97 250 €</text>
+<text x="48" y="289" fill="#6B5E4E" class="mono">20 % — IMMO PAPIER</text>
 
-<rect x="198" y="237" width="158" height="64" rx="3" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
-<rect x="198" y="237" width="158" height="3" rx="2" fill="#C0B4A0"/>
-<text x="208" y="253" fill="#7A7468" class="mono">ENV-04 · CASH</text>
-<text x="208" y="274" fill="#4A4038" class="srf" font-size="19">88 100 €</text>
-<text x="208" y="292" fill="#6B5E4E" class="mono">18 % — LIVRET A 3 %</text>
+<rect x="238" y="224" width="192" height="76" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="238" y="224" width="192" height="3" rx="2" fill="#C0B4A0"/>
+<text x="250" y="242" fill="#7A7468" class="mono">ENV-04 · CASH</text>
+<text x="250" y="268" fill="#3A3028" class="srf" font-size="22">88 100 €</text>
+<text x="250" y="289" fill="#6B5E4E" class="mono">18 % — LIVRET A 3 %</text>
 
-<!-- Donut chart (cx=528, cy=225, r=58, sw=18) circ=364.42 -->
-<circle cx="528" cy="225" r="58" fill="none" stroke="#DDD4C4" stroke-width="18"/>
-<circle cx="528" cy="225" r="58" fill="none" stroke="#B07820" stroke-width="18" stroke-dasharray="136 228" transform="rotate(-90 528 225)"/>
-<circle cx="528" cy="225" r="58" fill="none" stroke="#9A7840" stroke-width="18" stroke-dasharray="85 279" transform="rotate(46.8 528 225)"/>
-<circle cx="528" cy="225" r="58" fill="none" stroke="#7A6040" stroke-width="18" stroke-dasharray="71 293" transform="rotate(133.2 528 225)"/>
-<circle cx="528" cy="225" r="58" fill="none" stroke="#C0B4A0" stroke-width="18" stroke-dasharray="63 301" transform="rotate(205.2 528 225)"/>
-<text x="528" y="220" fill="#B07820" class="srf" font-size="20" text-anchor="middle">72</text>
-<text x="528" y="234" fill="#7A7468" class="mono" font-size="8" text-anchor="middle">SCORE</text>
+<!-- Donut chart (cx=590, cy=230, r=72, sw=20) circ=452 -->
+<circle cx="590" cy="230" r="72" fill="none" stroke="#DDD4C4" stroke-width="20"/>
+<circle cx="590" cy="230" r="72" fill="none" stroke="#B07820" stroke-width="20" stroke-dasharray="172 280" transform="rotate(-90 590 230)"/>
+<circle cx="590" cy="230" r="72" fill="none" stroke="#9A7840" stroke-width="20" stroke-dasharray="108 344" transform="rotate(46.8 590 230)"/>
+<circle cx="590" cy="230" r="72" fill="none" stroke="#7A6040" stroke-width="20" stroke-dasharray="90 362" transform="rotate(133.2 590 230)"/>
+<circle cx="590" cy="230" r="72" fill="none" stroke="#C0B4A0" stroke-width="20" stroke-dasharray="80 372" transform="rotate(205.2 590 230)"/>
+<text x="590" y="224" fill="#B07820" class="srf" font-size="26" text-anchor="middle" font-weight="bold">72</text>
+<text x="590" y="242" fill="#7A7468" class="mono" font-size="9" text-anchor="middle">SCORE</text>
 
 <!-- Donut legend -->
-<rect x="444" y="300" width="8" height="8" fill="#B07820"/>
-<text x="458" y="308" fill="#6B5E4E" class="mono">PEA 38 %</text>
-<rect x="444" y="316" width="8" height="8" fill="#9A7840"/>
-<text x="458" y="324" fill="#6B5E4E" class="mono">AV 24 %</text>
-<rect x="544" y="300" width="8" height="8" fill="#7A6040"/>
-<text x="558" y="308" fill="#6B5E4E" class="mono">SCPI 20 %</text>
-<rect x="544" y="316" width="8" height="8" fill="#C0B4A0"/>
-<text x="558" y="324" fill="#6B5E4E" class="mono">CASH 18 %</text>
+<rect x="450" y="320" width="9" height="9" fill="#B07820"/>
+<text x="464" y="329" fill="#6B5E4E" class="mono">PEA 38 %</text>
+<rect x="450" y="338" width="9" height="9" fill="#9A7840"/>
+<text x="464" y="347" fill="#6B5E4E" class="mono">AV 24 %</text>
+<rect x="560" y="320" width="9" height="9" fill="#7A6040"/>
+<text x="574" y="329" fill="#6B5E4E" class="mono">SCPI 20 %</text>
+<rect x="560" y="338" width="9" height="9" fill="#C0B4A0"/>
+<text x="574" y="347" fill="#6B5E4E" class="mono">CASH 18 %</text>
 
-<!-- Sparkline -->
-<line x1="32" y1="318" x2="648" y2="318" stroke="#C8BCAA" stroke-width="1"/>
-<text x="32" y="334" fill="#6B5E4E" class="mono">ÉVOLUTION PATRIMOINE NET · 12 MOIS</text>
-<polygon points="32,412 85,408 138,404 191,400 244,403 297,395 350,388 403,383 456,377 509,371 562,366 615,360 648,354 648,428 32,428" fill="#B07820" opacity="0.06"/>
-<polyline points="32,412 85,408 138,404 191,400 244,403 297,395 350,388 403,383 456,377 509,371 562,366 615,360 648,354" fill="none" stroke="#B07820" stroke-width="1.5"/>
-<circle cx="32" cy="412" r="3" fill="#B07820"/>
-<text x="32" y="430" fill="#6B5E4E" class="mono">MAI 2025</text>
-<circle cx="648" cy="354" r="3" fill="#B07820"/>
-<text x="648" y="430" fill="#4A7C5C" class="mono" text-anchor="end">MAI 2026 · +9,4 %</text>
+<!-- Method index -->
+<text x="670" y="148" fill="#B07820" class="mono" text-anchor="end" font-size="9">01</text>
+<text x="670" y="162" fill="#7A7468" class="mono" text-anchor="end" font-size="9">INVENTAIRE</text>
+<text x="670" y="184" fill="#7A7468" class="mono" text-anchor="end" font-size="9">02</text>
+<text x="670" y="198" fill="#B07820" class="mono" text-anchor="end" font-size="9" font-weight="700">ANALYSE</text>
+<text x="670" y="220" fill="#7A7468" class="mono" text-anchor="end" font-size="9">03</text>
+<text x="670" y="234" fill="#7A7468" class="mono" text-anchor="end" font-size="9">SIMULATION</text>
+<text x="670" y="256" fill="#7A7468" class="mono" text-anchor="end" font-size="9">04</text>
+<text x="670" y="270" fill="#7A7468" class="mono" text-anchor="end" font-size="9">DÉCISION</text>
+
+<!-- Divider + sparkline label -->
+<line x1="36" y1="322" x2="689" y2="322" stroke="#C8BCAA" stroke-width="1"/>
+<text x="36" y="340" fill="#6B5E4E" class="mono">ÉVOLUTION PATRIMOINE NET · 12 MOIS</text>
+
+<!-- Sparkline area -->
+<polygon points="36,620 100,613 164,606 228,601 292,604 356,594 420,584 484,577 548,569 612,561 676,553 689,548 689,640 36,640" fill="#B07820" opacity="0.05"/>
+<polyline points="36,620 100,613 164,606 228,601 292,604 356,594 420,584 484,577 548,569 612,561 676,553 689,548" fill="none" stroke="#B07820" stroke-width="2"/>
+
+<!-- Grid lines -->
+<line x1="36" y1="575" x2="689" y2="575" stroke="#C8BCAA" stroke-width="0.5" stroke-dasharray="3 6"/>
+<text x="30" y="579" fill="#C8BCAA" class="mono" text-anchor="end">+5 %</text>
+<line x1="36" y1="620" x2="689" y2="620" stroke="#C8BCAA" stroke-width="0.5" stroke-dasharray="3 6"/>
+<text x="30" y="624" fill="#C8BCAA" class="mono" text-anchor="end">0 %</text>
+
+<!-- Month labels -->
+<text x="36"  y="652" fill="#9A8E7C" class="mono">J</text>
+<text x="100" y="652" fill="#9A8E7C" class="mono">J</text>
+<text x="164" y="652" fill="#9A8E7C" class="mono">A</text>
+<text x="228" y="652" fill="#9A8E7C" class="mono">S</text>
+<text x="292" y="652" fill="#9A8E7C" class="mono">O</text>
+<text x="356" y="652" fill="#9A8E7C" class="mono">N</text>
+<text x="420" y="652" fill="#9A8E7C" class="mono">D</text>
+<text x="484" y="652" fill="#9A8E7C" class="mono">J</text>
+<text x="548" y="652" fill="#9A8E7C" class="mono">F</text>
+<text x="612" y="652" fill="#9A8E7C" class="mono">M</text>
+<text x="676" y="652" fill="#9A8E7C" class="mono">M</text>
+
+<!-- Start / end markers -->
+<circle cx="36" cy="620" r="4" fill="#B07820"/>
+<text x="36" y="672" fill="#6B5E4E" class="mono">MAI 2025</text>
+<text x="36" y="686" fill="#6B5E4E" class="mono">486 250 €</text>
+
+<circle cx="689" cy="548" r="4" fill="#B07820"/>
+<text x="689" y="672" fill="#4A7C5C" class="mono" text-anchor="end">MAI 2026</text>
+<text x="689" y="686" fill="#4A7C5C" class="mono" text-anchor="end">+9,4 % · +41 690 €</text>
+
+<!-- Bottom divider -->
+<line x1="36" y1="714" x2="689" y2="714" stroke="#C8BCAA" stroke-width="0.5"/>
+<text x="36" y="730" fill="#9A8E7C" class="mono">PATRIMO · COCKPIT PATRIMONIAL · 2026</text>
+<text x="689" y="730" fill="#B07820" class="mono" text-anchor="end">486 250 €</text>
 </svg>

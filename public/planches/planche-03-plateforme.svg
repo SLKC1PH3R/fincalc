@@ -1,121 +1,104 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 510">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 68 680 414">
 <style>
 .mono{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;letter-spacing:0.1em}
 .srf{font-family:Georgia,serif}
 .sans{font-family:-apple-system,system-ui,sans-serif}
 </style>
-<rect width="680" height="510" fill="#070910"/>
-<line x1="32" y1="34" x2="648" y2="34" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
-<text x="32" y="24" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · PTM-03 · 2026</text>
-<text x="648" y="24" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">FIG. 03 — PLANCHE 003 / 008</text>
-<text x="32" y="58" fill="#8a8276" class="mono">III. — PLATEFORME · 4 MODULES</text>
-<line x1="32" y1="68" x2="648" y2="68" stroke="#1a1d28" stroke-width="1"/>
+<rect width="680" height="510" fill="#F5F0E8"/>
 
-<!-- MOD-01 SUIVRE (x=32, y=78, w=300, h=180) -->
-<rect x="32" y="78" width="300" height="180" rx="4" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1"/>
-<rect x="32" y="78" width="300" height="3" rx="2" fill="#f1c086"/>
-<text x="44" y="98" fill="#8a8276" class="mono">MOD-01 — SUIVRE</text>
-<text x="44" y="114" fill="#f1c086" class="sans" font-size="12" font-weight="600">Allocation patrimoniale</text>
+<!-- MOD-01 SUIVRE -->
+<rect x="32" y="78" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="32" y="78" width="300" height="3" rx="2" fill="#B07820"/>
+<text x="44" y="98" fill="#7A7468" class="mono">MOD-01 — SUIVRE</text>
+<text x="44" y="114" fill="#B07820" class="sans" font-size="12" font-weight="600">Allocation patrimoniale</text>
 
-<!-- Allocation bars -->
-<text x="44" y="138" fill="#a8a092" class="mono">PEA</text>
-<rect x="100" y="128" width="200" height="7" rx="2" fill="#1a1d28"/>
-<rect x="100" y="128" width="76" height="7" rx="2" fill="#f1c086"/>
-<text x="308" y="137" fill="#f1c086" class="mono" text-anchor="end">38 %</text>
+<text x="44" y="138" fill="#6B5E4E" class="mono">PEA</text>
+<rect x="100" y="128" width="200" height="7" rx="2" fill="#DDD4C4"/>
+<rect x="100" y="128" width="76" height="7" rx="2" fill="#B07820"/>
+<text x="308" y="137" fill="#B07820" class="mono" text-anchor="end">38 %</text>
 
-<text x="44" y="157" fill="#a8a092" class="mono">AV</text>
-<rect x="100" y="147" width="200" height="7" rx="2" fill="#1a1d28"/>
-<rect x="100" y="147" width="48" height="7" rx="2" fill="#c4a378"/>
-<text x="308" y="156" fill="#c4a378" class="mono" text-anchor="end">24 %</text>
+<text x="44" y="157" fill="#6B5E4E" class="mono">AV</text>
+<rect x="100" y="147" width="200" height="7" rx="2" fill="#DDD4C4"/>
+<rect x="100" y="147" width="48" height="7" rx="2" fill="#9A7840"/>
+<text x="308" y="156" fill="#9A7840" class="mono" text-anchor="end">24 %</text>
 
-<text x="44" y="176" fill="#a8a092" class="mono">SCPI</text>
-<rect x="100" y="166" width="200" height="7" rx="2" fill="#1a1d28"/>
-<rect x="100" y="166" width="40" height="7" rx="2" fill="#8a7656"/>
-<text x="308" y="175" fill="#8a7656" class="mono" text-anchor="end">20 %</text>
+<text x="44" y="176" fill="#6B5E4E" class="mono">SCPI</text>
+<rect x="100" y="166" width="200" height="7" rx="2" fill="#DDD4C4"/>
+<rect x="100" y="166" width="40" height="7" rx="2" fill="#7A6040"/>
+<text x="308" y="175" fill="#7A6040" class="mono" text-anchor="end">20 %</text>
 
-<text x="44" y="195" fill="#a8a092" class="mono">CASH</text>
-<rect x="100" y="185" width="200" height="7" rx="2" fill="#1a1d28"/>
-<rect x="100" y="185" width="36" height="7" rx="2" fill="#3e3a32" stroke="#6b7280" stroke-width="0.5"/>
-<text x="308" y="194" fill="#a8a092" class="mono" text-anchor="end">18 %</text>
+<text x="44" y="195" fill="#6B5E4E" class="mono">CASH</text>
+<rect x="100" y="185" width="200" height="7" rx="2" fill="#DDD4C4"/>
+<rect x="100" y="185" width="36" height="7" rx="2" fill="#C0B4A0" stroke="#B8AE9E" stroke-width="0.5"/>
+<text x="308" y="194" fill="#7A7468" class="mono" text-anchor="end">18 %</text>
 
-<text x="44" y="247" fill="#a8a092" class="mono">486 250 €  ·  4 ENVELOPPES  ·  SCORE 72</text>
+<text x="44" y="247" fill="#6B5E4E" class="mono">486 250 €  ·  4 ENVELOPPES  ·  SCORE 72</text>
 
-<!-- MOD-02 OPTIMISER (x=348, y=78, w=300, h=180) -->
-<rect x="348" y="78" width="300" height="180" rx="4" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1"/>
-<rect x="348" y="78" width="300" height="3" rx="2" fill="#c4a378"/>
-<text x="360" y="98" fill="#8a8276" class="mono">MOD-02 — OPTIMISER</text>
-<text x="360" y="114" fill="#f1c086" class="sans" font-size="12" font-weight="600">Réduction des frais ETF</text>
+<!-- MOD-02 OPTIMISER -->
+<rect x="348" y="78" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="348" y="78" width="300" height="3" rx="2" fill="#9A7840"/>
+<text x="360" y="98" fill="#7A7468" class="mono">MOD-02 — OPTIMISER</text>
+<text x="360" y="114" fill="#B07820" class="sans" font-size="12" font-weight="600">Réduction des frais ETF</text>
 
-<!-- TER comparison table -->
-<text x="360" y="136" fill="#6b7280" class="mono">ETF ACTUEL</text>
-<text x="450" y="136" fill="#6b7280" class="mono">TER</text>
-<text x="508" y="136" fill="#6b7280" class="mono">ALTERNATIF</text>
+<text x="360" y="136" fill="#7A7468" class="mono">ETF ACTUEL</text>
+<text x="450" y="136" fill="#7A7468" class="mono">TER</text>
+<text x="508" y="136" fill="#7A7468" class="mono">ALTERNATIF</text>
+<line x1="360" y1="140" x2="636" y2="140" stroke="#C8BCAA" stroke-width="1"/>
 
-<line x1="360" y1="140" x2="636" y2="140" stroke="#1a1d28" stroke-width="1"/>
+<text x="360" y="154" fill="#6B5E4E" class="mono">WORLD ETF A</text>
+<text x="450" y="154" fill="#B84030" class="mono">0,50 %</text>
+<text x="508" y="154" fill="#4A7C5C" class="mono">iShares Core 0,20 %</text>
 
-<text x="360" y="154" fill="#a8a092" class="mono">WORLD ETF A</text>
-<text x="450" y="154" fill="#c46a5a" class="mono">0,50 %</text>
-<text x="508" y="154" fill="#7a9b6e" class="mono">iShares Core 0,20 %</text>
+<text x="360" y="168" fill="#6B5E4E" class="mono">S&amp;P 500 B</text>
+<text x="450" y="168" fill="#B84030" class="mono">0,40 %</text>
+<text x="508" y="168" fill="#4A7C5C" class="mono">Amundi 0,15 %</text>
 
-<text x="360" y="168" fill="#a8a092" class="mono">S&amp;P 500 B</text>
-<text x="450" y="168" fill="#c46a5a" class="mono">0,40 %</text>
-<text x="508" y="168" fill="#7a9b6e" class="mono">Amundi 0,15 %</text>
+<text x="360" y="182" fill="#6B5E4E" class="mono">EM MARKETS C</text>
+<text x="450" y="182" fill="#6B5E4E" class="mono">0,18 %</text>
+<text x="508" y="182" fill="#4A7C5C" class="mono">Xtrackers 0,18 %</text>
 
-<text x="360" y="182" fill="#a8a092" class="mono">EM MARKETS C</text>
-<text x="450" y="182" fill="#a8a092" class="mono">0,18 %</text>
-<text x="508" y="182" fill="#7a9b6e" class="mono">Xtrackers 0,18 %</text>
+<line x1="360" y1="196" x2="636" y2="196" stroke="#C8BCAA" stroke-width="1"/>
+<text x="360" y="218" fill="#6B5E4E" class="mono">ÉCONOMIE POTENTIELLE · 20 ANS</text>
+<text x="360" y="240" fill="#B07820" class="srf" font-size="24">8 240 €</text>
 
-<line x1="360" y1="196" x2="636" y2="196" stroke="#1a1d28" stroke-width="1"/>
+<!-- MOD-03 SIMULER -->
+<rect x="32" y="274" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="32" y="274" width="300" height="3" rx="2" fill="#7A6040"/>
+<text x="44" y="294" fill="#7A7468" class="mono">MOD-03 — SIMULER</text>
+<text x="44" y="310" fill="#B07820" class="sans" font-size="12" font-weight="600">18 simulateurs disponibles</text>
 
-<!-- Savings highlight -->
-<text x="360" y="218" fill="#8a8276" class="mono">ÉCONOMIE POTENTIELLE · 20 ANS</text>
-<text x="360" y="240" fill="#f1c086" class="srf" font-size="24">8 240 €</text>
+<text x="44" y="332" fill="#6B5E4E" class="mono">01  Flat Tax vs Barème TMI</text>
+<text x="44" y="348" fill="#6B5E4E" class="mono">02  PEA vs CTO vs AV</text>
+<text x="44" y="364" fill="#6B5E4E" class="mono">03  LMNP vs Location nue</text>
+<text x="44" y="380" fill="#6B5E4E" class="mono">04  Donation optimisée</text>
+<text x="44" y="396" fill="#6B5E4E" class="mono">05  Simulation retraite</text>
+<text x="44" y="440" fill="#7A7468" class="mono">+ 13 AUTRES SIMULATEURS</text>
 
-<!-- MOD-03 SIMULER (x=32, y=274, w=300, h=180) -->
-<rect x="32" y="274" width="300" height="180" rx="4" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1"/>
-<rect x="32" y="274" width="300" height="3" rx="2" fill="#8a7656"/>
-<text x="44" y="294" fill="#8a8276" class="mono">MOD-03 — SIMULER</text>
-<text x="44" y="310" fill="#f1c086" class="sans" font-size="12" font-weight="600">18 simulateurs disponibles</text>
+<!-- MOD-04 ÉDUQUER -->
+<rect x="348" y="274" width="300" height="180" rx="4" fill="#EDE8DF" stroke="#C8BCAA" stroke-width="1"/>
+<rect x="348" y="274" width="300" height="3" rx="2" fill="#C0B4A0"/>
+<text x="360" y="294" fill="#7A7468" class="mono">MOD-04 — ÉDUQUER</text>
+<text x="360" y="310" fill="#B07820" class="sans" font-size="12" font-weight="600">Glossaire des enveloppes</text>
 
-<text x="44" y="332" fill="#a8a092" class="mono">01  Flat Tax vs Barème TMI</text>
-<text x="44" y="348" fill="#a8a092" class="mono">02  PEA vs CTO vs AV</text>
-<text x="44" y="364" fill="#a8a092" class="mono">03  LMNP vs Location nue</text>
-<text x="44" y="380" fill="#a8a092" class="mono">04  Donation optimisée</text>
-<text x="44" y="396" fill="#a8a092" class="mono">05  Simulation retraite</text>
+<rect x="360" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#B07820" stroke-width="0.8"/>
+<text x="390" y="337" fill="#B07820" class="mono" text-anchor="middle">PEA</text>
 
-<text x="44" y="440" fill="#8a8276" class="mono">+ 13 AUTRES SIMULATEURS</text>
+<rect x="428" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#9A7840" stroke-width="0.8"/>
+<text x="458" y="337" fill="#9A7840" class="mono" text-anchor="middle">AV</text>
 
-<!-- MOD-04 ÉDUQUER (x=348, y=274, w=300, h=180) -->
-<rect x="348" y="274" width="300" height="180" rx="4" fill="#0c0f1c" stroke="#1a1d28" stroke-width="1"/>
-<rect x="348" y="274" width="300" height="3" rx="2" fill="#3e3a32" stroke="#3e3a32"/>
-<text x="360" y="294" fill="#8a8276" class="mono">MOD-04 — ÉDUQUER</text>
-<text x="360" y="310" fill="#f1c086" class="sans" font-size="12" font-weight="600">Glossaire des enveloppes</text>
+<rect x="496" y="322" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#7A6040" stroke-width="0.8"/>
+<text x="526" y="337" fill="#7A6040" class="mono" text-anchor="middle">PER</text>
 
-<!-- Envelope chips 3×2 -->
-<rect x="360" y="322" width="60" height="22" rx="3" fill="#1a1d28" stroke="#f1c086" stroke-width="0.5"/>
-<text x="390" y="337" fill="#f1c086" class="mono" text-anchor="middle">PEA</text>
+<rect x="360" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
+<text x="390" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">CTO</text>
 
-<rect x="428" y="322" width="60" height="22" rx="3" fill="#1a1d28" stroke="#c4a378" stroke-width="0.5"/>
-<text x="458" y="337" fill="#c4a378" class="mono" text-anchor="middle">AV</text>
+<rect x="428" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
+<text x="458" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">SCPI</text>
 
-<rect x="496" y="322" width="60" height="22" rx="3" fill="#1a1d28" stroke="#8a7656" stroke-width="0.5"/>
-<text x="526" y="337" fill="#8a7656" class="mono" text-anchor="middle">PER</text>
+<rect x="496" y="352" width="60" height="22" rx="3" fill="#F5F0E8" stroke="#C8BCAA" stroke-width="0.8"/>
+<text x="526" y="367" fill="#6B5E4E" class="mono" text-anchor="middle">LMNP</text>
 
-<rect x="360" y="352" width="60" height="22" rx="3" fill="#1a1d28" stroke="#6b7280" stroke-width="0.5"/>
-<text x="390" y="367" fill="#a8a092" class="mono" text-anchor="middle">CTO</text>
-
-<rect x="428" y="352" width="60" height="22" rx="3" fill="#1a1d28" stroke="#6b7280" stroke-width="0.5"/>
-<text x="458" y="367" fill="#a8a092" class="mono" text-anchor="middle">SCPI</text>
-
-<rect x="496" y="352" width="60" height="22" rx="3" fill="#1a1d28" stroke="#6b7280" stroke-width="0.5"/>
-<text x="526" y="367" fill="#a8a092" class="mono" text-anchor="middle">LMNP</text>
-
-<text x="360" y="396" fill="#a8a092" class="mono">Fiscalité · Plafonds · Cas d'usage</text>
-<text x="360" y="410" fill="#a8a092" class="mono">Comparatifs · Stratégies</text>
-<text x="360" y="440" fill="#8a8276" class="mono">25+ TERMES · GLOSSAIRE INTÉGRÉ</text>
-
-<!-- Bottom frame -->
-<line x1="32" y1="488" x2="648" y2="488" stroke="#f1c086" stroke-width="0.5" opacity="0.5"/>
-<text x="32" y="502" fill="#f1c086" class="mono" opacity="0.75">PATRIMO · 2026</text>
-<text x="648" y="502" fill="#f1c086" class="mono" opacity="0.75" text-anchor="end">003 / FIN</text>
+<text x="360" y="396" fill="#6B5E4E" class="mono">Fiscalité · Plafonds · Cas d'usage</text>
+<text x="360" y="410" fill="#6B5E4E" class="mono">Comparatifs · Stratégies</text>
+<text x="360" y="440" fill="#7A7468" class="mono">25+ TERMES · GLOSSAIRE INTÉGRÉ</text>
 </svg>

@@ -106,7 +106,7 @@ const STYLES = `
 .az-plate::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(21,20,15,.025) 12px,rgba(21,20,15,.025) 13px)}
 .az-plate .phl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);position:relative;z-index:1;text-align:center;line-height:1.6}
 .az-plate .phc{display:block;width:28px;height:1px;background:var(--coral);margin:4px auto}
-.az-pimg{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.az-pimg{width:100%;height:100%;object-fit:contain;object-position:center;display:block}
 
 /* section rule */
 .az-sec{position:relative;padding:130px 0}

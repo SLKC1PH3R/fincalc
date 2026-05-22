@@ -510,10 +510,10 @@ const COPY = {
     v_h2_a: 'Quatre étapes.', v_h2_em: 'Un résultat', v_h2_b: 'mesurable',
     v_sub_p: 'Chaque simulation commence par une saisie simple. Les résultats sont instantanés, visuels et exportables.',
     v_steps: [
-      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/planches/planche-04-inventaire.svg' },
-      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/planches/planche-05-analyse.svg' },
-      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/planches/planche-06-simulation.svg' },
-      { n:'iv',  t:'Décision',   b:"Score Patrimonial sur 5 piliers. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/planches/planche-07-score.svg' },
+      { n:'i',   t:'Inventaire', b:"Saisissez vos actifs par enveloppe. PEA, AV, immobilier, crypto, livrets — chacun dans sa case.", img:'/legacy/inventaire.jpg' },
+      { n:'ii',  t:'Analyse',    b:"Patrimoine net calculé, allocation visuelle, TER comparés. Une image nette de votre situation réelle.", img:'/legacy/Analyse.jpg' },
+      { n:'iii', t:'Simulation', b:"Flat tax vs barème, PEA vs CTO, impact des frais, projection retraite. 18 outils.", img:'/legacy/simulation.jpg' },
+      { n:'iv',  t:'Décision',   b:"Score Patrimonial sur 5 piliers. Recommandations actionnables. Vous décidez, en connaissance de cause.", img:'/legacy/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Méthode propriétaire · 2024',
     v_foot_r_a: 'Résultat immédiat · ', v_foot_r_b: 'Zéro compte requis',
@@ -687,10 +687,10 @@ const COPY = {
     v_h2_a: 'Four steps.', v_h2_em: 'One measurable', v_h2_b: 'outcome',
     v_sub_p: 'Every simulation starts with simple inputs. Results are instant, visual and exportable.',
     v_steps: [
-      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/planches/planche-04-inventaire.svg' },
-      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/planches/planche-05-analyse.svg' },
-      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/planches/planche-06-simulation.svg' },
-      { n:'iv',  t:'Decision',  b:'Wealth score across 5 pillars. Actionable recommendations. You decide — with full clarity.', img:'/planches/planche-07-score.svg' },
+      { n:'i',   t:'Inventory', b:'Enter your assets by wrapper. PEA, life insurance, real estate, crypto, savings — each in its own slot.', img:'/legacy/inventaire.jpg' },
+      { n:'ii',  t:'Analysis',  b:'Net worth calculated, visual allocation, TER comparison. A clear picture of your actual situation.', img:'/legacy/Analyse.jpg' },
+      { n:'iii', t:'Simulation',b:'Flat tax vs progressive, PEA vs CTO, fee impact, retirement projection. 18 tools.', img:'/legacy/simulation.jpg' },
+      { n:'iv',  t:'Decision',  b:'Wealth score across 5 pillars. Actionable recommendations. You decide — with full clarity.', img:'/legacy/decision.jpg' },
     ],
     v_foot_l: 'Patrimo · Proprietary method · 2024',
     v_foot_r_a: 'Instant results · ', v_foot_r_b: 'No account required',
@@ -1034,7 +1034,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-aart" data-az="right">
-                <Plate label="ABOUT" src="/planches/planche-02-manifeste.svg" altText="Manifeste Patrimo — 18 simulateurs, 8 enveloppes, 7 dimensions, 0 donnée bancaire" />
+                <Plate label="ABOUT" src="/legacy/heritage.jpg" altText="Manifeste Patrimo — 18 simulateurs, 8 enveloppes, 7 dimensions, 0 donnée bancaire" />
                 <div className="az-acapt"><b>{t.ii_capt_b}</b>{t.ii_capt}</div>
               </div>
             </div>
@@ -1051,7 +1051,7 @@ export function LandingPage() {
             </div>
             <div className="az-cgrid">
               <div className="az-cart" data-az="left">
-                <Plate label="PLATEFORME" src="/planches/planche-03-plateforme.svg" altText="Plateforme Patrimo — 4 modules : suivre, optimiser, simuler, éduquer" />
+                <Plate label="PLATEFORME" src="/legacy/section2.jpg" altText="Plateforme Patrimo — 4 modules : suivre, optimiser, simuler, éduquer" />
                 <span className="ribbon">{t.iii_ribbon}</span>
                 <span className="az-corner tl" /><span className="az-corner br" />
               </div>
@@ -1263,7 +1263,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-tart" data-az="right">
-                <Plate label="SECURITE" src="/planches/planche-08-securite.svg" altText="Architecture de confiance — AES-256, RGPD, hébergement UE, 0 donnée bancaire" />
+                <Plate label="SECURITE" src="/legacy/patrimoine-actifs.jpg" altText="Architecture de confiance — AES-256, RGPD, hébergement UE, 0 donnée bancaire" />
               </div>
             </div>
           </div>
@@ -1339,7 +1339,7 @@ export function LandingPage() {
                 </div>
               </div>
               <div className="az-caart" data-az="right">
-                <Plate label="CTA" src="/planches/planche-09-cta.svg" altText="Patrimo — accès immédiat, 100% gratuit, zéro donnée bancaire" />
+                <Plate label="CTA" src="/legacy/footer.jpg" altText="Patrimo — accès immédiat, 100% gratuit, zéro donnée bancaire" />
                 <span className="ribbon">{t.viii_ribbon}</span>
               </div>
             </div>
